@@ -1,0 +1,35 @@
+# IDE and editor state
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.vcxproj.user
+
+# CMake and Visual Studio build outputs
+build/
+**/build/
+CMakeUserPresets.json
+Testing/Temporary/
+
+# Compiled binaries and intermediate files
+*.obj
+*.pch
+*.pdb
+*.idb
+*.ilk
+*.lib
+*.exp
+*.exe
+*.dll
+*.vst3/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+~$*
+
+# Node dependencies if solver tooling grows later
+node_modules/
