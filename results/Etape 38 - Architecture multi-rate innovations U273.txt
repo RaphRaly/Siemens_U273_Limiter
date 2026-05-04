@@ -1,0 +1,660 @@
+Etape 38 - Architecture multi-rate innovations U273
+===================================================
+
+Date: 2026-05-04
+Objet: comprendre en profondeur ce que fait une architecture multi-rate moderne
+       et comment l'appliquer au plugin U273.
+
+
+0. Definition courte
+--------------------
+
+Une architecture multi-rate n'est pas juste:
+
+    "mettre un oversampler x4 autour du plugin".
+
+C'est:
+
+    faire tourner chaque sous-systeme au sample-rate dont il a besoin.
+
+Exemples:
+
+    - audio dry:
+        rate hote, pour rester transparent;
+
+    - gain cell non-lineaire:
+        2x/4x/8x, car elle cree des harmoniques;
+
+    - sidechain/detecteur:
+        4x/8x/16x ou bande cible 100-200 kHz, car elle doit suivre des pics
+        entre samples et eviter l'aliasing du signal de controle;
+
+    - true peak meter:
+        4x minimum selon standards;
+
+    - UI meters:
+        30-120 Hz, pas besoin de sample-rate audio.
+
+
+1. Sources retenues
+-------------------
+
+Fondations multirate:
+
+    - Crochiere & Rabiner, "Interpolation and Decimation of Digital Signals",
+      Proc. IEEE, 1981.
+      Point utilise:
+          interpolation, decimation, structures efficaces, implementations
+          multistage.
+      URL:
+          https://web.ece.ucsb.edu/Faculty/Rabiner/ece259/Reprints/179_interpolation_decimation.pdf
+
+    - Vaidyanathan, "Multirate digital filters, filter banks, polyphase
+      networks, and applications", Proc. IEEE, 1990.
+      Point utilise:
+          polyphase, M-th band filters, filter banks, perfect reconstruction.
+      URL:
+          https://authors.library.caltech.edu/records/x720m-mr760/latest
+
+
+Audio dynamics / aliasing:
+
+    - Giannoulis, Massberg, Reiss, "Digital Dynamic Range Compressor Design -
+      A Tutorial and Analysis", JAES 2012.
+      Point utilise:
+          un compresseur est un systeme non-lineaire avec memoire; sidechain,
+          gain computer, peak/RMS, attack/release et feedback/feedforward
+          changent fortement le comportement.
+      URL:
+          https://www.researchgate.net/publication/277772168_Digital_Dynamic_Range_Compressor_Design-A_Tutorial_and_Analysis
+
+    - Kraght, "Aliasing in digital clippers and compressors", JAES 2000.
+      Point utilise:
+          les limiteurs/compresseurs digitaux peuvent generer de l'aliasing;
+          time constants, soft limiting et detecteurs d'ordre superieur aident.
+      URL:
+          https://www.researchgate.net/publication/293662990_Aliasing_in_digital_clippers_and_compressors
+
+    - Parker, Zavalishin, Le Bivic, DAFx-16.
+      Point utilise:
+          les non-linearites creent des harmoniques au-dessus de Nyquist;
+          l'oversampling est le remede traditionnel, mais pas le seul.
+      URL:
+          https://www.dafx.de/paper-archive/2016/dafxpapers/20-DAFx-16_paper_41-PN.pdf
+
+    - Holters, "Antiderivative Antialiasing for Stateful Systems", DAFx-19 /
+      Applied Sciences 2020.
+      Point utilise:
+          anti-aliasing de systemes avec etat, au-dela des waveshapers
+          sans memoire.
+      URL:
+          https://www.mdpi.com/2076-3417/10/1/20
+
+
+Pratique plugin moderne:
+
+    - TDR Kotelnikov manual.
+      Points:
+          sidechain bandwidth jusqu'a 20x audible;
+          gain cell au minimum 2x;
+          seul le Delta/wet est oversample;
+          dry bit-transparent a 0 dB GR;
+          Eco ~= 100 kHz, Precise ~= 200 kHz.
+      URL:
+          https://docs.tokyodawn.net/kotelnikov-manual/
+
+    - Cytomic The Glue / The Scream manuals.
+      Points:
+          realtime/render separes;
+          x2 realtime, x8 render defaults;
+          minimum/intermediate/linear phase;
+          latence fixe et reportee;
+          oversampling base sur 44.1/48 kHz.
+      URL:
+          https://cytomic.com/product/glue/
+          https://cytomic.com/files/TheScream-Manual.pdf
+
+    - oeksound soothe2 manual.
+      Points:
+          oversample et resolution sont deux axes de qualite differents;
+          offline settings separes;
+          sidechain delay compensation.
+      URL:
+          https://oeksound.com/manuals/soothe2/
+
+    - JUCE dsp::Oversampling.
+      Points:
+          2x/4x/8x/16x;
+          FIR linear phase vs IIR low latency;
+          latency compensation;
+          custom stages.
+      URL:
+          https://docs.juce.com/master/classjuce_1_1dsp_1_1Oversampling.html
+
+
+2. Ce que ca fait mathematiquement
+----------------------------------
+
+2.1 Interpolation
+
+Passer de Fs a L*Fs:
+
+    1. inserer L-1 zeros entre les samples;
+    2. filtrer passe-bas pour reconstruire les samples intermediaires;
+    3. traiter le bloc non-lineaire au rate plus haut.
+
+Ce n'est pas "inventer" du signal arbitraire. C'est approximer la forme
+continue band-limitee entre les samples.
+
+
+2.2 Traitement non-lineaire au rate haut
+
+Une non-linearite f(x) cree de nouvelles frequences.
+
+Exemple simple:
+
+    x(t) = sin(wt)
+    x(t)^2 = 0.5 - 0.5*cos(2wt)
+    x(t)^3 = 0.75*sin(wt) - 0.25*sin(3wt)
+
+Donc saturation, diode, gain modulation ou rectification peuvent generer
+harmoniques 2w, 3w, etc.
+
+Si ces composantes depassent Nyquist, elles se replient:
+
+    f_alias = |f - k*Fs|
+
+Le multirate met Nyquist plus haut pendant le traitement critique, puis
+filtre avant de redescendre.
+
+
+2.3 Decimation
+
+Revenir de L*Fs a Fs:
+
+    1. filtrer tout ce qui depasse Fs/2;
+    2. garder un sample sur L.
+
+La qualite du filtre de decimation fixe une grosse partie de la qualite finale:
+
+    - stopband insuffisant = aliasing restant;
+    - transition trop large = perte d'aigus;
+    - linear phase = latence/pre-ring;
+    - minimum phase = moins de latence, phase non lineaire.
+
+
+2.4 Polyphase
+
+Faire l'interpolation/decimation naivement coute cher.
+Les structures polyphase reordonnent les calculs pour ne calculer que les
+samples utiles.
+
+C'est la base pratique des oversamplers efficaces.
+
+
+3. Ce que ca fait auditivement
+------------------------------
+
+3.1 Moins d'aliasing audio
+
+Dans un compresseur/limiteur:
+
+    - gain change tres vite;
+    - le signal est multiplie par une enveloppe variable;
+    - cette multiplication cree des sidebands;
+    - si la courbe de GR est sale ou trop basse resolution, ces sidebands
+      deviennent du "grain", de la durete, ou de la distorsion non musicale.
+
+Le multirate baisse ces artefacts.
+
+
+3.2 Detection plus juste des transitoires
+
+Le signal stocke dans le DAW n'est pas la waveform continue complete.
+Les pics peuvent tomber entre samples.
+
+Une sidechain haute rate:
+
+    - voit mieux les peaks;
+    - calcule une GR plus stable;
+    - reduit l'erreur intersample;
+    - evite de declencher trop tard ou de relacher sur de mauvais samples.
+
+
+3.3 Controle plus smooth
+
+Si la sidechain produit une enveloppe crantee ou aliassee, meme un gain cell
+audio propre sonnera faux.
+
+Multi-rate sidechain:
+
+    - timing plus fin;
+    - moins de modulation parasite;
+    - attaque/release plus coherentes;
+    - meilleure image stereo si le linking est calcule proprement.
+
+
+3.4 Dry transparent
+
+L'innovation type Kotelnikov:
+
+    only process the Delta/wet path.
+
+Forme:
+
+    y = dry + delta
+
+avec:
+
+    delta = process(x) - x
+
+Si GR = 0:
+
+    delta = 0
+    y = dry
+
+Donc le plugin peut etre bit-transparent quand il ne compresse pas, tout en
+oversamplant la partie qui change vraiment.
+
+
+4. Les innovations modernes
+---------------------------
+
+4.1 Rate islands
+
+Au lieu d'un seul rate global, on cree des ilots:
+
+    input/dry island:
+        Fs
+
+    detector island:
+        4x/8x/16x ou bande interne cible
+
+    nonlinear audio island:
+        2x/4x/8x
+
+    true-peak island:
+        4x minimum
+
+    UI/meter island:
+        30-120 Hz
+
+Chaque ilot a ses filtres d'entree/sortie et son contrat de latence.
+
+
+4.2 Bandwidth target instead of factor target
+
+Kotelnikov parle de bande interne:
+
+    Eco ~= 100 kHz
+    Precise ~= 200 kHz
+
+C'est plus intelligent que "x4 partout".
+
+Mapping:
+
+    Fs 48 kHz, target 200 kHz -> facteur 4 ou 8 selon marge;
+    Fs 96 kHz, target 200 kHz -> facteur 2;
+    Fs 192 kHz, target 200 kHz -> facteur 1 ou 2.
+
+
+4.3 Sidechain faster than audio path
+
+Dans un compresseur transparent, la sidechain peut demander plus de rate que
+le chemin audio, parce qu'elle:
+
+    - rectifie;
+    - detecte peaks/RMS;
+    - commute attack/release;
+    - genere la modulation de gain.
+
+Une sidechain mal samplee produit une mauvaise GR. Une mauvaise GR multiplie
+ensuite tout l'audio.
+
+
+4.4 Oversampling + resolution separes
+
+soothe2 distingue:
+
+    - oversample:
+        resolution frequentielle;
+
+    - resolution:
+        frequence de rafraichissement detection/filtre.
+
+Pour U273, equivalent:
+
+    - detector sample-rate;
+    - gain-control update-rate;
+    - audio gain-cell sample-rate.
+
+Ce sont trois decisions separees.
+
+
+4.5 Realtime/render split
+
+Le plugin doit savoir si le host est en playback ou offline render.
+
+Realtime:
+
+    faible latence;
+    CPU raisonnable;
+    pas de glitches.
+
+Render:
+
+    CPU moins critique;
+    meilleure decimation;
+    plus haut rate;
+    meilleur anti-aliasing.
+
+
+4.6 Phase modes
+
+Minimum phase:
+
+    + faible latence;
+    + bon tracking;
+    - phase haute frequence non lineaire.
+
+Linear phase:
+
+    + phase preservee;
+    + mastering/render;
+    - latence;
+    - possible pre-ring.
+
+Intermediate:
+
+    compromis pratique: moins de latence que linear, moins de phase shift que
+    minimum.
+
+
+4.7 True-peak separe
+
+Le true-peak n'oblige pas a oversampler tout le plugin.
+
+Architecture:
+
+    audio path: selon qualite;
+    true peak meter/safety: 4x ou 8x separe;
+    sidechain: rate propre.
+
+C'est important pour CPU et latence.
+
+
+5. Pourquoi c'est mieux qu'un oversampler global
+------------------------------------------------
+
+Oversampler global x8:
+
+    + simple;
+    + reduit aliasing;
+    - CPU eleve;
+    - latence elevee;
+    - oversample des blocs qui n'en ont pas besoin;
+    - complique dry/wet/bypass;
+    - peut ajouter phase/pre-ring partout.
+
+Architecture multi-rate:
+
+    + CPU concentre sur les non-linearites;
+    + sidechain plus precise;
+    + dry path intact possible;
+    + render quality plus haute;
+    + true-peak propre;
+    + scalable SD/MD/HD/UHD;
+    - plus complexe;
+    - demande des tests de latence/phase;
+    - les frontieres entre rates deviennent critiques.
+
+
+6. Risques techniques
+---------------------
+
+6.1 Latence incoherente
+
+Si dry et wet ne sont pas alignes:
+
+    comb filtering;
+    stereo flou;
+    bypass click;
+    null tests faux.
+
+Regle:
+
+    tout changement de rate doit declarer et compenser sa latence.
+
+
+6.2 Sidechain delay
+
+Si la sidechain est retardee par ses filtres mais pas l'audio:
+
+    attaque trop tard;
+    peak rate;
+    gain reduction decalee.
+
+Solutions:
+
+    - lookahead equivalent;
+    - delai audio aligne;
+    - compensation du group delay;
+    - tests step/burst.
+
+
+6.3 Pre-ringing
+
+Les FIR linear phase peuvent pre-ringer.
+Ce n'est pas toujours audible, mais peut adoucir ou "pre-echo" des transitoires.
+
+Decision:
+
+    - tracking: minimum/intermediate;
+    - mastering/render: linear si tests OK.
+
+
+6.4 State transfer
+
+Changer de quality mode pendant playback peut casser les etats:
+
+    detector;
+    envelope;
+    capacitor states;
+    B6 command state;
+    delay lines.
+
+Regle:
+
+    changer de mode = reprepare controle + crossfade ou courte pause propre.
+
+
+6.5 Automation
+
+Si les parametres changent au host Fs mais le moteur tourne a 4x:
+
+    il faut interpoler/smoother les parametres au rate interne.
+
+Sinon:
+
+    zipper noise;
+    aliasing de controle;
+    differences realtime/render.
+
+
+7. Architecture proposee pour U273
+----------------------------------
+
+7.1 Rate graph
+
+    Host Fs audio input
+        |
+        +--> DryDelay / DryPath @ Fs
+        |
+        +--> B11DetectorPath @ detectorRate
+        |       - rectifier S7/ZL10
+        |       - C11 attack/release
+        |       - control voltage / command
+        |
+        +--> B6GainCellPath @ gainCellRate
+        |       - bridge law / calibrated reduction
+        |       - delta generation
+        |
+        +--> TruePeakPath @ truePeakRate
+        |       - meter/safety only
+        |
+        +--> UIPath @ 30-120 Hz
+
+Output:
+
+    y = alignedDry + alignedDelta
+
+
+7.2 Quality mapping initial
+
+44.1/48 kHz:
+
+    Eco:
+        detector 4x
+        gain cell 2x
+        true peak 4x
+
+    Precise:
+        detector 8x
+        gain cell 4x
+        true peak 4x/8x
+
+    Render:
+        detector 16x
+        gain cell 8x
+        true peak 8x/16x
+
+
+88.2/96 kHz:
+
+    Eco:
+        detector 2x
+        gain cell 1x/2x selon aliasing tests
+
+    Precise:
+        detector 4x
+        gain cell 2x
+
+    Render:
+        detector 8x
+        gain cell 4x
+
+
+176.4/192 kHz:
+
+    Eco:
+        detector 1x
+        gain cell 1x
+
+    Precise:
+        detector 2x
+        gain cell 1x/2x
+
+    Render:
+        detector 4x
+        gain cell 2x
+
+
+7.3 Targets internes
+
+Au lieu de penser seulement en facteur:
+
+    Eco:
+        bande interne sidechain >= 100 kHz
+
+    Precise:
+        bande interne sidechain >= 200 kHz
+
+    Render:
+        bande interne sidechain >= 350-400 kHz
+
+Le facteur derive de Fs hote.
+
+
+8. Ce que ca apporte au son U273
+--------------------------------
+
+Pour le U273, l'interet n'est pas seulement l'aliasing classique.
+
+Ca permet:
+
+    - attaque limiteur 0.5 ms plus exacte;
+    - capture plus juste des peaks entre samples;
+    - moins de modulation parasite de la reduction de gain;
+    - pont B6 moins dur numeriquement;
+    - delta path transparent quand pas de GR;
+    - meilleurs null tests;
+    - render master plus propre;
+    - moins de CPU qu'un x8 global permanent.
+
+
+9. Tests a ajouter avant implementation finale
+----------------------------------------------
+
+Test 1 - Zero GR transparency:
+
+    input == output dans tolerance stricte;
+    off/eco/precise/render;
+    tous sample-rates.
+
+Test 2 - Sidechain rate convergence:
+
+    reference detector 32x;
+    comparer detector 2x/4x/8x/16x;
+    mesurer erreur de GR.
+
+Test 3 - Gain-cell aliasing:
+
+    sine 1k/5k/10k/15k;
+    multitone;
+    step/burst;
+    comparer Off/2x/4x/8x/16x.
+
+Test 4 - Latency and phase:
+
+    impulse;
+    step;
+    dry/wet null;
+    bypass automation.
+
+Test 5 - Realtime vs render:
+
+    meme preset;
+    render quality >= realtime quality;
+    difference expliquee et bornee.
+
+Test 6 - Stereo integrity:
+
+    mono center;
+    hard left transient + center sine;
+    M/S correlation;
+    no image wandering.
+
+
+10. Decision finale
+-------------------
+
+Pour viser un plugin commercial haut de gamme:
+
+    - ne pas faire un seul oversampler global;
+    - construire un RateGraph;
+    - separer sidechain, gain cell, true peak, UI;
+    - viser dry bit-transparency a 0 dB GR;
+    - utiliser detectorRate plus haut que gainCellRate;
+    - exposer Eco / Precise / Render / Diagnostic;
+    - compenser latence et sidechain delay;
+    - prouver par tests aliasing, GR, phase, true peak et null.
+
+En une phrase:
+
+    Le multi-rate sert a mettre la precision exactement la ou le systeme en a
+    besoin, sans payer le prix CPU/latence partout.
+
+Pour U273:
+
+    c'est probablement la meilleure architecture plugin finale, a condition
+    que la reference analogique B6/B11 reste la source de verite.

@@ -1,0 +1,96 @@
+Rapport AC provisoire - B11 reseau S6 Siemens U273
+===================================================
+
+Statut
+------
+Ce rapport continue l'analyse apres le pont B6. Il isole le reseau lineaire S6
+de B11, car cette partie peut etre traitee en AC sans modele transistor ni zener.
+
+Fichiers associes:
+- solver/b11_s6_network_sweep.js
+- results/b11_s6_core_ac_sweep.csv
+- results/b11_s6_core_ac_sweep.json
+
+Attention: les contacts exacts de S6 ne sont pas encore finalises. Le calcul
+ci-dessous est donc un coeur lineaire provisoire, pas la loi definitive de
+preaccentuation/ponderation du U273.
+
+1. Hypothese de reseau
+----------------------
+Noeuds:
+- VL: entree du reseau S6, source AC ideale 1 V
+- VM: noeud central
+- VR: sortie du reseau S6
+- 0: masse
+
+Valeurs utilisees:
+- R3 = 7.5 kOhm
+- R4 = 7.5 kOhm
+- R5 = 15 kOhm
+- R6 = 3.9 kOhm
+- C1 = 5 nF
+- C2 = 5 nF
+- C3 = 3.3 nF
+- C4 = 3 nF
+
+Admittances:
+- entre VL et VM: 1/R4 + j*w*C2
+- entre VM et VR: 1/R3 + j*w*C1
+- entre VL et VR: 1/R5 + j*w*C3
+- entre VM et masse: serie R6 + C4, donc Y = 1/(R6 + 1/(j*w*C4))
+- entre VR et masse: Rload, parametre
+
+Trois charges ont ete simulees:
+- Rload = 1 MOhm
+- Rload = 100 kOhm
+- Rload = 10 kOhm
+
+2. Resultats numeriques
+-----------------------
+Gain VR/VL pour une source VL = 1 V.
+
+Rload   | freq | |VR|     | gain dB | phase
+--------|------|----------|---------|---------
+1 MOhm  | 1 kHz  | 0.967602 | -0.29 dB | -3.38 deg
+1 MOhm  | 10 kHz | 0.854539 | -1.37 dB |  2.34 deg
+1 MOhm  | 20 kHz | 0.906452 | -0.85 dB |  4.72 deg
+100 kOhm| 1 kHz  | 0.911788 | -0.80 dB | -2.38 deg
+100 kOhm| 10 kHz | 0.847769 | -1.43 dB |  3.48 deg
+100 kOhm| 20 kHz | 0.904105 | -0.88 dB |  5.37 deg
+10 kOhm | 1 kHz  | 0.574594 | -4.81 dB |  3.57 deg
+10 kOhm | 10 kHz | 0.771388 | -2.25 dB | 13.81 deg
+10 kOhm | 20 kHz | 0.875514 | -1.15 dB | 11.61 deg
+
+3. Interpretation
+-----------------
+Le resultat le plus important n'est pas une courbe finale, mais une contrainte
+de modelisation:
+
+1. Le reseau S6 est sensible a la charge de sortie. Entre Rload = 1 MOhm et
+   Rload = 10 kOhm, le niveau a 1 kHz passe d'environ -0.29 dB a -4.81 dB.
+
+2. La zone de quelques kHz est bien celle ou les constantes R/C du reseau
+   deviennent visibles. Les frequences caracteristiques approximatives restent:
+   - R5/C3: environ 3.2 kHz
+   - R3/C1 et R4/C2: environ 4.2 kHz
+   - R6/C4: environ 13.6 kHz
+
+3. La charge de l'etage suivant doit etre incluse explicitement dans la MNA.
+   Remplacer S6 par une courbe de gain unique serait une approximation faible.
+
+4. Ce modele ne decide pas encore quelle position de S6 est active. Pour cela il
+   faut la table exacte des contacts du commutateur.
+
+4. Conclusion
+-------------
+Le sous-reseau B11/S6 est maintenant executable comme bloc AC lineaire
+provisoire. Il confirme que la ponderation frequentielle peut etre modelisee en
+MNA par admittances complexes simples, mais aussi que la charge aval est
+determinante.
+
+La prochaine etape scientifiquement propre est:
+
+1. confirmer les contacts S6 position par position;
+2. connecter S6 a une impedance d'entree aval realiste;
+3. ensuite seulement relier le detecteur/zener/redresseur de B11 a la commande
+   VCMD du pont B6.

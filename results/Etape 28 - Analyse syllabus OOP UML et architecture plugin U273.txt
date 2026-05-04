@@ -1,0 +1,726 @@
+Etape 28 - Analyse syllabus OOP UML et architecture plugin U273
+===============================================================
+
+Date: 2026-05-04
+Objet: analyser le syllabus "Object Oriented Programming and Design" et les
+       sources techniques utiles pour preparer une excellente architecture UML
+       du plugin Siemens U273 C++/JUCE VST3/AU.
+
+
+1. Source locale analysee
+-------------------------
+
+Fichier:
+
+    C:\Users\user\Downloads\Syllabus - EN (2).docx
+
+Extraction utile:
+
+    Course Name:
+
+        Object Oriented Programming and Design
+
+    Course objective:
+
+        - identifier les problemes de design dans de grands systemes complexes;
+        - choisir les techniques qui resolvent ces problemes;
+        - integrer les techniques selon des considerations d'ingenierie;
+        - maitriser UML Class Diagram, Statechart, Sequence Diagram;
+        - appliquer SOLID;
+        - utiliser des Design Patterns;
+        - comprendre frameworks, Dependency Injection et Aspect Oriented
+          Programming;
+        - definir des principes de package design.
+
+    Contenus utiles pour notre plugin:
+
+        - UML class diagram et relations;
+        - StateChart;
+        - Sequence diagram / Collaboration diagram;
+        - SOLID: OCP, SRP, DIP, LSP, ISP;
+        - Adapter, State, Composite;
+        - Factory Method, Factory Class, Abstract Factory;
+        - Singleton;
+        - Decorator;
+        - Visitor;
+        - Observer;
+        - Template Method;
+        - Bridge;
+        - Proxy;
+        - Builder;
+        - Prototype;
+        - Flyweight;
+        - Memento;
+        - Facade;
+        - Command;
+        - packages: principles and measures;
+        - Dependency Injection;
+        - Aspect Oriented Programming.
+
+Conclusion:
+
+    Ce syllabus est directement applicable a notre architecture, mais pas en
+    mode "tout utiliser". On doit selectionner les notions qui resolvent un
+    vrai probleme du plugin audio temps reel.
+
+
+2. Recherches externes ciblees
+------------------------------
+
+Sources primaires ou fortement autoritatives consultees:
+
+    1. OMG UML 2.5.1
+
+        https://www.omg.org/spec/UML/2.5.1/About-UML
+
+        Point retenu:
+
+            UML est le langage standard pour visualiser, specifier, construire
+            et documenter des artefacts de systemes objet/distribues.
+
+    2. SEI - Documenting Software Architecture: Documenting Interfaces
+
+        https://www.sei.cmu.edu/library/documenting-software-architecture-documenting-interfaces/
+
+        Point retenu:
+
+            Une interface doit documenter plus que la signature: elle doit
+            porter la semantique observable, les contraintes et les erreurs.
+
+    3. SEI - Documenting Component and Connector Views with UML 2.0
+
+        https://www.sei.cmu.edu/library/documenting-component-and-connector-views-with-uml-20/
+
+        Point retenu:
+
+            UML peut servir a documenter des vues composant/connecteur quand on
+            explicite les composants, connecteurs et responsabilites.
+
+    4. JUCE AudioProcessor
+
+        https://docs.juce.com/master/classjuce_1_1AudioProcessor.html
+
+        Point retenu:
+
+            AudioProcessor est la base JUCE pour un processeur audio ou plugin,
+            wrappable en VST, AU, AAX, etc. Le cycle prepareToPlay /
+            processBlock / releaseResources doit apparaitre dans les
+            diagrammes de sequence et d'etat.
+
+    5. JUCE AudioProcessorValueTreeState
+
+        https://docs.juce.com/master/classjuce_1_1AudioProcessorValueTreeState.html
+
+        Point retenu:
+
+            APVTS gere l'etat d'un AudioProcessor avec des parametres identifies
+            par ID et un ValueTree. Il influence fortement le diagramme de
+            classes ParameterBridge/PresetManager.
+
+    6. Steinberg VST3 API Documentation
+
+        https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical%2BDocumentation/API%2BDocumentation/Index.html
+
+        Point retenu:
+
+            VST3 separe processing part et edit controller part. Meme si JUCE
+            masque une partie de cette separation, notre UML doit garder une
+            frontiere claire entre processing temps reel et UI/parameters.
+
+    7. Apple AUAudioUnit / renderBlock
+
+        https://developer.apple.com/documentation/AudioToolbox/AUAudioUnit
+        https://developer.apple.com/documentation/audiotoolbox/auaudiounit/renderblock
+
+        Point retenu:
+
+            AU formalise aussi le cycle de rendu temps reel. La preparation des
+            ressources et le render block renforcent l'interdiction d'allouer,
+            bloquer ou faire de l'I/O pendant le rendu.
+
+
+3. Choix UML pour ce projet
+---------------------------
+
+Le syllabus mentionne principalement:
+
+    - Class Diagram;
+    - StateChart;
+    - Sequence Diagram;
+    - Collaboration Diagram.
+
+Pour le plugin U273, on ajoute aussi:
+
+    - Component Diagram;
+    - Package Diagram.
+
+Raison:
+
+    Class/State/Sequence expliquent le comportement objet.
+    Component/Package expliquent l'architecture globale, les dependances CMake
+    et les frontieres temps reel.
+
+Diagrammes obligatoires pour une architecture propre:
+
+    D01 - Component Overview
+
+        Montre:
+
+            - DAW Host;
+            - JUCE Plugin Wrapper;
+            - PluginProcessor;
+            - PluginEditor;
+            - ParameterBridge;
+            - Realtime DSP Engine;
+            - Scientific Reference Engine;
+            - Golden files;
+            - PresetManager;
+            - MeterBridge.
+
+    D02 - Package Dependencies
+
+        Montre:
+
+            - u273_core;
+            - u273_dsp;
+            - u273_reference;
+            - u273_plugin;
+            - u273_assets;
+            - u273_tests.
+
+        Regle:
+
+            Aucune dependance cyclique.
+
+    D03 - Core Class Diagram
+
+        Montre:
+
+            - U273DspEngine;
+            - DetectorEnvelope;
+            - B6BridgeRealtimeModel;
+            - GainReductionComputer;
+            - ParameterSnapshot;
+            - MeterFrame;
+            - ScientificReferenceModel;
+            - ReferenceValidator;
+            - PluginProcessor;
+            - PluginEditor.
+
+    D04 - Audio Callback Sequence
+
+        Montre:
+
+            DAW -> PluginProcessor::processBlock -> ParameterBridge snapshot
+            -> DspEngine::process -> MeterBridge.
+
+        Important:
+
+            Le diagramme doit montrer explicitement:
+
+                - pas d'allocation;
+                - pas de lock;
+                - pas de logging;
+                - pas d'I/O;
+                - fallback bypass borne en cas d'etat invalide.
+
+    D05 - Parameter Update Sequence
+
+        Montre:
+
+            UI/DAW automation -> APVTS -> ParameterBridge -> snapshot precompile
+            -> atomic publish -> audio thread consume.
+
+    D06 - Plugin Lifecycle Statechart
+
+        Montre:
+
+            Constructed -> Prepared -> Active -> Suspended -> Released
+            avec ErrorBypass si configuration invalide.
+
+    D07 - Model Boundary Statechart
+
+        Montre:
+
+            ScientificReferenceOffline, RealtimeApprox, HypothesisDisabled,
+            GuardedBoundary.
+
+    D08 - Preset Restore Sequence
+
+        Montre:
+
+            DAW restore state -> PresetManager migration -> APVTS -> snapshot
+            -> DSP reset/sync.
+
+    D09 - Validation Offline Sequence
+
+        Montre:
+
+            Golden files JS -> ReferenceValidator -> C++ DSP offline process
+            -> tolerances -> report.
+
+    D10 - Package Contract Notes
+
+        Montre:
+
+            Les contrats d'interfaces et leurs erreurs observables.
+
+
+4. Architecture objet cible
+---------------------------
+
+Regle globale:
+
+    Monolithe modulaire C++/JUCE.
+
+    Pas microservices.
+
+    Pas de solveur scientifique complet dans processBlock.
+
+Niveaux:
+
+    1. u273_core
+
+        Responsabilites:
+
+            - types physiques;
+            - ranges de parametres;
+            - utilitaires math;
+            - anti-denormal;
+            - smoothing;
+            - tables constantes;
+            - structures POD lues par le DSP.
+
+        Ne depend pas de JUCE si evitable.
+
+    2. u273_dsp
+
+        Responsabilites:
+
+            - U273DspEngine;
+            - DetectorEnvelope;
+            - B6BridgeRealtimeModel;
+            - GainReductionComputer;
+            - metering audio-thread safe;
+            - process mono/stereo.
+
+        Depend de:
+
+            - u273_core.
+
+        Ne depend pas de:
+
+            - PluginEditor;
+            - APVTS;
+            - fichiers;
+            - JSON;
+            - systeme d'exploitation;
+            - logging runtime.
+
+    3. u273_reference
+
+        Responsabilites:
+
+            - modele scientifique offline;
+            - port C++ des parties utiles des solveurs JS;
+            - validation DC/AC/transient;
+            - comparaison aux golden files.
+
+        Peut allouer et utiliser matrices dynamiques, mais jamais depuis le
+        thread audio.
+
+    4. u273_plugin
+
+        Responsabilites:
+
+            - PluginProcessor;
+            - PluginEditor;
+            - ParameterBridge;
+            - PresetManager;
+            - MeterBridge;
+            - integration JUCE/VST3/AU.
+
+    5. u273_assets
+
+        Responsabilites:
+
+            - presets;
+            - golden files;
+            - calibration tables generees;
+            - metadata de versions.
+
+    6. u273_tests
+
+        Responsabilites:
+
+            - tests unitaires;
+            - tests regression;
+            - tests offline audio;
+            - tests validation golden;
+            - benchmarks.
+
+
+5. Application SOLID
+--------------------
+
+SRP - Single Responsibility Principle
+
+    Chaque classe doit avoir une responsabilite nette:
+
+        - PluginProcessor: contrat DAW/JUCE;
+        - PluginEditor: UI;
+        - ParameterBridge: mapping DAW -> DSP;
+        - U273DspEngine: traitement audio;
+        - ScientificReferenceModel: reference offline;
+        - PresetManager: state/presets/migration;
+        - MeterBridge: transport de mesures vers UI.
+
+OCP - Open Closed Principle
+
+    Le moteur doit accepter de nouveaux modeles sans modifier processBlock en
+    profondeur.
+
+    Moyen:
+
+        - Strategy pour les modes de modele;
+        - tables/modes en objets separes;
+        - enum stable + factory hors audio thread.
+
+LSP - Liskov Substitution Principle
+
+    Si on introduit une interface de modele, chaque implementation doit
+    respecter:
+
+        - pas d'allocation dans process;
+        - meme contrat sur NaN/Inf;
+        - meme comportement de reset;
+        - meme ranges d'entrees.
+
+ISP - Interface Segregation Principle
+
+    Ne pas faire une mega-interface "IU273Everything".
+
+    Interfaces separees:
+
+        - IRealtimeProcessor;
+        - IParameterSnapshotProvider;
+        - IMeterSink;
+        - IReferenceSolver;
+        - IPresetCodec.
+
+DIP - Dependency Inversion Principle
+
+    PluginProcessor depend d'abstractions stables ou de facades, pas des
+    details internes du detector/pont.
+
+    u273_dsp ne doit pas dependre de JUCE UI.
+
+
+6. Design patterns utiles
+-------------------------
+
+Patterns a utiliser dans le MVP:
+
+    Strategy
+
+        Pour selectionner les variantes:
+
+            - RealtimeApprox;
+            - Conservative;
+            - Hypothesis;
+            - OfflineReference non temps reel.
+
+    State
+
+        Pour le cycle:
+
+            - Unprepared;
+            - Prepared;
+            - Active;
+            - Suspended;
+            - ErrorBypass.
+
+    Adapter
+
+        Pour isoler:
+
+            - JUCE AudioProcessor -> U273DspEngine;
+            - VST3/AU specifics -> PluginProcessor;
+            - golden JSON/CSV -> ReferenceValidator.
+
+    Bridge
+
+        Pour separer abstraction et implementation:
+
+            - UI/DAW parameters;
+            - DSP parameter snapshot;
+            - model implementations.
+
+    Facade
+
+        Pour offrir une entree simple:
+
+            - U273DspEngine comme facade temps reel;
+            - ScientificReferenceFacade pour validation offline.
+
+    Observer
+
+        Pour UI/metering, mais version audio-safe:
+
+            - pas de callbacks UI depuis audio thread;
+            - valeurs atomiques ou ring buffer borne;
+            - UI tire les valeurs.
+
+    Memento
+
+        Pour presets et state DAW:
+
+            - snapshot versionne;
+            - migration explicite.
+
+    Builder
+
+        Pour construire:
+
+            - ParameterLayout;
+            - CalibrationTable;
+            - ValidationScenario.
+
+    Flyweight
+
+        Pour tables immuables partagees:
+
+            - diode bridge tables;
+            - calibration curves;
+            - constants.
+
+Patterns a utiliser avec prudence:
+
+    Factory / Abstract Factory
+
+        Utile hors audio thread pour creer le modele, mais jamais dans
+        processBlock.
+
+    Template Method
+
+        Utile pour tests ou validation offline.
+        A eviter si cela rigidifie trop le DSP.
+
+    Command
+
+        Utile pour UI/presets hors audio thread.
+        Pas de file de commandes dynamique dans processBlock sauf structure
+        lock-free bornee et inspectee.
+
+    Proxy
+
+        Utile pour cache offline ou chargement golden.
+        Pas utile dans le DSP MVP.
+
+    Visitor
+
+        Utile pour exporter/analyser netlists et rapports.
+        Pas utile dans le chemin audio.
+
+    Decorator
+
+        Utile pour instrumentation offline.
+        A eviter dans processBlock si cela ajoute allocation, virtual dispatch
+        inutile ou branches non controlees.
+
+Patterns a eviter comme choix central:
+
+    Singleton
+
+        Risque:
+
+            - casse multi-instance plugin;
+            - complique tests;
+            - cache l'etat global;
+            - dangereux avec plusieurs DAW instances.
+
+        Autorise seulement pour constantes compile-time sans etat mutable.
+
+    Aspect Oriented Programming runtime
+
+        Risque:
+
+            - appels caches;
+            - instrumentation non bornee;
+            - logging accidentel sur audio thread.
+
+        Autorise seulement pour validation offline ou build debug hors audio
+        thread.
+
+
+7. Package design principles
+----------------------------
+
+Regles:
+
+    P01. Acyclic dependencies
+
+        Le graphe de packages doit etre sans cycle.
+
+    P02. Stable core
+
+        u273_core doit etre stable et petit.
+
+    P03. DSP isolated
+
+        u273_dsp ne depend pas de JUCE si on peut l'eviter.
+
+    P04. Plugin wrapper outward dependency
+
+        u273_plugin depend de u273_dsp/u273_core, pas l'inverse.
+
+    P05. Reference separated
+
+        u273_reference ne pollue pas le chemin audio.
+
+    P06. Assets are data
+
+        u273_assets ne doit pas devenir une couche de logique runtime.
+
+    P07. Tests may depend widely
+
+        u273_tests peut dependre des modules, mais les modules ne dependent pas
+        des tests.
+
+    P08. No hidden framework dependency in core
+
+        Pas de ValueTree, Slider, Component, FileChooser ou Logger dans core/dsp.
+
+
+8. UML acceptance criteria
+--------------------------
+
+L'architecture UML est acceptable si:
+
+    - chaque diagramme a un but clair;
+    - chaque classe principale a une responsabilite unique;
+    - les relations importantes sont typees: composition, aggregation,
+      association, dependency, realization;
+    - les packages montrent les dependances et interdisent les cycles;
+    - le cycle audio prepare/process/release apparait dans les sequences;
+    - les statecharts montrent les transitions invalides;
+    - les frontieres temps reel sont visibles;
+    - les frontieres scientifiques gardees sont visibles;
+    - les patterns sont justifies par un probleme reel;
+    - les patterns non retenus sont explicitement ecartes;
+    - le diagramme n'impose pas d'allocation dynamique dans processBlock;
+    - les diagrammes restent maintenables et lisibles.
+
+
+9. Fichiers UML crees
+---------------------
+
+Les premiers brouillons PlantUML sont crees dans:
+
+    docs/uml/
+
+Fichiers:
+
+    README.md
+    01_component_overview.puml
+    02_package_dependencies.puml
+    03_class_core.puml
+    04_sequence_audio_callback.puml
+    05_sequence_parameter_update.puml
+    06_state_plugin_lifecycle.puml
+    07_state_model_boundary.puml
+
+Statut:
+
+    Brouillons d'architecture.
+
+But:
+
+    Servir de base a l'Etape 29, ou on pourra scaffold CMake/JUCE en suivant
+    les packages et interfaces au lieu d'improviser.
+
+
+10. Decision de design immediate
+--------------------------------
+
+ADR-002:
+
+    Titre:
+
+        Utiliser UML comme contrat d'architecture modulaire avant le scaffold.
+
+    Status:
+
+        Accepted.
+
+    Decision:
+
+        Le projet doit conserver au minimum des diagrammes UML de component,
+        package, class, sequence et statechart.
+
+    Raison:
+
+        Le syllabus demande exactement ces competences et elles correspondent
+        aux risques reels du plugin:
+
+            - complexite objet;
+            - thread audio;
+            - separation UI/DSP;
+            - validation scientifique;
+            - state/preset/parameter lifecycle.
+
+ADR-003:
+
+    Titre:
+
+        Choisir les patterns par contrainte audio et non par demonstration.
+
+    Status:
+
+        Accepted.
+
+    Decision:
+
+        Les patterns Strategy, State, Adapter, Bridge, Facade, Observer
+        audio-safe, Memento, Builder et Flyweight sont candidats.
+
+        Singleton, AOP runtime et Decorator dynamique sur audio thread sont
+        ecartes du chemin temps reel.
+
+ADR-004:
+
+    Titre:
+
+        Proteger u273_dsp de JUCE et du moteur scientifique.
+
+    Status:
+
+        Accepted.
+
+    Decision:
+
+        u273_dsp depend de u273_core.
+        u273_plugin adapte JUCE vers u273_dsp.
+        u273_reference reste offline.
+
+    Consequence:
+
+        Les tests DSP peuvent tourner sans DAW, sans UI et sans wrapper plugin.
+
+
+11. Prochaine etape
+-------------------
+
+La prochaine etape peut devenir:
+
+    Etape 29 - Scaffold CMake JUCE selon architecture UML
+
+Contenu attendu:
+
+    - creer l'arborescence u273-plugin;
+    - creer CMake targets selon le package diagram;
+    - ajouter les headers d'interface minimaux;
+    - ajouter un test executable vide mais compilable;
+    - ne pas encore porter le modele complet;
+    - garder les fichiers PlantUML comme architecture source.
+

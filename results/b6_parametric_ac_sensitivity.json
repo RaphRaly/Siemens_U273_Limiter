@@ -1,0 +1,4585 @@
+{
+  "title": "Siemens U273 B6 parametric AC sensitivity",
+  "status": "scientific sensitivity study, not final full-device curve",
+  "warning": "C1=1000 pF is fixed. C4/C6, B11 output impedance Zcmd(s), R7/R8 settings, diode calibration, and downstream load remain parameters.",
+  "commands": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "frequencies": [
+    100,
+    1000,
+    10000,
+    20000
+  ],
+  "operatingPoints": {
+    "0": {
+      "iterations": 1,
+      "diodeConductances": {
+        "D3_SSD55": 2.275395691310719e-11,
+        "D4_OA154Q": 2.4176079220176386e-7,
+        "D2_SSD55": 2.275395691310719e-11,
+        "D1_OA154Q": 2.4176079220176386e-7
+      },
+      "diodeInfo": [
+        {
+          "name": "D3_SSD55",
+          "anode": "NB",
+          "cathode": "NL",
+          "vd": 0,
+          "rawVd": 0,
+          "id": 0,
+          "gd": 2.275395691310719e-11,
+          "rd": 43948400000,
+          "model": "shockley"
+        },
+        {
+          "name": "D4_OA154Q",
+          "anode": "NL",
+          "cathode": "N14",
+          "vd": 0,
+          "rawVd": 0,
+          "id": 0,
+          "gd": 2.4176079220176386e-7,
+          "rd": 4136320.0000000005,
+          "model": "shockley"
+        },
+        {
+          "name": "D2_SSD55",
+          "anode": "NB",
+          "cathode": "NR",
+          "vd": 0,
+          "rawVd": 0,
+          "id": 0,
+          "gd": 2.275395691310719e-11,
+          "rd": 43948400000,
+          "model": "shockley"
+        },
+        {
+          "name": "D1_OA154Q",
+          "anode": "NR",
+          "cathode": "N15",
+          "vd": 0,
+          "rawVd": 0,
+          "id": 0,
+          "gd": 2.4176079220176386e-7,
+          "rd": 4136320.0000000005,
+          "model": "shockley"
+        }
+      ]
+    },
+    "1": {
+      "iterations": 26,
+      "diodeConductances": {
+        "D3_SSD55": 0.00003466462228919278,
+        "D4_OA154Q": 0.0000370728913519291,
+        "D2_SSD55": 0.00003466462228919278,
+        "D1_OA154Q": 0.000037072891351929136
+      },
+      "diodeInfo": [
+        {
+          "name": "D3_SSD55",
+          "anode": "NB",
+          "cathode": "NL",
+          "vd": 0.6256710069425928,
+          "rawVd": 0.6256710069425928,
+          "id": 0.0000015234536862143601,
+          "gd": 0.00003466462228919278,
+          "rd": 28847.855074185103,
+          "model": "shockley"
+        },
+        {
+          "name": "D4_OA154Q",
+          "anode": "NL",
+          "cathode": "N14",
+          "vd": 0.20816826703057634,
+          "rawVd": 0.20816826703057634,
+          "id": 0.0000015234534195681141,
+          "gd": 0.0000370728913519291,
+          "rd": 26973.887483096583,
+          "model": "shockley"
+        },
+        {
+          "name": "D2_SSD55",
+          "anode": "NB",
+          "cathode": "NR",
+          "vd": 0.6256710069425928,
+          "rawVd": 0.6256710069425928,
+          "id": 0.0000015234536862143601,
+          "gd": 0.00003466462228919278,
+          "rd": 28847.855074185103,
+          "model": "shockley"
+        },
+        {
+          "name": "D1_OA154Q",
+          "anode": "NR",
+          "cathode": "N15",
+          "vd": 0.20816826703057636,
+          "rawVd": 0.20816826703057636,
+          "id": 0.0000015234534195681156,
+          "gd": 0.000037072891351929136,
+          "rd": 26973.887483096558,
+          "model": "shockley"
+        }
+      ]
+    },
+    "2": {
+      "iterations": 26,
+      "diodeConductances": {
+        "D3_SSD55": 0.0002644539466340896,
+        "D4_OA154Q": 0.00028122403689569456,
+        "D2_SSD55": 0.0002644539466340896,
+        "D1_OA154Q": 0.00028122403689569505
+      },
+      "diodeInfo": [
+        {
+          "name": "D3_SSD55",
+          "anode": "NB",
+          "cathode": "NL",
+          "vd": 0.71497184779353,
+          "rawVd": 0.71497184779353,
+          "id": 0.000011622326828253624,
+          "gd": 0.0002644539466340896,
+          "rd": 3781.376730155762,
+          "model": "shockley"
+        },
+        {
+          "name": "D4_OA154Q",
+          "anode": "NL",
+          "cathode": "N14",
+          "vd": 0.2919810973219744,
+          "rawVd": 0.2919810973219744,
+          "id": 0.000011622326082923994,
+          "gd": 0.00028122403689569456,
+          "rd": 3555.8838107814304,
+          "model": "shockley"
+        },
+        {
+          "name": "D2_SSD55",
+          "anode": "NB",
+          "cathode": "NR",
+          "vd": 0.71497184779353,
+          "rawVd": 0.71497184779353,
+          "id": 0.000011622326828253624,
+          "gd": 0.0002644539466340896,
+          "rd": 3781.376730155762,
+          "model": "shockley"
+        },
+        {
+          "name": "D1_OA154Q",
+          "anode": "NR",
+          "cathode": "N15",
+          "vd": 0.29198109732197447,
+          "rawVd": 0.29198109732197447,
+          "id": 0.000011622326082924014,
+          "gd": 0.00028122403689569505,
+          "rd": 3555.8838107814245,
+          "model": "shockley"
+        }
+      ]
+    },
+    "3": {
+      "iterations": 26,
+      "diodeConductances": {
+        "D3_SSD55": 0.0005279544633865078,
+        "D4_OA154Q": 0.0005611933243372701,
+        "D2_SSD55": 0.0005279544633865078,
+        "D1_OA154Q": 0.0005611933243372716
+      },
+      "diodeInfo": [
+        {
+          "name": "D3_SSD55",
+          "anode": "NB",
+          "cathode": "NL",
+          "vd": 0.7453552627620716,
+          "rawVd": 0.7453552627620716,
+          "id": 0.000023202752938695603,
+          "gd": 0.0005279544633865078,
+          "rd": 1894.102748152949,
+          "model": "shockley"
+        },
+        {
+          "name": "D4_OA154Q",
+          "anode": "NL",
+          "cathode": "N14",
+          "vd": 0.32055950371000874,
+          "rawVd": 0.32055950371000874,
+          "id": 0.000023202751713227376,
+          "gd": 0.0005611933243372701,
+          "rd": 1781.9171337808227,
+          "model": "shockley"
+        },
+        {
+          "name": "D2_SSD55",
+          "anode": "NB",
+          "cathode": "NR",
+          "vd": 0.7453552627620716,
+          "rawVd": 0.7453552627620716,
+          "id": 0.000023202752938695603,
+          "gd": 0.0005279544633865078,
+          "rd": 1894.102748152949,
+          "model": "shockley"
+        },
+        {
+          "name": "D1_OA154Q",
+          "anode": "NR",
+          "cathode": "N15",
+          "vd": 0.32055950371000885,
+          "rawVd": 0.32055950371000885,
+          "id": 0.000023202751713227437,
+          "gd": 0.0005611933243372716,
+          "rd": 1781.917133780818,
+          "model": "shockley"
+        }
+      ]
+    }
+  },
+  "scenarios": [
+    {
+      "name": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "options": {
+        "r7EffectiveOhm": 100,
+        "r8EffectiveOhm": 250000,
+        "rAmpInputOhm": null,
+        "commandAcMode": "ideal",
+        "zcmdOhm": 0,
+        "c4AbglFarad": 0,
+        "c6AbglFarad": 0
+      }
+    },
+    {
+      "name": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "options": {
+        "r7EffectiveOhm": 100,
+        "r8EffectiveOhm": 250000,
+        "rAmpInputOhm": null,
+        "zcmdOhm": 10000,
+        "c4AbglFarad": 0,
+        "c6AbglFarad": 0
+      }
+    },
+    {
+      "name": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "options": {
+        "r7EffectiveOhm": 100,
+        "r8EffectiveOhm": 250000,
+        "rAmpInputOhm": null,
+        "zcmdOhm": 100000,
+        "c4AbglFarad": 0,
+        "c6AbglFarad": 0
+      }
+    },
+    {
+      "name": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "options": {
+        "r7EffectiveOhm": 100,
+        "r8EffectiveOhm": 250000,
+        "rAmpInputOhm": null,
+        "zcmdOhm": 1000000,
+        "c4AbglFarad": 0,
+        "c6AbglFarad": 0
+      }
+    },
+    {
+      "name": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "options": {
+        "r7EffectiveOhm": 100,
+        "r8EffectiveOhm": 250000,
+        "rAmpInputOhm": null,
+        "commandAcMode": "open",
+        "zcmdOhm": null,
+        "c4AbglFarad": 0,
+        "c6AbglFarad": 0
+      }
+    },
+    {
+      "name": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "options": {
+        "r7EffectiveOhm": 100,
+        "r8EffectiveOhm": 250000,
+        "rAmpInputOhm": null,
+        "zcmdOhm": 100000,
+        "c4AbglFarad": 1e-10,
+        "c6AbglFarad": 1e-10
+      }
+    },
+    {
+      "name": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "options": {
+        "r7EffectiveOhm": 100,
+        "r8EffectiveOhm": 250000,
+        "rAmpInputOhm": null,
+        "zcmdOhm": 100000,
+        "c4AbglFarad": 1e-9,
+        "c6AbglFarad": 1e-9
+      }
+    }
+  ],
+  "rows": [
+    {
+      "scenario": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "vcmd": 0,
+      "frequency": 100,
+      "commandModel": "ideal AC ground",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 0,
+      "VNA": {
+        "re": 0.00023032243203310114,
+        "im": 0.011949259892667501,
+        "mag": 0.011951479423285212,
+        "phaseDeg": 88.8957584419992
+      },
+      "VNB": {
+        "re": 0.00018488082947903248,
+        "im": 0.011949962930929765,
+        "mag": 0.011951393013858442,
+        "phaseDeg": 89.11363355225996
+      },
+      "VCMD_NODE": {
+        "re": 0,
+        "im": 0,
+        "mag": 0,
+        "phaseDeg": 0
+      },
+      "IVAC": {
+        "re": -9.718103295610486e-9,
+        "im": -6.281396209053214e-7,
+        "mag": 6.282147919961334e-7,
+        "phaseDeg": -90.88636644773906
+      },
+      "inputCurrentMagnitude": 6.282147919961334e-7,
+      "inputImpedanceMagnitude": 1591812.2475634974
+    },
+    {
+      "scenario": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "vcmd": 0,
+      "frequency": 1000,
+      "commandModel": "ideal AC ground",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 0,
+      "VNA": {
+        "re": 0.0181046097156236,
+        "im": 0.11672722377159647,
+        "mag": 0.11812290913442408,
+        "phaseDeg": 81.1835677837106
+      },
+      "VNB": {
+        "re": 0.01806021975208181,
+        "im": 0.11673409145254877,
+        "mag": 0.11812290059402329,
+        "phaseDeg": 81.20535539870332
+      },
+      "VCMD_NODE": {
+        "re": 0,
+        "im": 0,
+        "mag": 0,
+        "phaseDeg": 0
+      },
+      "IVAC": {
+        "re": -9.493200651850291e-7,
+        "im": -0.000006136028067664023,
+        "mag": 0.000006209029637014434,
+        "phaseDeg": -98.79464460130409
+      },
+      "inputCurrentMagnitude": 0.000006209029637014434,
+      "inputImpedanceMagnitude": 161055.7620853687
+    },
+    {
+      "scenario": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "vcmd": 0,
+      "frequency": 10000,
+      "commandModel": "ideal AC ground",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 0,
+      "VNA": {
+        "re": 0.544937255886554,
+        "im": 0.3521964321799985,
+        "mag": 0.6488443108277114,
+        "phaseDeg": 32.874844423833125
+      },
+      "VNB": {
+        "re": 0.5449238622785516,
+        "im": 0.3522171537619106,
+        "mag": 0.6488443103585907,
+        "phaseDeg": 32.87702318543637
+      },
+      "VCMD_NODE": {
+        "re": 0,
+        "im": 0,
+        "mag": 0,
+        "phaseDeg": 0
+      },
+      "IVAC": {
+        "re": -0.000028643458582474637,
+        "im": -0.000018513994622300432,
+        "mag": 0.00003410594840259554,
+        "phaseDeg": -147.12297681463642
+      },
+      "inputCurrentMagnitude": 0.00003410594840259554,
+      "inputImpedanceMagnitude": 29320.39854736594
+    },
+    {
+      "scenario": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "vcmd": 0,
+      "frequency": 20000,
+      "commandModel": "ideal AC ground",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 0,
+      "VNA": {
+        "re": 0.6995255617207339,
+        "im": 0.22605808833568203,
+        "mag": 0.7351450678625895,
+        "phaseDeg": 17.908713560497635
+      },
+      "VNB": {
+        "re": 0.6995212633617157,
+        "im": 0.22607138853059122,
+        "mag": 0.7351450677297103,
+        "phaseDeg": 17.909802941299645
+      },
+      "VCMD_NODE": {
+        "re": 0,
+        "im": 0,
+        "mag": 0,
+        "phaseDeg": 0
+      },
+      "IVAC": {
+        "re": -0.000036769739263903565,
+        "im": -0.00001188324994050677,
+        "mag": 0.00003864227419140863,
+        "phaseDeg": -162.0901970588459
+      },
+      "inputCurrentMagnitude": 0.00003864227419140863,
+      "inputImpedanceMagnitude": 25878.394088470362
+    },
+    {
+      "scenario": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "vcmd": 1,
+      "frequency": 100,
+      "commandModel": "ideal AC ground",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 0,
+      "VNA": {
+        "re": 0.0001384435439650975,
+        "im": 0.007106580189695381,
+        "mag": 0.007107928573602612,
+        "phaseDeg": 88.8839600298437
+      },
+      "VNB": {
+        "re": 0.00009299699064221762,
+        "im": 0.007107063123572657,
+        "mag": 0.007107671537340118,
+        "phaseDeg": 89.25031888673227
+      },
+      "VCMD_NODE": {
+        "re": 0,
+        "im": 0,
+        "mag": 0,
+        "phaseDeg": 0
+      },
+      "IVAC": {
+        "re": -6.675598692454593e-9,
+        "im": -6.282080554205995e-7,
+        "mag": 6.282435232560967e-7,
+        "phaseDeg": -90.60882574126003
+      },
+      "inputCurrentMagnitude": 6.282435232560967e-7,
+      "inputImpedanceMagnitude": 1591739.4497234805
+    },
+    {
+      "scenario": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "vcmd": 1,
+      "frequency": 1000,
+      "commandModel": "ideal AC ground",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 0,
+      "VNA": {
+        "re": 0.007530825843325468,
+        "im": 0.07027814644920215,
+        "mag": 0.07068048674293353,
+        "phaseDeg": 83.88367071858758
+      },
+      "VNB": {
+        "re": 0.007485881650780877,
+        "im": 0.07028292230946971,
+        "mag": 0.07068046117880424,
+        "phaseDeg": 83.92030898386597
+      },
+      "VCMD_NODE": {
+        "re": 0,
+        "im": 0,
+        "mag": 0,
+        "phaseDeg": 0
+      },
+      "IVAC": {
+        "re": -6.601675313723033e-7,
+        "im": -0.00000621263918526286,
+        "mag": 0.000006247616090617426,
+        "phaseDeg": -96.06560292313128
+      },
+      "inputCurrentMagnitude": 0.000006247616090617426,
+      "inputImpedanceMagnitude": 160061.05136674206
+    },
+    {
+      "scenario": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "vcmd": 1,
+      "frequency": 10000,
+      "commandModel": "ideal AC ground",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 0,
+      "VNA": {
+        "re": 0.35476686403678803,
+        "im": 0.3338013313330287,
+        "mag": 0.4871168818858563,
+        "phaseDeg": 43.25599622681383
+      },
+      "VNB": {
+        "re": 0.35474551680930116,
+        "im": 0.3338240153216378,
+        "mag": 0.4871168801240204,
+        "phaseDeg": 43.25966005572178
+      },
+      "VCMD_NODE": {
+        "re": 0,
+        "im": 0,
+        "mag": 0,
+        "phaseDeg": 0
+      },
+      "IVAC": {
+        "re": -0.00003135609486623031,
+        "im": -0.000029508288940869084,
+        "mag": 0.00004305744768884765,
+        "phaseDeg": -136.7389311324645
+      },
+      "inputCurrentMagnitude": 0.00004305744768884765,
+      "inputImpedanceMagnitude": 23224.78580770618
+    },
+    {
+      "scenario": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "vcmd": 1,
+      "frequency": 20000,
+      "commandModel": "ideal AC ground",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 0,
+      "VNA": {
+        "re": 0.547658007972323,
+        "im": 0.2576627273674801,
+        "mag": 0.6052432360387527,
+        "phaseDeg": 25.196096694282836
+      },
+      "VNB": {
+        "re": 0.5476497689625405,
+        "im": 0.25768023723885675,
+        "mag": 0.605243235491482,
+        "phaseDeg": 25.197928608745837
+      },
+      "VCMD_NODE": {
+        "re": 0,
+        "im": 0,
+        "mag": 0,
+        "phaseDeg": 0
+      },
+      "IVAC": {
+        "re": -0.00004840781728832359,
+        "im": -0.00002277757909264649,
+        "mag": 0.0000534989241381683,
+        "phaseDeg": -154.80136698540252
+      },
+      "inputCurrentMagnitude": 0.0000534989241381683,
+      "inputImpedanceMagnitude": 18691.96467236169
+    },
+    {
+      "scenario": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "vcmd": 2,
+      "frequency": 100,
+      "commandModel": "ideal AC ground",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 0,
+      "VNA": {
+        "re": 0.0001307236022739557,
+        "im": 0.0019326849074676896,
+        "mag": 0.001937100826427182,
+        "phaseDeg": 86.13050221594374
+      },
+      "VNB": {
+        "re": 0.00008527587056904337,
+        "im": 0.0019329326684329174,
+        "mag": 0.0019348128268120684,
+        "phaseDeg": 87.47389997171247
+      },
+      "VCMD_NODE": {
+        "re": 0,
+        "im": 0,
+        "mag": 0,
+        "phaseDeg": 0
+      },
+      "IVAC": {
+        "re": -3.4248017240635746e-9,
+        "im": -6.282243442044789e-7,
+        "mag": 6.282336793884874e-7,
+        "phaseDeg": -90.31234819596519
+      },
+      "inputCurrentMagnitude": 6.282336793884874e-7,
+      "inputImpedanceMagnitude": 1591764.3908766306
+    },
+    {
+      "scenario": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "vcmd": 2,
+      "frequency": 1000,
+      "commandModel": "ideal AC ground",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 0,
+      "VNA": {
+        "re": 0.0011698524699564668,
+        "im": 0.019258269027149694,
+        "mag": 0.019293767924475933,
+        "phaseDeg": 86.52381286563168
+      },
+      "VNB": {
+        "re": 0.0011245380017155008,
+        "im": 0.01926073883054047,
+        "mag": 0.019293538970743332,
+        "phaseDeg": 86.65857991858958
+      },
+      "VCMD_NODE": {
+        "re": 0,
+        "im": 0,
+        "mag": 0,
+        "phaseDeg": 0
+      },
+      "IVAC": {
+        "re": -3.41401112283798e-7,
+        "im": -0.000006263822423194473,
+        "mag": 0.000006273119325246611,
+        "phaseDeg": -93.11974167449841
+      },
+      "inputCurrentMagnitude": 0.000006273119325246611,
+      "inputImpedanceMagnitude": 159410.32653012505
+    },
+    {
+      "scenario": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "vcmd": 2,
+      "frequency": 10000,
+      "commandModel": "ideal AC ground",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 0,
+      "VNA": {
+        "re": 0.08128471069940656,
+        "im": 0.14891607993274056,
+        "mag": 0.16965613179611455,
+        "phaseDeg": 61.37241621848068
+      },
+      "VNB": {
+        "re": 0.08124967071369572,
+        "im": 0.14893517795797417,
+        "mag": 0.16965611166255526,
+        "phaseDeg": 61.385893352862084
+      },
+      "VCMD_NODE": {
+        "re": 0,
+        "im": 0,
+        "mag": 0,
+        "phaseDeg": 0
+      },
+      "IVAC": {
+        "re": -0.000026399214939677008,
+        "im": -0.000048435799144064284,
+        "mag": 0.00005516289684339832,
+        "phaseDeg": -118.5919385026748
+      },
+      "inputCurrentMagnitude": 0.00005516289684339832,
+      "inputImpedanceMagnitude": 18128.12700607249
+    },
+    {
+      "scenario": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "vcmd": 2,
+      "frequency": 20000,
+      "commandModel": "ideal AC ground",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 0,
+      "VNA": {
+        "re": 0.1925576962502369,
+        "im": 0.17653675983281014,
+        "mag": 0.2612349401543863,
+        "phaseDeg": 42.514576042551845
+      },
+      "VNB": {
+        "re": 0.19253692668044078,
+        "im": 0.17655940012523166,
+        "mag": 0.2612349324040165,
+        "phaseDeg": 42.52131461136794
+      },
+      "VCMD_NODE": {
+        "re": 0,
+        "im": 0,
+        "mag": 0,
+        "phaseDeg": 0
+      },
+      "IVAC": {
+        "re": -0.00006259138718492575,
+        "im": -0.00005741958454288781,
+        "mag": 0.00008493933387313047,
+        "phaseDeg": -137.46760131526742
+      },
+      "inputCurrentMagnitude": 0.00008493933387313047,
+      "inputImpedanceMagnitude": 11773.108575276194
+    },
+    {
+      "scenario": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "vcmd": 3,
+      "frequency": 100,
+      "commandModel": "ideal AC ground",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 0,
+      "VNA": {
+        "re": 0.00013869403286265286,
+        "im": 0.0010538213841983942,
+        "mag": 0.0010629090010652491,
+        "phaseDeg": 82.50236136901478
+      },
+      "VNB": {
+        "re": 0.00009324652288570717,
+        "im": 0.0010540291960414868,
+        "mag": 0.0010581457650712107,
+        "phaseDeg": 84.94439098316515
+      },
+      "VCMD_NODE": {
+        "re": 0,
+        "im": 0,
+        "mag": 0,
+        "phaseDeg": 0
+      },
+      "IVAC": {
+        "re": -2.8725847021980177e-9,
+        "im": -6.282212792570943e-7,
+        "mag": 6.282278467676288e-7,
+        "phaseDeg": -90.26198703879692
+      },
+      "inputCurrentMagnitude": 6.282278467676288e-7,
+      "inputImpedanceMagnitude": 1591779.1692062381
+    },
+    {
+      "scenario": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "vcmd": 3,
+      "frequency": 1000,
+      "commandModel": "ideal AC ground",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 0,
+      "VNA": {
+        "re": 0.0006139469297197526,
+        "im": 0.010501785544049935,
+        "mag": 0.010519716272111549,
+        "phaseDeg": 86.65422843599912
+      },
+      "VNB": {
+        "re": 0.000568593236870224,
+        "im": 0.010503858705614915,
+        "mag": 0.010519236948397768,
+        "phaseDeg": 86.90149793058868
+      },
+      "VCMD_NODE": {
+        "re": 0,
+        "im": 0,
+        "mag": 0,
+        "phaseDeg": 0
+      },
+      "IVAC": {
+        "re": -2.865732822590161e-7,
+        "im": -0.00000626924444384687,
+        "mag": 0.000006275790798203008,
+        "phaseDeg": -92.61722412557059
+      },
+      "inputCurrentMagnitude": 0.000006275790798203008,
+      "inputImpedanceMagnitude": 159342.4688863652
+    },
+    {
+      "scenario": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "vcmd": 3,
+      "frequency": 10000,
+      "commandModel": "ideal AC ground",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 0,
+      "VNA": {
+        "re": 0.03992400332206361,
+        "im": 0.08704743271188228,
+        "mag": 0.09576628625455735,
+        "phaseDeg": 65.36160717447835
+      },
+      "VNB": {
+        "re": 0.03988640992719527,
+        "im": 0.08706461696428108,
+        "mag": 0.09576624261198328,
+        "phaseDeg": 65.38633723625814
+      },
+      "VCMD_NODE": {
+        "re": 0,
+        "im": 0,
+        "mag": 0,
+        "phaseDeg": 0
+      },
+      "IVAC": {
+        "re": -0.00002375380528113515,
+        "im": -0.00005196537858243222,
+        "mag": 0.0000571370618473648,
+        "phaseDeg": -114.56553304190058
+      },
+      "inputCurrentMagnitude": 0.0000571370618473648,
+      "inputImpedanceMagnitude": 17501.774989259808
+    },
+    {
+      "scenario": "cmd_ideal_c4c6_0",
+      "note": "Old local test limit: command node held at AC ground, C4/C6 omitted.",
+      "vcmd": 3,
+      "frequency": 20000,
+      "commandModel": "ideal AC ground",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 0,
+      "VNA": {
+        "re": 0.10494786846844321,
+        "im": 0.11464895001711128,
+        "mag": 0.15542984538400512,
+        "phaseDeg": 47.52949870417865
+      },
+      "VNB": {
+        "re": 0.10492311159985247,
+        "im": 0.11467158315623502,
+        "mag": 0.15542982767587568,
+        "phaseDeg": 47.54186374685939
+      },
+      "VCMD_NODE": {
+        "re": 0,
+        "im": 0,
+        "mag": 0,
+        "phaseDeg": 0
+      },
+      "IVAC": {
+        "re": -0.00006257161116700204,
+        "im": -0.0000684428769116981,
+        "mag": 0.00009273421118435392,
+        "phaseDeg": -132.43407138492813
+      },
+      "inputCurrentMagnitude": 0.00009273421118435392,
+      "inputImpedanceMagnitude": 10783.506833438398
+    },
+    {
+      "scenario": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 0,
+      "frequency": 100,
+      "commandModel": "finite command impedance 10000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 10000,
+      "VNA": {
+        "re": 0.00041318251219588803,
+        "im": 0.017493655909475145,
+        "mag": 0.017498534706297527,
+        "phaseDeg": 88.64698302339603
+      },
+      "VNB": {
+        "re": 0.00036775010809621185,
+        "im": 0.017494610933372637,
+        "mag": 0.01749847570081709,
+        "phaseDeg": 88.79577622412368
+      },
+      "VCMD_NODE": {
+        "re": 0.00012258336936540393,
+        "im": 0.005831536977790878,
+        "mag": 0.005832825233605695,
+        "phaseDeg": 88.79577622412368
+      },
+      "IVAC": {
+        "re": -1.3201302665578158e-8,
+        "im": -6.280124705996489e-7,
+        "mag": 6.281512060171047e-7,
+        "phaseDeg": -91.20422377587212
+      },
+      "inputCurrentMagnitude": 6.281512060171047e-7,
+      "inputImpedanceMagnitude": 1591973.3822381133
+    },
+    {
+      "scenario": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 0,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 10000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 10000,
+      "VNA": {
+        "re": 0.03527788039646915,
+        "im": 0.16760773282677346,
+        "mag": 0.17128012420768107,
+        "phaseDeg": 78.11394695972584
+      },
+      "VNB": {
+        "re": 0.035234351346352805,
+        "im": 0.16761688296617733,
+        "mag": 0.17128011843204516,
+        "phaseDeg": 78.12882631291318
+      },
+      "VCMD_NODE": {
+        "re": 0.011744783782117602,
+        "im": 0.055872294322059105,
+        "mag": 0.05709337281068172,
+        "phaseDeg": 78.12882631291318
+      },
+      "IVAC": {
+        "re": -0.0000012648244721354812,
+        "im": -0.000006017023938782948,
+        "mag": 0.000006148524865786903,
+        "phaseDeg": -101.87117368709751
+      },
+      "inputCurrentMagnitude": 0.000006148524865786903,
+      "inputImpedanceMagnitude": 162640.6368728278
+    },
+    {
+      "scenario": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 0,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 10000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 10000,
+      "VNA": {
+        "re": 0.6789735698995976,
+        "im": 0.32297973554696,
+        "mag": 0.7518783267232724,
+        "phaseDeg": 25.439883040113262
+      },
+      "VNB": {
+        "re": 0.6789651818611353,
+        "im": 0.32299736784563154,
+        "mag": 0.7518783264697358,
+        "phaseDeg": 25.441370975465112
+      },
+      "VCMD_NODE": {
+        "re": 0.22632172728704508,
+        "im": 0.10766578928187719,
+        "mag": 0.2506261088232453,
+        "phaseDeg": 25.441370975465116
+      },
+      "IVAC": {
+        "re": -0.000024373139987853752,
+        "im": -0.00001159479200478685,
+        "mag": 0.000026990538240312743,
+        "phaseDeg": -154.55862902464142
+      },
+      "inputCurrentMagnitude": 0.000026990538240312743,
+      "inputImpedanceMagnitude": 37050.02068118864
+    },
+    {
+      "scenario": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 0,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 10000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 10000,
+      "VNA": {
+        "re": 0.7880388958153953,
+        "im": 0.18743215033498342,
+        "mag": 0.8100222912347187,
+        "phaseDeg": 13.379000094712413
+      },
+      "VNB": {
+        "re": 0.7880364619350105,
+        "im": 0.18744238274058544,
+        "mag": 0.8100222911664329,
+        "phaseDeg": 13.379744062388461
+      },
+      "VCMD_NODE": {
+        "re": 0.2626788206450035,
+        "im": 0.062480794246861815,
+        "mag": 0.2700074303888109,
+        "phaseDeg": 13.379744062388466
+      },
+      "IVAC": {
+        "re": -0.00002828852423569973,
+        "im": -0.000006728709448096659,
+        "mag": 0.00002907776013159673,
+        "phaseDeg": -166.62025593782457
+      },
+      "inputCurrentMagnitude": 0.00002907776013159673,
+      "inputImpedanceMagnitude": 34390.5443704851
+    },
+    {
+      "scenario": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 1,
+      "frequency": 100,
+      "commandModel": "finite command impedance 10000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 10000,
+      "VNA": {
+        "re": 0.00017951485961183083,
+        "im": 0.008757487269749033,
+        "mag": 0.008759326964135877,
+        "phaseDeg": 88.82569014815999
+      },
+      "VNB": {
+        "re": 0.0001340704371794109,
+        "im": 0.008758045237359508,
+        "mag": 0.00875907136982917,
+        "phaseDeg": 89.12296979109958
+      },
+      "VCMD_NODE": {
+        "re": 0.0000446901457264703,
+        "im": 0.0029193484124531684,
+        "mag": 0.002919690456609722,
+        "phaseDeg": 89.12296979109958
+      },
+      "IVAC": {
+        "re": -7.712790562388336e-9,
+        "im": -6.281786001054155e-7,
+        "mag": 6.282259472265203e-7,
+        "phaseDeg": -90.70344348479702
+      },
+      "inputCurrentMagnitude": 6.282259472265203e-7,
+      "inputImpedanceMagnitude": 1591783.9822038242
+    },
+    {
+      "scenario": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 1,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 10000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 10000,
+      "VNA": {
+        "re": 0.010665736486716988,
+        "im": 0.0862843257029561,
+        "mag": 0.08694103057140454,
+        "phaseDeg": 82.95332723426546
+      },
+      "VNB": {
+        "re": 0.010620960181841539,
+        "im": 0.08628982320955784,
+        "mag": 0.08694100519732338,
+        "phaseDeg": 82.98305724043466
+      },
+      "VCMD_NODE": {
+        "re": 0.003540320060613847,
+        "im": 0.028763274403185945,
+        "mag": 0.028980335065774458,
+        "phaseDeg": 82.98305724043466
+      },
+      "IVAC": {
+        "re": -7.599207595355626e-7,
+        "im": -0.0000061894320598707625,
+        "mag": 0.000006235908016041379,
+        "phaseDeg": -96.99958106430026
+      },
+      "inputCurrentMagnitude": 0.000006235908016041379,
+      "inputImpedanceMagnitude": 160361.57002758526
+    },
+    {
+      "scenario": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 1,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 10000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 10000,
+      "VNA": {
+        "re": 0.4289359574541096,
+        "im": 0.3493028711205628,
+        "mag": 0.5531713580529475,
+        "phaseDeg": 39.15755840320716
+      },
+      "VNB": {
+        "re": 0.42891783075818535,
+        "im": 0.3493251265536075,
+        "mag": 0.5531713564384921,
+        "phaseDeg": 39.16053140586642
+      },
+      "VCMD_NODE": {
+        "re": 0.14297261025272842,
+        "im": 0.11644170885120247,
+        "mag": 0.184390452146164,
+        "phaseDeg": 39.16053140586642
+      },
+      "IVAC": {
+        "re": -0.000030763702180527485,
+        "im": -0.000025056545689861396,
+        "mag": 0.00003967664116026334,
+        "phaseDeg": -140.83773242163647
+      },
+      "inputCurrentMagnitude": 0.00003967664116026334,
+      "inputImpedanceMagnitude": 25203.74635445484
+    },
+    {
+      "scenario": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 1,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 10000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 10000,
+      "VNA": {
+        "re": 0.6119585911795165,
+        "im": 0.24918594682392645,
+        "mag": 0.6607472689409736,
+        "phaseDeg": 22.155864739475952
+      },
+      "VNB": {
+        "re": 0.6119521255614638,
+        "im": 0.2492018234216242,
+        "mag": 0.6607472684588684,
+        "phaseDeg": 22.15735124081332
+      },
+      "VCMD_NODE": {
+        "re": 0.2039840418538213,
+        "im": 0.08306727447387474,
+        "mag": 0.22024908948628952,
+        "phaseDeg": 22.15735124081332
+      },
+      "IVAC": {
+        "re": -0.00004389246636831996,
+        "im": -0.000017874857594056755,
+        "mag": 0.00004739260636324939,
+        "phaseDeg": -157.84178067300667
+      },
+      "inputCurrentMagnitude": 0.00004739260636324939,
+      "inputImpedanceMagnitude": 21100.3377264233
+    },
+    {
+      "scenario": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 2,
+      "frequency": 100,
+      "commandModel": "finite command impedance 10000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 10000,
+      "VNA": {
+        "re": 0.00013980288066235745,
+        "im": 0.0020369578459416703,
+        "mag": 0.0020417497671323054,
+        "phaseDeg": 86.07376597371807
+      },
+      "VNB": {
+        "re": 0.00009435557832355928,
+        "im": 0.002037210345075159,
+        "mag": 0.002039394264295656,
+        "phaseDeg": 87.34817975232845
+      },
+      "VCMD_NODE": {
+        "re": 0.000031451859441186425,
+        "im": 0.0006790701150250529,
+        "mag": 0.000679798088098552,
+        "phaseDeg": 87.34817975232845
+      },
+      "IVAC": {
+        "re": -3.4902974603123315e-9,
+        "im": -6.282184090733873e-7,
+        "mag": 6.282281048115081e-7,
+        "phaseDeg": -90.31832441272093
+      },
+      "inputCurrentMagnitude": 6.282281048115081e-7,
+      "inputImpedanceMagnitude": 1591778.5153850086
+    },
+    {
+      "scenario": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 2,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 10000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 10000,
+      "VNA": {
+        "re": 0.0012558879264328903,
+        "im": 0.02029603162436796,
+        "mag": 0.02033485072925553,
+        "phaseDeg": 86.45913794908762
+      },
+      "VNB": {
+        "re": 0.0012105790217586615,
+        "im": 0.020298548403027118,
+        "mag": 0.020334615040318735,
+        "phaseDeg": 86.586996838687
+      },
+      "VCMD_NODE": {
+        "re": 0.00040352634058622055,
+        "im": 0.0067661828010090385,
+        "mag": 0.006778205013439577,
+        "phaseDeg": 86.586996838687
+      },
+      "IVAC": {
+        "re": -3.4789450723902017e-7,
+        "im": -0.0000062630533709372964,
+        "mag": 0.000006272708196255913,
+        "phaseDeg": -93.17934764734997
+      },
+      "inputCurrentMagnitude": 0.000006272708196255913,
+      "inputImpedanceMagnitude": 159420.77468180095
+    },
+    {
+      "scenario": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 2,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 10000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 10000,
+      "VNA": {
+        "re": 0.08654922439488807,
+        "im": 0.155581278278899,
+        "mag": 0.1780345539333668,
+        "phaseDeg": 60.91299266191262
+      },
+      "VNB": {
+        "re": 0.08651449219972285,
+        "im": 0.15560057096901192,
+        "mag": 0.17803453329749938,
+        "phaseDeg": 60.925778970141074
+      },
+      "VCMD_NODE": {
+        "re": 0.028838164066574277,
+        "im": 0.05186685698967064,
+        "mag": 0.0593448444324998,
+        "phaseDeg": 60.92577897014108
+      },
+      "IVAC": {
+        "re": -0.00002666830035175102,
+        "im": -0.00004801034003663422,
+        "mag": 0.00005491985974203181,
+        "phaseDeg": -119.05085517198395
+      },
+      "inputCurrentMagnitude": 0.00005491985974203181,
+      "inputImpedanceMagnitude": 18208.349487729483
+    },
+    {
+      "scenario": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 2,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 10000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 10000,
+      "VNA": {
+        "re": 0.20259237709418448,
+        "im": 0.182245578143383,
+        "mag": 0.2725016000127122,
+        "phaseDeg": 41.97352808188078
+      },
+      "VNB": {
+        "re": 0.20257203470681545,
+        "im": 0.18226817731211475,
+        "mag": 0.2725015921163393,
+        "phaseDeg": 41.97992123758321
+      },
+      "VCMD_NODE": {
+        "re": 0.06752401156893847,
+        "im": 0.060756059104038265,
+        "mag": 0.09083386403877976,
+        "phaseDeg": 41.97992123758323
+      },
+      "IVAC": {
+        "re": -0.00006247769656916393,
+        "im": -0.000056238595349199355,
+        "mag": 0.0000840609432223997,
+        "phaseDeg": -138.0083958323369
+      },
+      "inputCurrentMagnitude": 0.0000840609432223997,
+      "inputImpedanceMagnitude": 11896.13108854018
+    },
+    {
+      "scenario": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 3,
+      "frequency": 100,
+      "commandModel": "finite command impedance 10000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 10000,
+      "VNA": {
+        "re": 0.00014402589746925561,
+        "im": 0.0010839074989974174,
+        "mag": 0.0010934344632965714,
+        "phaseDeg": 82.43107233645408
+      },
+      "VNB": {
+        "re": 0.00009857863465857362,
+        "im": 0.0010841166775215076,
+        "mag": 0.0010885893246267947,
+        "phaseDeg": 84.80438788214114
+      },
+      "VCMD_NODE": {
+        "re": 0.0000328595448861912,
+        "im": 0.00036137222584050254,
+        "mag": 0.00036286310820893156,
+        "phaseDeg": 84.80438788214114
+      },
+      "IVAC": {
+        "re": -2.8914763440838435e-9,
+        "im": -6.28217862675934e-7,
+        "mag": 6.282245168891191e-7,
+        "phaseDeg": -90.26371141455823
+      },
+      "inputCurrentMagnitude": 6.282245168891191e-7,
+      "inputImpedanceMagnitude": 1591787.6063670064
+    },
+    {
+      "scenario": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 3,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 10000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 10000,
+      "VNA": {
+        "re": 0.0006361429485807786,
+        "im": 0.010803105140837883,
+        "mag": 0.010821818633438049,
+        "phaseDeg": 86.63001837715309
+      },
+      "VNB": {
+        "re": 0.0005907907447151552,
+        "im": 0.010805191946357026,
+        "mag": 0.010821331096573093,
+        "phaseDeg": 86.87037998476112
+      },
+      "VCMD_NODE": {
+        "re": 0.00019693024823838506,
+        "im": 0.003601730648785675,
+        "mag": 0.003607110365524364,
+        "phaseDeg": 86.87037998476112
+      },
+      "IVAC": {
+        "re": -2.884592870902201e-7,
+        "im": -0.0000062690386214873555,
+        "mag": 0.000006275671597367782,
+        "phaseDeg": -92.63451086437266
+      },
+      "inputCurrentMagnitude": 0.000006275671597367782,
+      "inputImpedanceMagnitude": 159345.49545572654
+    },
+    {
+      "scenario": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 3,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 10000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 10000,
+      "VNA": {
+        "re": 0.04124847614676495,
+        "im": 0.08934269005777191,
+        "mag": 0.0984050458624421,
+        "phaseDeg": 65.21778158257871
+      },
+      "VNB": {
+        "re": 0.04121096898813074,
+        "im": 0.08935994829710867,
+        "mag": 0.0984050015222936,
+        "phaseDeg": 65.24182081848201
+      },
+      "VCMD_NODE": {
+        "re": 0.013736989662710248,
+        "im": 0.029786649432369555,
+        "mag": 0.03280166717409787,
+        "phaseDeg": 65.24182081848201
+      },
+      "IVAC": {
+        "re": -0.00002385607748226645,
+        "im": -0.00005184617416979005,
+        "mag": 0.000057071343149466046,
+        "phaseDeg": -114.70866633563898
+      },
+      "inputCurrentMagnitude": 0.000057071343149466046,
+      "inputImpedanceMagnitude": 17521.928604011766
+    },
+    {
+      "scenario": "cmd_10k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 3,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 10000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 10000,
+      "VNA": {
+        "re": 0.10802481301757666,
+        "im": 0.11723351953338959,
+        "mag": 0.1594147368647831,
+        "phaseDeg": 47.340985046818744
+      },
+      "VNB": {
+        "re": 0.10800020497957327,
+        "im": 0.11725616541836803,
+        "mag": 0.15941471890716216,
+        "phaseDeg": 47.35300467642038
+      },
+      "VCMD_NODE": {
+        "re": 0.03600006832652443,
+        "im": 0.03908538847278935,
+        "mag": 0.05313823963572073,
+        "phaseDeg": 47.35300467642038
+      },
+      "IVAC": {
+        "re": -0.0000626068483763933,
+        "im": -0.0000680314196414286,
+        "mag": 0.00009245480799857223,
+        "phaseDeg": -132.62223889333592
+      },
+      "inputCurrentMagnitude": 0.00009245480799857223,
+      "inputImpedanceMagnitude": 10816.09514580835
+    },
+    {
+      "scenario": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 0,
+      "frequency": 100,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.0035590407197142295,
+        "im": 0.05743688645671213,
+        "mag": 0.05754704768001418,
+        "phaseDeg": 86.45423633196724
+      },
+      "VNB": {
+        "re": 0.0035137576956656333,
+        "im": 0.05743965655639191,
+        "mag": 0.057547029797028665,
+        "phaseDeg": 86.4994059200117
+      },
+      "VCMD_NODE": {
+        "re": 0.0029281314130546947,
+        "im": 0.04786638046365994,
+        "mag": 0.04795585816419057,
+        "phaseDeg": 86.4994059200117
+      },
+      "IVAC": {
+        "re": -3.8291109136310425e-8,
+        "im": -6.259475890069627e-7,
+        "mag": 6.271176868997703e-7,
+        "phaseDeg": -93.50059407998265
+      },
+      "inputCurrentMagnitude": 6.271176868997703e-7,
+      "inputImpedanceMagnitude": 1594597.0284200038
+    },
+    {
+      "scenario": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 0,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.25668210115346357,
+        "im": 0.4195258249549257,
+        "mag": 0.4918207182060022,
+        "phaseDeg": 58.54009516425538
+      },
+      "VNB": {
+        "re": 0.2566490258960944,
+        "im": 0.41954605809124373,
+        "mag": 0.4918207166776481,
+        "phaseDeg": 58.54461212398624
+      },
+      "VCMD_NODE": {
+        "re": 0.21387418824674534,
+        "im": 0.34962171507603645,
+        "mag": 0.4098505972313734,
+        "phaseDeg": 58.54461212398624
+      },
+      "IVAC": {
+        "re": -0.0000027968279863074515,
+        "im": -0.000004571995364938616,
+        "mag": 0.000005359607112654134,
+        "phaseDeg": -121.4553878760487
+      },
+      "inputCurrentMagnitude": 0.000005359607112654134,
+      "inputImpedanceMagnitude": 186580.84053194517
+    },
+    {
+      "scenario": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 0,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.9179550587359425,
+        "im": 0.15005136124917134,
+        "mag": 0.9301381084933771,
+        "phaseDeg": 9.283614516207516
+      },
+      "VNB": {
+        "re": 0.9179538757366856,
+        "im": 0.15005859801379054,
+        "mag": 0.9301381084644724,
+        "phaseDeg": 9.28406621218153
+      },
+      "VCMD_NODE": {
+        "re": 0.7649615631139048,
+        "im": 0.1250488316781588,
+        "mag": 0.7751150903870605,
+        "phaseDeg": 9.28406621218153
+      },
+      "IVAC": {
+        "re": -0.00001000338528788793,
+        "im": -0.0000016352607808642058,
+        "mag": 0.000010136162737415246,
+        "phaseDeg": -170.7159337881694
+      },
+      "inputCurrentMagnitude": 0.000010136162737415246,
+      "inputImpedanceMagnitude": 98656.66385847739
+    },
+    {
+      "scenario": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 0,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.9362297268301155,
+        "im": 0.07651936737005884,
+        "mag": 0.9393515396182127,
+        "phaseDeg": 4.672478721317684
+      },
+      "VNB": {
+        "re": 0.9362294251922163,
+        "im": 0.07652305779076449,
+        "mag": 0.939351539610915,
+        "phaseDeg": 4.672704569304695
+      },
+      "VCMD_NODE": {
+        "re": 0.7801911876601804,
+        "im": 0.06376921482563709,
+        "mag": 0.7827929496757626,
+        "phaseDeg": 4.672704569304696
+      },
+      "IVAC": {
+        "re": -0.000010202542748174103,
+        "im": -8.339085989026515e-7,
+        "mag": 0.00001023656593197366,
+        "phaseDeg": -175.3272954313972
+      },
+      "inputCurrentMagnitude": 0.00001023656593197366,
+      "inputImpedanceMagnitude": 97689.01081138205
+    },
+    {
+      "scenario": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 1,
+      "frequency": 100,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.0003359919229492834,
+        "im": 0.01344041756566512,
+        "mag": 0.013444616577341532,
+        "phaseDeg": 88.5679827000707
+      },
+      "VNB": {
+        "re": 0.00029055536198071164,
+        "im": 0.013441188366082367,
+        "mag": 0.013444328436589301,
+        "phaseDeg": 88.76164196432117
+      },
+      "VCMD_NODE": {
+        "re": 0.0002421294683172597,
+        "im": 0.01120099030506864,
+        "mag": 0.011203607030491084,
+        "phaseDeg": 88.76164196432117
+      },
+      "IVAC": {
+        "re": -1.0654780084124382e-8,
+        "im": -6.280699310302997e-7,
+        "mag": 6.281603000851347e-7,
+        "phaseDeg": -90.97189078479221
+      },
+      "inputCurrentMagnitude": 6.281603000851347e-7,
+      "inputImpedanceMagnitude": 1591950.3347544724
+    },
+    {
+      "scenario": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 1,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.022275499637809493,
+        "im": 0.13067617419920494,
+        "mag": 0.13256115715945982,
+        "phaseDeg": 80.326153829011
+      },
+      "VNB": {
+        "re": 0.02223132130750336,
+        "im": 0.1306836684768658,
+        "mag": 0.13256112874311543,
+        "phaseDeg": 80.34552144495844
+      },
+      "VCMD_NODE": {
+        "re": 0.018526101089586137,
+        "im": 0.10890305706405487,
+        "mag": 0.11046760728592955,
+        "phaseDeg": 80.34552144495844
+      },
+      "IVAC": {
+        "re": -0.0000010359345763067578,
+        "im": -0.000006106773989254539,
+        "mag": 0.000006194017194214402,
+        "phaseDeg": -99.62782771097386
+      },
+      "inputCurrentMagnitude": 0.000006194017194214402,
+      "inputImpedanceMagnitude": 161446.1130224279
+    },
+    {
+      "scenario": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 1,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.5882294956553358,
+        "im": 0.3466943294285814,
+        "mag": 0.6827963807877605,
+        "phaseDeg": 30.51450936265039
+      },
+      "VNB": {
+        "re": 0.5882177747859286,
+        "im": 0.3467142123478262,
+        "mag": 0.6827963793240873,
+        "phaseDeg": 30.51644612593505
+      },
+      "VCMD_NODE": {
+        "re": 0.49018147898827397,
+        "im": 0.28892851028985517,
+        "mag": 0.5689969827700728,
+        "phaseDeg": 30.516446125935047
+      },
+      "IVAC": {
+        "re": -0.000027484174533821054,
+        "im": -0.000016201766778074858,
+        "mag": 0.000031904186191418015,
+        "phaseDeg": -149.48088878561956
+      },
+      "inputCurrentMagnitude": 0.000031904186191418015,
+      "inputImpedanceMagnitude": 31343.84917390535
+    },
+    {
+      "scenario": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 1,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.7292582645284591,
+        "im": 0.21491499955096485,
+        "mag": 0.7602671066244095,
+        "phaseDeg": 16.420432454327308
+      },
+      "VNB": {
+        "re": 0.7292546316587547,
+        "im": 0.21492732492585837,
+        "mag": 0.7602671062169739,
+        "phaseDeg": 16.421400835976034
+      },
+      "VCMD_NODE": {
+        "re": 0.6077121930489624,
+        "im": 0.17910610410488206,
+        "mag": 0.6335559218474784,
+        "phaseDeg": 16.421400835976037
+      },
+      "IVAC": {
+        "re": -0.00003407475035220814,
+        "im": -0.00001004343716211542,
+        "mag": 0.00003552406566814488,
+        "phaseDeg": -163.57726661990844
+      },
+      "inputCurrentMagnitude": 0.00003552406566814488,
+      "inputImpedanceMagnitude": 28149.931073253236
+    },
+    {
+      "scenario": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 2,
+      "frequency": 100,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.00015649504130242338,
+        "im": 0.0022162694388077387,
+        "mag": 0.002221787776396615,
+        "phaseDeg": 85.96093905025965
+      },
+      "VNB": {
+        "re": 0.00011104852636676323,
+        "im": 0.0022165300856976317,
+        "mag": 0.002219310117133471,
+        "phaseDeg": 87.13186999628013
+      },
+      "VCMD_NODE": {
+        "re": 0.00009254043863896939,
+        "im": 0.0018471084047480273,
+        "mag": 0.0018494250976112264,
+        "phaseDeg": 87.13186999628013
+      },
+      "IVAC": {
+        "re": -3.6029239596933795e-9,
+        "im": -6.282075247937665e-7,
+        "mag": 6.282178565343157e-7,
+        "phaseDeg": -90.32860172044929
+      },
+      "inputCurrentMagnitude": 6.282178565343157e-7,
+      "inputImpedanceMagnitude": 1591804.4824715613
+    },
+    {
+      "scenario": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 2,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.0014099487921611729,
+        "im": 0.02208063977405507,
+        "mag": 0.02212560978658214,
+        "phaseDeg": 86.34636553203757
+      },
+      "VNB": {
+        "re": 0.0013646497322894937,
+        "im": 0.02208323732486887,
+        "mag": 0.022125361909770408,
+        "phaseDeg": 86.46386216969172
+      },
+      "VCMD_NODE": {
+        "re": 0.001137208110241245,
+        "im": 0.018402697770724064,
+        "mag": 0.018437801591475345,
+        "phaseDeg": 86.46386216969172
+      },
+      "IVAC": {
+        "re": -3.5905964837398266e-7,
+        "im": -0.000006261692523125243,
+        "mag": 0.000006271978721683693,
+        "phaseDeg": -93.28187598610968
+      },
+      "inputCurrentMagnitude": 0.000006271978721683693,
+      "inputImpedanceMagnitude": 159439.3164222268
+    },
+    {
+      "scenario": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 2,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.09574112303045496,
+        "im": 0.16671384270381245,
+        "mag": 0.1922494941169007,
+        "phaseDeg": 60.13193025336024
+      },
+      "VNB": {
+        "re": 0.09570692105476925,
+        "im": 0.16673345485741545,
+        "mag": 0.19224947257788155,
+        "phaseDeg": 60.143680322352374
+      },
+      "VCMD_NODE": {
+        "re": 0.07975576754564107,
+        "im": 0.1389445457145129,
+        "mag": 0.16020789381490133,
+        "phaseDeg": 60.143680322352374
+      },
+      "IVAC": {
+        "re": -0.00002710989497926099,
+        "im": -0.00004727741724309664,
+        "mag": 0.00005449862922096676,
+        "phaseDeg": -119.83089318366429
+      },
+      "inputCurrentMagnitude": 0.00005449862922096676,
+      "inputImpedanceMagnitude": 18349.08536773397
+    },
+    {
+      "scenario": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 2,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.2196119871430709,
+        "im": 0.19136720082617675,
+        "mag": 0.29129165873566415,
+        "phaseDeg": 41.06849585914801
+      },
+      "VNB": {
+        "re": 0.2195923572896904,
+        "im": 0.1913897131920156,
+        "mag": 0.29129165057681455,
+        "phaseDeg": 41.0743708951791
+      },
+      "VCMD_NODE": {
+        "re": 0.182993631074742,
+        "im": 0.159491427660013,
+        "mag": 0.24274304214734546,
+        "phaseDeg": 41.0743708951791
+      },
+      "IVAC": {
+        "re": -0.00006223772115810289,
+        "im": -0.00005426872279074623,
+        "mag": 0.00008257498536659045,
+        "phaseDeg": -138.9129158566768
+      },
+      "inputCurrentMagnitude": 0.00008257498536659045,
+      "inputImpedanceMagnitude": 12110.204991990184
+    },
+    {
+      "scenario": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 3,
+      "frequency": 100,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.0001529343798109851,
+        "im": 0.0011323725678740084,
+        "mag": 0.0011426532969373284,
+        "phaseDeg": 82.30836781176545
+      },
+      "VNB": {
+        "re": 0.00010748752967750064,
+        "im": 0.0011325839479037355,
+        "mag": 0.0011376730497315048,
+        "phaseDeg": 84.57859950696466
+      },
+      "VCMD_NODE": {
+        "re": 0.00008957294139791721,
+        "im": 0.0009438199565864466,
+        "mag": 0.0009480608747762543,
+        "phaseDeg": 84.57859950696466
+      },
+      "IVAC": {
+        "re": -2.9219077734058373e-9,
+        "im": -6.282121582358648e-7,
+        "mag": 6.282189533119799e-7,
+        "phaseDeg": -90.26648923319702
+      },
+      "inputCurrentMagnitude": 6.282189533119799e-7,
+      "inputImpedanceMagnitude": 1591801.70341564
+    },
+    {
+      "scenario": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 3,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.0006726243192757767,
+        "im": 0.011288943905577583,
+        "mag": 0.01130896449628163,
+        "phaseDeg": 86.59020127026425
+      },
+      "VNB": {
+        "re": 0.0006272745476723,
+        "im": 0.01129105270909576,
+        "mag": 0.011308463407454445,
+        "phaseDeg": 86.82020103436047
+      },
+      "VCMD_NODE": {
+        "re": 0.0005227287897269168,
+        "im": 0.009409210590913134,
+        "mag": 0.009423719506212036,
+        "phaseDeg": 86.82020103436047
+      },
+      "IVAC": {
+        "re": -2.9150007218515963e-7,
+        "im": -0.000006268702409704124,
+        "mag": 0.000006275476252326531,
+        "phaseDeg": -92.66238531567342
+      },
+      "inputCurrentMagnitude": 0.000006275476252326531,
+      "inputImpedanceMagnitude": 159350.4556135108
+    },
+    {
+      "scenario": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 3,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.0434021388751224,
+        "im": 0.09301883024991903,
+        "mag": 0.10264622954594418,
+        "phaseDeg": 64.9864695010193
+      },
+      "VNB": {
+        "re": 0.04336477114319818,
+        "im": 0.09303620652808134,
+        "mag": 0.1026461840568745,
+        "phaseDeg": 65.00947249809481
+      },
+      "VCMD_NODE": {
+        "re": 0.03613730928599849,
+        "im": 0.07753017210673445,
+        "mag": 0.0855384867140621,
+        "phaseDeg": 65.00947249809481
+      },
+      "IVAC": {
+        "re": -0.000024019242641425142,
+        "im": -0.00005165344452155821,
+        "mag": 0.00005696492208376439,
+        "phaseDeg": -114.93878420267252
+      },
+      "inputCurrentMagnitude": 0.00005696492208376439,
+      "inputImpedanceMagnitude": 17554.662824422798
+    },
+    {
+      "scenario": "cmd_100k_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 3,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.11298303112713848,
+        "im": 0.1213263631891365,
+        "mag": 0.1657867658390687,
+        "phaseDeg": 47.039337038537965
+      },
+      "VNB": {
+        "re": 0.11295866137681401,
+        "im": 0.12134902742543088,
+        "mag": 0.16578674747138178,
+        "phaseDeg": 47.05083854851934
+      },
+      "VCMD_NODE": {
+        "re": 0.0941322178140117,
+        "im": 0.10112418952119243,
+        "mag": 0.1381556228928182,
+        "phaseDeg": 47.05083854851934
+      },
+      "IVAC": {
+        "re": -0.00006265758245264934,
+        "im": -0.00006737264915843223,
+        "mag": 0.00009200568728853531,
+        "phaseDeg": -132.92328979454757
+      },
+      "inputCurrentMagnitude": 0.00009200568728853531,
+      "inputImpedanceMagnitude": 10868.893320300303
+    },
+    {
+      "scenario": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 0,
+      "frequency": 100,
+      "commandModel": "finite command impedance 1000000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 1000000,
+      "VNA": {
+        "re": 0.03107324622030535,
+        "im": 0.1716384648008498,
+        "mag": 0.17442852183590926,
+        "phaseDeg": 79.73837784773994
+      },
+      "VNB": {
+        "re": 0.03102923209115278,
+        "im": 0.17164642141665043,
+        "mag": 0.17442851610132148,
+        "phaseDeg": 79.75306981605073
+      },
+      "VCMD_NODE": {
+        "re": 0.030420815775639983,
+        "im": 0.16828080531044162,
+        "mag": 0.17100834911894267,
+        "phaseDeg": 79.75306981605073
+      },
+      "IVAC": {
+        "re": -1.0998436128525457e-7,
+        "im": -6.084076451193848e-7,
+        "mag": 6.182688916378056e-7,
+        "phaseDeg": -100.24693018393272
+      },
+      "inputCurrentMagnitude": 6.182688916378056e-7,
+      "inputImpedanceMagnitude": 1617419.2386600296
+    },
+    {
+      "scenario": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 0,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 1000000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 1000000,
+      "VNA": {
+        "re": 0.7508021649871041,
+        "im": 0.4153009738631948,
+        "mag": 0.8580086187451968,
+        "phaseDeg": 28.948868607777616
+      },
+      "VNB": {
+        "re": 0.7507915152118793,
+        "im": 0.4153202259014514,
+        "mag": 0.8580086184631143,
+        "phaseDeg": 28.95033780464057
+      },
+      "VCMD_NODE": {
+        "re": 0.7360701129528229,
+        "im": 0.40717669206024654,
+        "mag": 0.8411849200618768,
+        "phaseDeg": 28.950337804640572
+      },
+      "IVAC": {
+        "re": -0.0000026612107259569413,
+        "im": -0.0000014721192467911982,
+        "mag": 0.0000030412460611929045,
+        "phaseDeg": -151.04966219546634
+      },
+      "inputCurrentMagnitude": 0.0000030412460611929045,
+      "inputImpedanceMagnitude": 328812.59190443734
+    },
+    {
+      "scenario": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 0,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 1000000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 1000000,
+      "VNA": {
+        "re": 0.9775457136793104,
+        "im": 0.054073017752252664,
+        "mag": 0.9790400980458501,
+        "phaseDeg": 3.1660940036383334
+      },
+      "VNB": {
+        "re": 0.9775455750171064,
+        "im": 0.05407552440615412,
+        "mag": 0.9790400980426315,
+        "phaseDeg": 3.166240923324661
+      },
+      "VCMD_NODE": {
+        "re": 0.9583780147226534,
+        "im": 0.05301522000603345,
+        "mag": 0.959843233375129,
+        "phaseDeg": 3.166240923324661
+      },
+      "IVAC": {
+        "re": -0.0000034649496120280423,
+        "im": -1.9167287135851274e-7,
+        "mag": 0.000003470247009004993,
+        "phaseDeg": -176.8337590777543
+      },
+      "inputCurrentMagnitude": 0.000003470247009004993,
+      "inputImpedanceMagnitude": 288163.925335887
+    },
+    {
+      "scenario": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 0,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 1000000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 1000000,
+      "VNA": {
+        "re": 0.9797873929914336,
+        "im": 0.027098511092956336,
+        "mag": 0.9801620604616388,
+        "phaseDeg": 1.584256564156692
+      },
+      "VNB": {
+        "re": 0.9797873582463849,
+        "im": 0.0270997672941335,
+        "mag": 0.9801620604608331,
+        "phaseDeg": 1.5843300239998557
+      },
+      "VCMD_NODE": {
+        "re": 0.9605758414180244,
+        "im": 0.02656839930797402,
+        "mag": 0.9609431965302286,
+        "phaseDeg": 1.5843300239998557
+      },
+      "IVAC": {
+        "re": -0.000003472895702858993,
+        "im": -9.60562151204425e-8,
+        "mag": 0.000003474223849926732,
+        "phaseDeg": -178.41566997815838
+      },
+      "inputCurrentMagnitude": 0.000003474223849926732,
+      "inputImpedanceMagnitude": 287834.07264361763
+    },
+    {
+      "scenario": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 1,
+      "frequency": 100,
+      "commandModel": "finite command impedance 1000000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 1000000,
+      "VNA": {
+        "re": 0.00044411125738099197,
+        "im": 0.01594820909517643,
+        "mag": 0.015954391500536798,
+        "phaseDeg": 88.40489134486779
+      },
+      "VNB": {
+        "re": 0.0003986800119470211,
+        "im": 0.01594909386741459,
+        "mag": 0.015954075997798422,
+        "phaseDeg": 88.5680737557055
+      },
+      "VCMD_NODE": {
+        "re": 0.000390862756810805,
+        "im": 0.015636366536680973,
+        "mag": 0.01564125097823375,
+        "phaseDeg": 88.5680737557055
+      },
+      "IVAC": {
+        "re": -1.2230213439456657e-8,
+        "im": -6.279964543547092e-7,
+        "mag": 6.281155345976257e-7,
+        "phaseDeg": -91.11569267154836
+      },
+      "inputCurrentMagnitude": 6.281155345976257e-7,
+      "inputImpedanceMagnitude": 1592063.792277651
+    },
+    {
+      "scenario": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 1,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 1000000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 1000000,
+      "VNA": {
+        "re": 0.030066366525397438,
+        "im": 0.1537053590483844,
+        "mag": 0.15661840184420314,
+        "phaseDeg": 78.93210275184973
+      },
+      "VNB": {
+        "re": 0.030022578673845772,
+        "im": 0.15371388636785263,
+        "mag": 0.15661837086541402,
+        "phaseDeg": 78.94842260569573
+      },
+      "VCMD_NODE": {
+        "re": 0.029433900660633113,
+        "im": 0.15069988859593397,
+        "mag": 0.1535474224170726,
+        "phaseDeg": 78.94842260569574
+      },
+      "IVAC": {
+        "re": -0.0000011787320246406461,
+        "im": -0.000006052798081052315,
+        "mag": 0.000006166504179509166,
+        "phaseDeg": -101.01994945768513
+      },
+      "inputCurrentMagnitude": 0.000006166504179509166,
+      "inputImpedanceMagnitude": 162166.4351291491
+    },
+    {
+      "scenario": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 1,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 1000000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 1000000,
+      "VNA": {
+        "re": 0.648405921183646,
+        "im": 0.33288851394950136,
+        "mag": 0.7288655577989126,
+        "phaseDeg": 27.175748355434678
+      },
+      "VNB": {
+        "re": 0.6483964377926468,
+        "im": 0.3329069820561573,
+        "mag": 0.7288655563572285,
+        "phaseDeg": 27.177380342432425
+      },
+      "VCMD_NODE": {
+        "re": 0.6356827821496539,
+        "im": 0.3263793941727033,
+        "mag": 0.7145740748600282,
+        "phaseDeg": 27.177380342432414
+      },
+      "IVAC": {
+        "re": -0.000025528478006256488,
+        "im": -0.00001310889865738277,
+        "mag": 0.000028697498380964376,
+        "phaseDeg": -152.81945685942176
+      },
+      "inputCurrentMagnitude": 0.000028697498380964376,
+      "inputImpedanceMagnitude": 34846.24292768738
+    },
+    {
+      "scenario": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 1,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 1000000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 1000000,
+      "VNA": {
+        "re": 0.768681210490553,
+        "im": 0.1973249974890882,
+        "mag": 0.7936044090069627,
+        "phaseDeg": 14.397287297803059
+      },
+      "VNB": {
+        "re": 0.7686783997746018,
+        "im": 0.1973359447550625,
+        "mag": 0.7936044086145287,
+        "phaseDeg": 14.398103291308038
+      },
+      "VCMD_NODE": {
+        "re": 0.7536062742888254,
+        "im": 0.1934666125049633,
+        "mag": 0.7780435378573811,
+        "phaseDeg": 14.39810329130804
+      },
+      "IVAC": {
+        "re": -0.000030264828318577662,
+        "im": -0.000007770509633459318,
+        "mag": 0.00003124645024825483,
+        "phaseDeg": -165.60031530974743
+      },
+      "inputCurrentMagnitude": 0.00003124645024825483,
+      "inputImpedanceMagnitude": 32003.635358734926
+    },
+    {
+      "scenario": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 2,
+      "frequency": 100,
+      "commandModel": "finite command impedance 1000000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 1000000,
+      "VNA": {
+        "re": 0.00016227537717731052,
+        "im": 0.0022751611364262266,
+        "mag": 0.0022809409231153524,
+        "phaseDeg": 85.92029964562857
+      },
+      "VNB": {
+        "re": 0.00011682913439970125,
+        "im": 0.0022754244592538553,
+        "mag": 0.0022784217161042164,
+        "phaseDeg": 87.06079298006723
+      },
+      "VCMD_NODE": {
+        "re": 0.00011453836705853063,
+        "im": 0.002230808293386133,
+        "mag": 0.00223374678049433,
+        "phaseDeg": 87.06079298006723
+      },
+      "IVAC": {
+        "re": -3.6399134675313763e-9,
+        "im": -6.282037627509404e-7,
+        "mag": 6.282143077839687e-7,
+        "phaseDeg": -90.33197723102325
+      },
+      "inputCurrentMagnitude": 6.282143077839687e-7,
+      "inputImpedanceMagnitude": 1591813.474493296
+    },
+    {
+      "scenario": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 2,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 1000000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 1000000,
+      "VNA": {
+        "re": 0.0014622358048536066,
+        "im": 0.02266678616415452,
+        "mag": 0.02271390165868697,
+        "phaseDeg": 86.30896012756
+      },
+      "VNB": {
+        "re": 0.0014169400550232464,
+        "im": 0.022669410241519472,
+        "mag": 0.022713649636679642,
+        "phaseDeg": 86.42340904256064
+      },
+      "VCMD_NODE": {
+        "re": 0.0013891569166894573,
+        "im": 0.02222491200148968,
+        "mag": 0.022268283957529063,
+        "phaseDeg": 86.42340904256064
+      },
+      "IVAC": {
+        "re": -3.627264155762718e-7,
+        "im": -0.0000062612349758596,
+        "mag": 0.000006271732924438379,
+        "phaseDeg": -93.31555830948864
+      },
+      "inputCurrentMagnitude": 0.000006271732924438379,
+      "inputImpedanceMagnitude": 159445.56505322616
+    },
+    {
+      "scenario": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 2,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 1000000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 1000000,
+      "VNA": {
+        "re": 0.09879556727841302,
+        "im": 0.17027977262818617,
+        "mag": 0.19686483962396692,
+        "phaseDeg": 59.87788346338713
+      },
+      "VNB": {
+        "re": 0.09876153959490194,
+        "im": 0.17029948554335128,
+        "mag": 0.1968648177798296,
+        "phaseDeg": 59.88932875613182
+      },
+      "VCMD_NODE": {
+        "re": 0.09682503881853133,
+        "im": 0.16696027994446205,
+        "mag": 0.19300472331355842,
+        "phaseDeg": 59.88932875613182
+      },
+      "IVAC": {
+        "re": -0.00002724917776390678,
+        "im": -0.0000470364930363153,
+        "mag": 0.00005435944596815102,
+        "phaseDeg": -120.08456766885674
+      },
+      "inputCurrentMagnitude": 0.00005435944596815102,
+      "inputImpedanceMagnitude": 18396.066813960835
+    },
+    {
+      "scenario": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 2,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 1000000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 1000000,
+      "VNA": {
+        "re": 0.22513331047086127,
+        "im": 0.1941795894765134,
+        "mag": 0.29730576928952535,
+        "phaseDeg": 40.7780775980584
+      },
+      "VNB": {
+        "re": 0.22511390863081143,
+        "im": 0.19420206922139888,
+        "mag": 0.2973057610422548,
+        "phaseDeg": 40.78380024595068
+      },
+      "VCMD_NODE": {
+        "re": 0.2206999104223642,
+        "im": 0.19039418551117543,
+        "mag": 0.29147623631593617,
+        "phaseDeg": 40.78380024595069
+      },
+      "IVAC": {
+        "re": -0.00006214753722041647,
+        "im": -0.00005363835678648711,
+        "mag": 0.00008209378600915868,
+        "phaseDeg": -139.20314796538923
+      },
+      "inputCurrentMagnitude": 0.00008209378600915868,
+      "inputImpedanceMagnitude": 12181.18993669553
+    },
+    {
+      "scenario": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 3,
+      "frequency": 100,
+      "commandModel": "finite command impedance 1000000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 1000000,
+      "VNA": {
+        "re": 0.0001557874456599394,
+        "im": 0.001147455344843778,
+        "mag": 0.0011579825113687177,
+        "phaseDeg": 82.26835439932056
+      },
+      "VNB": {
+        "re": 0.00011034072762190429,
+        "im": 0.0011476674099894879,
+        "mag": 0.0011529594789601715,
+        "phaseDeg": 84.50826448629752
+      },
+      "VCMD_NODE": {
+        "re": 0.0001081771839430434,
+        "im": 0.0011251641274406744,
+        "mag": 0.0011303524303531093,
+        "phaseDeg": 84.50826448629752
+      },
+      "IVAC": {
+        "re": -2.9313781369183327e-9,
+        "im": -6.282103322794551e-7,
+        "mag": 6.282171714944164e-7,
+        "phaseDeg": -90.26735373135345
+      },
+      "inputCurrentMagnitude": 6.282171714944164e-7,
+      "inputImpedanceMagnitude": 1591806.2182559872
+    },
+    {
+      "scenario": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 3,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 1000000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 1000000,
+      "VNA": {
+        "re": 0.0006841614014275845,
+        "im": 0.011440260584638207,
+        "mag": 0.011460699763436347,
+        "phaseDeg": 86.57761905678294
+      },
+      "VNB": {
+        "re": 0.0006388123952985204,
+        "im": 0.011442376239253392,
+        "mag": 0.011460194382165497,
+        "phaseDeg": 86.80457121695274
+      },
+      "VCMD_NODE": {
+        "re": 0.000626286662057373,
+        "im": 0.01121801592083666,
+        "mag": 0.011235484688397548,
+        "phaseDeg": 86.80457121695274
+      },
+      "IVAC": {
+        "re": -2.92447099850459e-7,
+        "im": -0.000006268596598117315,
+        "mag": 0.000006275414617070247,
+        "phaseDeg": -92.67106740791554
+      },
+      "inputCurrentMagnitude": 0.000006275414617070247,
+      "inputImpedanceMagnitude": 159352.02070630068
+    },
+    {
+      "scenario": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 3,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 1000000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 1000000,
+      "VNA": {
+        "re": 0.044077412531027566,
+        "im": 0.09415755065763029,
+        "mag": 0.10396375638305207,
+        "phaseDeg": 64.91457644724665
+      },
+      "VNB": {
+        "re": 0.04404008831775908,
+        "im": 0.09417496338340754,
+        "mag": 0.10396371053065667,
+        "phaseDeg": 64.93727466819344
+      },
+      "VCMD_NODE": {
+        "re": 0.043176557174273614,
+        "im": 0.09232839547392897,
+        "mag": 0.10192520640260459,
+        "phaseDeg": 64.93727466819344
+      },
+      "IVAC": {
+        "re": -0.000024069624207543472,
+        "im": -0.000051593288650331826,
+        "mag": 0.00005693166292362116,
+        "phaseDeg": -115.01028725938447
+      },
+      "inputCurrentMagnitude": 0.00005693166292362116,
+      "inputImpedanceMagnitude": 17564.91816059524
+    },
+    {
+      "scenario": "cmd_1M_c4c6_0",
+      "note": "Finite B11 output impedance sensitivity, C4/C6 omitted.",
+      "vcmd": 3,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 1000000 Ohm",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 1000000,
+      "VNA": {
+        "re": 0.11452636557907156,
+        "im": 0.12258251462226863,
+        "mag": 0.16775804393193744,
+        "phaseDeg": 46.945966103545985
+      },
+      "VNB": {
+        "re": 0.11450206961885194,
+        "im": 0.12260518402902235,
+        "mag": 0.16775802543482338,
+        "phaseDeg": 46.95731522540338
+      },
+      "VCMD_NODE": {
+        "re": 0.11225693099887446,
+        "im": 0.12020116081276701,
+        "mag": 0.16446865238708175,
+        "phaseDeg": 46.95731522540338
+      },
+      "IVAC": {
+        "re": -0.00006267187671243032,
+        "im": -0.00006716864892128353,
+        "mag": 0.00009186616095477546,
+        "phaseDeg": -133.01646573106635
+      },
+      "inputCurrentMagnitude": 0.00009186616095477546,
+      "inputImpedanceMagnitude": 10885.400996481036
+    },
+    {
+      "scenario": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "vcmd": 0,
+      "frequency": 100,
+      "commandModel": "open AC command port",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": null,
+      "VNA": {
+        "re": 0.057400684182131234,
+        "im": 0.2307619634322171,
+        "mag": 0.23779386516827694,
+        "phaseDeg": 76.03149977825372
+      },
+      "VNB": {
+        "re": 0.0573578761957254,
+        "im": 0.23077260323585944,
+        "mag": 0.23779386107706726,
+        "phaseDeg": 76.0421280629287
+      },
+      "VCMD_NODE": {
+        "re": 0.0573578761957254,
+        "im": 0.23077260323585944,
+        "mag": 0.23779386107706726,
+        "phaseDeg": 76.0421280629287
+      },
+      "IVAC": {
+        "re": -1.4707408741633401e-7,
+        "im": -5.917351246731686e-7,
+        "mag": 6.097386693997009e-7,
+        "phaseDeg": -103.95787193704761
+      },
+      "inputCurrentMagnitude": 6.097386693997009e-7,
+      "inputImpedanceMagnitude": 1640046.8761223864
+    },
+    {
+      "scenario": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "vcmd": 0,
+      "frequency": 1000,
+      "commandModel": "open AC command port",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": null,
+      "VNA": {
+        "re": 0.8484996899635333,
+        "im": 0.34136548648195125,
+        "mag": 0.9145939641334134,
+        "phaseDeg": 21.9157402377463
+      },
+      "VNB": {
+        "re": 0.8484933573908308,
+        "im": 0.3413812259118486,
+        "mag": 0.9145939639760589,
+        "phaseDeg": 21.916803066225857
+      },
+      "VCMD_NODE": {
+        "re": 0.8484933573908308,
+        "im": 0.3413812259118486,
+        "mag": 0.9145939639760589,
+        "phaseDeg": 21.916803066225857
+      },
+      "IVAC": {
+        "re": -0.000002175662602840853,
+        "im": -8.75352010776801e-7,
+        "mag": 0.0000023451543454901266,
+        "phaseDeg": -158.08319693392244
+      },
+      "inputCurrentMagnitude": 0.0000023451543454901266,
+      "inputImpedanceMagnitude": 426411.1664646126
+    },
+    {
+      "scenario": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "vcmd": 0,
+      "frequency": 10000,
+      "commandModel": "open AC command port",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": null,
+      "VNA": {
+        "re": 0.9842508475093333,
+        "im": 0.039598335258698894,
+        "mag": 0.9850470846503233,
+        "phaseDeg": 2.303878700134176
+      },
+      "VNB": {
+        "re": 0.9842507740516034,
+        "im": 0.03960016102974644,
+        "mag": 0.9850470846486284,
+        "phaseDeg": 2.3039849829821444
+      },
+      "VCMD_NODE": {
+        "re": 0.9842507740516034,
+        "im": 0.03960016102974644,
+        "mag": 0.9850470846486284,
+        "phaseDeg": 2.3039849829821444
+      },
+      "IVAC": {
+        "re": -0.0000025237647204524784,
+        "im": -1.0154067632067076e-7,
+        "mag": 0.000002525806578728513,
+        "phaseDeg": -177.69601501850937
+      },
+      "inputCurrentMagnitude": 0.000002525806578728513,
+      "inputImpedanceMagnitude": 395913.13460882596
+    },
+    {
+      "scenario": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "vcmd": 0,
+      "frequency": 20000,
+      "commandModel": "open AC command port",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": null,
+      "VNA": {
+        "re": 0.9854452581384532,
+        "im": 0.019823195476503838,
+        "mag": 0.9856446194579781,
+        "phaseDeg": 1.1524052356720242
+      },
+      "VNB": {
+        "re": 0.9854452397517341,
+        "im": 0.01982410946988597,
+        "mag": 0.9856446194575542,
+        "phaseDeg": 1.1524583770960086
+      },
+      "VCMD_NODE": {
+        "re": 0.9854452397517341,
+        "im": 0.01982410946988597,
+        "mag": 0.9856446194575542,
+        "phaseDeg": 1.1524583770960086
+      },
+      "IVAC": {
+        "re": -0.0000025268275073694402,
+        "im": -5.083195186019941e-8,
+        "mag": 0.0000025273387464542173,
+        "phaseDeg": -178.8475416258869
+      },
+      "inputCurrentMagnitude": 0.0000025273387464542173,
+      "inputImpedanceMagnitude": 395673.1171881771
+    },
+    {
+      "scenario": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "vcmd": 1,
+      "frequency": 100,
+      "commandModel": "open AC command port",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": null,
+      "VNA": {
+        "re": 0.0004632526040048741,
+        "im": 0.01635505680826781,
+        "mag": 0.016361616245859835,
+        "phaseDeg": 88.37754619009797
+      },
+      "VNB": {
+        "re": 0.00041782229368998004,
+        "im": 0.016355960070293548,
+        "mag": 0.016361295953870564,
+        "phaseDeg": 88.53666501312722
+      },
+      "VCMD_NODE": {
+        "re": 0.00041782229368998004,
+        "im": 0.016355960070293548,
+        "mag": 0.016361295953870564,
+        "phaseDeg": 88.53666501312722
+      },
+      "IVAC": {
+        "re": -1.248579791502378e-8,
+        "im": -6.279835281965346e-7,
+        "mag": 6.281076395298362e-7,
+        "phaseDeg": -91.13902554589761
+      },
+      "inputCurrentMagnitude": 6.281076395298362e-7,
+      "inputImpedanceMagnitude": 1592083.8038979117
+    },
+    {
+      "scenario": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "vcmd": 1,
+      "frequency": 1000,
+      "commandModel": "open AC command port",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": null,
+      "VNA": {
+        "re": 0.031428793443146766,
+        "im": 0.15738581318335396,
+        "mag": 0.1604931875460064,
+        "phaseDeg": 78.70699991402374
+      },
+      "VNB": {
+        "re": 0.031385073322594825,
+        "im": 0.15739450541302002,
+        "mag": 0.1604931561209818,
+        "phaseDeg": 78.7229133995822
+      },
+      "VCMD_NODE": {
+        "re": 0.031385073322594825,
+        "im": 0.15739450541302002,
+        "mag": 0.1604931561209818,
+        "phaseDeg": 78.7229133995822
+      },
+      "IVAC": {
+        "re": -0.0000012015275739416366,
+        "im": -0.000006043435619762162,
+        "mag": 0.000006161719127090437,
+        "phaseDeg": -101.24465100991496
+      },
+      "inputCurrentMagnitude": 0.000006161719127090437,
+      "inputImpedanceMagnitude": 162292.3699334864
+    },
+    {
+      "scenario": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "vcmd": 1,
+      "frequency": 10000,
+      "commandModel": "open AC command port",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": null,
+      "VNA": {
+        "re": 0.6568949643309665,
+        "im": 0.33033528985556504,
+        "mag": 0.7352770891897434,
+        "phaseDeg": 26.69662658486347
+      },
+      "VNB": {
+        "re": 0.6568857879600088,
+        "im": 0.3303535338790069,
+        "mag": 0.7352770877500466,
+        "phaseDeg": 26.698217935022956
+      },
+      "VCMD_NODE": {
+        "re": 0.6568857879600088,
+        "im": 0.3303535338790069,
+        "mag": 0.7352770877500466,
+        "phaseDeg": 26.698217935022956
+      },
+      "IVAC": {
+        "re": -0.000025218727607261525,
+        "im": -0.000012684504618358246,
+        "mag": 0.00002822907861660395,
+        "phaseDeg": -153.29853850137823
+      },
+      "inputCurrentMagnitude": 0.00002822907861660395,
+      "inputImpedanceMagnitude": 35424.4647365789
+    },
+    {
+      "scenario": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "vcmd": 1,
+      "frequency": 20000,
+      "commandModel": "open AC command port",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": null,
+      "VNA": {
+        "re": 0.7740962461095962,
+        "im": 0.1946425703552347,
+        "mag": 0.7981921625996218,
+        "phaseDeg": 14.114135001359381
+      },
+      "VNB": {
+        "re": 0.7740935426254522,
+        "im": 0.1946533202318837,
+        "mag": 0.7981921622089001,
+        "phaseDeg": 14.1149306764452
+      },
+      "VCMD_NODE": {
+        "re": 0.7740935426254522,
+        "im": 0.1946533202318837,
+        "mag": 0.7981921622089001,
+        "phaseDeg": 14.1149306764452
+      },
+      "IVAC": {
+        "re": -0.000029719125486446258,
+        "im": -0.000007474056414567438,
+        "mag": 0.00003064454174836485,
+        "phaseDeg": -165.88344754188722
+      },
+      "inputCurrentMagnitude": 0.00003064454174836485,
+      "inputImpedanceMagnitude": 32632.23866133872
+    },
+    {
+      "scenario": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "vcmd": 2,
+      "frequency": 100,
+      "commandModel": "open AC command port",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": null,
+      "VNA": {
+        "re": 0.00016308085038158814,
+        "im": 0.00228325010917932,
+        "mag": 0.0022890667148050877,
+        "phaseDeg": 85.9145940161601
+      },
+      "VNB": {
+        "re": 0.00011763464550964284,
+        "im": 0.0022835137995541543,
+        "mag": 0.0022865417517680337,
+        "phaseDeg": 87.05102895336906
+      },
+      "VCMD_NODE": {
+        "re": 0.00011763464550964284,
+        "im": 0.0022835137995541543,
+        "mag": 0.0022865417517680337,
+        "phaseDeg": 87.05102895336906
+      },
+      "IVAC": {
+        "re": -3.6449940753679414e-9,
+        "im": -6.282032387806559e-7,
+        "mag": 6.282138132804111e-7,
+        "phaseDeg": -90.33244087324059
+      },
+      "inputCurrentMagnitude": 6.282138132804111e-7,
+      "inputImpedanceMagnitude": 1591814.7275020797
+    },
+    {
+      "scenario": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "vcmd": 2,
+      "frequency": 1000,
+      "commandModel": "open AC command port",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": null,
+      "VNA": {
+        "re": 0.0014694828904129327,
+        "im": 0.022747296657784476,
+        "mag": 0.02279471178151786,
+        "phaseDeg": 86.30380962737094
+      },
+      "VNB": {
+        "re": 0.0014241875981939722,
+        "im": 0.02274992437861588,
+        "mag": 0.022794459185240406,
+        "phaseDeg": 86.41785217930179
+      },
+      "VCMD_NODE": {
+        "re": 0.0014241875981939722,
+        "im": 0.02274992437861588,
+        "mag": 0.022794459185240406,
+        "phaseDeg": 86.41785217930179
+      },
+      "IVAC": {
+        "re": -3.632300522235781e-7,
+        "im": -0.0000062611717202007495,
+        "mag": 0.00000627169892299367,
+        "phaseDeg": -93.32018505646757
+      },
+      "inputCurrentMagnitude": 0.00000627169892299367,
+      "inputImpedanceMagnitude": 159446.4294728405
+    },
+    {
+      "scenario": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "vcmd": 2,
+      "frequency": 10000,
+      "commandModel": "open AC command port",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": null,
+      "VNA": {
+        "re": 0.09921640211230659,
+        "im": 0.17076608910006585,
+        "mag": 0.19749671297174176,
+        "phaseDeg": 59.8430850409294
+      },
+      "VNB": {
+        "re": 0.09918239837138819,
+        "im": 0.17078581569612333,
+        "mag": 0.1974966910854229,
+        "phaseDeg": 59.85448969684105
+      },
+      "VCMD_NODE": {
+        "re": 0.09918239837138819,
+        "im": 0.17078581569612333,
+        "mag": 0.1974966910854229,
+        "phaseDeg": 59.85448969684105
+      },
+      "IVAC": {
+        "re": -0.000027268088871933518,
+        "im": -0.00004700339717208321,
+        "mag": 0.00005434029827342011,
+        "phaseDeg": -120.11931371644171
+      },
+      "inputCurrentMagnitude": 0.00005434029827342011,
+      "inputImpedanceMagnitude": 18402.548969613177
+    },
+    {
+      "scenario": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "vcmd": 2,
+      "frequency": 20000,
+      "commandModel": "open AC command port",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": null,
+      "VNA": {
+        "re": 0.22588895829729966,
+        "im": 0.19455902361496286,
+        "mag": 0.29812587132056634,
+        "phaseDeg": 40.73844635717936
+      },
+      "VNB": {
+        "re": 0.22586958754613357,
+        "im": 0.1945814987290863,
+        "mag": 0.29812586306108685,
+        "phaseDeg": 40.74414868665311
+      },
+      "VCMD_NODE": {
+        "re": 0.22586958754613357,
+        "im": 0.1945814987290863,
+        "mag": 0.29812586306108685,
+        "phaseDeg": 40.74414868665311
+      },
+      "IVAC": {
+        "re": -0.00006213473500864397,
+        "im": -0.000053552408410995234,
+        "mag": 0.00008202795707082092,
+        "phaseDeg": -139.24275301883367
+      },
+      "inputCurrentMagnitude": 0.00008202795707082092,
+      "inputImpedanceMagnitude": 12190.965564784512
+    },
+    {
+      "scenario": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "vcmd": 3,
+      "frequency": 100,
+      "commandModel": "open AC command port",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": null,
+      "VNA": {
+        "re": 0.00015617650297075245,
+        "im": 0.0011494965205416136,
+        "mag": 0.0011600574773766384,
+        "phaseDeg": 82.26287631068402
+      },
+      "VNB": {
+        "re": 0.00011072980294337425,
+        "im": 0.0011497086784046646,
+        "mag": 0.0011550286292810578,
+        "phaseDeg": 84.49874342134824
+      },
+      "VCMD_NODE": {
+        "re": 0.00011072980294337425,
+        "im": 0.0011497086784046646,
+        "mag": 0.0011550286292810578,
+        "phaseDeg": 84.49874342134824
+      },
+      "IVAC": {
+        "re": -2.932659769460397e-9,
+        "im": -6.282100833180057e-7,
+        "mag": 6.282169285173228e-7,
+        "phaseDeg": -90.2674707258076
+      },
+      "inputCurrentMagnitude": 6.282169285173228e-7,
+      "inputImpedanceMagnitude": 1591806.8339230139
+    },
+    {
+      "scenario": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "vcmd": 3,
+      "frequency": 1000,
+      "commandModel": "open AC command port",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": null,
+      "VNA": {
+        "re": 0.0006857294565805566,
+        "im": 0.011460743005839498,
+        "mag": 0.011481239268194058,
+        "phaseDeg": 86.57590968175309
+      },
+      "VNB": {
+        "re": 0.000640380554356776,
+        "im": 0.011462859587817837,
+        "mag": 0.011480733303427337,
+        "phaseDeg": 86.80245549463525
+      },
+      "VCMD_NODE": {
+        "re": 0.000640380554356776,
+        "im": 0.011462859587817837,
+        "mag": 0.011480733303427337,
+        "phaseDeg": 86.80245549463525
+      },
+      "IVAC": {
+        "re": -2.925752893300794e-7,
+        "im": -0.000006268582235281989,
+        "mag": 0.000006275406245050556,
+        "phaseDeg": -92.67224264443433
+      },
+      "inputCurrentMagnitude": 0.000006275406245050556,
+      "inputImpedanceMagnitude": 159352.23329783708
+    },
+    {
+      "scenario": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "vcmd": 3,
+      "frequency": 10000,
+      "commandModel": "open AC command port",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": null,
+      "VNA": {
+        "re": 0.04416898128680996,
+        "im": 0.09431146164280758,
+        "mag": 0.10414197379115366,
+        "phaseDeg": 64.90485043524515
+      },
+      "VNB": {
+        "re": 0.04413166296762913,
+        "im": 0.0943288792906546,
+        "mag": 0.10414192788939186,
+        "phaseDeg": 64.9275080193747
+      },
+      "VCMD_NODE": {
+        "re": 0.04413166296762913,
+        "im": 0.0943288792906546,
+        "mag": 0.10414192788939186,
+        "phaseDeg": 64.9275080193747
+      },
+      "IVAC": {
+        "re": -0.0000240764279883459,
+        "im": -0.000051585141248450566,
+        "mag": 0.00005692715680850926,
+        "phaseDeg": -115.01995985954453
+      },
+      "inputCurrentMagnitude": 0.00005692715680850926,
+      "inputImpedanceMagnitude": 17566.30852589012
+    },
+    {
+      "scenario": "cmd_open_c4c6_0",
+      "note": "Upper sensitivity bound: command port left open in AC.",
+      "vcmd": 3,
+      "frequency": 20000,
+      "commandModel": "open AC command port",
+      "c4AbglFarad": 0,
+      "c6AbglFarad": 0,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": null,
+      "VNA": {
+        "re": 0.1147352350573623,
+        "im": 0.12275187533851177,
+        "mag": 0.16802439424913787,
+        "phaseDeg": 46.93334834614349
+      },
+      "VNB": {
+        "re": 0.11471094906989376,
+        "im": 0.12277454542548785,
+        "mag": 0.16802437573444795,
+        "phaseDeg": 46.94467714958434
+      },
+      "VCMD_NODE": {
+        "re": 0.11471094906989376,
+        "im": 0.12277454542548785,
+        "mag": 0.16802437573444795,
+        "phaseDeg": 46.94467714958434
+      },
+      "IVAC": {
+        "re": -0.0000626737572562142,
+        "im": -0.00006714107823837312,
+        "mag": 0.00009184728757901456,
+        "phaseDeg": -133.0290567825558
+      },
+      "inputCurrentMagnitude": 0.00009184728757901456,
+      "inputImpedanceMagnitude": 10887.63779920793
+    },
+    {
+      "scenario": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "vcmd": 0,
+      "frequency": 100,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-10,
+      "c6AbglFarad": 1e-10,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.0035590407197142295,
+        "im": 0.05743688645671213,
+        "mag": 0.05754704768001418,
+        "phaseDeg": 86.45423633196724
+      },
+      "VNB": {
+        "re": 0.0035137576956656333,
+        "im": 0.05743965655639191,
+        "mag": 0.057547029797028665,
+        "phaseDeg": 86.4994059200117
+      },
+      "VCMD_NODE": {
+        "re": 0.0029281314130546942,
+        "im": 0.04786638046365994,
+        "mag": 0.04795585816419057,
+        "phaseDeg": 86.4994059200117
+      },
+      "IVAC": {
+        "re": -3.8291109136310425e-8,
+        "im": -6.259475890069627e-7,
+        "mag": 6.271176868997703e-7,
+        "phaseDeg": -93.50059407998265
+      },
+      "inputCurrentMagnitude": 6.271176868997703e-7,
+      "inputImpedanceMagnitude": 1594597.0284200038
+    },
+    {
+      "scenario": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "vcmd": 0,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-10,
+      "c6AbglFarad": 1e-10,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.25668210115346357,
+        "im": 0.4195258249549257,
+        "mag": 0.4918207182060022,
+        "phaseDeg": 58.54009516425538
+      },
+      "VNB": {
+        "re": 0.2566490258960944,
+        "im": 0.41954605809124373,
+        "mag": 0.4918207166776481,
+        "phaseDeg": 58.54461212398624
+      },
+      "VCMD_NODE": {
+        "re": 0.21387418824674534,
+        "im": 0.34962171507603645,
+        "mag": 0.4098505972313734,
+        "phaseDeg": 58.54461212398624
+      },
+      "IVAC": {
+        "re": -0.0000027968279863074515,
+        "im": -0.000004571995364938616,
+        "mag": 0.000005359607112654134,
+        "phaseDeg": -121.4553878760487
+      },
+      "inputCurrentMagnitude": 0.000005359607112654134,
+      "inputImpedanceMagnitude": 186580.84053194517
+    },
+    {
+      "scenario": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "vcmd": 0,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-10,
+      "c6AbglFarad": 1e-10,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.9179550587359425,
+        "im": 0.15005136124917134,
+        "mag": 0.9301381084933771,
+        "phaseDeg": 9.283614516207516
+      },
+      "VNB": {
+        "re": 0.9179538757366856,
+        "im": 0.15005859801379054,
+        "mag": 0.9301381084644724,
+        "phaseDeg": 9.28406621218153
+      },
+      "VCMD_NODE": {
+        "re": 0.7649615631139048,
+        "im": 0.1250488316781588,
+        "mag": 0.7751150903870605,
+        "phaseDeg": 9.28406621218153
+      },
+      "IVAC": {
+        "re": -0.00001000338528788793,
+        "im": -0.0000016352607808642058,
+        "mag": 0.000010136162737415246,
+        "phaseDeg": -170.7159337881694
+      },
+      "inputCurrentMagnitude": 0.000010136162737415246,
+      "inputImpedanceMagnitude": 98656.66385847739
+    },
+    {
+      "scenario": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "vcmd": 0,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-10,
+      "c6AbglFarad": 1e-10,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.9362297268301155,
+        "im": 0.07651936737005884,
+        "mag": 0.9393515396182127,
+        "phaseDeg": 4.672478721317684
+      },
+      "VNB": {
+        "re": 0.9362294251922163,
+        "im": 0.07652305779076449,
+        "mag": 0.939351539610915,
+        "phaseDeg": 4.672704569304695
+      },
+      "VCMD_NODE": {
+        "re": 0.7801911876601804,
+        "im": 0.06376921482563709,
+        "mag": 0.7827929496757626,
+        "phaseDeg": 4.672704569304696
+      },
+      "IVAC": {
+        "re": -0.000010202542748174103,
+        "im": -8.339085989026515e-7,
+        "mag": 0.00001023656593197366,
+        "phaseDeg": -175.3272954313972
+      },
+      "inputCurrentMagnitude": 0.00001023656593197366,
+      "inputImpedanceMagnitude": 97689.01081138205
+    },
+    {
+      "scenario": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "vcmd": 1,
+      "frequency": 100,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-10,
+      "c6AbglFarad": 1e-10,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.0003359905930390921,
+        "im": 0.013440417579247688,
+        "mag": 0.013444616557684383,
+        "phaseDeg": 88.56798836731238
+      },
+      "VNB": {
+        "re": 0.00029055403201007276,
+        "im": 0.013441188379665764,
+        "mag": 0.013444328421426607,
+        "phaseDeg": 88.76164763219272
+      },
+      "VCMD_NODE": {
+        "re": 0.00024212836000839406,
+        "im": 0.011200990316388139,
+        "mag": 0.011203607017855508,
+        "phaseDeg": 88.76164763219272
+      },
+      "IVAC": {
+        "re": -1.0654780095562715e-8,
+        "im": -6.280699318658667e-7,
+        "mag": 6.281603009207755e-7,
+        "phaseDeg": -90.97189078454264
+      },
+      "inputCurrentMagnitude": 6.281603009207755e-7,
+      "inputImpedanceMagnitude": 1591950.332636703
+    },
+    {
+      "scenario": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "vcmd": 1,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-10,
+      "c6AbglFarad": 1e-10,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.02227549840110926,
+        "im": 0.13067617458025127,
+        "mag": 0.13256115732727342,
+        "phaseDeg": 80.32615438361404
+      },
+      "VNB": {
+        "re": 0.022231320070747598,
+        "im": 0.1306836688579314,
+        "mag": 0.1325611289113724,
+        "phaseDeg": 80.34552199956211
+      },
+      "VCMD_NODE": {
+        "re": 0.018526100058956333,
+        "im": 0.10890305738160953,
+        "mag": 0.1104676074261437,
+        "phaseDeg": 80.34552199956211
+      },
+      "IVAC": {
+        "re": -0.000001035934578971022,
+        "im": -0.000006106773996931209,
+        "mag": 0.000006194017202228538,
+        "phaseDeg": -99.62782772339531
+      },
+      "inputCurrentMagnitude": 0.000006194017202228538,
+      "inputImpedanceMagnitude": 161446.11281354065
+    },
+    {
+      "scenario": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "vcmd": 1,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-10,
+      "c6AbglFarad": 1e-10,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.5882294957157759,
+        "im": 0.34669432978726067,
+        "mag": 0.6827963810219514,
+        "phaseDeg": 30.51450938600463
+      },
+      "VNB": {
+        "re": 0.5882177748463765,
+        "im": 0.3467142127065192,
+        "mag": 0.6827963795583014,
+        "phaseDeg": 30.51644614928929
+      },
+      "VCMD_NODE": {
+        "re": 0.49018147903864706,
+        "im": 0.288928510588766,
+        "mag": 0.5689969829652511,
+        "phaseDeg": 30.5164461492893
+      },
+      "IVAC": {
+        "re": -0.000027484174552685792,
+        "im": -0.000016201766767639575,
+        "mag": 0.00003190418620236992,
+        "phaseDeg": -149.4808888189681
+      },
+      "inputCurrentMagnitude": 0.00003190418620236992,
+      "inputImpedanceMagnitude": 31343.849163145795
+    },
+    {
+      "scenario": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "vcmd": 1,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-10,
+      "c6AbglFarad": 1e-10,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.7292582645772043,
+        "im": 0.21491499967152516,
+        "mag": 0.760267106705247,
+        "phaseDeg": 16.42043246200402
+      },
+      "VNB": {
+        "re": 0.7292546317075038,
+        "im": 0.21492732504642137,
+        "mag": 0.7602671062978176,
+        "phaseDeg": 16.421400843652755
+      },
+      "VCMD_NODE": {
+        "re": 0.6077121930895866,
+        "im": 0.1791061042053512,
+        "mag": 0.6335559219148481,
+        "phaseDeg": 16.421400843652755
+      },
+      "IVAC": {
+        "re": -0.000034074750359457524,
+        "im": -0.000010043437150888397,
+        "mag": 0.000035524065671924374,
+        "phaseDeg": -163.5772666405831
+      },
+      "inputCurrentMagnitude": 0.000035524065671924374,
+      "inputImpedanceMagnitude": 28149.93107025829
+    },
+    {
+      "scenario": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "vcmd": 2,
+      "frequency": 100,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-10,
+      "c6AbglFarad": 1e-10,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.00015649294962009043,
+        "im": 0.0022162694116958192,
+        "mag": 0.0022217876020221485,
+        "phaseDeg": 85.96099280764454
+      },
+      "VNB": {
+        "re": 0.00011104643458935065,
+        "im": 0.0022165300585848145,
+        "mag": 0.0022193099853884783,
+        "phaseDeg": 87.13192389688743
+      },
+      "VCMD_NODE": {
+        "re": 0.00009253869549112556,
+        "im": 0.001847108382154013,
+        "mag": 0.0018494249878237329,
+        "phaseDeg": 87.13192389688743
+      },
+      "IVAC": {
+        "re": -3.6029239472521596e-9,
+        "im": -6.282075261080532e-7,
+        "mag": 6.282178578485094e-7,
+        "phaseDeg": -90.32860171862718
+      },
+      "inputCurrentMagnitude": 6.282178578485094e-7,
+      "inputImpedanceMagnitude": 1591804.479141603
+    },
+    {
+      "scenario": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "vcmd": 2,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-10,
+      "c6AbglFarad": 1e-10,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.0014099467118173802,
+        "im": 0.022080639935179072,
+        "mag": 0.022125609814809384,
+        "phaseDeg": 86.34637093486927
+      },
+      "VNB": {
+        "re": 0.001364647651851514,
+        "im": 0.022083237486003507,
+        "mag": 0.02212536194228095,
+        "phaseDeg": 86.46386757266787
+      },
+      "VCMD_NODE": {
+        "re": 0.0011372063765429288,
+        "im": 0.01840269790500293,
+        "mag": 0.018437801618567465,
+        "phaseDeg": 86.46386757266787
+      },
+      "IVAC": {
+        "re": -3.5905964984445896e-7,
+        "im": -0.000006261692536144688,
+        "mag": 0.000006271978734765969,
+        "phaseDeg": -93.28187599271192
+      },
+      "inputCurrentMagnitude": 0.000006271978734765969,
+      "inputImpedanceMagnitude": 159439.31608966365
+    },
+    {
+      "scenario": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "vcmd": 2,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-10,
+      "c6AbglFarad": 1e-10,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.09574112175685297,
+        "im": 0.1667138437825674,
+        "mag": 0.1922494944181098,
+        "phaseDeg": 60.131930742621265
+      },
+      "VNB": {
+        "re": 0.0957069197811311,
+        "im": 0.16673345593623212,
+        "mag": 0.19224947287946284,
+        "phaseDeg": 60.14368081161356
+      },
+      "VCMD_NODE": {
+        "re": 0.07975576648427593,
+        "im": 0.13894454661352681,
+        "mag": 0.16020789406621908,
+        "phaseDeg": 60.14368081161356
+      },
+      "IVAC": {
+        "re": -0.0000271098950646289,
+        "im": -0.00004727741729308198,
+        "mag": 0.00005449862930679447,
+        "phaseDeg": -119.8308932353807
+      },
+      "inputCurrentMagnitude": 0.00005449862930679447,
+      "inputImpedanceMagnitude": 18349.085338836725
+    },
+    {
+      "scenario": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "vcmd": 2,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-10,
+      "c6AbglFarad": 1e-10,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.21961198663602827,
+        "im": 0.19136720180792982,
+        "mag": 0.2912916589983654,
+        "phaseDeg": 41.068496070256465
+      },
+      "VNB": {
+        "re": 0.21959235678265332,
+        "im": 0.19138971417380932,
+        "mag": 0.2912916508396568,
+        "phaseDeg": 41.07437110628757
+      },
+      "VCMD_NODE": {
+        "re": 0.18299363065221114,
+        "im": 0.15949142847817446,
+        "mag": 0.24274304236638072,
+        "phaseDeg": 41.07437110628757
+      },
+      "IVAC": {
+        "re": -0.00006223772127060113,
+        "im": -0.000054268722775296187,
+        "mag": 0.00008257498544122782,
+        "phaseDeg": -138.91291591605716
+      },
+      "inputCurrentMagnitude": 0.00008257498544122782,
+      "inputImpedanceMagnitude": 12110.204981044086
+    },
+    {
+      "scenario": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "vcmd": 3,
+      "frequency": 100,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-10,
+      "c6AbglFarad": 1e-10,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.00015293220557559468,
+        "im": 0.0011323725348261877,
+        "mag": 0.0011426529731860418,
+        "phaseDeg": 82.30847563125083
+      },
+      "VNB": {
+        "re": 0.00010748535534327731,
+        "im": 0.00113258391485476,
+        "mag": 0.0011376728114009776,
+        "phaseDeg": 84.57870836426495
+      },
+      "VCMD_NODE": {
+        "re": 0.00008957112945273109,
+        "im": 0.0009438199290456338,
+        "mag": 0.0009480606761674818,
+        "phaseDeg": 84.57870836426495
+      },
+      "IVAC": {
+        "re": -2.9219077574680653e-9,
+        "im": -6.282121596020334e-7,
+        "mag": 6.282189546780594e-7,
+        "phaseDeg": -90.26648923116392
+      },
+      "inputCurrentMagnitude": 6.282189546780594e-7,
+      "inputImpedanceMagnitude": 1591801.6999542231
+    },
+    {
+      "scenario": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "vcmd": 3,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-10,
+      "c6AbglFarad": 1e-10,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.0006726221512315489,
+        "im": 0.011288944026386898,
+        "mag": 0.011308964487928317,
+        "phaseDeg": 86.59021227141
+      },
+      "VNB": {
+        "re": 0.0006272723795298395,
+        "im": 0.011291052829914027,
+        "mag": 0.011308463407821179,
+        "phaseDeg": 86.8202120365744
+      },
+      "VCMD_NODE": {
+        "re": 0.0005227269829415329,
+        "im": 0.009409210691595022,
+        "mag": 0.00942371950651765,
+        "phaseDeg": 86.8202120365744
+      },
+      "IVAC": {
+        "re": -2.915000734220988e-7,
+        "im": -0.000006268702423282826,
+        "mag": 0.0000062754762659480315,
+        "phaseDeg": -92.66238532119588
+      },
+      "inputCurrentMagnitude": 0.0000062754762659480315,
+      "inputImpedanceMagnitude": 159350.45526762592
+    },
+    {
+      "scenario": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "vcmd": 3,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-10,
+      "c6AbglFarad": 1e-10,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.043402137241518784,
+        "im": 0.09301883121144375,
+        "mag": 0.1026462297265452,
+        "phaseDeg": 64.9864705542891
+      },
+      "VNB": {
+        "re": 0.04336476950954217,
+        "im": 0.09303620748966819,
+        "mag": 0.10264618423826728,
+        "phaseDeg": 65.00947355136567
+      },
+      "VCMD_NODE": {
+        "re": 0.03613730792461848,
+        "im": 0.07753017290805683,
+        "mag": 0.08553848686522275,
+        "phaseDeg": 65.00947355136567
+      },
+      "IVAC": {
+        "re": -0.000024019242727320843,
+        "im": -0.000051653444593977425,
+        "mag": 0.00005696492218564905,
+        "phaseDeg": -114.93878425029868
+      },
+      "inputCurrentMagnitude": 0.00005696492218564905,
+      "inputImpedanceMagnitude": 17554.66279302539
+    },
+    {
+      "scenario": "cmd_100k_c4c6_100p",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 100 pF C4/C6.",
+      "vcmd": 3,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-10,
+      "c6AbglFarad": 1e-10,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.11298303022408834,
+        "im": 0.12132636429267883,
+        "mag": 0.1657867660312399,
+        "phaseDeg": 47.03933752684602
+      },
+      "VNB": {
+        "re": 0.11295866047376002,
+        "im": 0.12134902852902607,
+        "mag": 0.16578674766387264,
+        "phaseDeg": 47.050839036827526
+      },
+      "VCMD_NODE": {
+        "re": 0.09413221706146672,
+        "im": 0.10112419044085508,
+        "mag": 0.13815562305322723,
+        "phaseDeg": 47.05083903682752
+      },
+      "IVAC": {
+        "re": -0.00006265758259880428,
+        "im": -0.00006737264916906115,
+        "mag": 0.00009200568739585275,
+        "phaseDeg": -132.92328985668837
+      },
+      "inputCurrentMagnitude": 0.00009200568739585275,
+      "inputImpedanceMagnitude": 10868.89330762259
+    },
+    {
+      "scenario": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "vcmd": 0,
+      "frequency": 100,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-9,
+      "c6AbglFarad": 1e-9,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.0035590407197142295,
+        "im": 0.05743688645671213,
+        "mag": 0.05754704768001418,
+        "phaseDeg": 86.45423633196724
+      },
+      "VNB": {
+        "re": 0.003513757695665633,
+        "im": 0.05743965655639191,
+        "mag": 0.057547029797028665,
+        "phaseDeg": 86.4994059200117
+      },
+      "VCMD_NODE": {
+        "re": 0.0029281314130546942,
+        "im": 0.04786638046365994,
+        "mag": 0.04795585816419057,
+        "phaseDeg": 86.4994059200117
+      },
+      "IVAC": {
+        "re": -3.8291109136310425e-8,
+        "im": -6.259475890069627e-7,
+        "mag": 6.271176868997703e-7,
+        "phaseDeg": -93.50059407998265
+      },
+      "inputCurrentMagnitude": 6.271176868997703e-7,
+      "inputImpedanceMagnitude": 1594597.0284200038
+    },
+    {
+      "scenario": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "vcmd": 0,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-9,
+      "c6AbglFarad": 1e-9,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.25668210115346357,
+        "im": 0.4195258249549257,
+        "mag": 0.4918207182060022,
+        "phaseDeg": 58.54009516425538
+      },
+      "VNB": {
+        "re": 0.2566490258960944,
+        "im": 0.41954605809124373,
+        "mag": 0.4918207166776481,
+        "phaseDeg": 58.54461212398624
+      },
+      "VCMD_NODE": {
+        "re": 0.21387418824674534,
+        "im": 0.34962171507603645,
+        "mag": 0.4098505972313734,
+        "phaseDeg": 58.54461212398624
+      },
+      "IVAC": {
+        "re": -0.0000027968279863074515,
+        "im": -0.000004571995364938616,
+        "mag": 0.000005359607112654134,
+        "phaseDeg": -121.4553878760487
+      },
+      "inputCurrentMagnitude": 0.000005359607112654134,
+      "inputImpedanceMagnitude": 186580.84053194517
+    },
+    {
+      "scenario": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "vcmd": 0,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-9,
+      "c6AbglFarad": 1e-9,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.9179550587359425,
+        "im": 0.15005136124917134,
+        "mag": 0.9301381084933771,
+        "phaseDeg": 9.283614516207516
+      },
+      "VNB": {
+        "re": 0.9179538757366856,
+        "im": 0.15005859801379054,
+        "mag": 0.9301381084644724,
+        "phaseDeg": 9.28406621218153
+      },
+      "VCMD_NODE": {
+        "re": 0.7649615631139048,
+        "im": 0.1250488316781588,
+        "mag": 0.7751150903870605,
+        "phaseDeg": 9.28406621218153
+      },
+      "IVAC": {
+        "re": -0.00001000338528788793,
+        "im": -0.0000016352607808642058,
+        "mag": 0.000010136162737415246,
+        "phaseDeg": -170.7159337881694
+      },
+      "inputCurrentMagnitude": 0.000010136162737415246,
+      "inputImpedanceMagnitude": 98656.66385847739
+    },
+    {
+      "scenario": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "vcmd": 0,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-9,
+      "c6AbglFarad": 1e-9,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.9362297268301155,
+        "im": 0.07651936737005884,
+        "mag": 0.9393515396182127,
+        "phaseDeg": 4.672478721317684
+      },
+      "VNB": {
+        "re": 0.9362294251922163,
+        "im": 0.07652305779076449,
+        "mag": 0.939351539610915,
+        "phaseDeg": 4.672704569304695
+      },
+      "VCMD_NODE": {
+        "re": 0.7801911876601804,
+        "im": 0.06376921482563709,
+        "mag": 0.7827929496757626,
+        "phaseDeg": 4.672704569304696
+      },
+      "IVAC": {
+        "re": -0.000010202542748174103,
+        "im": -8.339085989026515e-7,
+        "mag": 0.00001023656593197366,
+        "phaseDeg": -175.3272954313972
+      },
+      "inputCurrentMagnitude": 0.00001023656593197366,
+      "inputImpedanceMagnitude": 97689.01081138205
+    },
+    {
+      "scenario": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "vcmd": 1,
+      "frequency": 100,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-9,
+      "c6AbglFarad": 1e-9,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.0003359786263932182,
+        "im": 0.013440417701488768,
+        "mag": 0.01344461638083756,
+        "phaseDeg": 88.56803936164202
+      },
+      "VNB": {
+        "re": 0.0002905420648202866,
+        "im": 0.013441188501914317,
+        "mag": 0.013444328285021298,
+        "phaseDeg": 88.76169863218944
+      },
+      "VCMD_NODE": {
+        "re": 0.0002421183873502389,
+        "im": 0.011200990418261931,
+        "mag": 0.011203606904184414,
+        "phaseDeg": 88.76169863218942
+      },
+      "IVAC": {
+        "re": -1.0654780198832972e-8,
+        "im": -6.280699393843685e-7,
+        "mag": 6.281603084399473e-7,
+        "phaseDeg": -90.9718907823287
+      },
+      "inputCurrentMagnitude": 6.281603084399473e-7,
+      "inputImpedanceMagnitude": 1591950.313580822
+    },
+    {
+      "scenario": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "vcmd": 1,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-9,
+      "c6AbglFarad": 1e-9,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.022275487273169175,
+        "im": 0.13067617800892092,
+        "mag": 0.13256115883725636,
+        "phaseDeg": 80.32615937398073
+      },
+      "VNB": {
+        "re": 0.022231308942307796,
+        "im": 0.13068367228677452,
+        "mag": 0.1325611304253453,
+        "phaseDeg": 80.34552698993447
+      },
+      "VCMD_NODE": {
+        "re": 0.0185260907852565,
+        "im": 0.10890306023897879,
+        "mag": 0.1104676086877878,
+        "phaseDeg": 80.34552698993447
+      },
+      "IVAC": {
+        "re": -0.0000010359346029444939,
+        "im": -0.000006106774066006594,
+        "mag": 0.000006194017274340496,
+        "phaseDeg": -99.62782783516627
+      },
+      "inputCurrentMagnitude": 0.000006194017274340496,
+      "inputImpedanceMagnitude": 161446.1109339535
+    },
+    {
+      "scenario": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "vcmd": 1,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-9,
+      "c6AbglFarad": 1e-9,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.5882294962596524,
+        "im": 0.34669433301468267,
+        "mag": 0.682796383129246,
+        "phaseDeg": 30.514509596146418
+      },
+      "VNB": {
+        "re": 0.5882177753903208,
+        "im": 0.346714215934064,
+        "mag": 0.6827963816658015,
+        "phaseDeg": 30.51644635943109
+      },
+      "VCMD_NODE": {
+        "re": 0.49018147949193414,
+        "im": 0.2889285132783867,
+        "mag": 0.5689969847215013,
+        "phaseDeg": 30.51644635943109
+      },
+      "IVAC": {
+        "re": -0.000027484174722431493,
+        "im": -0.00001620176667374036,
+        "mag": 0.00003190418630091459,
+        "phaseDeg": -149.480889119043
+      },
+      "inputCurrentMagnitude": 0.00003190418630091459,
+      "inputImpedanceMagnitude": 31343.849066331877
+    },
+    {
+      "scenario": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "vcmd": 1,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-9,
+      "c6AbglFarad": 1e-9,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.7292582650158045,
+        "im": 0.21491500075634234,
+        "mag": 0.7602671074326179,
+        "phaseDeg": 16.420432531080408
+      },
+      "VNB": {
+        "re": 0.7292546321461404,
+        "im": 0.21492732613126211,
+        "mag": 0.7602671070252458,
+        "phaseDeg": 16.421400912729144
+      },
+      "VCMD_NODE": {
+        "re": 0.6077121934551172,
+        "im": 0.17910610510938513,
+        "mag": 0.6335559225210383,
+        "phaseDeg": 16.421400912729144
+      },
+      "IVAC": {
+        "re": -0.00003407475042468955,
+        "im": -0.000010043437049867424,
+        "mag": 0.0000355240657059342,
+        "phaseDeg": -163.57726682661507
+      },
+      "inputCurrentMagnitude": 0.0000355240657059342,
+      "inputImpedanceMagnitude": 28149.931043308276
+    },
+    {
+      "scenario": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "vcmd": 2,
+      "frequency": 100,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-9,
+      "c6AbglFarad": 1e-9,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.00015647412848221804,
+        "im": 0.0022162691677822988,
+        "mag": 0.002221786033115411,
+        "phaseDeg": 85.96147652168176
+      },
+      "VNB": {
+        "re": 0.00011102761259594353,
+        "im": 0.0022165298146632176,
+        "mag": 0.002219308800065848,
+        "phaseDeg": 87.13240889953848
+      },
+      "VCMD_NODE": {
+        "re": 0.00009252301049661964,
+        "im": 0.001847108178886015,
+        "mag": 0.0018494240000548735,
+        "phaseDeg": 87.13240889953848
+      },
+      "IVAC": {
+        "re": -3.602923835579336e-9,
+        "im": -6.282075379341156e-7,
+        "mag": 6.282178696737369e-7,
+        "phaseDeg": -90.32860170225655
+      },
+      "inputCurrentMagnitude": 6.282178696737369e-7,
+      "inputImpedanceMagnitude": 1591804.4491783513
+    },
+    {
+      "scenario": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "vcmd": 2,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-9,
+      "c6AbglFarad": 1e-9,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.0014099279927060515,
+        "im": 0.022080641384991707,
+        "mag": 0.02212561006881448,
+        "phaseDeg": 86.34641955001126
+      },
+      "VNB": {
+        "re": 0.0013646289318926847,
+        "im": 0.022083238935911863,
+        "mag": 0.022125362234827535,
+        "phaseDeg": 86.46391618910911
+      },
+      "VCMD_NODE": {
+        "re": 0.0011371907765772374,
+        "im": 0.01840269911325989,
+        "mag": 0.01843780186235628,
+        "phaseDeg": 86.46391618910911
+      },
+      "IVAC": {
+        "re": -3.5905966307592675e-7,
+        "im": -0.0000062616926532947734,
+        "mag": 0.000006271978852481403,
+        "phaseDeg": -93.28187605211934
+      },
+      "inputCurrentMagnitude": 0.000006271978852481403,
+      "inputImpedanceMagnitude": 159439.31309723196
+    },
+    {
+      "scenario": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "vcmd": 2,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-9,
+      "c6AbglFarad": 1e-9,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.09574111029687153,
+        "im": 0.1667138534892944,
+        "mag": 0.19224949712841288,
+        "phaseDeg": 60.13193514503391
+      },
+      "VNB": {
+        "re": 0.09570690832082429,
+        "im": 0.16673346564351482,
+        "mag": 0.19224947559311523,
+        "phaseDeg": 60.1436852140275
+      },
+      "VCMD_NODE": {
+        "re": 0.07975575693402026,
+        "im": 0.13894455470292902,
+        "mag": 0.16020789632759602,
+        "phaseDeg": 60.14368521402749
+      },
+      "IVAC": {
+        "re": -0.000027109895832776762,
+        "im": -0.0000472774177428546,
+        "mag": 0.00005449863007907988,
+        "phaseDeg": -119.8308937007293
+      },
+      "inputCurrentMagnitude": 0.00005449863007907988,
+      "inputImpedanceMagnitude": 18349.08507881678
+    },
+    {
+      "scenario": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "vcmd": 2,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-9,
+      "c6AbglFarad": 1e-9,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.21961198207361357,
+        "im": 0.1913672106418272,
+        "mag": 0.2912916613621726,
+        "phaseDeg": 41.06849796982847
+      },
+      "VNB": {
+        "re": 0.21959235222028894,
+        "im": 0.1913897230080729,
+        "mag": 0.29129165320473277,
+        "phaseDeg": 41.07437300585974
+      },
+      "VCMD_NODE": {
+        "re": 0.1829936268502408,
+        "im": 0.1594914358400608,
+        "mag": 0.2427430443372774,
+        "phaseDeg": 41.07437300585975
+      },
+      "IVAC": {
+        "re": -0.00006223772228287019,
+        "im": -0.000054268722636275434,
+        "mag": 0.00008257498611282154,
+        "phaseDeg": -138.912916450367
+      },
+      "inputCurrentMagnitude": 0.00008257498611282154,
+      "inputImpedanceMagnitude": 12110.204882550122
+    },
+    {
+      "scenario": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "vcmd": 3,
+      "frequency": 100,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-9,
+      "c6AbglFarad": 1e-9,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.0001529126416180782,
+        "im": 0.0011323722375027121,
+        "mag": 0.001142650060269336,
+        "phaseDeg": 82.30944580331823
+      },
+      "VNB": {
+        "re": 0.00010746579049645344,
+        "im": 0.001132583617520899,
+        "mag": 0.0011376706671105455,
+        "phaseDeg": 84.57968787389831
+      },
+      "VCMD_NODE": {
+        "re": 0.00008955482541371123,
+        "im": 0.0009438196812674161,
+        "mag": 0.0009480588892587882,
+        "phaseDeg": 84.57968787389831
+      },
+      "IVAC": {
+        "re": -2.9219076138654876e-9,
+        "im": -6.282121718949355e-7,
+        "mag": 6.282189669701608e-7,
+        "phaseDeg": -90.26648921285239
+      },
+      "inputCurrentMagnitude": 6.282189669701608e-7,
+      "inputImpedanceMagnitude": 1591801.6688080959
+    },
+    {
+      "scenario": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "vcmd": 3,
+      "frequency": 1000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-9,
+      "c6AbglFarad": 1e-9,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.0006726026429840031,
+        "im": 0.01128894511344387,
+        "mag": 0.011308964412787642,
+        "phaseDeg": 86.59031126066309
+      },
+      "VNB": {
+        "re": 0.0006272528703983881,
+        "im": 0.01129105391705151,
+        "mag": 0.011308463411144207,
+        "phaseDeg": 86.8203110354382
+      },
+      "VCMD_NODE": {
+        "re": 0.0005227107253319901,
+        "im": 0.009409211597542924,
+        "mag": 0.009423719509286837,
+        "phaseDeg": 86.8203110354382
+      },
+      "IVAC": {
+        "re": -2.9150008455129856e-7,
+        "im": -0.00000626870254546517,
+        "mag": 0.000006275476388515451,
+        "phaseDeg": -92.66238537087952
+      },
+      "inputCurrentMagnitude": 0.000006275476388515451,
+      "inputImpedanceMagnitude": 159350.4521553245
+    },
+    {
+      "scenario": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "vcmd": 3,
+      "frequency": 10000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-9,
+      "c6AbglFarad": 1e-9,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.04340212254221455,
+        "im": 0.09301883986332729,
+        "mag": 0.10264623135161238,
+        "phaseDeg": 64.98648003170062
+      },
+      "VNB": {
+        "re": 0.04336475480976653,
+        "im": 0.09303621614211087,
+        "mag": 0.10264618587045864,
+        "phaseDeg": 65.00948302878682
+      },
+      "VCMD_NODE": {
+        "re": 0.03613729567480545,
+        "im": 0.07753018011842575,
+        "mag": 0.08553848822538221,
+        "phaseDeg": 65.00948302878682
+      },
+      "IVAC": {
+        "re": -0.000024019243500217753,
+        "im": -0.00005165344524561168,
+        "mag": 0.0000569649231024159,
+        "phaseDeg": -114.938784678843
+      },
+      "inputCurrentMagnitude": 0.0000569649231024159,
+      "inputImpedanceMagnitude": 17554.66251050885
+    },
+    {
+      "scenario": "cmd_100k_c4c6_1n",
+      "note": "Adjustment-capacitor sensitivity with symmetrical 1 nF C4/C6.",
+      "vcmd": 3,
+      "frequency": 20000,
+      "commandModel": "finite command impedance 100000 Ohm",
+      "c4AbglFarad": 1e-9,
+      "c6AbglFarad": 1e-9,
+      "r7EffectiveOhm": 100,
+      "r8EffectiveOhm": 250000,
+      "zcmdOhm": 100000,
+      "VNA": {
+        "re": 0.11298302209836714,
+        "im": 0.1213263742224476,
+        "mag": 0.1657867677604142,
+        "phaseDeg": 47.039341920683405
+      },
+      "VNB": {
+        "re": 0.11295865234800423,
+        "im": 0.12134903845927054,
+        "mag": 0.16578674939592367,
+        "phaseDeg": 47.050843430666106
+      },
+      "VCMD_NODE": {
+        "re": 0.09413221029000356,
+        "im": 0.10112419871605882,
+        "mag": 0.1381556244966031,
+        "phaseDeg": 47.050843430666106
+      },
+      "IVAC": {
+        "re": -0.00006265758391391919,
+        "im": -0.00006737264926470098,
+        "mag": 0.00009200568836150426,
+        "phaseDeg": -132.92329041583668
+      },
+      "inputCurrentMagnitude": 0.00009200568836150426,
+      "inputImpedanceMagnitude": 10868.893193547434
+    }
+  ]
+}

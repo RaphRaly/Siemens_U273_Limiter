@@ -1,0 +1,185 @@
+Etape 11 - KCL N05: courant actif requis apres correction R14/C6
+=================================================================
+
+Date: 2026-05-03
+Objet: Siemens U273 limiter, B11 Regelverstaerker
+
+
+1. But de cette etape
+---------------------
+
+L'etape 10 a corrige la branche R14/C6:
+
+    R14/C6 ne fournit pas de courant DC de N10 vers N05.
+
+Il faut donc reprendre la KCL du noeud N05 = 0,5 V sans cette fermeture
+artificielle. Cette etape transforme le probleme en contrainte quantitative
+sur le reseau actif Ts1/Ts2.
+
+
+2. Script cree
+--------------
+
+Script:
+
+    solver/b11_n05_active_requirement.js
+
+Fichiers generes:
+
+    results/b11_n05_active_requirement.json
+    results/b11_n05_active_dc_requirement.csv
+    results/b11_n05_active_bjt_small_signal.csv
+    results/b11_n05_supply_comparison.csv
+
+
+3. KCL DC de N05
+----------------
+
+Charges DC confirmees ou deja bornees:
+
+    R12 = 120 ohm vers reference
+    R9  = 56 kOhm vers reference
+    R7/R8 = 500 ohm ajustable + 680 ohm vers reference
+
+Courant sortant:
+
+    I_R12 = 0,5 / 120
+          = 4,167 mA
+
+    I_R9 = 0,5 / 56k
+         = 0,00893 mA
+
+    I_R7/R8 = 0,5 / (680..1180)
+            = 0,424..0,735 mA
+
+Donc:
+
+    I_N05 = 4,599..4,911 mA
+
+Si R17=6,8 kOhm est confirme comme branche N05 -> reference:
+
+    I_R17 = 0,5 / 6,8k
+          = 0,0735 mA
+
+    I_N05 = 4,673..4,984 mA
+
+
+4. Resultat ferme
+-----------------
+
+Comme R14/C6 est ouvert en DC:
+
+    I_actif_requis_N05 = 4,599..4,911 mA
+
+ou, avec R17 candidat:
+
+    I_actif_requis_N05 = 4,673..4,984 mA
+
+Ce courant doit venir du reseau actif, pas de R14/C6.
+
+
+5. Comparaison avec R11 et R15
+------------------------------
+
+Courant disponible par R11 vers N10:
+
+    I_R11 = (21,5 - 10) / 10k
+          = 1,150 mA
+
+Deficit si R11 devait seul alimenter N05:
+
+    4,599..4,911 mA - 1,150 mA
+    = 3,449..3,761 mA
+
+Conclusion:
+
+    R11 seul est insuffisant pour etre la source collecteur d'un transistor
+    qui fournirait tout N05.
+
+Courant disponible par R15 vers N145:
+
+    I_R15 = (24 - 14,5) / 1,2k
+          = 7,917 mA
+
+Conclusion:
+
+    R15 a assez de magnitude de courant, mais il appartient a la zone Ts2/N145.
+    On ne peut pas l'assigner comme source de N05 sans preuve de broches et de
+    chemin actif.
+
+
+6. Hypothese de contrainte: un BJT fournit N05
+----------------------------------------------
+
+Cette section ne choisit pas les broches. Elle calcule seulement ce que
+demanderait un BJT forward-active si son courant d'emetteur etait le courant
+N05.
+
+Pour beta = 100:
+
+    cas bas:
+        IE = 4,599 mA
+        IC = 4,554 mA
+        IB = 0,046 mA
+        gm = 176,162 mS
+        re = 5,677 ohm
+
+    cas haut:
+        IE = 4,911 mA
+        IC = 4,862 mA
+        IB = 0,049 mA
+        gm = 188,095 mS
+        re = 5,316 ohm
+
+Consequences:
+
+    - le courant de base requis reste faible, environ 46..49 uA pour beta=100;
+    - le courant collecteur requis est autour de 4,55..4,86 mA;
+    - ce courant collecteur est incompatible avec R11 seul;
+    - un chemin actif depuis la zone Ts2/R15 ou une autre branche doit exister.
+
+
+7. Stamps petit-signal provisoires
+----------------------------------
+
+Si, plus tard, un transistor est confirme comme fournisseur de N05, ses
+parametres petit-signal seront du meme ordre:
+
+    gm ~= 0,176..0,188 S
+    re ~= 5,3..5,7 ohm
+    rpi(beta=100) ~= 532..568 ohm
+
+Ces valeurs sont des contraintes, pas encore des stamps definitifs.
+
+Le stamp BJT complet reste interdit tant que les noeuds B/C/E ne sont pas
+confirmes.
+
+
+8. Conclusion scientifique
+--------------------------
+
+Ferme:
+
+    - R14/C6 ne ferme pas N05 en DC;
+    - N05 exige 4,599..4,911 mA de courant actif;
+    - R11 seul ne peut pas fournir ce courant;
+    - une source active de plusieurs mA doit etre identifiee autour de Ts1/Ts2.
+
+Ouvert:
+
+    - chemin exact depuis Ts2/R15 vers N05;
+    - broches exactes de Ts1 et Ts2;
+    - endpoints de R17 et C10;
+    - sens exact du courant actif qui ferme la KCL.
+
+
+9. Decision de modelisation
+---------------------------
+
+Pour la prochaine etape:
+
+    - garder N05 comme noeud DC actif a courant impose par la KCL;
+    - ajouter une contrainte de courant actif requis 4,599..4,911 mA;
+    - chercher visuellement et numeriquement le chemin Ts2/R15 -> Ts1/N05;
+    - ne pas ajouter de stamp BJT final tant que les broches ne sont pas
+      confirmees.

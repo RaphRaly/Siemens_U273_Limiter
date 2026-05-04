@@ -1,0 +1,13 @@
+item,visibleConnection,dcStamp,status
+R10,V24_to_N215,g10 between V24 and N215,confirmed_by_user_crop
+R11,N215_to_N10,g11 between N215 and N10,confirmed_by_user_crop
+R15,V24_to_N145,g15 between V24 and N145,corrects_latest_path_file_that_used_N215_to_N145
+R14_C6,N145_to_R14_to_X_R14C6_to_C6_to_N10,open,corrects_previous_N05_endpoint_assumption
+R13,N9_to_N05,g13 between N9 and N05,confirmed_by_user_crop
+R16,N9_to_reference,g16 between N9 and REF,confirmed_by_second_user_crop
+R12_R9,N05_to_reference,g12 and g9 between N05 and REF,confirmed_by_second_user_crop
+R7_R8,N05_to_C5_100uF_to_N150; N150_to_R7_500_adjustable_to_R8_680_to_reference,open from N05 because C5 is series/open in DC,corrected_by_global_user_crop
+R17_C10,N4_to_R17_6k8_parallel_C10_100p_to_reference,g17 between N4 and REF; C10 open in DC and dynamic in AC/transient,confirmed_by_screenshot_092120_not_N05
+S6_core,R5/C3 between left and right nodes; R4/C2 and R3/C1 split through VM; C4/R6 from VM to reference,S6 contact table still guarded,visible_in_global_user_crop
+R1_R2,right side of S6 shows R1=3k and R2 visible as 1M adjustable,guarded until exact S6 position/contact routing is assigned,corrects_previous_R2_5k1_read_for_this_visible_branch
+Ts1_Ts2,SST117 terminals are visible around N145/N10/N9 and N10/N05,guarded,pin names B/C/E still unassigned

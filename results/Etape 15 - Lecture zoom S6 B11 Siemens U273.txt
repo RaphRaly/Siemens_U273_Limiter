@@ -1,0 +1,98 @@
+Etape 15 - Lecture zoom S6 B11
+==============================
+
+Date: 2026-05-03
+Objet: Siemens U273 limiter, B11 Regelverstaerker
+Source: crop utilisateur S6 au zoom maximum
+
+
+1. But
+------
+
+Le crop donne la meilleure lecture actuelle du commutateur S6 et de son reseau
+RC. Cette etape separe ce qui est maintenant ferme de ce qui reste a garder.
+
+
+2. Position dans le schema
+--------------------------
+
+S6 est confirme:
+
+    - a droite de Ts1/Ts2 B11;
+    - juste apres C5/R7/R8;
+    - a gauche de R1 = 3 kOhm et R2 = 1 MOhm ajustable;
+    - autour du reseau R3/R4/R5/R6 et C1/C2/C3/C4.
+
+
+3. Reseau RC lisible
+--------------------
+
+Valeurs confirmees dans ce crop:
+
+    R3 = 7,5 kOhm
+    R4 = 7,5 kOhm
+    R5 = 15 kOhm
+    R6 = 3,9 kOhm
+
+    C1 = 5 nF
+    C2 = 5 nF
+    C3 = 3,3 nF
+    C4 = 3 nF
+
+    R1 = 3 kOhm
+    R2 = 1 MOhm ajustable
+
+Le reseau RC de S6 reste donc valide comme coeur passif. Le crop corrige aussi
+la lecture R2 precedente: dans cette zone, R2 est bien 1 MOhm ajustable.
+
+
+4. Contacts visibles
+--------------------
+
+Les pastilles numerotees sont visibles:
+
+    groupe gauche: 7, 8, 9
+    groupe central/droit: 4, 5, 6 et 3
+    groupe droit: 1, 2
+
+Lecture geometrique exploitable:
+
+    - le noeud 4 est le noeud haut droit du reseau R5/C3;
+    - le noeud 6 est le noeud droit du reseau R3/C1;
+    - le noeud central VM est la jonction R4/R3/C2/C1/C4;
+    - C4 puis R6 descendent de VM vers la reference;
+    - le cote droit du commutateur route vers R1/R2 et la sortie de commande.
+
+Ce que le crop ne suffit pas a fermer sans risque:
+
+    - la table complete position par position de S6;
+    - l'etat des contacts pour les autres positions mecaniques;
+    - le nom fonctionnel exact de chaque position.
+
+On ne doit donc pas encore remplacer S6 par une seule netlist fixe. S6 reste un
+commutateur de topologie parametrique.
+
+
+5. Decision MNA
+---------------
+
+Ferme:
+
+    - valeurs R/C du coeur S6;
+    - R1 = 3 kOhm;
+    - R2 = 1 MOhm ajustable;
+    - emplacement de S6 entre C5/R7/R8 et la sortie vers R1/R2.
+
+Garde:
+
+    - table exacte des contacts S6;
+    - association position mecanique -> contacts fermes;
+    - valeur finale de Zcmd(s) tant que la position S6 n'est pas fixee.
+
+Prochaine photo utile pour S6:
+
+    soit une vue du manuel qui donne la table des positions de S6, soit une vue
+    encore plus large montrant les libelles de position autour du selecteur.
+
+Sans cette table, le modele correct reste un sweep de positions possibles, pas
+une netlist S6 definitive.

@@ -1,0 +1,4282 @@
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Maintenant je veux que tu verifie doucement doucement
+les nodes B1 2 etc en verifiant KCL et calculer KVL
+commnce une node par une node
+Thought for 1m 10s
+Oui. On va le faire proprement, nœud par nœud, en commençant par les nœuds DC de la
+carte audio B6 / Signalverstärker, parce que ce sont ceux où les tensions imprimées
+permettent une vraie vérification KCL/KVL chiffrée. Source : schéma page 1 du PDF
+Siemens U273.
+
+Siemens_U273_Limiter
+Convention utilisée :
+KCL : somme des courants entrants = somme des courants sortants
+KVL : somme algébrique des tensions dans une boucle = 0
+Analyse DC : les condensateurs sont ouverts en régime continu
+Nœud B6-0 — Masse / 0 V
+C’est le rail inférieur de référence.
+V0 = 0 V
+Tous les condensateurs de découplage et résistances de retour reviennent vers ce rail.
+Pour ce nœud, on ne peut pas encore faire une KCL numérique complète sans additionner
+tous les retours de la carte, mais conceptuellement :
+I_retour_total = I_alimentation_total
+Donc si la carte audio consomme environ 25 mA, alors le retour masse de B6 doit aussi
+absorber environ :
+I_0V ≈ 25 mA
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+1/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+KVL de référence :
+V0 = 0 V
+Rien d’anormal ici.
+
+Nœud B6-+24 V — entrée alimentation carte audio
+Sur le schéma :
++24 V
+→ B6/R38 = 68 Ω
+→ fusible Si = 0,4 A
+→ nœud 22 V
+On lit :
+Ventrée = 24 V
+Vaprès R38 ≈ 22 V
+R38 = 68 Ω
+Calcul du courant dans R38
+I_R38 = (24 V - 22 V) / 68 Ω
+I_R38 = 2 V / 68 Ω
+I_R38 ≈ 0,0294 A
+I_R38 ≈ 29,4 mA
+Le schéma indique environ 25 mA pour la carte audio. L’écart est acceptable car les
+tensions imprimées sont des valeurs nominales arrondies. Si on part de 25 mA :
+V_R38 = 0,025 A × 68 Ω
+V_R38 = 1,7 V
+Donc :
+24 V - 1,7 V = 22,3 V
+Ce qui colle très bien avec le nœud imprimé 22 V.
+
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+2/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+KVL boucle alimentation d’entrée
+Boucle :
++24 V → R38 → nœud 22 V
+Avec le courant calculé :
++24 V - (0,0294 A × 68 Ω) - 22 V = 0
++24 V - 2 V - 22 V = 0
+KVL validée.
+
+Nœud B6-22 V
+C’est le rail principal local de la carte audio après R38.
+Composants connectés à ce nœud :
+Branche
+Élément
+Destination
+Entrée
+R38 = 68 Ω
+depuis +24 V
+Sortie
+R30 = 6,8 kΩ
+vers rail 12,2 V
+Sortie
+R36 = 24 Ω
+vers étage Ts5
+Sortie
+R31 = 5,6 kΩ
+vers étage Ts4
+Découplage
+C19 = 250 µF
+vers masse, ouvert en DC
+Courant entrant par R38
+Avec les valeurs imprimées :
+I_R38 ≈ 29,4 mA
+Avec la consommation nominale imprimée :
+I_R38 ≈ 25 mA
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+3/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+On garde donc une fenêtre réaliste :
+I_R38 ≈ 25 à 29 mA
+Courant sortant vers R30
+R30 = 6,8 kΩ
+V22 = 22 V
+V12,2 = 12,2 V
+I_R30 = (22 V - 12,2 V) / 6,8 kΩ
+I_R30 = 9,8 V / 6800 Ω
+I_R30 ≈ 1,44 mA
+Courant sortant vers R36
+R36 = 24 Ω
+V22 = 22 V
+Vhaut Ts5 = 21,5 V
+I_R36 = (22 V - 21,5 V) / 24 Ω
+I_R36 = 0,5 V / 24 Ω
+I_R36 ≈ 20,8 mA
+C’est cohérent : l’étage de sortie consomme la plus grosse partie du courant.
+
+Courant sortant vers R31
+R31 = 5,6 kΩ
+V22 = 22 V
+Vbas R31 ≈ 4,8 V
+I_R31 = (22 V - 4,8 V) / 5,6 kΩ
+I_R31 = 17,2 V / 5600 Ω
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+4/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+I_R31 ≈ 3,07 mA
+KCL du nœud 22 V
+Courants sortants connus :
+I_R30 ≈ 1,44 mA
+I_R36 ≈ 20,8 mA
+I_R31 ≈ 3,07 mA
+Somme :
+I_sortants_connus ≈ 1,44 + 20,8 + 3,07
+I_sortants_connus ≈ 25,31 mA
+Courant entrant attendu :
+I_R38 ≈ 25 à 29 mA
+Conclusion :
+KCL nœud 22 V : cohérente
+Avec la valeur nominale imprimée de 25 mA, on tombe quasiment exactement sur les
+courants sortants principaux. C’est un très bon signe : les valeurs R30, R31, R36 et R38 sont
+cohérentes.
+
+KVL principale autour de R38 / R36 / Ts5
+Boucle partielle :
++24 V
+→ R38
+→ nœud 22 V
+→ R36
+→ nœud 21,5 V
+On a :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+5/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+V_R38 ≈ 24 V - 22 V = 2 V
+V_R36 ≈ 22 V - 21,5 V = 0,5 V
+Donc :
+24 V - 2 V - 0,5 V = 21,5 V
+C’est exactement la tension imprimée au nœud Ts5.
+KVL validée.
+
+Nœud B6-12,2 V
+Le rail 12,2 V est obtenu depuis le rail 22 V via :
+R30 = 6,8 kΩ
+Composants reliés à ce rail visibles dans la zone audio :
+Branche
+Élément
+Destination
+Entrée
+R30 = 6,8 kΩ
+depuis 22 V
+Sortie
+R25 = 16 kΩ
+vers nœud 2,4 V / Ts3
+Sortie
+R19 = 30 kΩ
+vers rail 6,4 V
+Sortie probable
+R21 = 10 kΩ
+vers zone Ts2 / 6,4 V
+Découplage
+C15 = 50 µF
+vers masse, ouvert en DC
+Courant entrant par R30
+I_R30 = (22 V - 12,2 V) / 6,8 kΩ
+I_R30 ≈ 1,44 mA
+Courant sortant par R25
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+6/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+R25 = 16 kΩ
+Vhaut = 12,2 V
+Vbas = 2,4 V
+I_R25 = (12,2 V - 2,4 V) / 16 kΩ
+I_R25 = 9,8 V / 16000 Ω
+I_R25 ≈ 0,612 mA
+Courant sortant par R19
+R19 = 30 kΩ
+Vhaut = 12,2 V
+Vbas = 6,4 V
+I_R19 = (12,2 V - 6,4 V) / 30 kΩ
+I_R19 = 5,8 V / 30000 Ω
+I_R19 ≈ 0,193 mA
+Courant par R21
+Sur le schéma, R21 = 10 kΩ est reliée à la zone autour de Ts2. Si on utilise les tensions
+imprimées :
+Vhaut ≈ 12,2 V
+Vbas ≈ 6,4 V
+Alors :
+I_R21 = (12,2 V - 6,4 V) / 10 kΩ
+I_R21 = 5,8 V / 10000 Ω
+I_R21 ≈ 0,58 mA
+KCL du nœud 12,2 V
+Somme des courants sortants principaux :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+7/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+I_R25 ≈ 0,612 mA
+I_R19 ≈ 0,193 mA
+I_R21 ≈ 0,58 mA
+I_sortants ≈ 0,612 + 0,193 + 0,58
+I_sortants ≈ 1,385 mA
+Courant entrant par R30 :
+I_R30 ≈ 1,44 mA
+Écart :
+1,44 mA - 1,385 mA ≈ 0,055 mA
+Soit environ 55 µA, ce qui est parfaitement acceptable avec :
+les tensions imprimées arrondies ;
+les courants de base des transistors ;
+les branches mineures non comptées ;
+les tolérances des résistances.
+Conclusion :
+KCL nœud 12,2 V : validée
+KVL autour du rail 22 V → 12,2 V
+Boucle :
+22 V
+→ R30
+→ 12,2 V
+V_R30 = I_R30 × R30
+V_R30 ≈ 1,44 mA × 6,8 kΩ
+V_R30 ≈ 9,8 V
+Donc :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+8/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+22 V - 9,8 V = 12,2 V
+KVL validée.
+
+Résultat de cette première passe
+Les trois premiers nœuds d’alimentation DC de B6 sont cohérents :
+Nœud
+Résultat
+Masse 0 V
+cohérent comme référence
++24 V → R38 → 22 V
+KVL cohérente, courant ≈ 25 à 29 mA
+22 V
+KCL cohérente, courant principal ≈ 25,3 mA
+12,2 V
+KCL cohérente, écart seulement ≈ 55 µA
+Le point le plus important : R30 = 6,8 kΩ est confirmé par la cohérence KCL/KVL. Si R30
+avait une valeur très différente, le nœud 12,2 V ne tomberait pas juste.
+Prochaine étape logique : on continue avec le nœud 6,4 V, puis on descend sur Ts1 / Ts2
+et on vérifie les courants de polarisation étage par étage.
+Sources
+Sources
+vasy continue
+Thought for 1m 7s
+On continue doucement, sans sauter d’étapes. Je pars de la carte audio B6 /
+Signalverstärker, page 1 du schéma Siemens U273.
+
+Siemens_U273_Limiter
+On avait déjà validé :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+9/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
++24 V → R38 68 Ω → rail 22 V
+22 V → R30 6,8 kΩ → rail 12,2 V
+12,2 V → R19 30 kΩ → rail 6,4 V
+Maintenant on continue avec le nœud 6,4 V, puis les nœuds de polarisation autour de Ts1
+/ Ts2.
+
+1. Nœud B6-6,4 V
+Connexions visibles
+Le nœud 6,4 V est alimenté depuis le rail 12,2 V par :
+R19 = 30 kΩ
+Il alimente ensuite au moins :
+R12 = 51 kΩ
+R15 = 30 kΩ
+C10 = 25 µF vers masse
+En analyse DC, C10 est ouvert, donc on ne le compte pas dans la KCL, sauf fuite
+négligeable.
+
+Courant entrant par R19
+Vhaut = 12,2 V
+Vbas = 6,4 V
+R19 = 30 kΩ
+I_R19 = (12,2 - 6,4) / 30 000
+I_R19 = 5,8 / 30 000
+I_R19 = 0,000193 A
+I_R19 ≈ 193 µA
+Donc le nœud 6,4 V reçoit environ :
+Ientrant ≈ 193 µA
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+10/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Courant sortant par R15
+R15 descend du nœud 6,4 V vers le nœud imprimé 3,8 V.
+R15 = 30 kΩ
+Vhaut = 6,4 V
+Vbas = 3,8 V
+I_R15 = (6,4 - 3,8) / 30 000
+I_R15 = 2,6 / 30 000
+I_R15 ≈ 86,7 µA
+KCL du nœud 6,4 V
+À ce stade :
+Ientrant = I_R19
+Isortant = I_R15 + I_R12
+Donc :
+I_R12 = I_R19 - I_R15
+I_R12 ≈ 193 µA - 86,7 µA
+I_R12 ≈ 106 µA
+Donc si R12 est bien la seule autre branche DC significative depuis ce nœud :
+I_R12 ≈ 106 µA
+Vérification par R12 :
+R12 = 51 kΩ
+I_R12 ≈ 106 µA
+V_R12 = 106 µA × 51 kΩ
+V_R12 ≈ 5,4 V
+Donc la tension au bas de R12 serait :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+11/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+6,4 V - 5,4 V ≈ 1,0 V
+C’est cohérent avec la zone basse tension autour du premier transistor Ts1.
+
+Conclusion nœud 6,4 V
+KCL cohérente :
+193 µA entrants ≈ 86,7 µA par R15 + 106 µA par R12
+Le rail 6,4 V est crédible.
+
+2. KVL autour de R19
+Boucle :
+12,2 V → R19 → 6,4 V
+Chute de tension :
+V_R19 = 12,2 - 6,4
+V_R19 = 5,8 V
+Avec le courant calculé :
+V_R19 = I_R19 × R19
+V_R19 = 193 µA × 30 kΩ
+V_R19 ≈ 5,8 V
+Donc :
+12,2 V - 5,8 V - 6,4 V = 0
+KVL validée.
+
+3. Nœud B6-3,8 V
+Ce nœud est imprimé près de Ts1 / Ts2.
+
+Connexions visibles
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+12/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Il est relié à :
+R15 = 30 kΩ vers 6,4 V
+R18 = 68 kΩ vers le nœud 0,8 V
+base / réseau de Ts2
+collecteur / réseau de Ts1 selon la topologie exacte
+Pour la KCL, on calcule d’abord les branches résistives certaines.
+
+Courant entrant par R15
+Déjà calculé :
+I_R15 ≈ 86,7 µA
+Ce courant arrive depuis le rail 6,4 V vers le nœud 3,8 V.
+
+Courant sortant par R18
+R18 = 68 kΩ
+Vhaut = 3,8 V
+Vbas = 0,8 V
+I_R18 = (3,8 - 0,8) / 68 000
+I_R18 = 3,0 / 68 000
+I_R18 ≈ 44,1 µA
+KCL du nœud 3,8 V
+Courant entrant :
+I_R15 ≈ 86,7 µA
+Courant sortant connu :
+I_R18 ≈ 44,1 µA
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+13/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Il reste donc :
+I_restant = 86,7 µA - 44,1 µA
+I_restant ≈ 42,6 µA
+Ce courant restant part dans le réseau transistorisé autour de Ts1 / Ts2.
+Donc la KCL s’écrit :
+I_R15 = I_R18 + I_transistor
+86,7 µA ≈ 44,1 µA + 42,6 µA
+Conclusion nœud 3,8 V
+Le nœud est cohérent. La différence d’environ 42,6 µA correspond au courant absorbé par
+les jonctions transistorisées et le réseau de polarisation autour de Ts1/Ts2.
+
+4. KVL autour de R15 et R18
+Boucle partielle :
+6,4 V → R15 → 3,8 V → R18 → 0,8 V
+Chutes :
+V_R15 = 6,4 - 3,8 = 2,6 V
+V_R18 = 3,8 - 0,8 = 3,0 V
+Total :
+V_R15 + V_R18 = 2,6 + 3,0
+V_R15 + V_R18 = 5,6 V
+Différence entre les extrémités :
+6,4 V - 0,8 V = 5,6 V
+Donc :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+14/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+6,4 V - 2,6 V - 3,0 V - 0,8 V = 0
+KVL validée.
+
+5. Nœud B6-0,8 V
+Ce nœud est imprimé près de la sortie de Ts1 / entrée suivante.
+
+Connexions visibles
+On voit autour de ce nœud :
+R18 = 68 kΩ depuis le nœud 3,8 V
+R16 = 500 Ω ajustable
+R17 = 68 kΩ vers masse
+C8 = 10 µF, ouvert en DC
+C11 = 1 nF, ouvert en DC
+En DC, C8 et C11 ne conduisent pas.
+
+Courant entrant depuis R18
+Déjà calculé :
+I_R18 ≈ 44,1 µA
+Courant sortant par R16 + R17
+R16 est un ajustable de 500 Ω en série fonctionnelle avec R17 de 68 kΩ vers masse.
+En prenant R16 à sa valeur maximale :
+Rtotal = R16 + R17
+Rtotal = 500 Ω + 68 000 Ω
+Rtotal = 68 500 Ω
+I_R16_R17 = 0,8 V / 68 500 Ω
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+15/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+I_R16_R17 ≈ 11,7 µA
+Même si R16 est réglé plus bas, l’écart reste faible, car R17 domine largement.
+
+KCL du nœud 0,8 V
+Courant entrant connu :
+I_R18 ≈ 44,1 µA
+Courant sortant résistif connu :
+I_R16_R17 ≈ 11,7 µA
+Il reste donc :
+I_restant = 44,1 µA - 11,7 µA
+I_restant ≈ 32,4 µA
+Ce courant restant est absorbé par le réseau transistorisé autour de Ts1, ou dépend du
+réglage exact de R16.
+KCL :
+I_R18 = I_R16_R17 + I_Ts1
+44,1 µA ≈ 11,7 µA + 32,4 µA
+Conclusion nœud 0,8 V
+Le nœud est cohérent. On ne peut pas fermer la KCL uniquement avec les résistances,
+parce que le transistor Ts1 participe au bilan de courant. Mais la différence est raisonnable
+pour un courant de polarisation de petit transistor.
+
+6. KVL autour de R18 / R16 / R17
+Boucle résistive partielle :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+16/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+3,8 V → R18 → 0,8 V → R16/R17 → 0 V
+Chute sur R18 :
+V_R18 = 3,8 - 0,8 = 3,0 V
+Chute sur R16 + R17 :
+V_R16_R17 = 0,8 - 0 = 0,8 V
+Total des chutes depuis 3,8 V vers masse :
+3,0 V + 0,8 V = 3,8 V
+Donc :
+3,8 V - 3,0 V - 0,8 V = 0
+KVL validée.
+
+7. Nœud B6-3,2 V
+Ce nœud est imprimé près de Ts2 et de R22.
+
+Connexions visibles
+R22 = 8,2 kΩ vers masse
+C13 = 25 µF vers masse, ouvert en DC
+réseau transistorisé Ts2
+En DC, C13 est ouvert.
+
+Courant par R22
+Vnœud = 3,2 V
+R22 = 8,2 kΩ
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+17/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+I_R22 = 3,2 / 8200
+I_R22 ≈ 0,000390 A
+I_R22 ≈ 390 µA
+Donc R22 tire environ :
+390 µA vers la masse
+Vérification Vbe Ts2
+Le nœud précédent autour de Ts2 est imprimé :
+Vbase approx. = 3,8 V
+Vémetteur approx. = 3,2 V
+Différence :
+V_BE = 3,8 - 3,2
+V_BE = 0,6 V
+C’est très cohérent pour un transistor silicium comme le BCY66.
+
+KCL du nœud 3,2 V
+La KCL s’écrit :
+I_Ts2_émetteur = I_R22 + I_fuite_C13
+En DC idéal :
+I_Ts2_émetteur ≈ I_R22
+I_Ts2_émetteur ≈ 390 µA
+Conclusion :
+Le nœud 3,2 V est cohérent avec une polarisation transistor classique :
+V_BE ≈ 0,6 V
+I_E ≈ 390 µA
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+18/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+8. Nœud B6-6,4 V autour de Ts2
+Attention : il y a un point imprimé 6,4 V près de Ts2. Ce point n’est pas forcément
+exactement le même nœud physique que le rail 6,4 V d’alimentation à gauche ; il faut le
+traiter comme nœud collecteur / charge de Ts2.
+
+Connexion principale visible
+R21 = 10 kΩ
+depuis le rail 12,2 V
+vers le nœud 6,4 V de Ts2
+Courant par R21
+I_R21 = (12,2 - 6,4) / 10 000
+I_R21 = 5,8 / 10 000
+I_R21 = 0,00058 A
+I_R21 ≈ 580 µA
+Ce courant alimente le nœud collecteur / charge de Ts2.
+
+Comparaison avec le courant d’émetteur Ts2
+On avait :
+I_E_Ts2 ≈ 390 µA
+et maintenant :
+I_R21 ≈ 580 µA
+La différence est :
+580 µA - 390 µA ≈ 190 µA
+Cette différence ne doit pas être interprétée immédiatement comme une erreur, parce que
+ce nœud alimente aussi le réseau voisin autour de Ts3, avec C14/R23 et les liaisons de
+polarisation. Il n’est donc pas isolé comme un simple collecteur avec une seule résistance.
+Conclusion prudente :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+19/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Le courant par R21 est cohérent en ordre de grandeur.
+La KCL complète de ce nœud demande d’inclure Ts3 et le réseau R23/C14.
+
+On ne déclare donc pas d’erreur ici.
+
+9. Résumé de cette passe
+Nœud
+Résultat
+B6-6,4 V rail alimentation
+KCL cohérente
+B6-3,8 V
+KCL cohérente avec courant transistor ≈ 42,6 µA
+B6-0,8 V
+KCL cohérente avec courant transistor ≈ 32,4 µA
+B6-3,2 V
+VBE Ts2 ≈ 0,6 V, très cohérent
+B6-6,4 V Ts2
+courant par R21 ≈ 580 µA, à fermer avec Ts3
+Donc pour l’instant, les nœuds autour de Ts1 / Ts2 sont électriquement crédibles. Il n’y a
+pas d’incohérence manifeste de valeur.
+Prochaine suite logique : fermer le bloc Ts3 / Ts4, avec les nœuds :
+2,4 V
+0,74 V
+4,8 V
+1,8 V
+C’est là qu’on verra si les courants intermédiaires de l’amplificateur restent cohérents.
+Sources
+Sources
+continue de maniere encore plus rigoureuse
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+20/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Thought for 1m 41s
+Très bien. Je continue avec une méthode plus stricte : à chaque nœud, je sépare ce qui est
+calculable directement par les résistances de ce qui dépend des transistors. Les
+condensateurs sont considérés ouverts en DC. Les valeurs avec ~ , par exemple 100 mV~ ,
+2,8 V~ , sont des niveaux AC, pas des tensions DC de polarisation. Source : schéma
+Siemens U273 page 1.
+
+Siemens_U273_Limiter
+On continue la carte B6 / Signalverstärker.
+
+1. Rappel des nœuds déjà validés
+On a déjà validé :
++24 V → R38 68 Ω → rail 22 V
+22 V → R30 6,8 kΩ → rail 12,2 V
+12,2 V → R19 30 kΩ → rail 6,4 V
+Et on avait trouvé :
+Nœud
+Rail 22 V
+Résultat
+KCL cohérente, environ 25 mA consommés
+Rail 12,2 V
+KCL cohérente
+Rail 6,4 V
+KCL cohérente
+Zone Ts1/Ts2
+cohérente en ordre de grandeur
+Maintenant on attaque le bloc :
+Ts3 → Ts4 → Ts5/Ts6
+2. Nœud B6-2,4 V autour de Ts3 / Ts4
+Sur le schéma, le nœud 2,4 V est alimenté depuis le rail 12,2 V via :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+21/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+R25 = 16 kΩ
+Connexions visibles
+Élément
+Connexion
+R25 16 kΩ
+du rail 12,2 V vers le nœud 2,4 V
+Ts3
+relié au nœud 2,4 V
+Ts4
+base ou entrée de l’étage Ts4 reliée à ce nœud
+Condensateurs proches
+ouverts en DC
+Courant dans R25
+Vhaut = 12,2 V
+Vbas = 2,4 V
+R25 = 16 kΩ
+Calcul :
+I_R25 = (12,2 - 2,4) / 16 000
+I_R25 = 9,8 / 16 000
+I_R25 = 0,0006125 A
+I_R25 ≈ 0,613 mA
+Donc le nœud 2,4 V reçoit environ :
+Ientrant ≈ 0,613 mA
+KVL autour de R25
+Boucle :
+12,2 V → R25 → 2,4 V
+Chute dans R25 :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+22/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+V_R25 = I_R25 × R25
+V_R25 = 0,613 mA × 16 kΩ
+V_R25 ≈ 9,8 V
+Donc :
+12,2 V - 9,8 V - 2,4 V = 0
+KVL validée.
+
+KCL du nœud 2,4 V
+La KCL s’écrit :
+I_R25 = I_Ts3 + I_base_Ts4 + I_autres_branches
+Numériquement :
+0,613 mA = courant absorbé par le réseau actif Ts3/Ts4
+À ce nœud, on ne peut pas aller plus loin sans modèle transistor ou sans connaître
+exactement les courants de base. Mais le courant de 0,613 mA est parfaitement plausible
+pour un étage petit signal.
+
+3. Vérification VBE de Ts4
+Le schéma indique autour de Ts4 :
+Base probable Ts4 : 2,4 V
+Émetteur probable Ts4 : 1,8 V
+Donc :
+V_BE_Ts4 = 2,4 V - 1,8 V
+V_BE_Ts4 = 0,6 V
+C’est une valeur très cohérente pour un transistor silicium.
+Conclusion :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+23/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+La polarisation base-émetteur de Ts4 est cohérente.
+
+C’est un point important : cela valide que les tensions 2,4 V et 1,8 V ne sont pas absurdes
+entre elles.
+
+4. Nœud B6-0,74 V autour de Ts3
+Le schéma indique :
+0,74 V
+100 mV~
+Il faut bien séparer :
+0,74 V = tension DC de polarisation
+100 mV~ = niveau AC du signal
+Pour KCL/KVL DC, on utilise seulement 0,74 V.
+
+Connexions visibles
+Autour de ce nœud :
+Élément
+Valeur
+Connexion
+R26
+220 Ω
+depuis nœud 0,74 V vers réseau d’émetteur
+R27
+620 Ω
+vers masse
+R20
+12 kΩ
+liaison / contre-réaction locale depuis le nœud
+précédent
+C16
+100 µF
+ouvert en DC
+C12
+2 nF
+ouvert en DC
+Le couple R26/R27 semble former une résistance d’émetteur équivalente vers masse.
+
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+24/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Hypothèse DC principale : R26 + R27 en série vers masse
+Si R26 et R27 sont en série du nœud 0,74 V vers masse :
+Rtotal = R26 + R27
+Rtotal = 220 Ω + 620 Ω
+Rtotal = 840 Ω
+Courant :
+I_R26_R27 = 0,74 V / 840 Ω
+I_R26_R27 ≈ 0,000881 A
+I_R26_R27 ≈ 0,881 mA
+Donc le courant d’émetteur ou courant de branche autour de Ts3 est de l’ordre de :
+0,88 mA
+Tension intermédiaire entre R26 et R27
+Si le courant est 0,881 mA :
+Chute sur R27 :
+V_R27 = 0,881 mA × 620 Ω
+V_R27 ≈ 0,546 V
+Chute sur R26 :
+V_R26 = 0,881 mA × 220 Ω
+V_R26 ≈ 0,194 V
+Vérification :
+0,546 V + 0,194 V = 0,740 V
+KVL validée.
+
+Influence possible de R20
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+25/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+R20 vaut :
+R20 = 12 kΩ
+Si R20 relie le nœud précédent autour de 0,8 V au nœud 0,74 V, alors le courant dans R20
+vaut :
+I_R20 = (0,8 - 0,74) / 12 000
+I_R20 = 0,06 / 12 000
+I_R20 = 5 µA
+C’est très faible devant les 0,881 mA de R26/R27.
+Donc même si R20 intervient en DC, son effet sur ce nœud est mineur :
+5 µA << 881 µA
+KCL du nœud 0,74 V
+Forme de la KCL :
+I_Ts3 + I_R20 = I_R26_R27
+Avec les valeurs :
+I_R26_R27 ≈ 0,881 mA
+I_R20 ≈ 0,005 mA
+Donc :
+I_Ts3 ≈ 0,881 mA - 0,005 mA
+I_Ts3 ≈ 0,876 mA
+Conclusion :
+Le nœud 0,74 V demande environ 0,88 mA dans le réseau d’émetteur de Ts3.
+
+Ce courant est crédible pour un étage petit signal.
+
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+26/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+5. Comparaison Ts3 : courant R25 vs courant d’émetteur
+On a deux résultats :
+Courant par R25 vers nœud 2,4 V ≈ 0,613 mA
+Courant par R26/R27 depuis nœud 0,74 V ≈ 0,881 mA
+Différence :
+0,881 mA - 0,613 mA ≈ 0,268 mA
+Il ne faut pas conclure trop vite à une erreur, parce que :
+1. Le nœud 2,4 V n’est pas forcément le seul chemin de courant de Ts3.
+2. Le réseau autour de Ts3 est couplé à Ts4.
+3. Les résistances de contre-réaction et d’ajustage peuvent injecter ou retirer du courant.
+4. Les tensions imprimées sont nominales et arrondies.
+5. Les transistors anciens ont des dispersions importantes.
+Mais ce point est à noter :
+Le bloc Ts3 ne peut pas être fermé comme un simple transistor isolé avec seulement R25
+
+
+Conclusion rigoureuse :
+Les valeurs sont plausibles, mais la KCL complète de Ts3 exige d’inclure tout le résea
+
+
+6. Nœud B6-4,8 V autour de Ts4
+Le schéma indique un nœud :
+4,8 V
+Il est relié à :
+R31 = 5,6 kΩ
+depuis le rail 22 V.
+
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+27/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Courant dans R31
+Vhaut = 22 V
+Vbas = 4,8 V
+R31 = 5,6 kΩ
+Calcul :
+I_R31 = (22 - 4,8) / 5 600
+I_R31 = 17,2 / 5 600
+I_R31 ≈ 0,003071 A
+I_R31 ≈ 3,07 mA
+Donc le nœud 4,8 V reçoit environ :
+3,07 mA
+KVL autour de R31
+Boucle :
+22 V → R31 → 4,8 V
+Chute :
+V_R31 = 22 V - 4,8 V
+V_R31 = 17,2 V
+Vérification :
+I_R31 × R31 = 3,07 mA × 5,6 kΩ
+≈ 17,2 V
+Donc :
+22 V - 17,2 V - 4,8 V = 0
+KVL validée.
+
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+28/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+KCL du nœud 4,8 V
+Forme :
+I_R31 = I_Ts4 + I_autres_branches
+Donc :
+3,07 mA = courant absorbé par Ts4 et son réseau associé
+On ne peut pas imposer que ces 3,07 mA soient exactement le courant collecteur de Ts4
+seul, parce que le nœud est pris dans un réseau d’étage driver. Mais l’ordre de grandeur
+est cohérent.
+
+7. Nœud B6-1,8 V autour de Ts4
+Le schéma indique :
+1,8 V
+avec :
+R32 = 1 kΩ
+C18 = 50 µF
+En DC, C18 est ouvert.
+
+Courant dans R32
+Vnœud = 1,8 V
+R32 = 1 kΩ
+I_R32 = 1,8 V / 1 000 Ω
+I_R32 = 1,8 mA
+Donc R32 tire :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+29/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+1,8 mA vers la masse
+KVL autour de R32
+Boucle :
+1,8 V → R32 → 0 V
+V_R32 = I_R32 × R32
+V_R32 = 1,8 mA × 1 kΩ
+V_R32 = 1,8 V
+Donc :
+1,8 V - 1,8 V = 0
+KVL validée.
+
+Cohérence Ts4 : VBE et VCE
+On a :
+Vbase ≈ 2,4 V
+Vémetteur ≈ 1,8 V
+Donc :
+V_BE ≈ 0,6 V
+C’est cohérent.
+Si le collecteur est au nœud 4,8 V :
+V_CE = 4,8 V - 1,8 V
+V_CE = 3,0 V
+C’est également plausible : Ts4 n’est ni saturé, ni bloqué.
+
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+30/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+KCL croisée Ts4
+On a :
+I_R31 ≈ 3,07 mA
+I_R32 ≈ 1,8 mA
+La différence est :
+3,07 mA - 1,8 mA = 1,27 mA
+Ce n’est pas forcément une erreur, parce que le nœud Ts4 est relié à d’autres chemins de
+polarisation et de contre-réaction. Mais c’est une zone à traiter avec prudence.
+Conclusion rigoureuse :
+Ts4 est cohérent en tensions : VBE ≈ 0,6 V et VCE ≈ 3 V.
+La KCL complète ne peut pas être fermée uniquement avec R31 et R32.
+
+Pour la fermer complètement, il faut inclure le réseau :
+R28 = 10 kΩ
+R29 = 20 kΩ ajustable
+C17 = 100 µF ouvert en DC
+liaisons vers C16 / R34 / Ts5/Ts6
+8. Nœud B6-21,5 V autour de Ts5
+Le schéma indique :
+21,5 V
+alimenté depuis le rail 22 V via :
+R36 = 24 Ω
+Courant dans R36
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+31/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Vhaut = 22 V
+Vbas = 21,5 V
+R36 = 24 Ω
+Calcul :
+I_R36 = (22 - 21,5) / 24
+I_R36 = 0,5 / 24
+I_R36 ≈ 0,0208 A
+I_R36 ≈ 20,8 mA
+C’est le courant principal de l’étage de sortie.
+
+KVL autour de R36
+22 V → R36 → 21,5 V
+V_R36 = I_R36 × R36
+V_R36 = 20,8 mA × 24 Ω
+V_R36 ≈ 0,5 V
+Donc :
+22 V - 0,5 V - 21,5 V = 0
+KVL validée.
+
+KCL du nœud 21,5 V
+Forme :
+I_R36 = I_Ts5 + I_R33 + I_autres
+Avec :
+I_R36 ≈ 20,8 mA
+Le schéma montre aussi :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+32/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+R33 = 20 kΩ
+C20 = 50 µF
+En DC, C20 est ouvert.
+Mais la tension exacte de l’autre côté de R33 n’est pas suffisamment nette dans le nœud
+visible pour calculer le courant R33 sans hypothèse. Donc on s’arrête proprement ici :
+Le nœud 21,5 V injecte environ 20,8 mA dans l’étage de sortie.
+KCL partielle validée, KCL complète dépend de Ts5/R33.
+
+9. Nœud B6-10,5 V / 2,8 V~ — sortie driver avant C21
+Le schéma indique :
+10,5 V
+2,8 V~
+Ici il faut être très précis :
+10,5 V = tension DC
+2,8 V~ = niveau AC du signal
+Donc pour KCL/KVL DC, on utilise 10,5 V et on ignore 2,8 V~.
+
+Connexions visibles
+Le nœud 10,5 V est relié à :
+Élément
+Fonction
+Ts5
+transistor supérieur
+Ts6
+transistor inférieur
+R34 3,6 kΩ
+liaison / polarisation
+C21 500 µF
+vers transformateur U2, ouvert en DC
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+33/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Élément
+Fonction
+U2
+isolé en DC par C21
+Point important :
+C21 est ouvert en DC.
+Donc le transformateur U2 ne charge pas le nœud 10,5 V en continu.
+
+KCL du nœud 10,5 V
+Forme :
+I_Ts5 + I_R34 = I_Ts6
+ou selon le sens réel des courants :
+courants entrants par Ts5/R34 = courants sortants par Ts6/réseau bas
+Mais il manque une tension sûre de l’autre côté de R34 pour calculer son courant DC.
+Donc conclusion rigoureuse :
+Le nœud 10,5 V est le point de repos de l’étage de sortie.
+Il est placé approximativement à mi-alimentation, ce qui maximise la marge de signal.
+
+
+Vérification simple :
+Rail sortie haut ≈ 21,5 V
+Point repos sortie ≈ 10,5 V
+Moitié de 21,5 V :
+21,5 V / 2 = 10,75 V
+Le schéma donne :
+10,5 V
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+34/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+C’est très cohérent.
+
+10. Attention sur le nœud B6-R37
+Le schéma indique près de R37 :
+220 mV~
+Ce n’est pas une tension DC. C’est un niveau AC.
+Donc on ne doit pas calculer :
+I = 220 mV / 10 Ω
+comme courant DC.
+Ce serait une erreur.
+Ce qu’on peut dire :
+R37 = 10 Ω
+220 mV~ indique probablement le niveau AC local dans l’étage de sortie.
+
+Pour connaître le courant DC dans R37, il faudrait une tension DC imprimée à ses bornes,
+qui n’est pas visible sur le crop.
+
+11. Bilan du bloc Ts3 → Ts6
+Valeurs calculées
+Nœud
+Élément
+2,4 V
+R25 16 kΩ
+0,74 V
+R26+R27
+4,8 V
+R31 5,6 kΩ
+1,8 V
+R32 1 kΩ
+Calcul
+Résultat
+(12,2 - 2,4) / 16k
+0,613 mA
+0,74 / 840
+0,881 mA
+(22 - 4,8) / 5,6k
+3,07 mA
+1,8 / 1k
+1,8 mA
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+35/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Nœud
+Élément
+21,5 V
+R36 24 Ω
+10,5 V
+point sortie
+Calcul
+(22 - 21,5) / 24
+proche de 21,5 / 2
+Résultat
+20,8 mA
+cohérent
+Cohérences transistor
+Transistor
+Vérification
+Résultat
+Ts4
+VBE = 2,4 - 1,8
+0,6 V , cohérent
+Ts4
+VCE = 4,8 - 1,8
+3,0 V , cohérent
+Ts5/Ts6
+point repos 10,5 V pour rail 21,5 V
+cohérent
+Sortie
+C21 bloque le DC vers U2
+cohérent
+12. Ce qu’on peut conclure à ce stade
+Sur la carte audio B6 :
+Les rails d’alimentation sont cohérents.
+Les nœuds Ts1/Ts2 sont cohérents.
+Le bloc Ts3/Ts4 est cohérent en tensions.
+L’étage Ts5/Ts6 est cohérent en point de repos.
+
+Mais il faut rester rigoureux :
+On ne peut pas fermer certaines KCL uniquement avec les résistances visibles,
+car les transistors et réseaux de contre-réaction absorbent ou injectent des courants
+
+
+Le plus important, pour l’instant :
+Aucune contradiction flagrante n’apparaît dans les valeurs imprimées.
+Les tensions DC et les résistances donnent des courants plausibles.
+
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+36/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Prochaine suite logique : je continue avec la carte B11 / Regelverstärker, en commençant
+par :
++24 V régulation
+→ R30 1 Ω
+→ C11 500 µF
+→ transformateur Ü
+→ D1 ZL10 / D2 SSD55
+→ Ts5/Ts6 2N3054
+Là aussi on vérifiera d’abord les nœuds DC, puis seulement après les chemins AC et le
+redressement.
+Sources
+Sources
+continue toujours de maniere rigoureuse
+Thought for 50s
+On continue avec la carte B11 / Regelverstärker, c’est-à-dire la carte de régulation du
+Siemens U273. Je vais être plus strict : je ne ferme une KCL que lorsque le chemin DC est
+certain ; sinon je donne une KCL partielle et j’indique clairement ce qui dépend des
+transistors, des diodes ou du réglage. Source : schéma page 1 du PDF.
+
+Siemens_U273_Limiter
+Rappel méthodologique :
+En DC :
+- les condensateurs sont ouverts ;
+- les transformateurs sont ouverts côté secondaire si aucun chemin DC n’est visible ;
+- les diodes et zeners sont non linéaires, donc leur courant dépend de leur seuil ;
+- les transistors ne peuvent pas être remplacés par une simple résistance.
+
+
+1. Nœud B11-+24 V
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+37/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+La carte B11 reçoit aussi le rail :
++24 V
+On voit plusieurs branches importantes depuis ce rail :
++24 V → R23 100 Ω → nœud 23 V
++24 V → R15 1,2 kΩ → nœud 14,5 V
++24 V → R10 2 kΩ → nœud 21,5 V
++24 V → R18 10 MΩ ajustable / réseau de réglage
++24 V → étage Ts5 / Ts6 2N3054
+Sur cette carte, il est inutile de faire une KCL globale au nœud +24 V tout de suite, car
+plusieurs branches actives passent par transistors et diodes. On commence donc par les
+branches résistives sûres.
+
+2. Branche B11/R23 : nœud 23 V autour de Ts3
+Le schéma indique :
+R23 = 100 Ω
+Vhaut = 24 V
+Vbas = 23 V
+Courant dans R23
+I_R23 = (24 V - 23 V) / 100 Ω
+I_R23 = 1 V / 100 Ω
+I_R23 = 0,01 A
+I_R23 = 10 mA
+Donc R23 fournit environ :
+10 mA
+au nœud 23 V.
+
+KVL de la branche R23
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+38/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Boucle :
+24 V → R23 → 23 V
+Chute :
+V_R23 = I_R23 × R23
+V_R23 = 10 mA × 100 Ω
+V_R23 = 1 V
+Donc :
+24 V - 1 V - 23 V = 0
+KVL validée.
+
+KCL du nœud 23 V
+Le nœud 23 V est connecté à Ts3 SST116.
+Forme de la KCL :
+I_R23 = I_Ts3 + I_autres_branches
+Avec les valeurs visibles :
+10 mA = courant absorbé par Ts3 et son réseau associé
+À ce stade, on ne peut pas répartir ces 10 mA plus finement sans modèle du transistor et
+sans connaître les courants internes du réseau. Mais le courant est réaliste pour la carte de
+régulation, qui doit piloter un pont de diodes.
+Conclusion :
+Nœud 23 V cohérent.
+R23 impose environ 10 mA.
+
+3. Nœud B11-14,5 V autour de Ts2
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+39/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Le schéma indique autour de Ts2 :
+R15 = 1,2 kΩ
+nœud = 14,5 V
+La branche est :
++24 V → R15 1,2 kΩ → nœud 14,5 V
+Courant dans R15
+I_R15 = (24 V - 14,5 V) / 1,2 kΩ
+I_R15 = 9,5 V / 1200 Ω
+I_R15 ≈ 0,00792 A
+I_R15 ≈ 7,92 mA
+KVL autour de R15
+24 V → R15 → 14,5 V
+V_R15 = I_R15 × R15
+V_R15 ≈ 7,92 mA × 1,2 kΩ
+V_R15 ≈ 9,5 V
+Donc :
+24 V - 9,5 V - 14,5 V = 0
+KVL validée.
+
+KCL du nœud 14,5 V
+En DC, les condensateurs proches sont ouverts :
+C7 = 25 µF ouvert en DC
+C8 = 25 µF ouvert en DC
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+40/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Donc la KCL principale est :
+I_R15 = I_Ts2 + I_autres_fuites_DC
+Numériquement :
+I_Ts2 ≈ 7,92 mA
+C’est cohérent pour un étage actif de régulation. Ce n’est pas un étage audio basse
+consommation ; il doit produire une commande robuste.
+Conclusion :
+Nœud 14,5 V cohérent.
+R15 fournit environ 7,9 mA à l’étage Ts2.
+
+4. Nœud B11-9 V autour de Ts2
+Le schéma indique :
+nœud 9 V
+R16 = 1,2 kΩ vers masse
+R13 = 220 kΩ vers la zone de commande
+C9 = 25 µF, ouvert en DC
+Courant dans R16
+I_R16 = 9 V / 1,2 kΩ
+I_R16 = 9 V / 1200 Ω
+I_R16 = 0,0075 A
+I_R16 = 7,5 mA
+Donc R16 tire :
+7,5 mA vers la masse
+Courant possible dans R13
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+41/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+R13 vaut :
+R13 = 220 kΩ
+Il part du nœud 9 V vers le réseau de commande autour du nœud bas, proche de 0,5 V.
+Si on prend :
+Vgauche = 9 V
+Vdroite ≈ 0,5 V
+Alors :
+I_R13 = (9 V - 0,5 V) / 220 kΩ
+I_R13 = 8,5 V / 220000 Ω
+I_R13 ≈ 38,6 µA
+Ce courant est très faible devant R16 :
+38,6 µA << 7,5 mA
+KCL du nœud 9 V
+Courants sortants connus :
+I_R16 ≈ 7,5 mA
+I_R13 ≈ 38,6 µA
+Somme :
+I_sortant ≈ 7,539 mA
+Le courant entrant vient principalement de Ts2 :
+I_Ts2 ≈ 7,54 mA
+Comparaison avec le courant fourni par R15 au nœud 14,5 V :
+I_R15 ≈ 7,92 mA
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+42/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+I_R16 + I_R13 ≈ 7,54 mA
+Écart :
+7,92 mA - 7,54 mA ≈ 0,38 mA
+Cet écart est plausible : il peut correspondre au courant de base, aux chemins internes du
+transistor, et aux branches non comptées autour de Ts2.
+Conclusion :
+KCL du nœud 9 V cohérente en ordre de grandeur.
+Le courant principal est d’environ 7,5 mA.
+
+KVL entre 14,5 V et 9 V
+La différence de potentiel autour de Ts2 est :
+14,5 V - 9 V = 5,5 V
+Donc Ts2 dispose d’une marge de fonctionnement d’environ :
+5,5 V
+C’est suffisant : le transistor n’est pas dans une situation manifestement saturée par les
+tensions imprimées.
+
+5. Branche B11/R10-R11 : nœuds 21,5 V et 10 V autour de
+Ts1
+Le schéma indique :
+R10 = 2 kΩ
+R11 = 10 kΩ
+nœud intermédiaire = 21,5 V
+nœud inférieur = 10 V
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+43/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Courant dans R10
+I_R10 = (24 V - 21,5 V) / 2 kΩ
+I_R10 = 2,5 V / 2000 Ω
+I_R10 = 1,25 mA
+Courant dans R11
+I_R11 = (21,5 V - 10 V) / 10 kΩ
+I_R11 = 11,5 V / 10000 Ω
+I_R11 = 1,15 mA
+KVL sur R10
+24 V - (1,25 mA × 2 kΩ) - 21,5 V = 0
+24 V - 2,5 V - 21,5 V = 0
+KVL validée.
+
+KVL sur R11
+21,5 V - (1,15 mA × 10 kΩ) - 10 V = 0
+21,5 V - 11,5 V - 10 V = 0
+KVL validée.
+
+KCL du nœud 21,5 V
+Courant entrant par R10 :
+I_R10 = 1,25 mA
+Courant sortant par R11 :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+44/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+I_R11 = 1,15 mA
+Différence :
+I_diff = 1,25 mA - 1,15 mA
+I_diff = 0,10 mA
+I_diff = 100 µA
+Donc il reste environ :
+100 µA
+qui part dans une autre branche connectée au nœud 21,5 V, probablement via le réseau
+actif autour de Ts1 / C7 / polarisation.
+KCL :
+I_R10 = I_R11 + I_autre
+1,25 mA = 1,15 mA + 0,10 mA
+Conclusion :
+Nœud 21,5 V cohérent.
+La différence de 100 µA est raisonnable.
+
+6. Nœud B11-10 V autour de Ts1
+Le nœud 10 V est relié à :
+R11 = 10 kΩ depuis le nœud 21,5 V
+C6 = 1 nF, ouvert en DC
+entrée / électrode de Ts1
+Courant entrant par R11
+I_R11 = 1,15 mA
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+45/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Le courant sortant principal passe dans le transistor Ts1 et ses réseaux.
+Forme KCL :
+I_R11 = I_Ts1 + I_autres_DC
+Donc :
+I_Ts1 ≈ 1,15 mA, à quelques corrections près
+Ce courant est plausible pour l’étage de commande.
+
+7. Nœud B11-0,5 V
+Le schéma indique un nœud :
+0,5 V
+Autour de ce nœud on voit :
+R12 = 120 Ω vers masse
+R9 = 56 kΩ vers masse
+C5 = 100 µF, ouvert en DC
+R7 = 500 Ω ajustable
+R8 = 680 Ω vers masse
+Il faut être très prudent : selon la position du curseur de R7, le courant exact varie.
+
+Courant dans R12
+I_R12 = 0,5 V / 120 Ω
+I_R12 = 0,00417 A
+I_R12 = 4,17 mA
+Courant dans R9
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+46/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+I_R9 = 0,5 V / 56 kΩ
+I_R9 = 0,5 V / 56000 Ω
+I_R9 ≈ 8,93 µA
+R9 est négligeable devant R12 :
+8,93 µA << 4,17 mA
+Courant dans R7 + R8
+R7 est ajustable :
+R7 = 500 Ω ajustable
+R8 = 680 Ω
+Selon le réglage, la résistance totale vue vers masse varie approximativement entre :
+Rmin ≈ 680 Ω
+Rmax ≈ 680 Ω + 500 Ω = 1180 Ω
+Donc le courant possible vaut :
+Cas R7 minimum
+I_R8_max = 0,5 V / 680 Ω
+I_R8_max ≈ 0,735 mA
+Cas R7 maximum
+I_R7_R8_min = 0,5 V / 1180 Ω
+I_R7_R8_min ≈ 0,424 mA
+Donc cette branche tire environ :
+0,42 mA à 0,74 mA
+KCL du nœud 0,5 V
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+47/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Courants sortants connus :
+I_R12 ≈ 4,17 mA
+I_R9 ≈ 0,009 mA
+I_R7/R8 ≈ 0,42 à 0,74 mA
+Somme :
+I_sortant ≈ 4,17 + 0,009 + (0,42 à 0,74)
+I_sortant ≈ 4,60 à 4,92 mA
+Donc la KCL impose :
+I_entrant_depuis_Ts1/réseau ≈ 4,6 à 4,9 mA
+Conclusion :
+Le nœud 0,5 V est cohérent, mais dépend fortement du réglage de R7.
+
+8. Vérification critique : Ts1 semble avoir un rôle de
+commande, pas un simple étage résistif
+On a :
+Courant par R11 vers nœud 10 V ≈ 1,15 mA
+Courant demandé au nœud 0,5 V ≈ 4,6 à 4,9 mA
+À première vue, si on assimilait Ts1 à un simple NPN classique avec collecteur via R11 et
+émetteur via R12, cela semblerait incohérent.
+Mais ici il ne faut pas faire cette simplification, car :
+Ts1 fait partie d’un réseau de régulation actif ;
+le courant du nœud 0,5 V peut venir d’autres branches ;
+R7/R8/C5 appartiennent à la chaîne de commande ;
+la topologie n’est pas un simple étage émetteur commun isolé.
+
+Donc on note :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+48/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+La KCL locale du nœud 0,5 V est calculable côté résistances.
+La KCL complète dépend du réseau actif Ts1/Ts2 et de la commande.
+
+Il n’y a pas encore de contradiction formelle.
+
+9. Nœud B11-0,45 V autour de Ts3/Ts4
+Le schéma indique :
+0,45 V
+près de Ts3 / Ts4 et du réseau :
+R25 = 100 Ω
+R26 = 100 Ω
+R27 = 500 Ω ajustable
+Courant si R25 ou R26 ont 0,45 V à leurs bornes
+Si un des 100 Ω est directement entre 0,45 V et un nœud proche masse :
+I = 0,45 V / 100 Ω
+I = 4,5 mA
+Mais attention : le schéma montre plusieurs résistances de 100 Ω dans un réseau actif
+symétrique. Il ne faut pas forcément supposer que chacune voit toute la tension de 0,45 V.
+
+Rôle probable de R27
+R27 = 500 Ω ajustable
+Il sert vraisemblablement à équilibrer les deux branches Ts3/Ts4 ou à régler le courant de
+repos du push-pull de régulation.
+Comme R27 est ajustable, les courants précis autour du nœud 0,45 V ne peuvent pas être
+figés sans sa position.
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+49/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Conclusion nœud 0,45 V
+Ce qu’on peut dire de manière sûre :
+Le nœud 0,45 V est plausible pour des jonctions silicium conduisant faiblement.
+Les résistances de 100 Ω donnent des courants de l’ordre de quelques mA.
+La KCL exacte dépend du réglage de R27 et des transistors Ts3/Ts4.
+
+Pas d’incohérence manifeste.
+
+10. Étages B11/Ts5 et B11/Ts6 — 2N3054
+Le schéma montre :
+Ts5 = 2N3054
+Ts6 = 2N3054
+R28 = 1 Ω
+R29 = 1 Ω
+Ces résistances de 1 Ω sont typiques de résistances d’émetteur ou de mesure/stabilisation
+de courant.
+
+Ce qu’on peut vérifier
+Sans tension DC imprimée directement aux bornes de R28/R29, on ne peut pas calculer
+leur courant exact.
+Mais on peut établir la règle :
+I_R28 = V_R28 / 1 Ω
+I_R29 = V_R29 / 1 Ω
+Donc :
+Chute aux bornes
+Courant correspondant
+10 mV
+10 mA
+50 mV
+50 mA
+100 mV
+100 mA
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+50/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Chute aux bornes
+Courant correspondant
+450 mV
+450 mA
+Attention : si quelqu’un interprète le 0,45 V imprimé comme chute directe sur 1 Ω, cela
+donnerait 450 mA, ce qui est énorme pour cette carte. Il faut donc éviter cette
+interprétation sans certitude topologique.
+Conclusion rigoureuse :
+Les 1 Ω servent probablement à équilibrer/stabiliser le courant des 2N3054.
+Le courant exact ne peut pas être calculé sans tension directe à leurs bornes.
+
+11. Zone D1 / D2 / Gr / Ü : pas de KCL linéaire simple
+Cette zone contient :
+Élément
+Valeur
+D1
+ZL10
+D2
+SSD55
+Gr
+B30 C2200
+R31
+51 kΩ
+Ü
+transformateur
+S7
+commutateur limiteur/compresseur
+Pourquoi on ne peut pas faire une KCL linéaire directe
+Les diodes et la zener ont une conduction non linéaire :
+Si V < seuil → courant quasi nul
+Si V > seuil → courant important
+Donc la KCL dépend du mode :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+51/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+mode limiteur
+mode compresseur
+position de S7
+niveau AC présent sur Ü
+seuil de la zener ZL10
+KVL qualitative du seuil
+D1 est une zener :
+D1 = ZL10 ≈ zener 10 V
+Donc la commande ne devient franchement active que lorsque la tension issue du
+transformateur/réseau de détection dépasse le seuil imposé par la zener et les diodes.
+La boucle de seuil est donc de forme :
+V_detection
+→ R31
+→ D1 ZL10
+→ réseau redresseur / S7
+KVL qualitative :
+V_detection ≈ V_Zener + V_diode + I × R31
+Avec :
+V_Zener ≈ 10 V
+V_diode ≈ 0,2 à 0,7 V selon diode et courant
+Mais sans le niveau instantané de détection, on ne calcule pas un courant unique.
+Conclusion :
+La zone D1/D2/Gr/Ü doit être analysée en régime dynamique, pas uniquement en DC.
+
+12. Bilan rigoureux de la carte B11
+Branches DC validées
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+52/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Branche
+Calcul
+Résultat
+R23
+(24 - 23) / 100 Ω
+10 mA
+R15
+(24 - 14,5) / 1,2 kΩ
+7,92 mA
+R16
+9 / 1,2 kΩ
+7,5 mA
+R13
+(9 - 0,5) / 220 kΩ
+38,6 µA
+R10
+(24 - 21,5) / 2 kΩ
+1,25 mA
+R11
+(21,5 - 10) / 10 kΩ
+1,15 mA
+R12
+0,5 / 120 Ω
+4,17 mA
+R9
+0,5 / 56 kΩ
+8,93 µA
+0,5 / (680 à 1180 Ω)
+0,42 à 0,74 mA
+R7/R8
+Nœuds cohérents
+Nœud
+Diagnostic
+23 V
+cohérent, environ 10 mA via R23
+14,5 V
+cohérent, environ 7,92 mA via R15
+9V
+cohérent, environ 7,5 mA vers R16
+21,5 V
+cohérent, écart de 100 µA entre R10 et R11
+10 V
+cohérent en KCL partielle
+0,5 V
+cohérent mais dépend de R7 et du réseau actif
+0,45 V
+plausible, mais dépend de R27 et des transistors
+Ts5/Ts6 2N3054
+pas assez de tension imprimée pour calcul exact
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+53/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+13. Conclusion de cette passe
+La carte B11 est cohérente en DC sur les branches résistives principales.
+Les points les plus solides sont :
+R23 : 10 mA
+R15/R16 : environ 7,5 à 7,9 mA
+R10/R11 : environ 1,15 à 1,25 mA
+R12 : environ 4,17 mA
+Les points qui ne doivent pas être surinterprétés :
+nœud 0,45 V autour de Ts3/Ts4
+courants dans R28/R29 de 1 Ω
+zone D1/D2/ZL10/B30 C2200
+courant exact du pont de diodes de commande
+Pour aller encore plus loin de manière rigoureuse, la prochaine étape est de revenir au
+pont de diodes B6/D1-D4 et de vérifier son équilibre :
+nœuds 14 et 15
+R7 100 Ω
+R8 250 kΩ
+R9 390 kΩ
+R10 20 kΩ
+R6/R11 39 kΩ
+C3/C5/C7
+Là, on pourra vérifier la logique de commande envoyée par B11 vers le pont de diodes,
+mais il faudra séparer régime DC de repos et régime dynamique de compression.
+Sources
+Sources
+ok alors fait le
+Thought for 59s
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+54/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+D’accord. On attaque maintenant le pont de diodes B6/D1-D4, c’est la partie la plus
+délicate du Siemens U273, donc je vais être encore plus rigoureux : je ne vais pas inventer
+de tension DC là où le schéma ne l’imprime pas. On va faire les nœuds un par un, avec KCL
+symbolique, puis les KVL de boucle. Source : schéma page 1 du PDF Siemens U273.
+Siemens_U273_Limiter
+1. Zone analysée
+On travaille ici sur cette zone :
+U1 secondaire
+→ R5 5,6 kΩ
+→ C1 0,68 µF
+→ nœud audio 25 mV~
+→ pont de diodes D1-D4
+→ commande venant de B11
+Composants concernés :
+Référence
+Valeur
+B6/D1
+OA154Q
+B6/D2
+SSD55
+B6/D3
+SSD55
+B6/D4
+OA154Q
+B6/R6
+39 kΩ
+B6/R7
+100 Ω ajustable
+B6/R8
+250 kΩ ajustable
+B6/R9
+390 kΩ
+B6/R10
+20 kΩ
+B6/R11
+39 kΩ
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+55/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Référence
+Valeur
+B6/C1
+0,68 µF
+B6/C2
+22 µF
+B6/C3
+4,7 µF
+B6/C4
+Abgl., valeur non lisible
+B6/C5
+150 µF
+B6/C6
+Abgl., valeur non lisible
+B6/C7
+4,7 µF
+2. Convention de nœuds
+Pour ne pas se perdre, je renomme les nœuds de manière logique.
+N0
+= rail inférieur / référence locale du pont
+NA
+= nœud audio après C1, marqué 25 mV~
+NB
+= nœud sous C2, relié au réseau R7/R9
+N14 = nœud marqué 14, côté gauche du pont
+N15 = nœud marqué 15, côté droit du pont
+NL
+= nœud supérieur gauche du pont, côté D3
+NR
+= nœud supérieur droit du pont, côté D2
+NM
+= nœud intermédiaire de commande autour de R8/R10
+Schéma logique simplifié :
+NA = 25 mV~
+|
+C2
+|
+NB
+R7 / réseau d'équilibrage
+/
+\
+D3
+D2
+|
+|
+D4
+D1
+|
+|
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+56/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+N14 ---- C5 ---- N15
+|
+|
+R6
+R11
+|
+|
+N0
+N0
+Ce dessin est volontairement simplifié : il ne remplace pas le schéma, mais il aide pour
+KCL/KVL.
+
+3. Point crucial : en DC, les condensateurs sont ouverts
+Pour une analyse DC stricte :
+C1 ouvert
+C2 ouvert
+C3 ouvert
+C4 ouvert
+C5 ouvert
+C6 ouvert
+C7 ouvert
+Donc :
+Le transformateur U1 n'injecte pas de DC dans le pont via C1.
+Le nœud NA n'a pas de tension DC explicitement imposée par U1.
+Les nœuds 14 et 15 ne sont pas court-circuités en DC par C5.
+
+C’est très important : on ne peut pas faire comme si C5 reliait directement N14 et N15 en
+continu. En régime transitoire ou AC, oui, il intervient. En DC pur, non.
+
+4. Nœud NA — nœud audio 25 mV~
+Le nœud NA est marqué :
+25 mV~
+C’est une tension AC, pas une tension DC.
+Il est relié à :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+57/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Élément
+Connexion
+C1 = 0,68 µF
+depuis R5 / U1
+C2 = 22 µF
+vers le réseau de pont
+entrée de l’amplificateur audio
+vers Ts1
+KCL DC au nœud NA
+En DC :
+I_C1 = 0
+I_C2 = 0
+Donc la KCL DC de NA ne peut pas être fermée avec U1 ou C2.
+Forme rigoureuse :
+I_entrée_ampli_DC + I_fuites = 0
+Mais le schéma ne donne pas de tension DC imprimée à ce nœud.
+Conclusion :
+NA est un nœud AC.
+On ne doit pas utiliser 25 mV~ pour calculer un courant DC.
+
+5. KVL autour de R5 / C1 / NA en AC
+Chemin audio :
+U1 secondaire → R5 5,6 kΩ → C1 0,68 µF → NA
+En AC, la KVL instantanée est :
+v_U1 - v_R5 - v_C1 - v_NA = 0
+Avec :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+58/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+v_R5 = i_audio × 5,6 kΩ
+Le schéma donne :
+v_NA ≈ 25 mV~
+Donc cette zone travaille à très faible niveau. C’est cohérent avec le principe du pont de
+diodes : moins la tension audio sur les diodes est grande, moins la distorsion propre du
+pont est importante.
+
+6. Nœud NB — sous C2, réseau R7/R9
+Le nœud NB est le nœud sous C2 22 µF, associé à :
+R7 = 100 Ω ajustable
+R9 = 390 kΩ
+haut du réseau de diodes
+KCL DC au nœud NB
+En DC :
+I_C2 = 0
+Les courants résistifs possibles sont :
+I_R9 = V_NB / 390 kΩ
+I_R7 = (V_NB - V_NR ou V_NL) / 100 Ω selon position exacte du curseur
+Donc la KCL générale s’écrit :
+I_R7 + I_R9 + I_diode_haut = 0
+ou, en forme développée :
+(V_NB - Vx) / R7 + V_NB / R9 + I_diode = 0
+où Vx est le nœud relié par R7 dans la position réelle du réglage.
+
+Ce qu’on peut vérifier
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+59/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+R9 est très grand :
+R9 = 390 kΩ
+Donc même si NB valait par exemple 1 V :
+I_R9 = 1 V / 390 kΩ
+I_R9 ≈ 2,56 µA
+Conclusion :
+R9 est une résistance de fuite / référence très faible courant.
+Elle ne peut pas fournir un gros courant de commande.
+
+Le vrai équilibrage du haut du pont se fait donc surtout par :
+R7 = 100 Ω ajustable
+7. Nœud N14 — côté gauche bas du pont
+N14 est connecté à :
+Élément
+Connexion
+D4 OA154Q
+vers la branche diode gauche
+R6 = 39 kΩ
+vers N0
+C3 = 4,7 µF
+vers N0, ouvert en DC
+C4 = Abgl.
+
+ouvert en DC
+C5 = 150 µF
+vers N15, ouvert en DC
+liaison vers commande B11
+via le câblage de régulation
+KCL DC à N14
+En DC, les condensateurs ne comptent pas :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+60/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+I_C3 = 0
+I_C4 = 0
+I_C5 = 0
+La KCL devient :
+I_D4 + I_commande_14 = I_R6
+avec :
+I_R6 = V_14 / 39 kΩ
+Donc :
+I_D4 + I_commande_14 = V_14 / 39 000
+C’est la KCL correcte du nœud N14.
+
+Exemple numérique prudent
+Le schéma ne donne pas V14 . Mais pour comprendre l’ordre de grandeur :
+Si V14 = 1 V :
+I_R6 = 1 / 39 000
+I_R6 ≈ 25,6 µA
+Si V14 = 0,4 V :
+I_R6 = 0,4 / 39 000
+I_R6 ≈ 10,3 µA
+Donc R6 travaille à des courants faibles, de l’ordre de quelques dizaines de microampères.
+Conclusion :
+R6 ne pilote pas fortement le pont.
+R6 sert surtout de fuite / référence DC côté gauche.
+
+8. Nœud N15 — côté droit bas du pont
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+61/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+N15 est connecté à :
+Élément
+Connexion
+D1 OA154Q
+branche diode droite
+R11 = 39 kΩ
+vers N0
+C7 = 4,7 µF
+vers N0, ouvert en DC
+C5 = 150 µF
+vers N14, ouvert en DC
+réseau R8/R10
+commande / équilibrage
+KCL DC à N15
+En DC :
+I_C7 = 0
+I_C5 = 0
+Donc :
+I_D1 + I_commande_15 = I_R11
+avec :
+I_R11 = V_15 / 39 kΩ
+Donc :
+I_D1 + I_commande_15 = V_15 / 39 000
+Symétrie avec N14
+Comme :
+R6 = R11 = 39 kΩ
+D1 = D4 = OA154Q
+Alors si le pont est équilibré :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+62/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+V14 ≈ V15
+I_R6 ≈ I_R11
+I_D4 ≈ I_D1
+C’est exactement ce qu’on veut : une action symétrique sur les deux alternances du signal.
+
+9. Vérification de symétrie du pont
+Le pont est construit ainsi :
+Branche gauche : D3 SSD55 + D4 OA154Q
+Branche droite : D2 SSD55 + D1 OA154Q
+Donc :
+Branche
+Diode haute
+Diode basse
+Gauche
+D3 = SSD55
+D4 = OA154Q
+Droite
+D2 = SSD55
+D1 = OA154Q
+C’est volontairement symétrique :
+D3 correspond à D2
+D4 correspond à D1
+R6 correspond à R11
+C3 correspond à C7
+Donc la structure est équilibrée.
+
+KCL de symétrie
+À réglage parfait :
+I_D3 ≈ I_D2
+I_D4 ≈ I_D1
+I_R6 ≈ I_R11
+Si ce n’est pas le cas, on ajuste :
+R7 = 100 Ω
+R8 = 250 kΩ
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+63/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+C4 / C6 = Abgl.
+
+Ces éléments servent à réduire :
+déséquilibre DC
+résidu de porteuse de commande
+distorsion paire
+asymétrie des alternances audio
+10. KVL branche gauche du pont
+Branche gauche :
+NL → D3 → D4 → N14
+La KVL instantanée est :
+V_NL - V_N14 = V_D3 + V_D4
+ou :
+V_NL - V_D3 - V_D4 - V_N14 = 0
+Comme D3 est une SSD55 et D4 une OA154Q, la chute totale n’est pas simplement 2 ×
+0,7 V . Ces diodes sont utilisées dans une région de conduction progressive, pas comme
+de simples interrupteurs saturés.
+Donc il faut garder la forme :
+V_D3 = f(I_D3)
+V_D4 = f(I_D4)
+La relation réelle est non linéaire.
+
+11. KVL branche droite du pont
+Branche droite :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+64/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+NR → D2 → D1 → N15
+KVL :
+V_NR - V_N15 = V_D2 + V_D1
+ou :
+V_NR - V_D2 - V_D1 - V_N15 = 0
+À pont équilibré :
+V_D3 + V_D4 ≈ V_D2 + V_D1
+Donc :
+V_NL - V_N14 ≈ V_NR - V_N15
+C’est la condition pour que le pont atténue le signal de manière symétrique.
+
+12. KVL entre les deux branches via R7
+R7 relie le haut du pont et sert d’ajustage d’équilibre.
+KVL entre les nœuds supérieurs gauche/droite :
+V_NL - V_NR = I_R7 × R7
+avec :
+R7 = 100 Ω ajustable
+Si le pont est parfaitement équilibré :
+V_NL ≈ V_NR
+donc :
+I_R7 ≈ 0
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+65/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Si un déséquilibre existe, R7 permet de faire circuler un petit courant correcteur.
+Exemple :
+si la différence entre les deux hauts de pont vaut seulement 10 mV :
+I_R7 = 10 mV / 100 Ω
+I_R7 = 0,01 V / 100 Ω
+I_R7 = 0,1 mA
+Donc R7 peut corriger des déséquilibres significatifs à l’échelle du pont.
+
+13. R8 / R10 — réseau d’équilibrage et de commande
+On a :
+R8 = 250 kΩ ajustable
+R10 = 20 kΩ
+Leur rôle est de régler la répartition de commande entre les branches du pont.
+
+KCL au nœud intermédiaire NM
+Le nœud autour de R8/R10 se traite ainsi :
+I_R8 + I_R10 + I_diode_midpoint = 0
+En forme résistive :
+(V_NM - V_x) / 250 kΩ + (V_NM - V_y) / 20 kΩ + I_diode = 0
+La branche R10 est beaucoup plus forte que R8 :
+R10 = 20 kΩ
+R8 = 250 kΩ
+Rapport :
+250 kΩ / 20 kΩ = 12,5
+Donc, à différence de tension égale :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+66/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+I_R10 ≈ 12,5 × I_R8
+Conclusion :
+R10 impose le chemin principal de courant de ce réseau.
+R8 sert à ajuster finement l’équilibre.
+
+14. R6 / R11 — vérification de symétrie basse
+Comme :
+R6 = 39 kΩ
+R11 = 39 kΩ
+Les deux côtés du bas du pont sont symétriques.
+KCL gauche :
+I_D4 + I_commande_14 = V14 / 39 kΩ
+KCL droite :
+I_D1 + I_commande_15 = V15 / 39 kΩ
+À équilibre :
+V14 = V15
+donc :
+I_R6 = I_R11
+et donc :
+I_D4 + I_commande_14 = I_D1 + I_commande_15
+C’est une condition de bon équilibrage du pont.
+
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+67/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+15. Rôle de C3 / C7 / C5 en dynamique
+En DC :
+C3, C5, C7 ouverts
+Mais en dynamique :
+Condensateur
+Rôle probable
+C3 = 4,7 µF
+Filtrage côté gauche de la commande
+C7 = 4,7 µF
+Filtrage côté droit de la commande
+C5 = 150 µF
+Équilibrage lent / mémoire de commande entre N14 et N15
+C4/C6 = Abgl.
+
+Compensation fine / équilibrage dynamique
+Donc il ne faut pas les utiliser pour une KCL DC, mais ils sont essentiels pour :
+attaque
+relâchement
+ripple de commande
+distorsion
+symétrie dynamique
+16. Vérification avec le texte Siemens : 25 mV et
+commande DC
+Le texte technique Siemens donne un point de fonctionnement d’exemple : la tension de
+signal sur la diode bridge est de l’ordre de 25 mV, avec une tension de commande
+continue de l’ordre de 1 V dans l’exemple de calcul de distorsion du pont. C’est cohérent
+avec le schéma, qui imprime 25 mV~ au nœud audio après C1.
+
+Siemens_U273_Limiter
+Ce rapport est important :
+signal audio sur pont ≈ 25 mV~
+commande DC ≈ beaucoup plus grande
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+68/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Donc le pont est exploité comme une résistance dynamique commandée par une
+polarisation DC, pas comme un redresseur audio.
+
+17. KVL de fonctionnement du pont sous commande
+Pour chaque branche de diode, on peut écrire :
+Branche gauche
+V_NL - V_N14 = V_D3(I_D3) + V_D4(I_D4)
+Branche droite
+V_NR - V_N15 = V_D2(I_D2) + V_D1(I_D1)
+Condition de symétrie
+V_D3 + V_D4 ≈ V_D2 + V_D1
+Comme les paires sont choisies symétriquement :
+SSD55 + OA154Q
+SSD55 + OA154Q
+la condition est réaliste.
+
+18. KCL globale du pont
+Si on additionne les deux côtés, on obtient :
+courant de commande entrant
+=
+courant dans les diodes
++
+courants de fuite R6/R11/R9
++
+courants de compensation R7/R8/R10
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+69/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Forme générale :
+I_commande_total
+=
+I_D1 + I_D2 + I_D3 + I_D4
++ I_R6 + I_R11 + I_R9
++ I_R7 + I_R8 + I_R10
+Mais attention : certains courants sont internes au pont et s’annulent si on prend une
+supermaille. Pour une KCL externe, les vrais courants vers la masse sont surtout :
+I_R6
+I_R11
+I_R9
+courants envoyés/repris par B11
+Les courants dans R7/R8/R10 redistribuent principalement la commande entre les
+branches.
+
+19. Ce qu’on peut valider
+Validé structurellement
+Le pont est symétrique :
+D3/D2 = SSD55
+D4/D1 = OA154Q
+R6/R11 = 39 kΩ
+C3/C7 = 4,7 µF
+Validé fonctionnellement
+R5 + pont de diodes forment un atténuateur commandé.
+Le signal audio sur le pont est faible : 25 mV~.
+La commande DC vient de B11.
+R7/R8/C4/C6 servent à l’équilibrage.
+
+Validé par KVL
+Branche gauche :
+V_NL - V_N14 = V_D3 + V_D4
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+70/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Branche droite :
+V_NR - V_N15 = V_D2 + V_D1
+Équilibre :
+V_D3 + V_D4 ≈ V_D2 + V_D1
+Validé par KCL
+N14 :
+I_D4 + I_commande_14 = V14 / 39 kΩ
+N15 :
+I_D1 + I_commande_15 = V15 / 39 kΩ
+Équilibre :
+si V14 ≈ V15, alors I_R6 ≈ I_R11
+20. Ce qu’on ne peut pas calculer numériquement sans
+hypothèse
+On ne peut pas encore donner un courant exact dans les diodes parce qu’il manque :
+V14 DC exact
+V15 DC exact
+position exacte de R7
+position exacte de R8
+tension instantanée de commande venant de B11
+point de fonctionnement exact des diodes OA154Q et SSD55
+Donc un calcul du type :
+I_D1 = tant de mA
+I_D2 = tant de mA
+serait une invention.
+La bonne conclusion est :
+Le pont est vérifiable en symétrie, KCL/KVL et ordre de grandeur.
+Mais pas en courant diode exact sans point de commande mesuré.
+
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+71/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+21. Conclusion de cette passe
+Le pont de diodes B6 est cohérent.
+Il est organisé pour que :
+Le signal audio très faible arrive par C1.
+La commande continue arrive depuis B11.
+Les diodes deviennent des résistances dynamiques.
+Le pont atténue symétriquement les deux alternances.
+R7/R8/C4/C6 permettent l’équilibrage fin.
+C3/C5/C7 filtrent et stabilisent la commande.
+
+Aucune incohérence KCL/KVL n’apparaît.
+Le prochain niveau d’analyse, si on continue, c’est de faire une analyse dynamique de
+compression avec une hypothèse de commande, par exemple :
+Vcommande pont = 1 V
+signal audio = 25 mV~
+Là, on pourra estimer :
+courant de fuite R6/R11
+courant de commande minimal
+effet de R5 sur l’atténuation
+pourquoi le pont reste relativement peu distordant
+C’est la suite logique.
+Sources
+Sources
+ok continue
+Thought for 17s
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+72/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Oui. On continue avec une analyse dynamique du pont de diodes, c’est-à-dire ce qui se
+passe quand le U273 commence à compresser/limiter. On reste rigoureux : les calculs cidessous sont des modèles d’ordre de grandeur, pas une simulation exacte SPICE, parce
+qu’il manque les courbes précises des diodes OA154Q et SSD55 , ainsi que les valeurs de
+C4/C6 Abgl. . Schéma source : Siemens U273 page 1 du PDF.
+
+Siemens_U273_Limiter
+1. Modèle dynamique du pont
+Le chemin audio simplifié est :
+U1 secondaire
+→ R5 = 5,6 kΩ
+→ C1 = 0,68 µF
+→ nœud audio NA = 25 mV~
+→ pont de diodes commandé
+→ entrée Ts1
+En dynamique, le pont de diodes peut être modélisé comme une résistance shunt variable
+:
+Rbridge élevée
+→ peu d’atténuation
+Rbridge basse
+→ forte atténuation
+Le modèle AC simplifié devient :
+source audio → R5 → NA → Rbridge vers référence
+En première approximation, si l’impédance d’entrée de l’ampli Ts1 est grande devant
+Rbridge , l’atténuation vaut :
+A = V_NA / V_source
+A ≈ Rbridge / (R5 + Rbridge)
+avec :
+R5 = 5,6 kΩ
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+73/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+2. KCL AC au nœud NA
+Au nœud audio NA , en régime AC :
+courant venant de R5
+=
+courant dans le pont de diodes
++
+courant d’entrée de l’ampli Ts1
+Forme KCL :
+(Vsource - VNA) / R5
+=
+VNA / Rbridge
++
+VNA / Zin_Ts1
+Si Zin_Ts1 est suffisamment élevé :
+(Vsource - VNA) / R5 ≈ VNA / Rbridge
+Donc :
+VNA ≈ Vsource × Rbridge / (R5 + Rbridge)
+C’est cette équation qui décrit l’action du limiteur : B11 diminue Rbridge, donc VNA baisse.
+
+3. Table d’atténuation selon Rbridge
+Avec R5 = 5,6 kΩ , on peut calculer l’atténuation pour plusieurs valeurs hypothétiques de
+résistance dynamique du pont.
+Rbridge équivalente
+Rapport VNA/Vsource
+Atténuation approx.
+
+100 kΩ
+0,947
+-0,5 dB
+47 kΩ
+0,893
+-1,0 dB
+22 kΩ
+0,797
+-2,0 dB
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+74/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Rbridge équivalente
+Rapport VNA/Vsource
+Atténuation approx.
+
+10 kΩ
+0,641
+-3,9 dB
+5,6 kΩ
+0,500
+-6,0 dB
+2,2 kΩ
+0,282
+-11,0 dB
+1 kΩ
+0,152
+-16,4 dB
+560 Ω
+0,091
+-20,8 dB
+220 Ω
+0,038
+-28,4 dB
+100 Ω
+0,0175
+-35,1 dB
+Conclusion directe :
+Le pont n’a pas besoin de devenir extrêmement conducteur pour produire beaucoup de réd
+Dès que Rbridge descend sous 1 kΩ, la réduction devient très forte.
+
+
+4. KVL audio autour de R5 et du pont
+Pour une valeur donnée de Rbridge , la boucle audio est :
+Vsource
+→ chute dans R5
+→ tension VNA
+→ pont de diodes vers référence
+KVL :
+Vsource - VR5 - VNA = 0
+avec :
+VR5 = Iaudio × R5
+VNA = Iaudio × Rbridge
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+75/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Donc :
+Vsource = Iaudio × (R5 + Rbridge)
+et :
+VNA = Vsource × Rbridge / (R5 + Rbridge)
+La KVL confirme la même équation que la KCL.
+
+5. Exemple avec le nœud imprimé 25 mV~
+Le schéma indique :
+VNA ≈ 25 mV~
+Prenons plusieurs hypothèses de Rbridge .
+
+Cas A — Rbridge = 5,6 kΩ
+Ici l’atténuation est -6 dB .
+Courant audio dans le pont :
+Ibridge = VNA / Rbridge
+Ibridge = 25 mV / 5,6 kΩ
+Ibridge ≈ 4,46 µA
+Chute dans R5 :
+VR5 = Ibridge × R5
+VR5 = 4,46 µA × 5,6 kΩ
+VR5 ≈ 25 mV
+Donc :
+Vsource ≈ 25 mV + 25 mV
+Vsource ≈ 50 mV~
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+76/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+KVL :
+50 mV - 25 mV - 25 mV = 0
+Validé.
+
+Cas B — Rbridge = 1 kΩ
+Atténuation environ -16,4 dB .
+Courant audio dans le pont :
+Ibridge = 25 mV / 1 kΩ
+Ibridge = 25 µA
+Chute dans R5 :
+VR5 = 25 µA × 5,6 kΩ
+VR5 = 140 mV
+Donc :
+Vsource ≈ 140 mV + 25 mV
+Vsource ≈ 165 mV~
+KVL :
+165 mV - 140 mV - 25 mV = 0
+Validé.
+
+Cas C — Rbridge = 220 Ω
+Atténuation environ -28,4 dB .
+Courant audio dans le pont :
+Ibridge = 25 mV / 220 Ω
+Ibridge ≈ 114 µA
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+77/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Chute dans R5 :
+VR5 = 114 µA × 5,6 kΩ
+VR5 ≈ 638 mV
+Donc :
+Vsource ≈ 638 mV + 25 mV
+Vsource ≈ 663 mV~
+KVL :
+663 mV - 638 mV - 25 mV = 0
+Validé.
+
+6. Ce que ça prouve
+Ces trois cas montrent une chose importante :
+Le nœud audio peut rester autour de 25 mV~
+pendant que le niveau en amont augmente fortement,
+parce que le pont de diodes baisse sa résistance dynamique.
+
+C’est exactement le comportement d’un limiteur :
+entrée augmente
+→ sortie tend à augmenter
+→ B11 augmente la commande
+→ Rbridge diminue
+→ VNA reste contenu
+→ l’amplificateur B6 ne reçoit pas plus de signal
+7. Relation avec la résistance dynamique des diodes
+Une diode polarisée par un courant continu a une résistance dynamique approximative :
+rd ≈ n × VT / ID
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+78/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+avec :
+VT ≈ 25,8 mV à température ambiante
+n ≈ 1 à 2 selon la diode et le régime
+ID = courant de polarisation de la diode
+Pour ordre de grandeur, avec n = 1 :
+Courant diode ID
+Résistance dynamique rd approx.
+
+10 µA
+2,58 kΩ
+25 µA
+1,03 kΩ
+50 µA
+516 Ω
+100 µA
+258 Ω
+250 µA
+103 Ω
+1 mA
+25,8 Ω
+Ce tableau est essentiel : il montre que quelques dizaines ou centaines de microampères
+de commande suffisent à transformer les diodes en résistance dynamique très basse.
+
+8. Lien entre courant de commande et atténuation
+Si les diodes sont faiblement polarisées :
+ID faible
+→ rd élevée
+→ Rbridge élevée
+→ peu d’atténuation
+Si B11 augmente le courant :
+ID augmente
+→ rd baisse
+→ Rbridge baisse
+→ forte atténuation
+Exemple théorique :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+79/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+ID diode approx.
+
+rd approx.
+
+Conséquence
+compression modérée
+10 µA
+2,58 kΩ
+50 µA
+516 Ω
+forte réduction
+100 µA
+258 Ω
+très forte réduction
+250 µA
+103 Ω
+limitation dure
+Attention : dans le vrai pont, Rbridge n’est pas exactement égal à rd d’une seule diode.
+Il dépend de la géométrie du pont, des deux branches et de l’équilibrage. Mais l’ordre de
+grandeur est valide.
+
+9. Vérification des résistances de fuite R6/R11 avec une
+commande de 1 V
+Prenons une hypothèse de travail :
+V14 ≈ V15 ≈ 1 V
+Ce n’est pas une tension imprimée sur le schéma ; c’est une hypothèse utile pour estimer
+les courants de fuite.
+
+Courant dans R6
+R6 = 39 kΩ
+V14 = 1 V
+I_R6 = 1 V / 39 kΩ
+I_R6 ≈ 25,6 µA
+Courant dans R11
+R11 = 39 kΩ
+V15 = 1 V
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+80/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+I_R11 = 1 V / 39 kΩ
+I_R11 ≈ 25,6 µA
+Total fuite basse :
+I_R6 + I_R11 ≈ 51,2 µA
+Conclusion :
+Avec 1 V de commande, R6/R11 consomment déjà environ 51 µA.
+Ce courant est du même ordre que le courant nécessaire pour polariser les diodes dans
+
+
+10. Courant dans R9 avec 1 V
+R9 = 390 kΩ
+V ≈ 1 V
+I_R9 = 1 V / 390 kΩ
+I_R9 ≈ 2,56 µA
+Donc :
+R9 est une fuite très faible.
+Elle fixe une référence mais ne pilote presque pas le pont.
+
+11. Courant dans R10 avec 1 V
+R10 = 20 kΩ
+V ≈ 1 V
+I_R10 = 1 V / 20 kΩ
+I_R10 = 50 µA
+Donc R10 est beaucoup plus actif que R9 :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+81/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+I_R10 / I_R9 ≈ 50 µA / 2,56 µA
+I_R10 / I_R9 ≈ 19,5
+Conclusion :
+R10 est une branche significative de commande.
+R9 est plutôt une résistance de fuite / stabilisation.
+
+12. Courant dans R8 avec 1 V
+R8 = 250 kΩ ajustable
+V ≈ 1 V
+I_R8 = 1 V / 250 kΩ
+I_R8 = 4 µA
+Donc R8 agit surtout comme réglage fin :
+R8 est trop grande pour fournir un gros courant,
+mais suffisante pour déséquilibrer ou rééquilibrer légèrement le pont.
+
+13. R7 = 100 Ω : équilibrage très sensible
+R7 est petite :
+R7 = 100 Ω ajustable
+Si les deux côtés hauts du pont diffèrent de seulement 10 mV :
+I_R7 = 10 mV / 100 Ω
+I_R7 = 100 µA
+Si la différence vaut 5 mV :
+I_R7 = 5 mV / 100 Ω
+I_R7 = 50 µA
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+82/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Conclusion :
+R7 est un réglage très sensible.
+Quelques millivolts de déséquilibre suffisent à faire circuler des dizaines de microam
+
+
+C’est logique : le pont travaille précisément dans cette plage de courant.
+
+14. KCL avec hypothèse Vcommande ≈ 1 V
+Prenons un état équilibré :
+V14 ≈ V15 ≈ 1 V
+Vhaut gauche ≈ Vhaut droite
+Courants de fuite/référence estimés :
+Branche
+Courant approx.
+
+R6 39 kΩ
+25,6 µA
+R11 39 kΩ
+25,6 µA
+R9 390 kΩ
+2,56 µA
+R10 20 kΩ
+50 µA
+R8 250 kΩ
+4 µA
+Somme approximative hors diodes :
+I_hors_diodes ≈ 25,6 + 25,6 + 2,56 + 50 + 4
+I_hors_diodes ≈ 107,8 µA
+Donc même avant de compter la conduction dynamique des diodes :
+la commande doit fournir environ 100 µA
+rien que pour les résistances du réseau.
+
+Si les diodes prennent chacune, par exemple, 50 µA , le courant total peut vite monter vers
+:
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+83/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+I_total ≈ 100 µA + 4 × 50 µA
+I_total ≈ 300 µA
+Ordre de grandeur très plausible pour la carte B11.
+
+15. Lien avec B11 : pourquoi les courants de plusieurs mA
+sont cohérents
+Sur B11, on avait calculé des branches actives de plusieurs mA :
+R15/R16 autour de Ts2 : ≈ 7,5 à 7,9 mA
+R12 au nœud 0,5 V : ≈ 4,17 mA
+R23 autour de Ts3 : ≈ 10 mA
+Le pont B6, lui, semble demander seulement :
+quelques centaines de µA en commande utile
+Ce n’est pas contradictoire.
+Au contraire :
+B11 est un amplificateur/régulateur à basse impédance.
+Il consomme plusieurs mA pour pouvoir fournir une commande stable,
+mais le pont de diodes lui-même n’a besoin que de courants de l’ordre de 100 µA à quel
+
+
+Cela explique pourquoi Siemens utilise une carte de régulation assez robuste.
+
+16. Analyse du mécanisme de limitation
+Supposons que le niveau d’entrée augmente.
+
+Étape 1 — Vsource augmente
+Vsource audio augmente
+Sans régulation :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+84/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+VNA augmenterait aussi
+Donc l’amplificateur B6 recevrait plus de signal, et la sortie monterait.
+
+Étape 2 — B11 détecte la sortie
+sortie plus élevée
+→ transformateur Ü
+→ diodes/zener/redressement
+→ tension de commande plus élevée
+Étape 3 — Le pont reçoit plus de commande
+Vcommande augmente
+→ courant diode augmente
+→ résistance dynamique diode diminue
+Étape 4 — Rbridge diminue
+Exemple :
+Rbridge passe de 5,6 kΩ à 1 kΩ
+L’atténuation passe de :
+-6 dB
+à:
+-16,4 dB
+Donc le circuit retire environ :
+10 dB supplémentaires
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+85/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Étape 5 — VNA reste limité
+Le nœud audio reste autour d’un niveau faible :
+VNA ≈ quelques dizaines de mV~
+Ce qui protège l’ampli audio de la surcharge.
+
+17. Pourquoi la distorsion reste acceptable
+Le pont de diodes est naturellement non linéaire. Mais Siemens réduit la distorsion par
+plusieurs moyens :
+1. signal audio faible : 25 mV~
+2. commande DC plus grande que le signal audio
+3. pont symétrique
+4. diodes appairées par fonction : SSD55/OA154Q de chaque côté
+5. réglages R7/R8
+6. compensations C4/C6
+7. fonctionnement en boucle feedback
+Le point essentiel :
+Le signal audio module légèrement la résistance dynamique,
+mais la commande DC dominante maintient les diodes dans une zone plus stable.
+
+Si la commande DC était trop faible par rapport au signal audio, les diodes se
+comporteraient comme des redresseurs audio et la distorsion exploserait.
+
+18. Bilan dynamique du pont
+Élément
+Rôle dynamique
+R5 5,6 kΩ
+Résistance série qui transforme le pont en atténuateur
+D1-D4
+Résistance dynamique variable
+R6/R11 39 kΩ
+Références DC symétriques basses
+R7 100 Ω
+Équilibrage très sensible haut du pont
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+86/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Élément
+Rôle dynamique
+R8 250 kΩ
+Réglage fin / équilibrage lent
+R9 390 kΩ
+Fuite / stabilisation faible courant
+R10 20 kΩ
+Branche significative de commande
+C3/C7 4,7 µF
+Filtrage symétrique de commande
+C5 150 µF
+Mémoire / stabilisation entre nœuds 14 et 15
+C4/C6 Abgl.
+
+Compensation fine dynamique
+19. Conclusion rigoureuse
+Avec une hypothèse de commande autour de 1 V , le pont est cohérent :
+R6 + R11 tirent ≈ 51 µA
+R10 peut tirer ≈ 50 µA
+R8 tire ≈ 4 µA
+R9 tire ≈ 2,6 µA
+R7 peut corriger plusieurs dizaines à centaines de µA selon déséquilibre
+Donc le réseau autour du pont demande typiquement :
+≈ 100 µA hors diodes
+≈ quelques centaines de µA avec diodes conductrices
+C’est parfaitement compatible avec la carte B11, qui travaille avec des courants de
+plusieurs mA pour fournir une commande stable.
+Le mécanisme est donc validé :
+B11 augmente le courant de commande
+→ rd des diodes baisse
+→ Rbridge baisse
+→ atténuation par R5 augmente
+→ VNA reste faible
+→ la sortie est limitée
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+87/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Prochaine étape logique : vérifier la chaîne de détection B11, c’est-à-dire :
+sortie audio
+→ transformateur Ü
+→ D1 ZL10
+→ D2 SSD55
+→ Gr B30 C2200
+→ S7 limiteur/compresseur
+Là on analysera le seuil de limitation, le rôle de la zener et la différence entre mode
+compresseur et mode limiteur.
+Sources
+Sources
+ok fait le analyse bien de facon rigoureuse et scientifique
+Thought for 37s
+Oui. On analyse maintenant la chaîne de détection / seuil / redressement de la carte B11,
+celle qui décide quand le U273 commence à réduire le niveau via le pont de diodes B6. Je
+vais rester strict : ce qui est calculable, je le calcule ; ce qui dépend du rapport du
+transformateur Ü , de la position de S7 ou des courbes de diodes, je le laisse sous forme
+d’équation. Source : schéma Siemens U273 page 1.
+
+Siemens_U273_Limiter
+1. Zone étudiée
+On analyse cette chaîne fonctionnelle :
+Signal de sortie / prélèvement de niveau
+→ transformateur Ü
+→ réseau D2 SSD55 / D1 ZL10
+→ commutateur S7 limiteur-compresseur
+→ bloc redresseur Gr B30 C2200
+→ filtrage / mise en forme
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+88/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+→ amplificateur de régulation B11
+→ commande du pont de diodes B6/D1-D4
+Composants principaux :
+Référence
+B11/Ü
+Type / valeur
+transformateur
+B11/D1
+ZL10
+B11/D2
+SSD55
+B11/S7
+B11/R31
+B11/Gr
+commutateur
+51 kΩ
+B30 C2200
+B11/C11
+500 µF
+B11/R30
+1 Ω
+B11/Si
+0,8 A
+Fonction
+Couplage du signal de détection
+Zener de seuil, environ 10 V nominal
+Diode de seuil / redressement
+Sélection limiteur / compresseur
+Limitation / polarisation du seuil
+Bloc redresseur
+Filtrage alimentation / régulation
+Résistance série / protection
+Fusible côté régulation
+2. But électrique de cette chaîne
+Cette partie ne traite pas l’audio comme un étage de son. Elle fabrique une tension ou un
+courant de commande.
+Son rôle est :
+si la sortie reste sous le seuil
+→ faible ou aucune commande
+→ pont de diodes B6 peu conducteur
+→ gain normal
+si la sortie dépasse le seuil
+→ D1/D2/Gr conduisent
+→ génération d’une commande DC
+→ pont de diodes B6 plus conducteur
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+89/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+→ atténuation d’entrée
+→ limitation de la sortie
+Donc cette chaîne est le cerveau du seuil.
+
+3. Modèle du transformateur Ü
+Le transformateur Ü reçoit un signal alternatif lié au niveau de sortie.
+Le schéma indique une tension alternative de l’ordre de :
+8 V~
+Je l’interprète comme une tension RMS, car c’est l’usage habituel pour une valeur AC
+imprimée sur ce type de schéma. Donc la crête vaut :
+V_peak = V_RMS × √2
+V_peak = 8 × 1,414
+V_peak ≈ 11,3 V
+C’est une information capitale : une crête d’environ 11,3 V est très proche du seuil d’une
+zener ZL10 , donc environ 10 V, plus une ou plusieurs chutes de diode.
+Cela valide l’idée suivante :
+Le seuil du limiteur est réglé pour commencer à agir près du niveau nominal de sortie.
+
+
+4. D1 ZL10 : rôle de seuil
+D1 = ZL10 est une diode Zener d’environ 10 V.
+
+En première approximation :
+V_Z ≈ 10 V
+Tant que la tension issue du transformateur Ü ne dépasse pas ce seuil, la zener conduit
+très peu.
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+90/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Forme de conduction :
+si |V_Ü| < V_Z + V_D + marges
+→ courant de commande quasi nul
+si |V_Ü| > V_Z + V_D + marges
+→ courant de commande apparaît
+Donc ZL10 rend le mode limiteur non actif sous un certain niveau.
+C’est exactement le comportement attendu d’un limiteur broadcast : il ne réduit pas tout
+le temps, il intervient quand le niveau approche la limite.
+
+5. D2 SSD55 : diode associée au seuil
+D2 = SSD55 est en série ou en association directe avec le réseau de seuil.
+
+Sa chute directe dépend du courant et de sa technologie exacte. Sans courbe constructeur,
+on ne fixe pas une valeur unique. Pour ordre de grandeur :
+V_D2 ≈ 0,2 à 0,7 V selon courant et type de diode
+La boucle de seuil se comporte donc comme :
+V_Ü_peak ≈ V_ZL10 + V_D2 + V_rectification + I × R31
+C’est cette équation qui fixe le déclenchement.
+
+6. KVL de seuil en mode limiteur
+Prenons la demi-alternance qui rend le réseau conducteur.
+Boucle simplifiée :
+transformateur Ü
+→ D2 SSD55
+→ D1 ZL10
+→ Gr B30 C2200
+→ retour
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+91/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+KVL :
+V_Ü_peak - V_D2 - V_ZL10 - V_Gr - I × R31 = 0
+Donc :
+I = (V_Ü_peak - V_D2 - V_ZL10 - V_Gr) / R31
+À l’instant du seuil, le courant commence à peine :
+I ≈ 0
+Donc la condition de seuil devient :
+V_Ü_peak ≈ V_D2 + V_ZL10 + V_Gr
+Avec :
+V_Ü_peak ≈ 11,3 V
+V_ZL10 ≈ 10 V
+Il reste environ :
+11,3 V - 10 V = 1,3 V
+pour absorber :
+la chute de D2
+la ou les chutes du bloc Gr
+la petite chute dans R31
+C’est cohérent. Le seuil n’est pas placé au hasard : 8 V~ au transformateur Ü donne une
+crête juste suffisante pour franchir une zener 10 V plus les diodes associées.
+
+7. R31 = 51 kΩ : limitation de courant du seuil
+R31 = 51 kΩ limite le courant dans la zone zener / diode.
+
+Si le signal dépasse le seuil de, par exemple, 1 V après les chutes de diodes, le courant
+dans R31 vaut :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+92/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+I_R31 = 1 V / 51 kΩ
+I_R31 ≈ 19,6 µA
+Si le dépassement vaut 2 V :
+I_R31 = 2 V / 51 kΩ
+I_R31 ≈ 39,2 µA
+Si le dépassement vaut 5 V :
+I_R31 = 5 V / 51 kΩ
+I_R31 ≈ 98 µA
+Donc R31 place cette partie du détecteur dans une zone de courants faibles, de l’ordre
+de quelques dizaines de microampères au début de conduction.
+C’est logique :
+la zener fixe le seuil ;
+R31 empêche la zener et les diodes de recevoir un courant excessif ;
+les étages actifs suivants amplifient ensuite cette information.
+
+8. Mode limiteur vs mode compresseur via S7
+S7 sélectionne la manière dont le réseau de seuil est utilisé.
+
+Mode limiteur
+En mode limiteur, la zener ZL10 est dans la logique de seuil.
+Comportement :
+tant que V_Ü_peak < environ 10 V + diodes
+→ presque pas de réduction
+quand V_Ü_peak dépasse ce seuil
+→ la régulation démarre vite
+→ forte réduction
+→ plafonnement de la sortie
+Donc la courbe entrée/sortie est plutôt :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+93/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+linéaire sous le seuil
+puis brutalement contrôlée au-dessus du seuil
+Mode compresseur
+En mode compresseur, S7 modifie ou contourne une partie du seuil. Le réseau devient
+sensible plus tôt.
+Comportement :
+réduction plus progressive
+action à plus bas niveau
+courbe entrée/sortie moins brutale
+Donc :
+limiteur = seuil plus haut, action forte
+compresseur = seuil plus bas, action progressive
+Sans le détail mécanique exact de S7 et sans sa table de contacts, on ne doit pas donner
+un seuil numérique absolu en dB. Mais la fonction électrique est claire.
+
+9. Gr = B30 C2200 : redressement
+Le bloc Gr B30 C2200 est le bloc redresseur.
+Son rôle est de transformer le signal alternatif de détection en tension continue utilisable
+par la régulation.
+Forme générale :
+v_detect(t) alternatif
+→ redressement
+→ |v_detect(t)| ou double alternance
+→ filtrage
+→ tension de commande DC
+Le redressement permet au limiteur de réagir au niveau, indépendamment de la polarité
+instantanée du signal.
+KCL au nœud de sortie du redresseur :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+94/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+i_redresseur = i_charge_condensateurs + i_entrée_ampli_régulation + i_fuites
+En formule :
+i_Gr(t) = C × dV_ctrl/dt + V_ctrl/R_eq + i_base/transistors
+Cette équation est importante : elle explique les temps d’attaque et de relâchement.
+
+10. Attaque : charge rapide de la commande
+Quand le niveau dépasse le seuil :
+D1/D2/Gr conduisent
+→ courant de charge apparaît
+→ les condensateurs de commande se chargent
+→ V_ctrl augmente
+→ pont de diodes B6 devient plus conducteur
+La dynamique d’attaque dépend de :
+impédance du transformateur Ü
+chute des diodes
+R31 = 51 kΩ
+résistance interne du redresseur
+capacités de filtrage
+impédance d’entrée des étages B11
+Forme simplifiée :
+τ_attack ≈ R_charge × C_equiv
+Mais ici R_charge n’est pas simplement une résistance fixe : il dépend de la conduction
+des diodes et du signal instantané. Donc l’attaque est non linéaire.
+Le document donne un ordre de grandeur de temps d’attaque très rapide pour le limiteur,
+autour de la milliseconde. Cela est cohérent avec un redressement à seuil suivi d’un
+amplificateur actif de régulation.
+
+11. Relâchement : décharge contrôlée
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+95/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Quand le niveau redescend sous le seuil :
+D1/D2/Gr cessent de conduire
+→ plus de courant de charge
+→ les condensateurs de commande se déchargent
+→ V_ctrl baisse lentement
+→ le pont de diodes B6 redevient moins conducteur
+→ le gain revient
+La décharge passe par les résistances et réseaux autour de :
+R7 500 Ω ajustable
+R8 680 Ω
+R9 56 kΩ
+R13 220 kΩ
+C5 100 µF
+C7/C8/C9 25 µF
+Ici aussi, on ne peut pas donner un seul RC universel sans reconstituer exactement les
+contacts et les chemins actifs. La bonne formulation est :
+τ_release = C_equiv × R_decharge_equiv
+Le relâchement dépend de la position de réglage et de la conduction des transistors B11.
+
+12. Vérification énergétique : le détecteur ne pilote pas
+directement le pont
+C’est un point très important.
+Le réseau Ü → D1/D2/Gr produit une information de niveau. Mais il ne doit pas être vu
+comme la source directe et unique du courant du pont B6.
+Il y a ensuite les étages actifs :
+Ts5/Ts6 2N3054
+Ts3/Ts4 SST116
+Ts2 SST117
+Ts1 SST117
+Ces transistors fournissent une commande de plus basse impédance.
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+96/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Pourquoi ?
+Parce que le pont B6 demande typiquement :
+≈ 100 µA hors diodes
+≈ quelques centaines de µA avec diodes conductrices
+Le détecteur par R31, lui, travaille d’abord dans les dizaines de microampères. Il faut donc
+amplification / buffer / régulation.
+Le rôle de B11 est donc :
+détecter le dépassement de seuil
+amplifier cette information
+filtrer temporellement
+fournir une commande suffisamment basse impédance au pont de diodes
+13. Analyse scientifique de la boucle complète
+La boucle complète peut être décrite comme un système asservi.
+
+Grandeur mesurée
+Vout = niveau de sortie audio
+Détecteur
+Vdet = kÜ × Vout
+où kÜ est le rapport de transfert du transformateur de détection Ü .
+
+Seuil zener
+En limiteur :
+Verr = max(0, |Vdet| - Vseuil)
+avec :
+Vseuil ≈ VZL10 + Vdiodes
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+97/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Redressement / filtrage
+Vctrl = filtre(Verr)
+Action sur le pont
+Vctrl ↑
+→ ID diodes B6 ↑
+→ rd diodes ↓
+→ Rbridge ↓
+→ gain d’entrée ↓
+Effet sur la sortie
+gain ↓
+→ Vout ↓
+→ Vdet ↓
+C’est une contre-réaction négative dynamique.
+
+14. KVL globale du seuil
+En mode limiteur, le déclenchement peut être résumé par :
+|Vdet_peak| ≥ VZL10 + VD2 + VGr + I × R31
+Au tout début du déclenchement :
+I ≈ 0
+Donc :
+|Vdet_peak| ≈ VZL10 + VD2 + VGr
+Avec :
+VZL10 ≈ 10 V
+Vdet ≈ 8 V~ RMS
+Vdet_peak ≈ 11,3 V
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+98/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+La marge disponible est :
+11,3 V - 10 V ≈ 1,3 V
+Cette marge est cohérente avec les chutes de diode nécessaires.
+Conclusion :
+Le seuil zener est dimensionné de façon cohérente avec la tension AC imprimée de 8 V~.
+
+
+15. KCL au nœud redressé
+Au nœud après redressement, la KCL instantanée est :
+i_Gr(t) = i_C(t) + i_R(t) + i_ampli(t)
+avec :
+i_C(t) = C × dVctrl/dt
+i_R(t) = Vctrl / R_eq
+Donc :
+i_Gr(t) = C × dVctrl/dt + Vctrl/R_eq + i_ampli(t)
+Interprétation :
+Si i_Gr est grand, dVctrl/dt est grand : attaque rapide.
+Si i_Gr = 0 , la commande redescend via R_eq : release.
+Si R_eq est grand, release lente.
+Si R_eq est petit, release rapide.
+
+16. Pourquoi la boucle est stable
+Le U273 évite l’instabilité grâce à plusieurs éléments :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+99/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Élément
+Effet stabilisant
+Transformateur Ü
+isolation et limitation de bande
+Zener ZL10
+seuil net
+R31 51 kΩ
+limite le courant de seuil
+Bloc Gr
+redressement contrôlé
+Condensateurs C5/C7/C8/C9/C11
+filtrage temporel
+Réseau S6 R1-R6 C1-C4
+préaccentuation / façonnage fréquentiel
+Pont de diodes B6 symétrique
+réduction équilibrée du signal
+Feedback global
+correction par mesure de sortie
+Le système ne réagit pas à chaque micro-variation instantanée du signal comme un
+interrupteur brut ; il convertit le niveau en une commande lissée.
+
+17. Différence sonore probable limiteur / compresseur
+Limiteur
+Zener active dans le seuil
+→ action tardive
+→ réduction forte
+→ sortie plafonnée
+→ transitoires contrôlés rapidement
+Conséquence sonore :
+plus ferme
+plus protecteur
+plus broadcast
+plus sensible au seuil de sortie
+Compresseur
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+100/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+seuil plus bas ou réseau zener contourné
+→ action plus progressive
+→ réduction plus continue
+→ moins de rupture au seuil
+Conséquence sonore :
+plus doux
+plus nivelant
+moins brutal
+plus adapté à contrôle de dynamique général
+18. Ce qu’on peut conclure rigoureusement
+La chaîne Ü → D1/D2 → Gr → B11 est cohérente :
+1. Le transformateur Ü donne une tension AC de l’ordre de 8 V~ .
+2. 8 V~ RMS correspond à environ 11,3 V crête .
+3. Une zener ZL10 impose un seuil d’environ 10 V .
+4. Il reste environ 1,3 V pour les chutes de diode et la chute dans R31 .
+5. Le déclenchement se produit donc logiquement près du niveau nominal prévu.
+6. Le redresseur B30 C2200 transforme ce dépassement en commande DC.
+7. Les étages transistors B11 amplifient et abaissent l’impédance de cette commande.
+8. Cette commande pilote ensuite le pont de diodes B6.
+9. Le pont réduit le niveau audio avant amplification.
+10. La boucle forme une régulation négative stable.
+Conclusion nette :
+Le réseau D1 ZL10 / D2 SSD55 / Gr B30 C2200 est bien le seuil-redresseur du sidechain.
+Il est dimensionné de manière cohérente avec la tension 8 V~ imprimée.
+Il permet une action de limiteur nette, tandis que S7 modifie ce comportement pour le
+
+
+La prochaine étape logique serait d’analyser le réseau S6 de préaccentuation :
+B11/R1 3 kΩ
+B11/R2 5,1 kΩ
+B11/R3 7,5 kΩ
+B11/R4 7,5 kΩ
+B11/R5 15 kΩ
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+101/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+B11/R6 3,9 kΩ
+B11/C1 5 nF
+B11/C2 5 nF
+B11/C3 3,3 nF
+B11/C4 3 nF
+C’est lui qui détermine à quelles fréquences le limiteur réagit plus fortement ou plus
+faiblement.
+Sources
+Sources
+ok continue et fait le bien de facon rigoureuse et
+scientifique
+Thought for 1m 16s
+Très bien. On continue avec le réseau S6 de préaccentuation / correction fréquentielle du
+sidechain. C’est une partie subtile : elle ne modifie pas directement le signal audio
+principal, elle modifie ce que le détecteur de niveau “entend”. Autrement dit, elle change
+la manière dont le compresseur/limiteur réagit selon la fréquence. Source : schéma
+Siemens U273 page 1 et note technique associée dans le PDF.
+
+Siemens_U273_Limiter
+1. Zone étudiée
+On analyse le bloc autour de :
+B11/S6
+B11/R1 = 3 kΩ
+B11/R2 = 5,1 kΩ
+B11/R3 = 7,5 kΩ
+B11/R4 = 7,5 kΩ
+B11/R5 = 15 kΩ
+B11/R6 = 3,9 kΩ
+B11/C1 = 5 nF
+B11/C2 = 5 nF
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+102/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+B11/C3 = 3,3 nF
+B11/C4 = 3 nF
+Le schéma montre une note allemande indiquant que des ponts de câblage permettent
+de commuter la préaccentuation, avec une configuration de livraison à réponse
+fréquentielle linéaire. Le rôle de ce réseau est donc bien lié à la réponse fréquentielle du
+circuit de régulation.
+
+2. Fonction globale du réseau S6
+Le signal de commande arrive depuis le bloc de régulation, notamment autour de :
+B11/Ts1
+B11/C5 = 100 µF
+B11/R7 = 500 Ω ajustable
+B11/R8 = 680 Ω
+Puis il passe vers le réseau autour de S6.
+La fonction du bloc S6 est :
+modifier la sensibilité du détecteur selon la fréquence
+Donc :
+si le réseau accentue les hautes fréquences
+→ le limiteur réagit plus vite/plus fort aux aigus
+si le réseau est linéaire
+→ le limiteur réagit de façon plus neutre sur la bande audio
+Ce n’est pas un égaliseur audio dans le chemin principal. C’est un égaliseur de sidechain.
+
+3. Pourquoi ce réseau existe
+Dans un limiteur broadcast ou transmission, on veut parfois que les aigus déclenchent plus
+fortement la réduction de gain. La raison est simple :
+les systèmes de transmission peuvent être plus sensibles aux hautes fréquences
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+103/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Donc un réseau de préaccentuation dans le sidechain permet :
+d’éviter la surmodulation dans l’aigu
+de contrôler les sifflantes
+de protéger la chaîne de diffusion
+de maintenir une limitation plus sûre
+Mais en studio pur, on peut vouloir une réponse linéaire, d’où les ponts de câblage.
+
+4. Modèle électrique du réseau
+Je définis trois nœuds pour analyser proprement.
+VL = nœud gauche du réseau S6
+VM = nœud central du réseau RC
+VR = nœud droit vers le commutateur S6 / charge
+0V = masse
+Le réseau visible peut se modéliser ainsi :
+entre VL et VM :
+R4 = 7,5 kΩ
+C2 = 5 nF
+entre VM et VR :
+R3 = 7,5 kΩ
+C1 = 5 nF
+entre VL et VR :
+R5 = 15 kΩ
+C3 = 3,3 nF
+entre VM et masse :
+C4 = 3 nF en série avec R6 = 3,9 kΩ
+vers la zone S6 / charge :
+R1 = 3 kΩ
+R2 = 5,1 kΩ
+La position exacte de S6 et des ponts de câblage détermine quelles branches sont
+effectivement engagées. Donc l’analyse rigoureuse doit rester en termes de réseau
+commutable, pas en “un seul filtre fixe”.
+
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+104/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+5. Admittances du réseau
+En régime sinusoïdal, on travaille avec :
+s = jω
+Les admittances sont :
+Y_LM = 1/R4 + sC2
+Y_MR = 1/R3 + sC1
+Y_LR = 1/R5 + sC3
+Pour la branche centrale vers masse :
+Z_M0 = R6 + 1/(sC4)
+donc :
+Y_M0 = 1 / Z_M0
+C’est important : C4 et R6 ne sont pas simplement en parallèle. Ils forment une branche
+fréquentielle vers la masse.
+
+6. KCL rigoureuse au nœud VM
+Au nœud central VM , les courants quittant le nœud doivent sommer à zéro :
+(VM - VL)Y_LM + (VM - VR)Y_MR + VM·Y_M0 = 0
+C’est l’équation principale du réseau.
+Elle dit :
+courant vers le côté gauche
++
+courant vers le côté droit
++
+courant vers la masse par C4/R6
+=
+0
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+105/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+C’est la KCL exacte du nœud central dans le modèle linéaire petit signal.
+
+7. KCL au nœud VR
+Si VR est chargé par le commutateur S6 et par une charge équivalente Yload , alors :
+(VR - VL)Y_LR + (VR - VM)Y_MR + VR·Yload = 0
+où Yload dépend de la position de S6 et du réseau R1/R2.
+On peut écrire :
+Yload = 1/Rload
+avec Rload dépendant de la commutation.
+C’est pour cela qu’on ne peut pas donner un unique transfert numérique définitif sans
+table de contacts S6.
+
+8. KCL au nœud VL
+Le nœud VL reçoit la commande depuis l’étage précédent, via le réseau autour de R7/R8.
+Si on appelle Zsource l’impédance source vue depuis le régulateur, alors :
+(VL - Vsource)/Zsource
++
+(VL - VM)Y_LM
++
+(VL - VR)Y_LR
+=
+0
+Donc le réseau S6 est un vrai réseau de transfert dépendant :
+de la fréquence
+de la position S6
+de l’impédance source
+de la charge aval
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+106/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+C’est pour ça que l’analyse sérieuse doit rester nodale.
+
+9. Analyse DC du réseau S6
+En DC :
+s = 0
+Donc tous les condensateurs sont ouverts :
+C1 ouvert
+C2 ouvert
+C3 ouvert
+C4 ouvert
+Il reste seulement :
+R4 = 7,5 kΩ
+R3 = 7,5 kΩ
+R5 = 15 kΩ
+Entre VL et VR , on a donc deux chemins résistifs :
+chemin haut : R5 = 15 kΩ
+chemin bas : R4 + R3 = 7,5 kΩ + 7,5 kΩ = 15 kΩ
+Si ces deux chemins sont connectés par S6, leur équivalent est :
+Req_DC = 15 kΩ || 15 kΩ
+Req_DC = 7,5 kΩ
+Donc en DC, le réseau est parfaitement symétrique :
+R4 = R3
+R4 + R3 = R5
+C’est un signe de conception volontaire. Le réseau n’introduit pas de déséquilibre DC
+majeur dans le sidechain.
+
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+107/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+10. Analyse haute fréquence
+À haute fréquence, les condensateurs deviennent conducteurs.
+Les branches changent :
+R4 // C2
+R3 // C1
+R5 // C3
+C4 + R6 vers masse
+Comme C1 = C2 = 5 nF et R3 = R4 = 7,5 kΩ , les deux demi-branches restent
+symétriques.
+Donc le réseau conserve une structure équilibrée :
+gauche ≈ droite
+Mais la branche centrale C4/R6 crée une fuite fréquentielle vers la masse. C’est elle qui
+peut produire une modification de courbe dans le sidechain.
+
+11. Fréquences caractéristiques des branches
+On calcule les fréquences où la réactance capacitive devient comparable à la résistance :
+f_c = 1 / (2πRC)
+Branche R3/C1 et R4/C2
+R3 = R4 = 7,5 kΩ
+C1 = C2 = 5 nF
+f_c = 1 / (2π × 7500 × 5 nF)
+f_c ≈ 4,24 kHz
+Donc les branches latérales commencent à modifier la réponse autour de :
+≈ 4,2 kHz
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+108/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Branche R5/C3
+R5 = 15 kΩ
+C3 = 3,3 nF
+f_c = 1 / (2π × 15000 × 3,3 nF)
+f_c ≈ 3,22 kHz
+Donc la branche supérieure agit autour de :
+≈ 3,2 kHz
+Branche C4/R6 vers masse
+R6 = 3,9 kΩ
+C4 = 3 nF
+f_c = 1 / (2π × 3900 × 3 nF)
+f_c ≈ 13,6 kHz
+Donc cette fuite vers masse agit surtout dans le haut du spectre :
+≈ 13,6 kHz
+12. Tableau des constantes de temps
+Branche
+R
+C
+τ = RC
+f_c approx.
+
+R3/C1
+7,5 kΩ
+5 nF
+37,5 µs
+4,24 kHz
+R4/C2
+7,5 kΩ
+5 nF
+37,5 µs
+4,24 kHz
+R5/C3
+15 kΩ
+3,3 nF
+49,5 µs
+3,22 kHz
+R6/C4
+3,9 kΩ
+3 nF
+11,7 µs
+13,6 kHz
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+109/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Ces valeurs ne sont pas au hasard : tout le réseau agit principalement entre :
+≈ 3 kHz et ≈ 14 kHz
+C’est exactement la zone critique pour :
+sifflantes
+présence
+préaccentuation broadcast
+surmodulation HF
+agressivité perçue
+13. KVL des branches RC
+Branche R4/C2 entre VL et VM
+R4 et C2 sont en parallèle. Ils ont donc la même tension :
+V_R4 = V_C2 = VL - VM
+Courants :
+I_R4 = (VL - VM) / R4
+I_C2 = sC2(VL - VM)
+KCL locale :
+I_LM = I_R4 + I_C2
+Donc :
+I_LM = (VL - VM)(1/R4 + sC2)
+C’est exactement :
+I_LM = (VL - VM)Y_LM
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+110/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Branche R3/C1 entre VM et VR
+Même logique :
+V_R3 = V_C1 = VM - VR
+I_MR = (VM - VR)(1/R3 + sC1)
+Branche R5/C3 entre VL et VR
+V_R5 = V_C3 = VL - VR
+I_LR = (VL - VR)(1/R5 + sC3)
+Branche C4/R6 vers masse
+Ici C4 et R6 sont en série.
+KVL :
+VM = V_C4 + V_R6
+Courant identique dans C4 et R6 :
+I_C4 = I_R6
+Avec :
+V_R6 = I·R6
+V_C4 = I/(sC4)
+Donc :
+VM = I(R6 + 1/(sC4))
+et :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+111/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+I = VM / (R6 + 1/(sC4))
+C’est la justification de :
+Y_M0 = 1 / (R6 + 1/(sC4))
+14. Interprétation fréquentielle
+À basse fréquence
+À basse fréquence :
+sC ≈ 0
+Les condensateurs sont quasiment ouverts.
+Le réseau devient surtout résistif :
+R5 en parallèle avec R4+R3
+Donc le sidechain voit une réponse relativement linéaire.
+
+Dans la zone 3 à 5 kHz
+Les condensateurs C1, C2 et C3 commencent à conduire.
+Cela modifie le transfert :
+les hautes fréquences passent plus facilement par certaines branches
+Selon la position de S6, cela peut produire :
+préaccentuation HF
+ou correction inverse
+ou réponse linéarisée
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+112/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Au-dessus de 10 kHz
+C4/R6 devient plus actif :
+C4 laisse passer davantage de courant vers R6
+Donc le nœud central VM peut être davantage référencé à la masse, ce qui modifie
+fortement la courbe du sidechain dans l’aigu.
+Cette action autour de 13,6 kHz est cohérente avec une correction haute fréquence.
+
+15. Effet sur la compression
+Si le réseau S6 accentue les aigus dans le sidechain :
+à niveau audio identique :
+un signal aigu produit plus de Vctrl
+qu’un signal grave ou médium
+Donc :
+le pont de diodes B6 reçoit plus de commande
+→ il atténue davantage
+→ les aigus sont mieux limités
+Cela ne veut pas dire que l’audio est directement filtré. Cela veut dire que le gain global
+baisse davantage quand le contenu aigu augmente.
+
+16. Effet possible sur la courbe de compression
+Sans préaccentuation :
+Vctrl ∝ niveau large bande
+Avec préaccentuation :
+Vctrl ∝ niveau pondéré en fréquence
+On peut écrire :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+113/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Vctrl = F(s) · Vdet
+où F(s) est la fonction de transfert du réseau S6.
+Si |F(jω)| augmente dans l’aigu :
+le limiteur devient plus sensible dans l’aigu
+Si |F(jω)| est plat :
+la régulation est linéaire en fréquence
+17. Relation avec les ponts de câblage
+La note du schéma indique que des ponts permettent de commuter la préaccentuation.
+Interprétation technique :
+les contacts S6 et les straps décident quelles branches RC sont actives
+Donc :
+configuration linéaire :
+le réseau est compensé pour que F(s) ≈ constant
+configuration préaccentuée :
+les branches RC donnent plus de gain de détection dans l’aigu
+Ce point est fondamental : le même réseau peut être câblé pour différents usages.
+
+18. Ce qu’on peut valider scientifiquement
+Validé par symétrie
+R3 = R4 = 7,5 kΩ
+C1 = C2 = 5 nF
+Donc les deux moitiés du réseau sont symétriques.
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+114/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Validé par dimensionnement
+Les fréquences de transition sont :
+R5/C3 ≈ 3,2 kHz
+R3/C1 et R4/C2 ≈ 4,2 kHz
+R6/C4 ≈ 13,6 kHz
+Ce sont des fréquences pertinentes pour un sidechain de limiteur broadcast.
+
+Validé par KCL
+Le nœud central VM est gouverné par :
+(VM - VL)Y_LM + (VM - VR)Y_MR + VM·Y_M0 = 0
+C’est une formulation nodale propre.
+
+Validé par KVL
+La branche C4/R6 respecte :
+VM = V_C4 + V_R6
+et chaque branche parallèle respecte :
+V_R = V_C
+19. Ce qu’on ne peut pas conclure sans informations
+supplémentaires
+On ne peut pas donner une courbe exacte en dB/fréquence sans :
+table de contacts exacte de S6
+configuration exacte des ponts de câblage
+impédance source venant de Ts1/R7
+impédance de charge côté R1/R2
+valeur réelle de réglage de R7
+position exacte du mode linéaire/préaccentué
+Donc il serait faux de dire :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+115/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+la préaccentuation est exactement +x dB à 10 kHz
+On ne peut donner que :
+les pôles/zéros possibles
+les fréquences caractéristiques
+les équations nodales
+le sens fonctionnel du réseau
+20. Conclusion de cette analyse S6
+Le réseau S6 est électriquement cohérent et bien dimensionné.
+Il agit principalement dans la bande :
+3 kHz → 14 kHz
+Il sert à modifier la réponse fréquentielle du sidechain, pas du chemin audio principal.
+Sa logique est :
+plus de sensibilité dans l’aigu
+→ plus de tension de commande
+→ pont de diodes B6 plus conducteur
+→ réduction de gain plus forte
+→ limitation plus efficace des composantes aiguës
+La formulation scientifique correcte du réseau est :
+Y_LM = 1/R4 + sC2
+Y_MR = 1/R3 + sC1
+Y_LR = 1/R5 + sC3
+Y_M0 = 1 / (R6 + 1/(sC4))
+avec KCL centrale :
+(VM - VL)Y_LM + (VM - VR)Y_MR + VM·Y_M0 = 0
+C’est le meilleur niveau d’analyse possible sans la table exacte de S6.
+
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+116/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+La suite logique, maintenant, c’est de reconnecter ce réseau à la boucle complète de
+régulation :
+sortie U2
+→ transformateur Ü
+→ seuil ZL10
+→ redressement B30 C2200
+→ amplificateur B11
+→ réseau S6
+→ pont de diodes B6
+→ atténuation d’entrée
+Et d’écrire le modèle global du compresseur sous forme de blocs et équations.
+Sources
+Sources
+ok alors execute bien la reconnection de maniere
+rigoureuse et scientifique
+Thought for 10s
+Oui. On reconnecte maintenant toute la boucle complète du Siemens U273, depuis la
+sortie jusqu’au pont de diodes, puis retour vers le chemin audio. L’objectif est de vérifier
+scientifiquement que chaque sous-bloc qu’on a analysé séparément s’insère correctement
+dans l’asservissement global. Source : schéma Siemens U273, page 1 du PDF.
+Siemens_U273_Limiter
+1. Architecture complète reconnectée
+Le U273 est une boucle de régulation négative dynamique :
+Entrée audio
+→ U1
+→ R5 / C1
+→ pont de diodes B6
+→ amplificateur audio B6
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+117/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+→ C21
+→ transformateur de sortie U2
+→ sortie audio
+Puis en retour :
+sortie audio
+→ prélèvement vers B11
+→ transformateur Ü
+→ seuil D1 ZL10 / D2 SSD55 / S7
+→ redresseur Gr B30 C2200
+→ amplificateur de régulation B11
+→ réseau S6 de pondération fréquentielle
+→ commande du pont de diodes B6
+→ réduction du niveau d’entrée audio
+Donc la sortie commande indirectement l’entrée. C’est un feedback limiter/compressor,
+pas un feed-forward moderne.
+
+2. Variables de travail
+Pour être clair, je définis les signaux :
+vin(t)
+= signal d’entrée ligne
+vu1(t)
+= signal après transformateur d’entrée U1
+vna(t)
+= signal au nœud audio 25 mV~, après R5/C1
+vo(t)
+= signal de sortie audio après U2
+vdet(t)
+= signal détecté par le transformateur Ü
+vthr(t)
+= signal après seuil zener/diodes
+vrect(t)
+= signal redressé par Gr B30 C2200
+vctrl(t)
+= tension de commande filtrée/amplifiée
+ictrl(t)
+= courant de commande envoyé au pont B6
+rbridge(t)
+= résistance dynamique équivalente du pont de diodes
+La boucle complète peut s’écrire conceptuellement :
+vin → vna → vo → vdet → vctrl → rbridge → vna
+3. Bloc 1 — Entrée audio vers nœud NA
+Le chemin d’entrée est :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+118/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+vin
+→ S1/S2
+→ R1/R2
+→ U1
+→ R5 = 5,6 kΩ
+→ C1 = 0,68 µF
+→ NA = 25 mV~
+Au nœud NA , le pont de diodes agit comme une résistance shunt dynamique rbridge .
+En petit signal AC, la KCL du nœud NA est :
+(vu1 - vna) / R5 = vna / rbridge + i_in_amp
+Si l’impédance d’entrée de l’ampli audio est grande devant le pont :
+(vu1 - vna) / R5 ≈ vna / rbridge
+Donc :
+vna ≈ vu1 × rbridge / (R5 + rbridge)
+C’est l’équation fondamentale d’atténuation.
+Quand rbridge baisse, vna baisse.
+
+4. Bloc 2 — Pont de diodes comme résistance dynamique
+Le pont B6 est composé de :
+D1 = OA154Q
+D2 = SSD55
+D3 = SSD55
+D4 = OA154Q
+avec :
+R6/R11 = 39 kΩ
+R7 = 100 Ω ajustable
+R8 = 250 kΩ ajustable
+R9 = 390 kΩ
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+119/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+R10 = 20 kΩ
+C3/C7 = 4,7 µF
+C5 = 150 µF
+C4/C6 = Abgl.
+
+Le courant de commande ictrl polarise les diodes. Une diode polarisée a une résistance
+dynamique approximative :
+rd ≈ nVT / ID
+avec :
+VT ≈ 25,8 mV à température ambiante
+ID = courant de polarisation diode
+n = coefficient technologique de la diode
+Donc :
+ictrl ↑
+→ ID ↑
+→ rd ↓
+→ rbridge ↓
+→ vna ↓
+C’est la conversion commande → réduction de gain.
+
+5. Bloc 3 — Amplificateur audio B6
+Le signal vna est amplifié par la chaîne audio :
+vna
+→ Ts1 BCY66
+→ Ts2 BCY66
+→ Ts3 SST117/1
+→ Ts4 SST116/1
+→ Ts5/Ts6 SST117/1
+→ C21 500 µF
+→ U2
+→ vo
+On peut représenter ce chemin par un gain dépendant de la fréquence :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+120/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+vo(s) = A_audio(s) × vna(s)
+où A_audio(s) inclut :
+gain des transistors
+limitation de bande
+C21
+transformateur U2
+charge 300 Ω
+Important : le gain audio B6 n’est pas commandé directement. Ce qui est commandé, c’est
+le niveau vna envoyé à l’entrée de cet amplificateur.
+
+6. Bloc 4 — Sortie vers transformateur de détection Ü
+Une partie de la sortie est renvoyée vers la carte B11 :
+vo
+→ prélèvement
+→ transformateur Ü
+→ vdet
+On peut écrire :
+vdet(s) = KÜ × vo(s)
+où KÜ est le rapport effectif du transformateur de détection et de son réseau de charge.
+Le schéma indique environ :
+vdet ≈ 8 V~
+Si on considère 8 V~ comme RMS :
+vdet_peak ≈ 8 × √2 ≈ 11,3 V
+Cette valeur est cohérente avec une zener ZL10 d’environ 10 V.
+
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+121/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+7. Bloc 5 — Seuil limiteur D1 ZL10 / D2 SSD55 / S7
+La chaîne de seuil est :
+vdet
+→ D2 SSD55
+→ D1 ZL10
+→ S7
+→ Gr B30 C2200
+En mode limiteur, la condition de conduction est :
+|vdet_peak| ≥ VZL10 + VD2 + VGr + I·R31
+Au début de conduction :
+I ≈ 0
+donc :
+|vdet_peak| ≈ VZL10 + VD2 + VGr
+Avec :
+VZL10 ≈ 10 V
+vdet_peak ≈ 11,3 V
+Il reste environ :
+11,3 V - 10 V = 1,3 V
+pour les chutes de D2 et du redresseur.
+Conclusion :
+Le seuil de limitation est cohérent avec la tension 8 V~ imprimée.
+
+Le commutateur S7 change la topologie du seuil :
+mode limiteur
+→ seuil zener actif, action tardive et ferme
+mode compresseur → seuil modifié/abaissé, action plus progressive
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+122/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+8. Bloc 6 — Redressement par Gr B30 C2200
+Le bloc Gr B30 C2200 transforme le signal de détection AC en commande redressée.
+Modèle :
+vrect(t) ≈ rectification(vthr(t))
+KCL au nœud redressé :
+i_Gr(t) = i_C(t) + i_charge_B11(t) + i_fuite(t)
+avec :
+i_C(t) = C × dvctrl/dt
+Donc :
+i_Gr(t) = C × dvctrl/dt + vctrl/R_eq + i_ampli(t)
+Cette équation explique les temps d’attaque et de relâchement :
+beaucoup de courant redressé → dvctrl/dt élevé → attaque rapide
+plus de courant redressé → décharge par R_eq → relâchement
+9. Bloc 7 — Amplificateur de régulation B11
+Après redressement, le signal de commande traverse l’amplificateur de régulation :
+Ts5/Ts6 2N3054
+→ Ts3/Ts4 SST116
+→ Ts2 SST117
+→ Ts1 SST117
+Ce bloc sert à :
+amplifier l’erreur de niveau
+abaisser l’impédance de commande
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+123/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+fournir le courant nécessaire au pont B6
+stabiliser la boucle
+On peut écrire :
+vctrl(s) = A_reg(s) × vrect(s)
+Mais A_reg(s) n’est pas un simple gain constant, parce qu’il inclut :
+transistors
+condensateurs de temps
+réglages R7/R18/R27
+diodes
+charge du pont B6
+La KCL générale de la sortie de régulation est :
+i_reg = i_pont + i_filtres + i_fuites
+C’est cohérent avec les courants qu’on avait estimés :
+pont B6 : quelques centaines de µA utiles
+B11 : plusieurs mA disponibles
+Donc B11 a une réserve de courant suffisante pour piloter le pont de manière stable.
+
+10. Bloc 8 — Réseau S6 de pondération fréquentielle
+Le réseau S6 agit dans la boucle de régulation, pas dans l’audio direct.
+On a :
+R1 = 3 kΩ
+R2 = 5,1 kΩ
+R3 = 7,5 kΩ
+R4 = 7,5 kΩ
+R5 = 15 kΩ
+R6 = 3,9 kΩ
+C1 = 5 nF
+C2 = 5 nF
+C3 = 3,3 nF
+C4 = 3 nF
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+124/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+On l’a modélisé par :
+Y_LM = 1/R4 + sC2
+Y_MR = 1/R3 + sC1
+Y_LR = 1/R5 + sC3
+Y_M0 = 1 / (R6 + 1/(sC4))
+KCL du nœud central :
+(VM - VL)Y_LM + (VM - VR)Y_MR + VM·Y_M0 = 0
+Son rôle est de produire une pondération fréquentielle :
+vctrl_weighted(s) = F_S6(s) × vctrl(s)
+avec des fréquences caractéristiques autour de :
+3,2 kHz
+4,2 kHz
+13,6 kHz
+Donc :
+si F_S6(s) augmente dans l’aigu
+→ le limiteur réagit davantage aux aigus
+11. Bloc 9 — Retour vers le pont B6
+La sortie de B11/S6 retourne vers le pont B6 via les nœuds de commande :
+commande B11
+→ nœuds 14 / 15 / réseau R7-R8-R10
+→ polarisation des diodes D1-D4
+La relation globale est :
+ictrl(t) = G_driver × vctrl_weighted(t)
+Puis :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+125/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+rbridge(t) = f(ictrl(t))
+où f est non linéaire, parce que les diodes ne sont pas des résistances linéaires.
+Approximation locale :
+rbridge ∝ 1 / ictrl
+Donc :
+vctrl ↑
+→ ictrl ↑
+→ rbridge ↓
+→ atténuation ↑
+12. Fermeture mathématique de la boucle
+On peut maintenant écrire la boucle complète.
+
+Étape audio
+vna(s) = vin_equiv(s) × H_att(s)
+avec :
+H_att(s) ≈ rbridge / (R5 + rbridge)
+Sortie audio
+vo(s) = A_audio(s) × vna(s)
+Détection
+vdet(s) = KÜ × vo(s)
+Seuil + redressement
+En mode limiteur :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+126/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+verr(t) = max(0, |vdet(t)| - Vthreshold)
+avec :
+Vthreshold ≈ VZL10 + VD2 + VGr
+Filtrage / régulation
+vctrl(s) = A_reg(s) × F_S6(s) × Rectifier(verr)
+Pont de diodes
+rbridge = f(vctrl)
+Puis retour :
+H_att = rbridge / (R5 + rbridge)
+Donc la boucle fermée complète est :
+vin → H_att(vctrl) → A_audio → KÜ → seuil/redressement → A_reg/F_S6 → vctrl → H_att
+13. Sens de la contre-réaction
+On vérifie maintenant le signe de la boucle.
+Supposons que vin augmente.
+
+Étape 1
+vin ↑
+Donc :
+vna ↑
+vo ↑
+Étape 2
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+127/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+vo ↑
+→ vdet ↑
+Étape 3
+Si le seuil est franchi :
+vdet > Vthreshold
+→ vrect ↑
+→ vctrl ↑
+Étape 4
+vctrl ↑
+→ ictrl pont ↑
+→ rbridge ↓
+Étape 5
+Comme :
+H_att = rbridge / (R5 + rbridge)
+si rbridge ↓ , alors :
+H_att ↓
+Donc :
+vna ↓
+vo ↓
+Conclusion :
+une augmentation de sortie provoque une action qui réduit l’entrée audio de l’amplific
+
+
+C’est bien une contre-réaction négative.
+
+14. Vérification KCL/KVL globale
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+128/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+KCL au nœud audio NA
+(vu1 - vna)/R5 = vna/rbridge + i_in_amp
+Quand vctrl augmente :
+rbridge diminue
+→ vna/rbridge augmente
+→ plus de courant est shunté
+→ vna baisse
+KCL cohérente.
+
+KVL de la branche audio
+vu1 - vR5 - vna = 0
+avec :
+vR5 = i_audio × R5
+vna = i_audio × rbridge
+Quand rbridge diminue :
+la part de tension sur rbridge diminue
+la part de tension sur R5 augmente
+Donc le pont absorbe davantage de signal.
+
+KVL de seuil
+vdet_peak - VD2 - VZL10 - VGr - I·R31 = 0
+Quand vdet_peak augmente au-dessus du seuil :
+I augmente
+Donc la commande augmente.
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+129/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+KCL du nœud de commande du pont
+Forme globale :
+i_reg = i_D1 + i_D2 + i_D3 + i_D4 + i_R6 + i_R11 + i_R9 + i_R10 + i_trim
+Quand i_reg augmente :
+les courants diode augmentent
+les résistances dynamiques diminuent
+KCL cohérente.
+
+15. Comportement temporel reconnecté
+La boucle n’est pas instantanée. Elle a des constantes de temps.
+
+Attaque
+Quand le niveau monte :
+redresseur Gr conduit
+→ condensateurs de commande se chargent
+→ vctrl monte
+→ rbridge baisse
+Le temps d’attaque dépend de :
+R31
+impédance de Gr
+capacité équivalente de C5/C7/C8/C9
+gain dynamique de B11
+charge du pont B6
+Relâchement
+Quand le niveau baisse :
+redresseur cesse de conduire
+→ condensateurs se déchargent
+→ vctrl baisse
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+130/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+→ rbridge remonte
+→ gain revient
+Le relâchement dépend de :
+R7/R8/R9/R13
+C5/C7/C8/C9
+réglages de B11
+mode S7/S6
+Donc la boucle a une mémoire. C’est indispensable pour éviter un comportement de
+commutation brutal.
+
+16. Modèle bloc complet
+Voici le modèle propre :
+┌──────────────────────────────────────────────┐
+│
+│
+│
+▼
+vin → U1 → R5/C1 → [Pont D1-D4 : H_att(vctrl)] → B6 Audio → U2 → vo
+▲
+│
+│
+│
+│
+▼
+└──── B11 Driver ← S6 ← Redresseur ← Ü ←┘
+En équations :
+vo = A_audio · H_att(vctrl) · vin
+avec :
+H_att(vctrl) = rbridge(vctrl) / (R5 + rbridge(vctrl))
+et :
+vctrl = A_reg · F_S6 · Rectifier(max(0, |KÜ·vo| - Vthreshold))
+C’est la boucle fermée.
+
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+131/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+17. Régime sous seuil
+Si :
+|KÜ·vo| < Vthreshold
+alors :
+vctrl ≈ faible
+ictrl ≈ faible
+rbridge élevée
+H_att ≈ proche de 1
+Le U273 se comporte alors comme un amplificateur ligne normal.
+vo ≈ A_audio · vin
+18. Régime au-dessus du seuil
+Si :
+|KÜ·vo| > Vthreshold
+alors :
+vctrl augmente
+rbridge baisse
+H_att baisse
+La sortie devient :
+vo = A_audio · vin · rbridge/(R5+rbridge)
+Mais rbridge baisse quand vo monte. Donc la croissance de vo est freinée.
+C’est le principe du limiteur.
+
+19. Effet
+Raph de S6 dans la boucle complète
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+132/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Avec S6 en réponse linéaire :
+F_S6(s) ≈ constant
+Le limiteur réagit à peu près pareil à toutes les fréquences dans la bande utile.
+Avec S6 en préaccentuation :
+|F_S6(jω)| augmente dans l’aigu
+Donc pour un même niveau de sortie :
+vctrl aigu > vctrl grave
+Conséquence :
+les aigus déclenchent davantage de réduction
+Ce n’est pas un EQ audio direct. C’est une pondération du détecteur.
+
+20. Effet de S7 dans la boucle complète
+Mode limiteur
+S7 garde le seuil zener actif
+→ déclenchement tardif
+→ action forte après seuil
+Courbe :
+sous seuil : gain normal
+au seuil : compression forte
+au-dessus : sortie plafonnée
+Mode compresseur
+S7 modifie/contourne le seuil zener
+→ commande plus progressive
+→ action plus tôt
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+133/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+Courbe :
+réduction continue
+moins de rupture au seuil
+21. Cohérence scientifique finale
+La reconnexion complète est cohérente pour quatre raisons.
+
+1. Cohérence de niveau
+Le schéma donne :
+nœud pont audio ≈ 25 mV~
+détection Ü ≈ 8 V~
+Cela signifie :
+le pont travaille à faible audio
+le détecteur travaille à tension élevée
+C’est exactement ce qu’il faut pour limiter la distorsion du pont.
+
+2. Cohérence de seuil
+8 V~ RMS → 11,3 V crête
+ZL10 ≈ 10 V
+Le seuil est donc naturellement aligné avec la tension de détection.
+
+3. Cohérence de courant
+Le pont B6 demande :
+centaines de µA typiquement
+La carte B11 travaille avec :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+134/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+plusieurs mA dans ses étages actifs
+Donc B11 peut piloter le pont sans s’effondrer.
+
+4. Cohérence de signe
+vo ↑
+→ vctrl ↑
+→ rbridge ↓
+→ H_att ↓
+→ vo ↓
+C’est bien une boucle de régulation négative.
+
+22. Conclusion nette
+La reconnexion complète valide l’architecture du U273 :
+U1/R5/C1 préparent un faible signal audio.
+Le pont B6 agit comme atténuateur variable.
+B6 amplifie le signal atténué.
+U2 fournit la sortie ligne.
+Ü prélève la sortie.
+ZL10/D2/S7 créent le seuil limiteur-compresseur.
+Gr B30 C2200 redresse le signal de détection.
+B11 amplifie et filtre la commande.
+S6 pondère la réponse fréquentielle du sidechain.
+La commande revient au pont B6.
+Le pont réduit le signal d’entrée.
+
+Scientifiquement, le système se résume à :
+vo = A_audio · vin · rbridge(vctrl)/(R5 + rbridge(vctrl))
+avec :
+vctrl = A_reg · F_S6 · Rectifier(max(0, |KÜ·vo| - Vthreshold))
+et :
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+135/136
+4/30/26, 7:40 PM
+ChatGPT - Raph
+vctrl ↑ ⇒ rbridge ↓ ⇒ gain ↓
+Donc le Siemens U273 est bien un limiteur-compresseur à pont de diodes commandé par
+boucle de retour, avec :
+seuil zener
+redressement
+pondération fréquentielle du sidechain
+amplificateur de commande
+atténuation d’entrée par résistance dynamique de diodes
+La boucle est cohérente en niveau, en courant, en polarité et en fonction.
+Sources
+Sources
+https://chatgpt.com/g/g-p-69f1ecd38d648191a613c2de228d47a5-raph/c/69f3807c-9bd0-83eb-ae1b-7e154d88cd17
+136/136
+

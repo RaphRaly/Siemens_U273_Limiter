@@ -1,0 +1,97 @@
+transistor,type,collector,base,emitter,vc,vb,ve,driveVolt,outputVolt,bcReverseVolt,softActive,strictActive,reasons
+Ts1,npn,N215,N10,N9,21.5,10,9,1,12.5,11.5,false,false,base-emitter drive 1.000 V outside soft window
+Ts1,pnp,N215,N10,N9,21.5,10,9,-1,-12.5,-11.5,false,false,base-emitter drive -1.000 V outside soft window; output voltage -12.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts1,npn,N215,N10,N05,21.5,10,0.5,9.5,21,11.5,false,false,base-emitter drive 9.500 V outside soft window
+Ts1,pnp,N215,N10,N05,21.5,10,0.5,-9.5,-21,-11.5,false,false,base-emitter drive -9.500 V outside soft window; output voltage -21.000 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts1,npn,N215,N9,N10,21.5,9,10,-1,11.5,12.5,false,false,base-emitter drive -1.000 V outside soft window
+Ts1,pnp,N215,N9,N10,21.5,9,10,1,-11.5,-12.5,false,false,base-emitter drive 1.000 V outside soft window; output voltage -11.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts1,npn,N215,N9,N05,21.5,9,0.5,8.5,21,12.5,false,false,base-emitter drive 8.500 V outside soft window
+Ts1,pnp,N215,N9,N05,21.5,9,0.5,-8.5,-21,-12.5,false,false,base-emitter drive -8.500 V outside soft window; output voltage -21.000 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts1,npn,N215,N05,N10,21.5,0.5,10,-9.5,11.5,21,false,false,base-emitter drive -9.500 V outside soft window
+Ts1,pnp,N215,N05,N10,21.5,0.5,10,9.5,-11.5,-21,false,false,base-emitter drive 9.500 V outside soft window; output voltage -11.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts1,npn,N215,N05,N9,21.5,0.5,9,-8.5,12.5,21,false,false,base-emitter drive -8.500 V outside soft window
+Ts1,pnp,N215,N05,N9,21.5,0.5,9,8.5,-12.5,-21,false,false,base-emitter drive 8.500 V outside soft window; output voltage -12.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts1,npn,N10,N215,N9,10,21.5,9,12.5,1,-11.5,false,false,base-emitter drive 12.500 V outside soft window; base-collector junction not reverse biased by voltage ordering
+Ts1,pnp,N10,N215,N9,10,21.5,9,-12.5,-1,11.5,false,false,base-emitter drive -12.500 V outside soft window; output voltage -1.000 V below soft active limit
+Ts1,npn,N10,N215,N05,10,21.5,0.5,21,9.5,-11.5,false,false,base-emitter drive 21.000 V outside soft window; base-collector junction not reverse biased by voltage ordering
+Ts1,pnp,N10,N215,N05,10,21.5,0.5,-21,-9.5,11.5,false,false,base-emitter drive -21.000 V outside soft window; output voltage -9.500 V below soft active limit
+Ts1,npn,N10,N9,N215,10,9,21.5,-12.5,-11.5,1,false,false,base-emitter drive -12.500 V outside soft window; output voltage -11.500 V below soft active limit
+Ts1,pnp,N10,N9,N215,10,9,21.5,12.5,11.5,-1,false,false,base-emitter drive 12.500 V outside soft window; base-collector junction not reverse biased by voltage ordering
+Ts1,npn,N10,N9,N05,10,9,0.5,8.5,9.5,1,false,false,base-emitter drive 8.500 V outside soft window
+Ts1,pnp,N10,N9,N05,10,9,0.5,-8.5,-9.5,-1,false,false,base-emitter drive -8.500 V outside soft window; output voltage -9.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts1,npn,N10,N05,N215,10,0.5,21.5,-21,-11.5,9.5,false,false,base-emitter drive -21.000 V outside soft window; output voltage -11.500 V below soft active limit
+Ts1,pnp,N10,N05,N215,10,0.5,21.5,21,11.5,-9.5,false,false,base-emitter drive 21.000 V outside soft window; base-collector junction not reverse biased by voltage ordering
+Ts1,npn,N10,N05,N9,10,0.5,9,-8.5,1,9.5,false,false,base-emitter drive -8.500 V outside soft window
+Ts1,pnp,N10,N05,N9,10,0.5,9,8.5,-1,-9.5,false,false,base-emitter drive 8.500 V outside soft window; output voltage -1.000 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts1,npn,N9,N215,N10,9,21.5,10,11.5,-1,-12.5,false,false,base-emitter drive 11.500 V outside soft window; output voltage -1.000 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts1,pnp,N9,N215,N10,9,21.5,10,-11.5,1,12.5,false,false,base-emitter drive -11.500 V outside soft window
+Ts1,npn,N9,N215,N05,9,21.5,0.5,21,8.5,-12.5,false,false,base-emitter drive 21.000 V outside soft window; base-collector junction not reverse biased by voltage ordering
+Ts1,pnp,N9,N215,N05,9,21.5,0.5,-21,-8.5,12.5,false,false,base-emitter drive -21.000 V outside soft window; output voltage -8.500 V below soft active limit
+Ts1,npn,N9,N10,N215,9,10,21.5,-11.5,-12.5,-1,false,false,base-emitter drive -11.500 V outside soft window; output voltage -12.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts1,pnp,N9,N10,N215,9,10,21.5,11.5,12.5,1,false,false,base-emitter drive 11.500 V outside soft window
+Ts1,npn,N9,N10,N05,9,10,0.5,9.5,8.5,-1,false,false,base-emitter drive 9.500 V outside soft window; base-collector junction not reverse biased by voltage ordering
+Ts1,pnp,N9,N10,N05,9,10,0.5,-9.5,-8.5,1,false,false,base-emitter drive -9.500 V outside soft window; output voltage -8.500 V below soft active limit
+Ts1,npn,N9,N05,N215,9,0.5,21.5,-21,-12.5,8.5,false,false,base-emitter drive -21.000 V outside soft window; output voltage -12.500 V below soft active limit
+Ts1,pnp,N9,N05,N215,9,0.5,21.5,21,12.5,-8.5,false,false,base-emitter drive 21.000 V outside soft window; base-collector junction not reverse biased by voltage ordering
+Ts1,npn,N9,N05,N10,9,0.5,10,-9.5,-1,8.5,false,false,base-emitter drive -9.500 V outside soft window; output voltage -1.000 V below soft active limit
+Ts1,pnp,N9,N05,N10,9,0.5,10,9.5,1,-8.5,false,false,base-emitter drive 9.500 V outside soft window; base-collector junction not reverse biased by voltage ordering
+Ts1,npn,N05,N215,N10,0.5,21.5,10,11.5,-9.5,-21,false,false,base-emitter drive 11.500 V outside soft window; output voltage -9.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts1,pnp,N05,N215,N10,0.5,21.5,10,-11.5,9.5,21,false,false,base-emitter drive -11.500 V outside soft window
+Ts1,npn,N05,N215,N9,0.5,21.5,9,12.5,-8.5,-21,false,false,base-emitter drive 12.500 V outside soft window; output voltage -8.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts1,pnp,N05,N215,N9,0.5,21.5,9,-12.5,8.5,21,false,false,base-emitter drive -12.500 V outside soft window
+Ts1,npn,N05,N10,N215,0.5,10,21.5,-11.5,-21,-9.5,false,false,base-emitter drive -11.500 V outside soft window; output voltage -21.000 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts1,pnp,N05,N10,N215,0.5,10,21.5,11.5,21,9.5,false,false,base-emitter drive 11.500 V outside soft window
+Ts1,npn,N05,N10,N9,0.5,10,9,1,-8.5,-9.5,false,false,base-emitter drive 1.000 V outside soft window; output voltage -8.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts1,pnp,N05,N10,N9,0.5,10,9,-1,8.5,9.5,false,false,base-emitter drive -1.000 V outside soft window
+Ts1,npn,N05,N9,N215,0.5,9,21.5,-12.5,-21,-8.5,false,false,base-emitter drive -12.500 V outside soft window; output voltage -21.000 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts1,pnp,N05,N9,N215,0.5,9,21.5,12.5,21,8.5,false,false,base-emitter drive 12.500 V outside soft window
+Ts1,npn,N05,N9,N10,0.5,9,10,-1,-9.5,-8.5,false,false,base-emitter drive -1.000 V outside soft window; output voltage -9.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts1,pnp,N05,N9,N10,0.5,9,10,1,9.5,8.5,false,false,base-emitter drive 1.000 V outside soft window
+Ts2,npn,N145,N10,N9,14.5,10,9,1,5.5,4.5,false,false,base-emitter drive 1.000 V outside soft window
+Ts2,pnp,N145,N10,N9,14.5,10,9,-1,-5.5,-4.5,false,false,base-emitter drive -1.000 V outside soft window; output voltage -5.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts2,npn,N145,N10,N05,14.5,10,0.5,9.5,14,4.5,false,false,base-emitter drive 9.500 V outside soft window
+Ts2,pnp,N145,N10,N05,14.5,10,0.5,-9.5,-14,-4.5,false,false,base-emitter drive -9.500 V outside soft window; output voltage -14.000 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts2,npn,N145,N9,N10,14.5,9,10,-1,4.5,5.5,false,false,base-emitter drive -1.000 V outside soft window
+Ts2,pnp,N145,N9,N10,14.5,9,10,1,-4.5,-5.5,false,false,base-emitter drive 1.000 V outside soft window; output voltage -4.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts2,npn,N145,N9,N05,14.5,9,0.5,8.5,14,5.5,false,false,base-emitter drive 8.500 V outside soft window
+Ts2,pnp,N145,N9,N05,14.5,9,0.5,-8.5,-14,-5.5,false,false,base-emitter drive -8.500 V outside soft window; output voltage -14.000 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts2,npn,N145,N05,N10,14.5,0.5,10,-9.5,4.5,14,false,false,base-emitter drive -9.500 V outside soft window
+Ts2,pnp,N145,N05,N10,14.5,0.5,10,9.5,-4.5,-14,false,false,base-emitter drive 9.500 V outside soft window; output voltage -4.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts2,npn,N145,N05,N9,14.5,0.5,9,-8.5,5.5,14,false,false,base-emitter drive -8.500 V outside soft window
+Ts2,pnp,N145,N05,N9,14.5,0.5,9,8.5,-5.5,-14,false,false,base-emitter drive 8.500 V outside soft window; output voltage -5.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts2,npn,N10,N145,N9,10,14.5,9,5.5,1,-4.5,false,false,base-emitter drive 5.500 V outside soft window; base-collector junction not reverse biased by voltage ordering
+Ts2,pnp,N10,N145,N9,10,14.5,9,-5.5,-1,4.5,false,false,base-emitter drive -5.500 V outside soft window; output voltage -1.000 V below soft active limit
+Ts2,npn,N10,N145,N05,10,14.5,0.5,14,9.5,-4.5,false,false,base-emitter drive 14.000 V outside soft window; base-collector junction not reverse biased by voltage ordering
+Ts2,pnp,N10,N145,N05,10,14.5,0.5,-14,-9.5,4.5,false,false,base-emitter drive -14.000 V outside soft window; output voltage -9.500 V below soft active limit
+Ts2,npn,N10,N9,N145,10,9,14.5,-5.5,-4.5,1,false,false,base-emitter drive -5.500 V outside soft window; output voltage -4.500 V below soft active limit
+Ts2,pnp,N10,N9,N145,10,9,14.5,5.5,4.5,-1,false,false,base-emitter drive 5.500 V outside soft window; base-collector junction not reverse biased by voltage ordering
+Ts2,npn,N10,N9,N05,10,9,0.5,8.5,9.5,1,false,false,base-emitter drive 8.500 V outside soft window
+Ts2,pnp,N10,N9,N05,10,9,0.5,-8.5,-9.5,-1,false,false,base-emitter drive -8.500 V outside soft window; output voltage -9.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts2,npn,N10,N05,N145,10,0.5,14.5,-14,-4.5,9.5,false,false,base-emitter drive -14.000 V outside soft window; output voltage -4.500 V below soft active limit
+Ts2,pnp,N10,N05,N145,10,0.5,14.5,14,4.5,-9.5,false,false,base-emitter drive 14.000 V outside soft window; base-collector junction not reverse biased by voltage ordering
+Ts2,npn,N10,N05,N9,10,0.5,9,-8.5,1,9.5,false,false,base-emitter drive -8.500 V outside soft window
+Ts2,pnp,N10,N05,N9,10,0.5,9,8.5,-1,-9.5,false,false,base-emitter drive 8.500 V outside soft window; output voltage -1.000 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts2,npn,N9,N145,N10,9,14.5,10,4.5,-1,-5.5,false,false,base-emitter drive 4.500 V outside soft window; output voltage -1.000 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts2,pnp,N9,N145,N10,9,14.5,10,-4.5,1,5.5,false,false,base-emitter drive -4.500 V outside soft window
+Ts2,npn,N9,N145,N05,9,14.5,0.5,14,8.5,-5.5,false,false,base-emitter drive 14.000 V outside soft window; base-collector junction not reverse biased by voltage ordering
+Ts2,pnp,N9,N145,N05,9,14.5,0.5,-14,-8.5,5.5,false,false,base-emitter drive -14.000 V outside soft window; output voltage -8.500 V below soft active limit
+Ts2,npn,N9,N10,N145,9,10,14.5,-4.5,-5.5,-1,false,false,base-emitter drive -4.500 V outside soft window; output voltage -5.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts2,pnp,N9,N10,N145,9,10,14.5,4.5,5.5,1,false,false,base-emitter drive 4.500 V outside soft window
+Ts2,npn,N9,N10,N05,9,10,0.5,9.5,8.5,-1,false,false,base-emitter drive 9.500 V outside soft window; base-collector junction not reverse biased by voltage ordering
+Ts2,pnp,N9,N10,N05,9,10,0.5,-9.5,-8.5,1,false,false,base-emitter drive -9.500 V outside soft window; output voltage -8.500 V below soft active limit
+Ts2,npn,N9,N05,N145,9,0.5,14.5,-14,-5.5,8.5,false,false,base-emitter drive -14.000 V outside soft window; output voltage -5.500 V below soft active limit
+Ts2,pnp,N9,N05,N145,9,0.5,14.5,14,5.5,-8.5,false,false,base-emitter drive 14.000 V outside soft window; base-collector junction not reverse biased by voltage ordering
+Ts2,npn,N9,N05,N10,9,0.5,10,-9.5,-1,8.5,false,false,base-emitter drive -9.500 V outside soft window; output voltage -1.000 V below soft active limit
+Ts2,pnp,N9,N05,N10,9,0.5,10,9.5,1,-8.5,false,false,base-emitter drive 9.500 V outside soft window; base-collector junction not reverse biased by voltage ordering
+Ts2,npn,N05,N145,N10,0.5,14.5,10,4.5,-9.5,-14,false,false,base-emitter drive 4.500 V outside soft window; output voltage -9.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts2,pnp,N05,N145,N10,0.5,14.5,10,-4.5,9.5,14,false,false,base-emitter drive -4.500 V outside soft window
+Ts2,npn,N05,N145,N9,0.5,14.5,9,5.5,-8.5,-14,false,false,base-emitter drive 5.500 V outside soft window; output voltage -8.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts2,pnp,N05,N145,N9,0.5,14.5,9,-5.5,8.5,14,false,false,base-emitter drive -5.500 V outside soft window
+Ts2,npn,N05,N10,N145,0.5,10,14.5,-4.5,-14,-9.5,false,false,base-emitter drive -4.500 V outside soft window; output voltage -14.000 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts2,pnp,N05,N10,N145,0.5,10,14.5,4.5,14,9.5,false,false,base-emitter drive 4.500 V outside soft window
+Ts2,npn,N05,N10,N9,0.5,10,9,1,-8.5,-9.5,false,false,base-emitter drive 1.000 V outside soft window; output voltage -8.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts2,pnp,N05,N10,N9,0.5,10,9,-1,8.5,9.5,false,false,base-emitter drive -1.000 V outside soft window
+Ts2,npn,N05,N9,N145,0.5,9,14.5,-5.5,-14,-8.5,false,false,base-emitter drive -5.500 V outside soft window; output voltage -14.000 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts2,pnp,N05,N9,N145,0.5,9,14.5,5.5,14,8.5,false,false,base-emitter drive 5.500 V outside soft window
+Ts2,npn,N05,N9,N10,0.5,9,10,-1,-9.5,-8.5,false,false,base-emitter drive -1.000 V outside soft window; output voltage -9.500 V below soft active limit; base-collector junction not reverse biased by voltage ordering
+Ts2,pnp,N05,N9,N10,0.5,9,10,1,9.5,8.5,false,false,base-emitter drive 1.000 V outside soft window

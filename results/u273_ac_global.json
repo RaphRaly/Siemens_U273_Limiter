@@ -1,0 +1,4981 @@
+{
+  "title": "Siemens U273 AC global small-signal reference",
+  "status": "PARAMETRIC_THEVENIN_B6_BRIDGE_REFERENCE",
+  "scientificBoundary": "This is the global AC chain currently justified by the schematic: B11/S6/S7 finite command port + B6 bridge/input small-signal. Full BJT output AC requires conditional stamps and remains guarded.",
+  "frequencies": [
+    40,
+    100,
+    1000,
+    5000,
+    15000
+  ],
+  "driveVolts": [
+    0,
+    1,
+    3,
+    8
+  ],
+  "sourceScenarios": [
+    {
+      "name": "rsource_3k",
+      "commandSourceOhm": 3000,
+      "note": "low B11/S6/S7 output-impedance bound"
+    },
+    {
+      "name": "rsource_10k",
+      "commandSourceOhm": 10000,
+      "note": "moderate B11/S6/S7 reference"
+    },
+    {
+      "name": "rsource_51k",
+      "commandSourceOhm": 51000,
+      "note": "detector-side R31 bound"
+    },
+    {
+      "name": "rsource_100k",
+      "commandSourceOhm": 100000,
+      "note": "high output-impedance sensitivity bound"
+    }
+  ],
+  "b6InventoryStatus": "FERME_SCHEMA_AVEC_MODELES_ACTIFS_GARDES",
+  "operatingPoints": {
+    "rsource_3k": {
+      "0": {
+        "driveVolt": 0,
+        "nodes": {
+          "B11_DRV": 0,
+          "CMD": 0,
+          "N14": 0,
+          "N15": 0,
+          "NB": 0,
+          "NL": 0,
+          "NR": 0
+        },
+        "diodeInfo": [
+          {
+            "name": "D3_SSD55",
+            "anode": "NB",
+            "cathode": "NL",
+            "vd": 0,
+            "rawVd": 0,
+            "id": 0,
+            "gd": 1e-12,
+            "rd": 1000000000000,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0,
+            "dynamicResistanceOhm": 1000000000000,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D4_OA154Q",
+            "anode": "NL",
+            "cathode": "N14",
+            "vd": 0,
+            "rawVd": 0,
+            "id": 0,
+            "gd": 1e-12,
+            "rd": 1000000000000,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0,
+            "dynamicResistanceOhm": 1000000000000,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D2_SSD55",
+            "anode": "NB",
+            "cathode": "NR",
+            "vd": 0,
+            "rawVd": 0,
+            "id": 0,
+            "gd": 1e-12,
+            "rd": 1000000000000,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0,
+            "dynamicResistanceOhm": 1000000000000,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D1_OA154Q",
+            "anode": "NR",
+            "cathode": "N15",
+            "vd": 0,
+            "rawVd": 0,
+            "id": 0,
+            "gd": 1e-12,
+            "rd": 1000000000000,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0,
+            "dynamicResistanceOhm": 1000000000000,
+            "inStatedCurrentRange": false
+          }
+        ],
+        "diodeConductance": {
+          "D3_SSD55": 1e-12,
+          "D4_OA154Q": 1e-12,
+          "D2_SSD55": 1e-12,
+          "D1_OA154Q": 1e-12
+        },
+        "residual": {
+          "residual": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "maxAbs": 0,
+          "rms": 0
+        }
+      },
+      "1": {
+        "driveVolt": 1,
+        "nodes": {
+          "B11_DRV": 0.9999999998785472,
+          "CMD": 0.9773555249174533,
+          "N14": 0.10586945114247943,
+          "N15": 0.10586945114247939,
+          "NB": 0.8263923585101612,
+          "NL": 0.46613089987698636,
+          "NR": 0.46613089987698636
+        },
+        "diodeInfo": [
+          {
+            "name": "D3_SSD55",
+            "anode": "NB",
+            "cathode": "NL",
+            "vd": 0.3602614586331749,
+            "rawVd": 0.3602614586331749,
+            "id": 0.000002714601777740081,
+            "gd": 0.000047903364557987034,
+            "rd": 20875.360410008358,
+            "model": "u273_empirical",
+            "currentMicroAmp": 2.714601777740081,
+            "voltageMilliVolt": 360.26145863317487,
+            "dynamicResistanceOhm": 20875.360410008358,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D4_OA154Q",
+            "anode": "NL",
+            "cathode": "N14",
+            "vd": 0.36026144873450694,
+            "rawVd": 0.36026144873450694,
+            "id": 0.000002714601311569279,
+            "gd": 0.000047903357647888354,
+            "rd": 20875.36342129624,
+            "model": "u273_empirical",
+            "currentMicroAmp": 2.7146013115692793,
+            "voltageMilliVolt": 360.2614487345069,
+            "dynamicResistanceOhm": 20875.36342129624,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D2_SSD55",
+            "anode": "NB",
+            "cathode": "NR",
+            "vd": 0.3602614586331749,
+            "rawVd": 0.3602614586331749,
+            "id": 0.000002714601777740081,
+            "gd": 0.000047903364557987034,
+            "rd": 20875.360410008358,
+            "model": "u273_empirical",
+            "currentMicroAmp": 2.714601777740081,
+            "voltageMilliVolt": 360.26145863317487,
+            "dynamicResistanceOhm": 20875.360410008358,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D1_OA154Q",
+            "anode": "NR",
+            "cathode": "N15",
+            "vd": 0.36026144873450694,
+            "rawVd": 0.36026144873450694,
+            "id": 0.000002714601311569279,
+            "gd": 0.000047903357647888354,
+            "rd": 20875.36342129624,
+            "model": "u273_empirical",
+            "currentMicroAmp": 2.7146013115692793,
+            "voltageMilliVolt": 360.2614487345069,
+            "dynamicResistanceOhm": 20875.36342129624,
+            "inStatedCurrentRange": true
+          }
+        ],
+        "diodeConductance": {
+          "D3_SSD55": 0.000047903364557987034,
+          "D4_OA154Q": 0.000047903357647888354,
+          "D2_SSD55": 0.000047903364557987034,
+          "D1_OA154Q": 0.000047903357647888354
+        },
+        "residual": {
+          "residual": [
+            4.489274620447792e-20,
+            -4.743384504624082e-20,
+            -2.236539675248145e-16,
+            -2.236573556566035e-16,
+            5.262209125476286e-16,
+            -4.006974060281193e-17,
+            -4.006974060281193e-17,
+            -1.21452847778869e-10
+          ],
+          "maxAbs": 1.21452847778869e-10,
+          "rms": 4.2940066129981224e-11
+        }
+      },
+      "3": {
+        "driveVolt": 3,
+        "nodes": {
+          "B11_DRV": 2.999999999842111,
+          "CMD": 2.8527854160181074,
+          "N14": 0.8633269986701586,
+          "N15": 0.8633269986701586,
+          "NB": 1.871354857191417,
+          "NL": 1.3673409254402187,
+          "NR": 1.3673409254402187
+        },
+        "diodeInfo": [
+          {
+            "name": "D3_SSD55",
+            "anode": "NB",
+            "cathode": "NL",
+            "vd": 0.5040139317511982,
+            "rawVd": 0.5040139317511982,
+            "id": 0.000022136591077193866,
+            "gd": 0.0002792195951022764,
+            "rd": 3581.4105368704736,
+            "model": "u273_empirical",
+            "currentMicroAmp": 22.136591077193867,
+            "voltageMilliVolt": 504.01393175119824,
+            "dynamicResistanceOhm": 3581.4105368704736,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D4_OA154Q",
+            "anode": "NL",
+            "cathode": "N14",
+            "vd": 0.5040139267700601,
+            "rawVd": 0.5040139267700601,
+            "id": 0.000022136589709852994,
+            "gd": 0.00027921958061485034,
+            "rd": 3581.4107226934743,
+            "model": "u273_empirical",
+            "currentMicroAmp": 22.136589709852995,
+            "voltageMilliVolt": 504.0139267700601,
+            "dynamicResistanceOhm": 3581.4107226934743,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D2_SSD55",
+            "anode": "NB",
+            "cathode": "NR",
+            "vd": 0.5040139317511982,
+            "rawVd": 0.5040139317511982,
+            "id": 0.000022136591077193866,
+            "gd": 0.0002792195951022764,
+            "rd": 3581.4105368704736,
+            "model": "u273_empirical",
+            "currentMicroAmp": 22.136591077193867,
+            "voltageMilliVolt": 504.01393175119824,
+            "dynamicResistanceOhm": 3581.4105368704736,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D1_OA154Q",
+            "anode": "NR",
+            "cathode": "N15",
+            "vd": 0.5040139267700601,
+            "rawVd": 0.5040139267700601,
+            "id": 0.000022136589709852994,
+            "gd": 0.00027921958061485034,
+            "rd": 3581.4107226934743,
+            "model": "u273_empirical",
+            "currentMicroAmp": 22.136589709852995,
+            "voltageMilliVolt": 504.0139267700601,
+            "dynamicResistanceOhm": 3581.4107226934743,
+            "inStatedCurrentRange": true
+          }
+        ],
+        "diodeConductance": {
+          "D3_SSD55": 0.0002792195951022764,
+          "D4_OA154Q": 0.00027921958061485034,
+          "D2_SSD55": 0.0002792195951022764,
+          "D1_OA154Q": 0.00027921958061485034
+        },
+        "residual": {
+          "residual": [
+            1.4230153513872246e-19,
+            -2.0328790734103208e-19,
+            -3.6174405484978855e-16,
+            -3.6174405484978855e-16,
+            7.235152147538892e-16,
+            1.1248597539537109e-18,
+            1.1248597539537109e-18,
+            -1.5788881313483216e-10
+          ],
+          "maxAbs": 1.5788881313483216e-10,
+          "rms": 5.5822125221446854e-11
+        }
+      },
+      "8": {
+        "driveVolt": 8,
+        "nodes": {
+          "B11_DRV": 7.99999999983323,
+          "CMD": 7.507203849946799,
+          "N14": 2.9920800243872883,
+          "N15": 2.9920800243872883,
+          "NB": 4.221896184037259,
+          "NL": 3.6069881018994816,
+          "NR": 3.6069881018994816
+        },
+        "diodeInfo": [
+          {
+            "name": "D3_SSD55",
+            "anode": "NB",
+            "cathode": "NL",
+            "vd": 0.6149080821377777,
+            "rawVd": 0.6149080821377777,
+            "id": 0.00007672000423197057,
+            "gd": 0.0007931879511428289,
+            "rd": 1260.735237542622,
+            "model": "u273_empirical",
+            "currentMicroAmp": 76.72000423197056,
+            "voltageMilliVolt": 614.9080821377777,
+            "dynamicResistanceOhm": 1260.735237542622,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D4_OA154Q",
+            "anode": "NL",
+            "cathode": "N14",
+            "vd": 0.6149080775121933,
+            "rawVd": 0.6149080775121933,
+            "id": 0.0000767200006249798,
+            "gd": 0.0007931879198177764,
+            "rd": 1260.7352873323332,
+            "model": "u273_empirical",
+            "currentMicroAmp": 76.7200006249798,
+            "voltageMilliVolt": 614.9080775121934,
+            "dynamicResistanceOhm": 1260.7352873323332,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D2_SSD55",
+            "anode": "NB",
+            "cathode": "NR",
+            "vd": 0.6149080821377777,
+            "rawVd": 0.6149080821377777,
+            "id": 0.00007672000423197057,
+            "gd": 0.0007931879511428289,
+            "rd": 1260.735237542622,
+            "model": "u273_empirical",
+            "currentMicroAmp": 76.72000423197056,
+            "voltageMilliVolt": 614.9080821377777,
+            "dynamicResistanceOhm": 1260.735237542622,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D1_OA154Q",
+            "anode": "NR",
+            "cathode": "N15",
+            "vd": 0.6149080775121933,
+            "rawVd": 0.6149080775121933,
+            "id": 0.0000767200006249798,
+            "gd": 0.0007931879198177764,
+            "rd": 1260.7352873323332,
+            "model": "u273_empirical",
+            "currentMicroAmp": 76.7200006249798,
+            "voltageMilliVolt": 614.9080775121934,
+            "dynamicResistanceOhm": 1260.7352873323332,
+            "inStatedCurrentRange": true
+          }
+        ],
+        "diodeConductance": {
+          "D3_SSD55": 0.0007931879511428289,
+          "D4_OA154Q": 0.0007931879198177764,
+          "D2_SSD55": 0.0007931879511428289,
+          "D1_OA154Q": 0.0007931879198177764
+        },
+        "residual": {
+          "residual": [
+            2.439454888092385e-19,
+            2.981555974335137e-19,
+            3.353437319497665e-16,
+            3.353437319497665e-16,
+            -6.710127245512787e-16,
+            -5.908901840045999e-18,
+            -5.908901840045999e-18,
+            -1.6676970915341371e-10
+          ],
+          "maxAbs": 1.6676970915341371e-10,
+          "rms": 5.896199612015929e-11
+        }
+      }
+    },
+    "rsource_10k": {
+      "0": {
+        "driveVolt": 0,
+        "nodes": {
+          "B11_DRV": 0,
+          "CMD": 0,
+          "N14": 0,
+          "N15": 0,
+          "NB": 0,
+          "NL": 0,
+          "NR": 0
+        },
+        "diodeInfo": [
+          {
+            "name": "D3_SSD55",
+            "anode": "NB",
+            "cathode": "NL",
+            "vd": 0,
+            "rawVd": 0,
+            "id": 0,
+            "gd": 1e-12,
+            "rd": 1000000000000,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0,
+            "dynamicResistanceOhm": 1000000000000,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D4_OA154Q",
+            "anode": "NL",
+            "cathode": "N14",
+            "vd": 0,
+            "rawVd": 0,
+            "id": 0,
+            "gd": 1e-12,
+            "rd": 1000000000000,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0,
+            "dynamicResistanceOhm": 1000000000000,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D2_SSD55",
+            "anode": "NB",
+            "cathode": "NR",
+            "vd": 0,
+            "rawVd": 0,
+            "id": 0,
+            "gd": 1e-12,
+            "rd": 1000000000000,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0,
+            "dynamicResistanceOhm": 1000000000000,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D1_OA154Q",
+            "anode": "NR",
+            "cathode": "N15",
+            "vd": 0,
+            "rawVd": 0,
+            "id": 0,
+            "gd": 1e-12,
+            "rd": 1000000000000,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0,
+            "dynamicResistanceOhm": 1000000000000,
+            "inStatedCurrentRange": false
+          }
+        ],
+        "diodeConductance": {
+          "D3_SSD55": 1e-12,
+          "D4_OA154Q": 1e-12,
+          "D2_SSD55": 1e-12,
+          "D1_OA154Q": 1e-12
+        },
+        "residual": {
+          "residual": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "maxAbs": 0,
+          "rms": 0
+        }
+      },
+      "1": {
+        "driveVolt": 1,
+        "nodes": {
+          "B11_DRV": 0.9999999998785472,
+          "CMD": 0.9322991616010975,
+          "N14": 0.09217174305187356,
+          "N15": 0.09217174305187356,
+          "NB": 0.7968974850461984,
+          "NL": 0.4445346087465989,
+          "NR": 0.4445346087465989
+        },
+        "diodeInfo": [
+          {
+            "name": "D3_SSD55",
+            "anode": "NB",
+            "cathode": "NL",
+            "vd": 0.3523628762995995,
+            "rawVd": 0.3523628762995995,
+            "id": 0.000002363378471739261,
+            "gd": 0.000042640355851067144,
+            "rd": 23451.961880730258,
+            "model": "u273_empirical",
+            "currentMicroAmp": 2.3633784717392614,
+            "voltageMilliVolt": 352.3628762995995,
+            "dynamicResistanceOhm": 23451.961880730258,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D4_OA154Q",
+            "anode": "NL",
+            "cathode": "N14",
+            "vd": 0.3523628656947253,
+            "rawVd": 0.3523628656947253,
+            "id": 0.0000023633780271810534,
+            "gd": 0.00004264034911361845,
+            "rd": 23451.965586290677,
+            "model": "u273_empirical",
+            "currentMicroAmp": 2.3633780271810534,
+            "voltageMilliVolt": 352.3628656947253,
+            "dynamicResistanceOhm": 23451.965586290677,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D2_SSD55",
+            "anode": "NB",
+            "cathode": "NR",
+            "vd": 0.3523628762995995,
+            "rawVd": 0.3523628762995995,
+            "id": 0.000002363378471739261,
+            "gd": 0.000042640355851067144,
+            "rd": 23451.961880730258,
+            "model": "u273_empirical",
+            "currentMicroAmp": 2.3633784717392614,
+            "voltageMilliVolt": 352.3628762995995,
+            "dynamicResistanceOhm": 23451.961880730258,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D1_OA154Q",
+            "anode": "NR",
+            "cathode": "N15",
+            "vd": 0.3523628656947253,
+            "rawVd": 0.3523628656947253,
+            "id": 0.0000023633780271810534,
+            "gd": 0.00004264034911361845,
+            "rd": 23451.965586290677,
+            "model": "u273_empirical",
+            "currentMicroAmp": 2.3633780271810534,
+            "voltageMilliVolt": 352.3628656947253,
+            "dynamicResistanceOhm": 23451.965586290677,
+            "inStatedCurrentRange": true
+          }
+        ],
+        "diodeConductance": {
+          "D3_SSD55": 0.000042640355851067144,
+          "D4_OA154Q": 0.00004264034911361845,
+          "D2_SSD55": 0.000042640355851067144,
+          "D1_OA154Q": 0.00004264034911361845
+        },
+        "residual": {
+          "residual": [
+            4.235164736271502e-21,
+            -6.776263578034403e-21,
+            -2.0993711597697834e-16,
+            -2.0993711597697834e-16,
+            4.67399556558501e-16,
+            -2.3598337910504807e-17,
+            -2.3598337910504807e-17,
+            -1.21452847778869e-10
+          ],
+          "maxAbs": 1.21452847778869e-10,
+          "rms": 4.294006612987579e-11
+        }
+      },
+      "3": {
+        "driveVolt": 3,
+        "nodes": {
+          "B11_DRV": 2.999999999842111,
+          "CMD": 2.5752708166366647,
+          "N14": 0.7419312366183336,
+          "N15": 0.7419312366183337,
+          "NB": 1.7258124502257721,
+          "NL": 1.2338718408695066,
+          "NR": 1.2338718408695066
+        },
+        "diodeInfo": [
+          {
+            "name": "D3_SSD55",
+            "anode": "NB",
+            "cathode": "NL",
+            "vd": 0.4919406093562655,
+            "rawVd": 0.4919406093562655,
+            "id": 0.00001902387909618344,
+            "gd": 0.00024584653637339826,
+            "rd": 4067.578151604192,
+            "model": "u273_empirical",
+            "currentMicroAmp": 19.02387909618344,
+            "voltageMilliVolt": 491.9406093562655,
+            "dynamicResistanceOhm": 4067.5781516041916,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D4_OA154Q",
+            "anode": "NL",
+            "cathode": "N14",
+            "vd": 0.49194060425117303,
+            "rawVd": 0.49194060425117303,
+            "id": 0.000019023877862311697,
+            "gd": 0.000245846522979274,
+            "rd": 4067.5783732125615,
+            "model": "u273_empirical",
+            "currentMicroAmp": 19.023877862311696,
+            "voltageMilliVolt": 491.94060425117306,
+            "dynamicResistanceOhm": 4067.5783732125615,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D2_SSD55",
+            "anode": "NB",
+            "cathode": "NR",
+            "vd": 0.4919406093562655,
+            "rawVd": 0.4919406093562655,
+            "id": 0.00001902387909618344,
+            "gd": 0.00024584653637339826,
+            "rd": 4067.578151604192,
+            "model": "u273_empirical",
+            "currentMicroAmp": 19.02387909618344,
+            "voltageMilliVolt": 491.9406093562655,
+            "dynamicResistanceOhm": 4067.5781516041916,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D1_OA154Q",
+            "anode": "NR",
+            "cathode": "N15",
+            "vd": 0.4919406042511729,
+            "rawVd": 0.4919406042511729,
+            "id": 0.000019023877862311666,
+            "gd": 0.0002458465229792737,
+            "rd": 4067.578373212567,
+            "model": "u273_empirical",
+            "currentMicroAmp": 19.023877862311668,
+            "voltageMilliVolt": 491.94060425117294,
+            "dynamicResistanceOhm": 4067.578373212567,
+            "inStatedCurrentRange": true
+          }
+        ],
+        "diodeConductance": {
+          "D3_SSD55": 0.00024584653637339826,
+          "D4_OA154Q": 0.000245846522979274,
+          "D2_SSD55": 0.00024584653637339826,
+          "D1_OA154Q": 0.0002458465229792737
+        },
+        "residual": {
+          "residual": [
+            1.3552527156068805e-20,
+            -1.3552527156068805e-20,
+            -3.0314292742694704e-16,
+            -3.0308871731832276e-16,
+            6.062316447452698e-16,
+            -1.3552527156068805e-19,
+            2.710505431213761e-20,
+            -1.5788881313483216e-10
+          ],
+          "maxAbs": 1.5788881313483216e-10,
+          "rms": 5.5822125221184955e-11
+        }
+      },
+      "8": {
+        "driveVolt": 8,
+        "nodes": {
+          "B11_DRV": 7.99999999983323,
+          "CMD": 6.588208595504012,
+          "N14": 2.5647618256765154,
+          "N15": 2.5647618256765154,
+          "NB": 3.764625786845577,
+          "NL": 3.1646938039514203,
+          "NR": 3.1646938039514203
+        },
+        "diodeInfo": [
+          {
+            "name": "D3_SSD55",
+            "anode": "NB",
+            "cathode": "NL",
+            "vd": 0.5999319828941565,
+            "rawVd": 0.5999319828941565,
+            "id": 0.00006576312689970316,
+            "gd": 0.0006968802095108187,
+            "rd": 1434.96685133584,
+            "model": "u273_empirical",
+            "currentMicroAmp": 65.76312689970317,
+            "voltageMilliVolt": 599.9319828941565,
+            "dynamicResistanceOhm": 1434.96685133584,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D4_OA154Q",
+            "anode": "NL",
+            "cathode": "N14",
+            "vd": 0.5999319782749049,
+            "rawVd": 0.5999319782749049,
+            "id": 0.00006576312373500666,
+            "gd": 0.0006968801813408067,
+            "rd": 1434.9669093415553,
+            "model": "u273_empirical",
+            "currentMicroAmp": 65.76312373500666,
+            "voltageMilliVolt": 599.9319782749048,
+            "dynamicResistanceOhm": 1434.9669093415553,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D2_SSD55",
+            "anode": "NB",
+            "cathode": "NR",
+            "vd": 0.5999319828941565,
+            "rawVd": 0.5999319828941565,
+            "id": 0.00006576312689970316,
+            "gd": 0.0006968802095108187,
+            "rd": 1434.96685133584,
+            "model": "u273_empirical",
+            "currentMicroAmp": 65.76312689970317,
+            "voltageMilliVolt": 599.9319828941565,
+            "dynamicResistanceOhm": 1434.96685133584,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D1_OA154Q",
+            "anode": "NR",
+            "cathode": "N15",
+            "vd": 0.5999319782749049,
+            "rawVd": 0.5999319782749049,
+            "id": 0.00006576312373500666,
+            "gd": 0.0006968801813408067,
+            "rd": 1434.9669093415553,
+            "model": "u273_empirical",
+            "currentMicroAmp": 65.76312373500666,
+            "voltageMilliVolt": 599.9319782749048,
+            "dynamicResistanceOhm": 1434.9669093415553,
+            "inStatedCurrentRange": true
+          }
+        ],
+        "diodeConductance": {
+          "D3_SSD55": 0.0006968802095108187,
+          "D4_OA154Q": 0.0006968801813408067,
+          "D2_SSD55": 0.0006968802095108187,
+          "D1_OA154Q": 0.0006968801813408067
+        },
+        "residual": {
+          "residual": [
+            -2.710505431213761e-20,
+            0,
+            2.8845198798976845e-16,
+            2.8845198798976845e-16,
+            -5.774460770657797e-16,
+            9.215718466126788e-19,
+            9.215718466126788e-19,
+            -1.6676970915341371e-10
+          ],
+          "maxAbs": 1.6676970915341371e-10,
+          "rms": 5.89619961199734e-11
+        }
+      }
+    },
+    "rsource_51k": {
+      "0": {
+        "driveVolt": 0,
+        "nodes": {
+          "B11_DRV": 0,
+          "CMD": 0,
+          "N14": 0,
+          "N15": 0,
+          "NB": 0,
+          "NL": 0,
+          "NR": 0
+        },
+        "diodeInfo": [
+          {
+            "name": "D3_SSD55",
+            "anode": "NB",
+            "cathode": "NL",
+            "vd": 0,
+            "rawVd": 0,
+            "id": 0,
+            "gd": 1e-12,
+            "rd": 1000000000000,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0,
+            "dynamicResistanceOhm": 1000000000000,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D4_OA154Q",
+            "anode": "NL",
+            "cathode": "N14",
+            "vd": 0,
+            "rawVd": 0,
+            "id": 0,
+            "gd": 1e-12,
+            "rd": 1000000000000,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0,
+            "dynamicResistanceOhm": 1000000000000,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D2_SSD55",
+            "anode": "NB",
+            "cathode": "NR",
+            "vd": 0,
+            "rawVd": 0,
+            "id": 0,
+            "gd": 1e-12,
+            "rd": 1000000000000,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0,
+            "dynamicResistanceOhm": 1000000000000,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D1_OA154Q",
+            "anode": "NR",
+            "cathode": "N15",
+            "vd": 0,
+            "rawVd": 0,
+            "id": 0,
+            "gd": 1e-12,
+            "rd": 1000000000000,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0,
+            "dynamicResistanceOhm": 1000000000000,
+            "inStatedCurrentRange": false
+          }
+        ],
+        "diodeConductance": {
+          "D3_SSD55": 1e-12,
+          "D4_OA154Q": 1e-12,
+          "D2_SSD55": 1e-12,
+          "D1_OA154Q": 1e-12
+        },
+        "residual": {
+          "residual": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "maxAbs": 0,
+          "rms": 0
+        }
+      },
+      "1": {
+        "driveVolt": 1,
+        "nodes": {
+          "B11_DRV": 0.9999999998785472,
+          "CMD": 0.7776761446099046,
+          "N14": 0.050481649555968774,
+          "N15": 0.050481649555968774,
+          "NB": 0.6904903190143585,
+          "NL": 0.37048597695759333,
+          "NR": 0.37048597695759333
+        },
+        "diodeInfo": [
+          {
+            "name": "D3_SSD55",
+            "anode": "NB",
+            "cathode": "NL",
+            "vd": 0.3200043420567652,
+            "rawVd": 0.3200043420567652,
+            "id": 0.0000012944016412816702,
+            "gd": 0.000025715257376428882,
+            "rd": 38887.41945537049,
+            "model": "u273_empirical",
+            "currentMicroAmp": 1.2944016412816703,
+            "voltageMilliVolt": 320.0043420567652,
+            "dynamicResistanceOhm": 38887.41945537049,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D4_OA154Q",
+            "anode": "NL",
+            "cathode": "N14",
+            "vd": 0.32000432740162454,
+            "rawVd": 0.32000432740162454,
+            "id": 0.0000012944012707859974,
+            "gd": 0.000025715251193642283,
+            "rd": 38887.42880517672,
+            "model": "u273_empirical",
+            "currentMicroAmp": 1.2944012707859975,
+            "voltageMilliVolt": 320.00432740162455,
+            "dynamicResistanceOhm": 38887.42880517672,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D2_SSD55",
+            "anode": "NB",
+            "cathode": "NR",
+            "vd": 0.3200043420567652,
+            "rawVd": 0.3200043420567652,
+            "id": 0.0000012944016412816702,
+            "gd": 0.000025715257376428882,
+            "rd": 38887.41945537049,
+            "model": "u273_empirical",
+            "currentMicroAmp": 1.2944016412816703,
+            "voltageMilliVolt": 320.0043420567652,
+            "dynamicResistanceOhm": 38887.41945537049,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D1_OA154Q",
+            "anode": "NR",
+            "cathode": "N15",
+            "vd": 0.32000432740162454,
+            "rawVd": 0.32000432740162454,
+            "id": 0.0000012944012707859974,
+            "gd": 0.000025715251193642283,
+            "rd": 38887.42880517672,
+            "model": "u273_empirical",
+            "currentMicroAmp": 1.2944012707859975,
+            "voltageMilliVolt": 320.00432740162455,
+            "dynamicResistanceOhm": 38887.42880517672,
+            "inStatedCurrentRange": false
+          }
+        ],
+        "diodeConductance": {
+          "D3_SSD55": 0.000025715257376428882,
+          "D4_OA154Q": 0.000025715251193642283,
+          "D2_SSD55": 0.000025715257376428882,
+          "D1_OA154Q": 0.000025715251193642283
+        },
+        "residual": {
+          "residual": [
+            0,
+            0,
+            -1.201329888431829e-16,
+            -1.201329888431829e-16,
+            2.5873299000240407e-16,
+            -9.642623071542955e-18,
+            -9.642623071542955e-18,
+            -1.21452847778869e-10
+          ],
+          "maxAbs": 1.21452847778869e-10,
+          "rms": 4.2940066129567615e-11
+        }
+      },
+      "3": {
+        "driveVolt": 3,
+        "nodes": {
+          "B11_DRV": 2.999999999842111,
+          "CMD": 1.7758088059309642,
+          "N14": 0.40328637902704734,
+          "N15": 0.40328637902704734,
+          "NB": 1.295733827926593,
+          "NL": 0.8495101005441574,
+          "NR": 0.8495101005441574
+        },
+        "diodeInfo": [
+          {
+            "name": "D3_SSD55",
+            "anode": "NB",
+            "cathode": "NL",
+            "vd": 0.44622372738243565,
+            "rawVd": 0.44622372738243565,
+            "id": 0.000010340677234981113,
+            "gd": 0.00014732417394817826,
+            "rd": 6787.752296182927,
+            "model": "u273_empirical",
+            "currentMicroAmp": 10.340677234981113,
+            "voltageMilliVolt": 446.22372738243564,
+            "dynamicResistanceOhm": 6787.752296182927,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D4_OA154Q",
+            "anode": "NL",
+            "cathode": "N14",
+            "vd": 0.4462237215171101,
+            "rawVd": 0.4462237215171101,
+            "id": 0.00001034067638547121,
+            "gd": 0.00014732416378164778,
+            "rd": 6787.752764591428,
+            "model": "u273_empirical",
+            "currentMicroAmp": 10.34067638547121,
+            "voltageMilliVolt": 446.2237215171101,
+            "dynamicResistanceOhm": 6787.752764591428,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D2_SSD55",
+            "anode": "NB",
+            "cathode": "NR",
+            "vd": 0.44622372738243565,
+            "rawVd": 0.44622372738243565,
+            "id": 0.000010340677234981113,
+            "gd": 0.00014732417394817826,
+            "rd": 6787.752296182927,
+            "model": "u273_empirical",
+            "currentMicroAmp": 10.340677234981113,
+            "voltageMilliVolt": 446.22372738243564,
+            "dynamicResistanceOhm": 6787.752296182927,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D1_OA154Q",
+            "anode": "NR",
+            "cathode": "N15",
+            "vd": 0.4462237215171101,
+            "rawVd": 0.4462237215171101,
+            "id": 0.00001034067638547121,
+            "gd": 0.00014732416378164778,
+            "rd": 6787.752764591428,
+            "model": "u273_empirical",
+            "currentMicroAmp": 10.34067638547121,
+            "voltageMilliVolt": 446.2237215171101,
+            "dynamicResistanceOhm": 6787.752764591428,
+            "inStatedCurrentRange": true
+          }
+        ],
+        "diodeConductance": {
+          "D3_SSD55": 0.00014732417394817826,
+          "D4_OA154Q": 0.00014732416378164778,
+          "D2_SSD55": 0.00014732417394817826,
+          "D1_OA154Q": 0.00014732416378164778
+        },
+        "residual": {
+          "residual": [
+            0,
+            -1.3552527156068805e-20,
+            -1.6231184148465805e-16,
+            -1.6231184148465805e-16,
+            3.2467789307794037e-16,
+            7.047314121155779e-19,
+            7.047314121155779e-19,
+            -1.5788881313483216e-10
+          ],
+          "maxAbs": 1.5788881313483216e-10,
+          "rms": 5.5822125220744746e-11
+        }
+      },
+      "8": {
+        "driveVolt": 8,
+        "nodes": {
+          "B11_DRV": 7.99999999983323,
+          "CMD": 4.035012793117151,
+          "N14": 1.392018652242918,
+          "N15": 1.392018652242918,
+          "NB": 2.4801158493069226,
+          "NL": 1.9360672484140715,
+          "NR": 1.9360672484140715
+        },
+        "diodeInfo": [
+          {
+            "name": "D3_SSD55",
+            "anode": "NB",
+            "cathode": "NL",
+            "vd": 0.5440486008928511,
+            "rawVd": 0.5440486008928511,
+            "id": 0.000035692787890859105,
+            "gd": 0.0004170810565288283,
+            "rd": 2397.6154858782966,
+            "model": "u273_empirical",
+            "currentMicroAmp": 35.69278789085911,
+            "voltageMilliVolt": 544.0486008928511,
+            "dynamicResistanceOhm": 2397.6154858782966,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D4_OA154Q",
+            "anode": "NL",
+            "cathode": "N14",
+            "vd": 0.5440485961711534,
+            "rawVd": 0.5440485961711534,
+            "id": 0.00003569278595478955,
+            "gd": 0.00041708103752503763,
+            "rd": 2397.615595122733,
+            "model": "u273_empirical",
+            "currentMicroAmp": 35.69278595478955,
+            "voltageMilliVolt": 544.0485961711535,
+            "dynamicResistanceOhm": 2397.615595122733,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D2_SSD55",
+            "anode": "NB",
+            "cathode": "NR",
+            "vd": 0.5440486008928511,
+            "rawVd": 0.5440486008928511,
+            "id": 0.000035692787890859105,
+            "gd": 0.0004170810565288283,
+            "rd": 2397.6154858782966,
+            "model": "u273_empirical",
+            "currentMicroAmp": 35.69278789085911,
+            "voltageMilliVolt": 544.0486008928511,
+            "dynamicResistanceOhm": 2397.6154858782966,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D1_OA154Q",
+            "anode": "NR",
+            "cathode": "N15",
+            "vd": 0.5440485961711534,
+            "rawVd": 0.5440485961711534,
+            "id": 0.00003569278595478955,
+            "gd": 0.00041708103752503763,
+            "rd": 2397.615595122733,
+            "model": "u273_empirical",
+            "currentMicroAmp": 35.69278595478955,
+            "voltageMilliVolt": 544.0485961711535,
+            "dynamicResistanceOhm": 2397.615595122733,
+            "inStatedCurrentRange": true
+          }
+        ],
+        "diodeConductance": {
+          "D3_SSD55": 0.0004170810565288283,
+          "D4_OA154Q": 0.00041708103752503763,
+          "D2_SSD55": 0.0004170810565288283,
+          "D1_OA154Q": 0.00041708103752503763
+        },
+        "residual": {
+          "residual": [
+            0,
+            0,
+            1.5707378973883745e-16,
+            1.5707378973883745e-16,
+            -3.142017895862992e-16,
+            -1.4365678785432934e-18,
+            -1.4365678785432934e-18,
+            -1.6676970915341371e-10
+          ],
+          "maxAbs": 1.6676970915341371e-10,
+          "rms": 5.89619961196005e-11
+        }
+      }
+    },
+    "rsource_100k": {
+      "0": {
+        "driveVolt": 0,
+        "nodes": {
+          "B11_DRV": 0,
+          "CMD": 0,
+          "N14": 0,
+          "N15": 0,
+          "NB": 0,
+          "NL": 0,
+          "NR": 0
+        },
+        "diodeInfo": [
+          {
+            "name": "D3_SSD55",
+            "anode": "NB",
+            "cathode": "NL",
+            "vd": 0,
+            "rawVd": 0,
+            "id": 0,
+            "gd": 1e-12,
+            "rd": 1000000000000,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0,
+            "dynamicResistanceOhm": 1000000000000,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D4_OA154Q",
+            "anode": "NL",
+            "cathode": "N14",
+            "vd": 0,
+            "rawVd": 0,
+            "id": 0,
+            "gd": 1e-12,
+            "rd": 1000000000000,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0,
+            "dynamicResistanceOhm": 1000000000000,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D2_SSD55",
+            "anode": "NB",
+            "cathode": "NR",
+            "vd": 0,
+            "rawVd": 0,
+            "id": 0,
+            "gd": 1e-12,
+            "rd": 1000000000000,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0,
+            "dynamicResistanceOhm": 1000000000000,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D1_OA154Q",
+            "anode": "NR",
+            "cathode": "N15",
+            "vd": 0,
+            "rawVd": 0,
+            "id": 0,
+            "gd": 1e-12,
+            "rd": 1000000000000,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0,
+            "dynamicResistanceOhm": 1000000000000,
+            "inStatedCurrentRange": false
+          }
+        ],
+        "diodeConductance": {
+          "D3_SSD55": 1e-12,
+          "D4_OA154Q": 1e-12,
+          "D2_SSD55": 1e-12,
+          "D1_OA154Q": 1e-12
+        },
+        "residual": {
+          "residual": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "maxAbs": 0,
+          "rms": 0
+        }
+      },
+      "1": {
+        "driveVolt": 1,
+        "nodes": {
+          "B11_DRV": 0.9999999998785472,
+          "CMD": 0.6842063481561843,
+          "N14": 0.030527368489539665,
+          "N15": 0.03052736848953967,
+          "NB": 0.6210476178117118,
+          "NL": 0.3257874833189181,
+          "NR": 0.3257874833189181
+        },
+        "diodeInfo": [
+          {
+            "name": "D3_SSD55",
+            "anode": "NB",
+            "cathode": "NL",
+            "vd": 0.2952601344927937,
+            "rawVd": 0.2952601344927937,
+            "id": 7.827533640533427e-7,
+            "gd": 0.000016853799426676576,
+            "rd": 59333.80211094581,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0.7827533640533427,
+            "voltageMilliVolt": 295.2601344927937,
+            "dynamicResistanceOhm": 59333.80211094582,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D4_OA154Q",
+            "anode": "NL",
+            "cathode": "N14",
+            "vd": 0.2952601148293784,
+            "rawVd": 0.2952601148293784,
+            "id": 7.827530382473845e-7,
+            "gd": 0.00001685379353401905,
+            "rd": 59333.82285605432,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0.7827530382473845,
+            "voltageMilliVolt": 295.26011482937844,
+            "dynamicResistanceOhm": 59333.82285605433,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D2_SSD55",
+            "anode": "NB",
+            "cathode": "NR",
+            "vd": 0.2952601344927937,
+            "rawVd": 0.2952601344927937,
+            "id": 7.827533640533427e-7,
+            "gd": 0.000016853799426676576,
+            "rd": 59333.80211094581,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0.7827533640533427,
+            "voltageMilliVolt": 295.2601344927937,
+            "dynamicResistanceOhm": 59333.80211094582,
+            "inStatedCurrentRange": false
+          },
+          {
+            "name": "D1_OA154Q",
+            "anode": "NR",
+            "cathode": "N15",
+            "vd": 0.2952601148293784,
+            "rawVd": 0.2952601148293784,
+            "id": 7.827530382473845e-7,
+            "gd": 0.00001685379353401905,
+            "rd": 59333.82285605432,
+            "model": "u273_empirical",
+            "currentMicroAmp": 0.7827530382473845,
+            "voltageMilliVolt": 295.26011482937844,
+            "dynamicResistanceOhm": 59333.82285605433,
+            "inStatedCurrentRange": false
+          }
+        ],
+        "diodeConductance": {
+          "D3_SSD55": 0.000016853799426676576,
+          "D4_OA154Q": 0.00001685379353401905,
+          "D2_SSD55": 0.000016853799426676576,
+          "D1_OA154Q": 0.00001685379353401905
+        },
+        "residual": {
+          "residual": [
+            8.470329472543003e-22,
+            0,
+            -5.4061030825558465e-17,
+            -5.4061030825558465e-17,
+            1.4385160543219783e-16,
+            -1.862710154306932e-17,
+            -1.862710154306932e-17,
+            -1.21452847778869e-10
+          ],
+          "maxAbs": 1.21452847778869e-10,
+          "rms": 4.294006612946753e-11
+        }
+      },
+      "3": {
+        "driveVolt": 3,
+        "nodes": {
+          "B11_DRV": 2.999999999842111,
+          "CMD": 1.4056029138820714,
+          "N14": 0.25657123073343246,
+          "N15": 0.2565712307334324,
+          "NB": 1.0867234966900632,
+          "NL": 0.6716473603216198,
+          "NR": 0.6716473603216198
+        },
+        "diodeInfo": [
+          {
+            "name": "D3_SSD55",
+            "anode": "NB",
+            "cathode": "NL",
+            "vd": 0.4150761363684434,
+            "rawVd": 0.4150761363684434,
+            "id": 0.000006578750177747097,
+            "gd": 0.00010076119763954512,
+            "rd": 9924.455280665861,
+            "model": "u273_empirical",
+            "currentMicroAmp": 6.578750177747097,
+            "voltageMilliVolt": 415.07613636844343,
+            "dynamicResistanceOhm": 9924.455280665861,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D4_OA154Q",
+            "anode": "NL",
+            "cathode": "N14",
+            "vd": 0.4150761295881873,
+            "rawVd": 0.4150761295881873,
+            "id": 0.000006578749506099095,
+            "gd": 0.00010076118899840707,
+            "rd": 9924.456131773206,
+            "model": "u273_empirical",
+            "currentMicroAmp": 6.578749506099095,
+            "voltageMilliVolt": 415.0761295881873,
+            "dynamicResistanceOhm": 9924.456131773206,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D2_SSD55",
+            "anode": "NB",
+            "cathode": "NR",
+            "vd": 0.4150761363684434,
+            "rawVd": 0.4150761363684434,
+            "id": 0.000006578750177747097,
+            "gd": 0.00010076119763954512,
+            "rd": 9924.455280665861,
+            "model": "u273_empirical",
+            "currentMicroAmp": 6.578750177747097,
+            "voltageMilliVolt": 415.07613636844343,
+            "dynamicResistanceOhm": 9924.455280665861,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D1_OA154Q",
+            "anode": "NR",
+            "cathode": "N15",
+            "vd": 0.41507612958818735,
+            "rawVd": 0.41507612958818735,
+            "id": 0.000006578749506099101,
+            "gd": 0.00010076118899840715,
+            "rd": 9924.456131773199,
+            "model": "u273_empirical",
+            "currentMicroAmp": 6.5787495060991015,
+            "voltageMilliVolt": 415.07612958818737,
+            "dynamicResistanceOhm": 9924.456131773199,
+            "inStatedCurrentRange": true
+          }
+        ],
+        "diodeConductance": {
+          "D3_SSD55": 0.00010076119763954512,
+          "D4_OA154Q": 0.00010076118899840707,
+          "D2_SSD55": 0.00010076119763954512,
+          "D1_OA154Q": 0.00010076118899840715
+        },
+        "residual": {
+          "residual": [
+            0,
+            1.3552527156068805e-20,
+            -1.13651492730793e-16,
+            -1.1365826899437104e-16,
+            2.2733009051589814e-16,
+            -1.2536087619363645e-18,
+            -1.2874900798265365e-18,
+            -1.5788881313483216e-10
+          ],
+          "maxAbs": 1.5788881313483216e-10,
+          "rms": 5.582212522065452e-11
+        }
+      },
+      "8": {
+        "driveVolt": 8,
+        "nodes": {
+          "B11_DRV": 7.99999999983323,
+          "CMD": 2.923549226265301,
+          "N14": 0.8944948926144413,
+          "N15": 0.8944948926144413,
+          "NB": 1.9082590715517154,
+          "NL": 1.4013769796054352,
+          "NR": 1.4013769796054352
+        },
+        "diodeInfo": [
+          {
+            "name": "D3_SSD55",
+            "anode": "NB",
+            "cathode": "NL",
+            "vd": 0.5068820919462802,
+            "rawVd": 0.5068820919462802,
+            "id": 0.00002293576787857152,
+            "gd": 0.0002876630152619859,
+            "rd": 3476.2897798636404,
+            "model": "u273_empirical",
+            "currentMicroAmp": 22.93576787857152,
+            "voltageMilliVolt": 506.8820919462802,
+            "dynamicResistanceOhm": 3476.28977986364,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D4_OA154Q",
+            "anode": "NL",
+            "cathode": "N14",
+            "vd": 0.5068820869909939,
+            "rawVd": 0.5068820869909939,
+            "id": 0.000022935766477194176,
+            "gd": 0.000287663000497949,
+            "rd": 3476.2899582809914,
+            "model": "u273_empirical",
+            "currentMicroAmp": 22.93576647719418,
+            "voltageMilliVolt": 506.8820869909939,
+            "dynamicResistanceOhm": 3476.2899582809914,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D2_SSD55",
+            "anode": "NB",
+            "cathode": "NR",
+            "vd": 0.5068820919462802,
+            "rawVd": 0.5068820919462802,
+            "id": 0.00002293576787857152,
+            "gd": 0.0002876630152619859,
+            "rd": 3476.2897798636404,
+            "model": "u273_empirical",
+            "currentMicroAmp": 22.93576787857152,
+            "voltageMilliVolt": 506.8820919462802,
+            "dynamicResistanceOhm": 3476.28977986364,
+            "inStatedCurrentRange": true
+          },
+          {
+            "name": "D1_OA154Q",
+            "anode": "NR",
+            "cathode": "N15",
+            "vd": 0.5068820869909939,
+            "rawVd": 0.5068820869909939,
+            "id": 0.000022935766477194176,
+            "gd": 0.000287663000497949,
+            "rd": 3476.2899582809914,
+            "model": "u273_empirical",
+            "currentMicroAmp": 22.93576647719418,
+            "voltageMilliVolt": 506.8820869909939,
+            "dynamicResistanceOhm": 3476.2899582809914,
+            "inStatedCurrentRange": true
+          }
+        ],
+        "diodeConductance": {
+          "D3_SSD55": 0.0002876630152619859,
+          "D4_OA154Q": 0.000287663000497949,
+          "D2_SSD55": 0.0002876630152619859,
+          "D1_OA154Q": 0.000287663000497949
+        },
+        "residual": {
+          "residual": [
+            6.776263578034403e-21,
+            -1.3552527156068805e-20,
+            9.917739372811152e-17,
+            9.917739372811152e-17,
+            -1.9846320767347159e-16,
+            1.7889335846010823e-18,
+            1.7889335846010823e-18,
+            -1.6676970915341371e-10
+          ],
+          "maxAbs": 1.6676970915341371e-10,
+          "rms": 5.896199611950615e-11
+        }
+      }
+    }
+  },
+  "rows": [
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 0,
+      "frequency": 40,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.7594509634382615,
+        "im": 0.16106878078174922,
+        "mag": 0.7763432990693117,
+        "db": -2.1989238242656066,
+        "phaseDeg": 11.974191957492204
+      },
+      "VNB": {
+        "re": 0.7580571591284545,
+        "im": 0.16738121745498244,
+        "mag": 0.7763163842549087,
+        "db": -2.1992249580041423,
+        "phaseDeg": 12.45129004456027
+      },
+      "VCMD": {
+        "re": 0.09887702075588538,
+        "im": 0.02183233271151945,
+        "mag": 0.10125865881585766,
+        "db": -19.89135658396275,
+        "phaseDeg": 12.45129004456027
+      },
+      "IVAC": {
+        "re": -0.000034902744234829104,
+        "im": -0.000007706627069207116,
+        "mag": 0.00003574344213846411,
+        "db": -88.93607253422465,
+        "phaseDeg": -167.54870995543965
+      },
+      "inputImpedanceOhm": 27977.16000955273
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 0,
+      "frequency": 100,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.7890938711464446,
+        "im": 0.06704560828151242,
+        "mag": 0.7919370246873926,
+        "db": -2.0261870479619044,
+        "phaseDeg": 4.8564897890909675
+      },
+      "VNB": {
+        "re": 0.7888618002079975,
+        "im": 0.0696731885887657,
+        "mag": 0.7919326316269132,
+        "db": -2.0262352307632425,
+        "phaseDeg": 5.0473327290608845
+      },
+      "VCMD": {
+        "re": 0.10289501741843447,
+        "im": 0.009087807207230309,
+        "mag": 0.1032955606469887,
+        "db": -19.71836685672185,
+        "phaseDeg": 5.0473327290608845
+      },
+      "IVAC": {
+        "re": -0.000036321062755930084,
+        "im": -0.0000032079183634831095,
+        "mag": 0.00003646245109625769,
+        "db": -88.76308280698375,
+        "phaseDeg": -174.9526672709406
+      },
+      "inputImpedanceOhm": 27425.473876127726
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 0,
+      "frequency": 1000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.79495574426328,
+        "im": 0.006756333570924646,
+        "mag": 0.7949844548043106,
+        "db": -1.9928272698571177,
+        "phaseDeg": 0.486945444560632
+      },
+      "VNB": {
+        "re": 0.7949534056333346,
+        "im": 0.007021120624027651,
+        "mag": 0.7949844107042944,
+        "db": -1.992827751687777,
+        "phaseDeg": 0.506029808428931
+      },
+      "VCMD": {
+        "re": 0.1036895746478263,
+        "im": 0.0009157983422644762,
+        "mag": 0.1036936187875167,
+        "db": -19.684959377646383,
+        "phaseDeg": 0.5060298084289307
+      },
+      "IVAC": {
+        "re": -0.00003660153467493991,
+        "im": -3.2326899685854425e-7,
+        "mag": 0.000036602962221726796,
+        "db": -88.72967532790827,
+        "phaseDeg": -179.49397019154924
+      },
+      "inputImpedanceOhm": 27320.19321120463
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 0,
+      "frequency": 5000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.7950130298969346,
+        "im": 0.0013513679051923902,
+        "mag": 0.7950141784277305,
+        "db": -1.9925025197506674,
+        "phaseDeg": 0.09739161504747622
+      },
+      "VNB": {
+        "re": 0.7950129363447316,
+        "im": 0.0014043292815703622,
+        "mag": 0.7950141766636639,
+        "db": -1.9925025390238928,
+        "phaseDeg": 0.10120848795664489
+      },
+      "VCMD": {
+        "re": 0.10369733952322586,
+        "im": 0.000183173384552656,
+        "mag": 0.10369750130395616,
+        "db": -19.6846341649825,
+        "phaseDeg": 0.10120848795664492
+      },
+      "IVAC": {
+        "re": -0.0000366042756096691,
+        "im": -6.465864096233273e-8,
+        "mag": 0.000036604332716885676,
+        "db": -88.7293501152444,
+        "phaseDeg": -179.89879151215717
+      },
+      "inputImpedanceOhm": 27319.170321569538
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 0,
+      "frequency": 15000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.7950151517518359,
+        "im": 0.00045045721654555707,
+        "mag": 0.7950152793668174,
+        "db": -1.9924904915013038,
+        "phaseDeg": 0.03246390278283297
+      },
+      "VNB": {
+        "re": 0.7950151413571178,
+        "im": 0.0004681110576353173,
+        "mag": 0.7950152791708095,
+        "db": -1.9924904936427754,
+        "phaseDeg": 0.0337361937542288
+      },
+      "VCMD": {
+        "re": 0.10369762713353713,
+        "im": 0.00006105796403938922,
+        "mag": 0.10369764510923604,
+        "db": -19.684622119601382,
+        "phaseDeg": 0.0337361937542288
+      },
+      "IVAC": {
+        "re": -0.000036604377133653466,
+        "im": -2.155294031611012e-8,
+        "mag": 0.00003660438347892188,
+        "db": -88.72933806986327,
+        "phaseDeg": -179.96626380585602
+      },
+      "inputImpedanceOhm": 27319.132436032858
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 0.9773555249174533,
+      "frequency": 40,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.5793206627010818,
+        "im": 0.20109864699573776,
+        "mag": 0.6132316822017083,
+        "db": -4.247508314124444,
+        "phaseDeg": 19.14333939005815
+      },
+      "VNB": {
+        "re": 0.5756389574683208,
+        "im": 0.21083801697104101,
+        "mag": 0.6130357891310231,
+        "db": -4.250283411151944,
+        "phaseDeg": 20.116156050427577
+      },
+      "VCMD": {
+        "re": 0.07508334227847666,
+        "im": 0.027500610909266233,
+        "mag": 0.07996118988665521,
+        "db": -21.94241503711055,
+        "phaseDeg": 20.116156050427577
+      },
+      "IVAC": {
+        "re": -0.000053850954370410236,
+        "im": -0.00002035689587698813,
+        "mag": 0.00005757020493580461,
+        "db": -84.79604449120627,
+        "phaseDeg": -159.2922580302162
+      },
+      "inputImpedanceOhm": 17370.0962349375
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 0.9773555249174533,
+      "frequency": 100,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.6416845142664128,
+        "im": 0.08988479447115726,
+        "mag": 0.6479492974966824,
+        "db": -3.769179533172096,
+        "phaseDeg": 7.973898150177574
+      },
+      "VNB": {
+        "re": 0.6410260704430074,
+        "im": 0.0942384687860496,
+        "mag": 0.6479161303646813,
+        "db": -3.769624156575177,
+        "phaseDeg": 8.363255217239232
+      },
+      "VCMD": {
+        "re": 0.08361209614474012,
+        "im": 0.012291974189484734,
+        "mag": 0.08451079961278454,
+        "db": -21.461755782533785,
+        "phaseDeg": 8.363255217239232
+      },
+      "IVAC": {
+        "re": -0.000060180873472668635,
+        "im": -0.000009101674025011653,
+        "mag": 0.00006086524461456573,
+        "db": -84.3126125646867,
+        "phaseDeg": -171.3998393230388
+      },
+      "inputImpedanceOhm": 16429.737633235254
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 0.9773555249174533,
+      "frequency": 1000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.6551278395392943,
+        "im": 0.00919209175667688,
+        "mag": 0.6551923234366277,
+        "db": -3.6726239926158617,
+        "phaseDeg": 0.8038637245636041
+      },
+      "VNB": {
+        "re": 0.6551211055582329,
+        "im": 0.009637330676520657,
+        "mag": 0.65519198796262,
+        "db": -3.672628439998484,
+        "phaseDeg": 0.8428037844554327
+      },
+      "VCMD": {
+        "re": 0.08545057898585648,
+        "im": 0.0012570431317200862,
+        "mag": 0.08545982451686349,
+        "db": -21.364760065957093,
+        "phaseDeg": 0.8428037844554329
+      },
+      "IVAC": {
+        "re": -0.000061545410065632,
+        "im": -9.308387190185784e-7,
+        "mag": 0.00006155244886166284,
+        "db": -84.21509328001457,
+        "phaseDeg": -179.13350055039848
+      },
+      "inputImpedanceOhm": 16246.307311793036
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 0.9773555249174533,
+      "frequency": 5000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.6552611888612152,
+        "im": 0.0018388222946180593,
+        "mag": 0.6552637689474706,
+        "db": -3.6716768905701875,
+        "phaseDeg": 0.16078547300970691
+      },
+      "VNB": {
+        "re": 0.6552609194426376,
+        "im": 0.0019278896624702402,
+        "mag": 0.6552637555270102,
+        "db": -3.6716770684659368,
+        "phaseDeg": 0.1685734934332436
+      },
+      "VCMD": {
+        "re": 0.08546881557947451,
+        "im": 0.0002514638690178575,
+        "mag": 0.08546918550352312,
+        "db": -21.36380869442454,
+        "phaseDeg": 0.1685734934332436
+      },
+      "IVAC": {
+        "re": -0.00006155894547417752,
+        "im": -1.862087532583203e-7,
+        "mag": 0.0000615592271035996,
+        "db": -84.21413683033585,
+        "phaseDeg": -179.82668736366486
+      },
+      "inputImpedanceOhm": 16244.518442654819
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 0.9773555249174533,
+      "frequency": 15000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.6552661288531518,
+        "im": 0.0006129457521599261,
+        "mag": 0.6552664155324079,
+        "db": -3.6716418086698157,
+        "phaseDeg": 0.05359531475797686
+      },
+      "VNB": {
+        "re": 0.65526609891751,
+        "im": 0.0006426351166088971,
+        "mag": 0.6552664140412395,
+        "db": -3.6716418284360106,
+        "phaseDeg": 0.05619132167008408
+      },
+      "VCMD": {
+        "re": 0.0854694911631535,
+        "im": 0.00008382197173159533,
+        "mag": 0.08546953226624866,
+        "db": -21.363773454394618,
+        "phaseDeg": 0.056191321670084095
+      },
+      "IVAC": {
+        "re": -0.00006155944690014104,
+        "im": -6.207009096864944e-8,
+        "mag": 0.00006155947819261853,
+        "db": -84.21410140222602,
+        "phaseDeg": -179.94222896370292
+      },
+      "inputImpedanceOhm": 16244.45218445513
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 2.8527854160181074,
+      "frequency": 40,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.2587231598882461,
+        "im": 0.13226529569386472,
+        "mag": 0.2905714746969228,
+        "db": -10.734940449747059,
+        "phaseDeg": 27.077174472442376
+      },
+      "VNB": {
+        "re": 0.24880665710590105,
+        "im": 0.1458441321907067,
+        "mag": 0.288401219683055,
+        "db": -10.800058145314281,
+        "phaseDeg": 30.377746991796275
+      },
+      "VCMD": {
+        "re": 0.032453042231204494,
+        "im": 0.0190231476770487,
+        "mag": 0.037617550393441966,
+        "db": -28.49218977127289,
+        "phaseDeg": 30.377746991796272
+      },
+      "IVAC": {
+        "re": -0.0000750801444496851,
+        "im": -0.00005483035763095977,
+        "mag": 0.00009296986720720069,
+        "db": -80.63315578723632,
+        "phaseDeg": -143.85967862618028
+      },
+      "inputImpedanceOhm": 10756.173263873912
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 2.8527854160181074,
+      "frequency": 100,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.3327484531621594,
+        "im": 0.07460459912255694,
+        "mag": 0.3410093536723695,
+        "db": -9.344674168385668,
+        "phaseDeg": 12.637140873581048
+      },
+      "VNB": {
+        "re": 0.33050199062600605,
+        "im": 0.08228552876350187,
+        "mag": 0.3405913593320325,
+        "db": -9.35532748225513,
+        "phaseDeg": 13.980759976000995
+      },
+      "VCMD": {
+        "re": 0.04310895529904428,
+        "im": 0.010732895056108941,
+        "mag": 0.04442495991287382,
+        "db": -27.047459108213733,
+        "phaseDeg": 13.980759976000995
+      },
+      "IVAC": {
+        "re": -0.00010617354938402311,
+        "im": -0.00003105286888063254,
+        "mag": 0.00011062144120612129,
+        "db": -79.12321375447529,
+        "phaseDeg": -163.697240804117
+      },
+      "inputImpedanceOhm": 9039.838833203201
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 2.8527854160181074,
+      "frequency": 1000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.3541903493469688,
+        "im": 0.008089129843245137,
+        "mag": 0.35428270857063954,
+        "db": -9.013000874059676,
+        "phaseDeg": 1.3083147095484313
+      },
+      "VNB": {
+        "re": 0.35416597299451186,
+        "im": 0.008922395112544466,
+        "mag": 0.3542783447540841,
+        "db": -9.013107861675842,
+        "phaseDeg": 1.4431298087767788
+      },
+      "VCMD": {
+        "re": 0.046195561694936334,
+        "im": 0.0011637906668536262,
+        "mag": 0.0462102188809675,
+        "db": -26.70523948763445,
+        "phaseDeg": 1.4431298087767788
+      },
+      "IVAC": {
+        "re": -0.00011518232213498075,
+        "im": -0.000003369545071212848,
+        "mag": 0.00011523159795122783,
+        "db": -78.76856831162394,
+        "phaseDeg": -178.3243464575455
+      },
+      "inputImpedanceOhm": 8678.175238212469
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 2.8527854160181074,
+      "frequency": 5000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.3544161449288379,
+        "im": 0.0016191500701130531,
+        "mag": 0.35441984345288646,
+        "db": -9.009639411724903,
+        "phaseDeg": 0.2617539334515802
+      },
+      "VNB": {
+        "re": 0.3544151690694441,
+        "im": 0.001785940389735645,
+        "mag": 0.3544196688244013,
+        "db": -9.009643691406616,
+        "phaseDeg": 0.28871783608047497
+      },
+      "VCMD": {
+        "re": 0.046228065530797065,
+        "im": 0.00023294874648725837,
+        "mag": 0.046228652455356706,
+        "db": -26.70177531736522,
+        "phaseDeg": 0.28871783608047535
+      },
+      "IVAC": {
+        "re": -0.00011527719341957112,
+        "im": -6.744655945431137e-7,
+        "mag": 0.00011527916648957621,
+        "db": -78.76498344580472,
+        "phaseDeg": -179.6647767880001
+      },
+      "inputImpedanceOhm": 8674.59429532241
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 2.8527854160181074,
+      "frequency": 15000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.354424514888741,
+        "im": 0.0005397330507363035,
+        "mag": 0.354424925852973,
+        "db": -9.009514856481891,
+        "phaseDeg": 0.08725243505103598
+      },
+      "VNB": {
+        "re": 0.3544244064566026,
+        "im": 0.0005953315200345572,
+        "mag": 0.35442490644949576,
+        "db": -9.009515332002811,
+        "phaseDeg": 0.09624041349303743
+      },
+      "VCMD": {
+        "re": 0.04622927040738296,
+        "im": 0.00007765193739581186,
+        "mag": 0.046229335623847276,
+        "db": -26.70164695796142,
+        "phaseDeg": 0.09624041349303748
+      },
+      "IVAC": {
+        "re": -0.00011528071018083301,
+        "im": -2.2482874213784093e-7,
+        "mag": 0.00011528092941922574,
+        "db": -78.76485061612041,
+        "phaseDeg": -179.88825778670684
+      },
+      "inputImpedanceOhm": 8674.4616393874
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 7.507203849946799,
+      "frequency": 40,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.13490466379271399,
+        "im": 0.04500377150552868,
+        "mag": 0.14221324749384998,
+        "db": -16.941198923671813,
+        "phaseDeg": 18.448536536705312
+      },
+      "VNB": {
+        "re": 0.12164337232449816,
+        "im": 0.05908657963830394,
+        "mag": 0.13523436665223126,
+        "db": -17.37825857161347,
+        "phaseDeg": 25.90752018142907
+      },
+      "VCMD": {
+        "re": 0.015866526824934543,
+        "im": 0.007706945170213559,
+        "mag": 0.017639265215508425,
+        "db": -35.070390197572074,
+        "phaseDeg": 25.907520181429074
+      },
+      "IVAC": {
+        "re": -0.00007786670596644079,
+        "im": -0.00007332437350244126,
+        "mag": 0.00010695647548227108,
+        "db": -79.41585833478322,
+        "phaseDeg": -136.72085693344647
+      },
+      "inputImpedanceOhm": 9349.597539475375
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 7.507203849946799,
+      "frequency": 100,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.1647019152557017,
+        "im": 0.029254741156542835,
+        "mag": 0.1672798875209828,
+        "db": -15.531125444199002,
+        "phaseDeg": 10.071965203914084
+      },
+      "VNB": {
+        "re": 0.16118432316776835,
+        "im": 0.03857529946776167,
+        "mag": 0.16573605450860437,
+        "db": -15.611660082567152,
+        "phaseDeg": 13.459112743533284
+      },
+      "VCMD": {
+        "re": 0.021024042152317617,
+        "im": 0.00503156080014283,
+        "mag": 0.021617746240252752,
+        "db": -33.30379170852576,
+        "phaseDeg": 13.459112743533288
+      },
+      "IVAC": {
+        "re": -0.00012883814907867368,
+        "im": -0.0000486237024318186,
+        "mag": 0.00013770814462549623,
+        "db": -77.22080746046692,
+        "phaseDeg": -159.32342140532504
+      },
+      "inputImpedanceOhm": 7261.734610683681
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 7.507203849946799,
+      "frequency": 1000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.17532548342639118,
+        "im": 0.003327117625059179,
+        "mag": 0.1753570496170278,
+        "db": -15.1215354028086,
+        "phaseDeg": 1.0871603826806397
+      },
+      "VNB": {
+        "re": 0.17528532553060133,
+        "im": 0.0043907884652223915,
+        "mag": 0.1753403101677284,
+        "db": -15.12236459074099,
+        "phaseDeg": 1.434923593356876
+      },
+      "VCMD": {
+        "re": 0.022863303330078435,
+        "im": 0.0005727115389420516,
+        "mag": 0.022870475239268925,
+        "db": -32.814496216699595,
+        "phaseDeg": 1.4349235933568774
+      },
+      "IVAC": {
+        "re": -0.00014703130188095485,
+        "im": -0.000005551029017476472,
+        "mag": 0.00014713605151682352,
+        "db": -76.645618053741,
+        "phaseDeg": -177.83787842084791
+      },
+      "inputImpedanceOhm": 6796.430852201169
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 7.507203849946799,
+      "frequency": 5000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.17544323502021875,
+        "im": 0.0006663140233711846,
+        "mag": 0.17544450030917885,
+        "db": -15.117204822874214,
+        "phaseDeg": 0.217601994241959
+      },
+      "VNB": {
+        "re": 0.17544162649522993,
+        "im": 0.0008793400014577022,
+        "mag": 0.1754438301740187,
+        "db": -15.117237999925361,
+        "phaseDeg": 0.2871727192471454
+      },
+      "VCMD": {
+        "re": 0.022883690412421297,
+        "im": 0.00011469652192926572,
+        "mag": 0.022883977848785052,
+        "db": -32.80936962588397,
+        "phaseDeg": 0.287172719247146
+      },
+      "IVAC": {
+        "re": -0.00014723298651168532,
+        "im": -0.0000011117326633432278,
+        "mag": 0.00014723718370936352,
+        "db": -76.63964996294537,
+        "phaseDeg": -179.56737698167737
+      },
+      "inputImpedanceOhm": 6791.76261598384
+    },
+    {
+      "scenario": "rsource_3k",
+      "scenarioNote": "low B11/S6/S7 output-impedance bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 3000,
+      "cmdDcVolt": 7.507203849946799,
+      "frequency": 15000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.17544760240451257,
+        "im": 0.0002221156838867963,
+        "mag": 0.17544774300306332,
+        "db": -15.117044285377315,
+        "phaseDeg": 0.07253609782625377
+      },
+      "VNB": {
+        "re": 0.17544742367040964,
+        "im": 0.00029312795098115517,
+        "mag": 0.1754476685413057,
+        "db": -15.117047971755579,
+        "phaseDeg": 0.09572656280772567
+      },
+      "VCMD": {
+        "re": 0.022884446565705607,
+        "im": 0.000038234080562759426,
+        "mag": 0.022884478505387704,
+        "db": -32.809179597714184,
+        "phaseDeg": 0.0957265628077258
+      },
+      "IVAC": {
+        "re": -0.00014724046696813745,
+        "im": -3.7059643146870957e-7,
+        "mag": 0.00014724093335316166,
+        "db": -76.63942876489821,
+        "phaseDeg": -179.8557898720053
+      },
+      "inputImpedanceOhm": 6791.589656671565
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 0,
+      "frequency": 40,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.8073523802218644,
+        "im": 0.14015562926974895,
+        "mag": 0.8194275234979047,
+        "db": -1.7297890550943729,
+        "phaseDeg": 9.848345266203712
+      },
+      "VNB": {
+        "re": 0.8064084525123066,
+        "im": 0.1453911028883291,
+        "mag": 0.8194102544405811,
+        "db": -1.7299721081434187,
+        "phaseDeg": 10.22032342025409
+      },
+      "VCMD": {
+        "re": 0.2688028175041022,
+        "im": 0.04846370096277637,
+        "mag": 0.2731367514801937,
+        "db": -11.272397202536668,
+        "phaseDeg": 10.220323420254092
+      },
+      "IVAC": {
+        "re": -0.000028947996806422485,
+        "im": -0.000005219167989846176,
+        "mag": 0.000029414728175029616,
+        "db": -90.62870321248982,
+        "phaseDeg": -169.77967657974582
+      },
+      "inputImpedanceOhm": 33996.57457480459
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 0,
+      "frequency": 100,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.828468770806279,
+        "im": 0.057585120326914284,
+        "mag": 0.8304676696201557,
+        "db": -1.6135454022136655,
+        "phaseDeg": 3.97611392565072
+      },
+      "VNB": {
+        "re": 0.8283136398535857,
+        "im": 0.059736196097934874,
+        "mag": 0.8304648692700652,
+        "db": -1.613574691220009,
+        "phaseDeg": 4.124906943295603
+      },
+      "VCMD": {
+        "re": 0.2761045466178619,
+        "im": 0.01991206536597829,
+        "mag": 0.2768216230900217,
+        "db": -11.155999785613261,
+        "phaseDeg": 4.124906943295603
+      },
+      "IVAC": {
+        "re": -0.00002973433689403441,
+        "im": -0.0000021443763498296152,
+        "mag": 0.000029811560516981404,
+        "db": -90.51230579556642,
+        "phaseDeg": -175.87509305670622
+      },
+      "inputImpedanceOhm": 33544.03401426689
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 0,
+      "frequency": 1000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.8325799427159901,
+        "im": 0.0057881609191776625,
+        "mag": 0.8326000623467353,
+        "db": -1.5912712185682512,
+        "phaseDeg": 0.3983183261123144
+      },
+      "VNB": {
+        "re": 0.8325783834192262,
+        "im": 0.006004376021993685,
+        "mag": 0.8326000342711892,
+        "db": -1.5912715114592924,
+        "phaseDeg": 0.4131976609912476
+      },
+      "VCMD": {
+        "re": 0.2775261278064087,
+        "im": 0.002001458673997895,
+        "mag": 0.27753334475706304,
+        "db": -11.133696605852542,
+        "phaseDeg": 0.4131976609912478
+      },
+      "IVAC": {
+        "re": -0.00002988743025848713,
+        "im": -2.1554171137387086e-7,
+        "mag": 0.000029888207468586574,
+        "db": -90.49000261580571,
+        "phaseDeg": -179.58680233898113
+      },
+      "inputImpedanceOhm": 33458.01186140155
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 0,
+      "frequency": 5000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.832620015884003,
+        "im": 0.0011576899840006036,
+        "mag": 0.8326208207201982,
+        "db": -1.5910546647851385,
+        "phaseDeg": 0.07966504054374378
+      },
+      "VNB": {
+        "re": 0.8326199535090184,
+        "im": 0.0012009351636593165,
+        "mag": 0.8326208195971484,
+        "db": -1.5910546765007791,
+        "phaseDeg": 0.08264090758375264
+      },
+      "VCMD": {
+        "re": 0.2775399845030061,
+        "im": 0.00040031172121977215,
+        "mag": 0.27754027319904945,
+        "db": -11.133479770894027,
+        "phaseDeg": 0.08264090758375264
+      },
+      "IVAC": {
+        "re": -0.00002988892251817632,
+        "im": -4.3110494582792555e-8,
+        "mag": 0.000029888953608520503,
+        "db": -90.48978578084717,
+        "phaseDeg": -179.91735909255598
+      },
+      "inputImpedanceOhm": 33457.176624441214
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 0,
+      "frequency": 15000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.8326215001522566,
+        "im": 0.0003858973736626066,
+        "mag": 0.8326215895787096,
+        "db": -1.59104664406679,
+        "phaseDeg": 0.026555030405603218
+      },
+      "VNB": {
+        "re": 0.8326214932216898,
+        "im": 0.00040031246020572433,
+        "mag": 0.8326215894539261,
+        "db": -1.591046645368529,
+        "phaseDeg": 0.02754698608639904
+      },
+      "VCMD": {
+        "re": 0.2775404977405632,
+        "im": 0.00013343748673524144,
+        "mag": 0.27754052981797533,
+        "db": -11.133471739761777,
+        "phaseDeg": 0.027546986086399043
+      },
+      "IVAC": {
+        "re": -0.000029888977789915058,
+        "im": -1.4370191664395478e-8,
+        "mag": 0.00002988898124440584,
+        "db": -90.48977774971493,
+        "phaseDeg": -179.97245301343156
+      },
+      "inputImpedanceOhm": 33457.145689338766
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 0.9322991616010975,
+      "frequency": 40,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.6292501083143525,
+        "im": 0.1946205044776184,
+        "mag": 0.6586598815600864,
+        "db": -3.6267757655612023,
+        "phaseDeg": 17.18629360345991
+      },
+      "VNB": {
+        "re": 0.6262738685803465,
+        "im": 0.20348447182497306,
+        "mag": 0.6585020035964062,
+        "db": -3.628857985811924,
+        "phaseDeg": 17.999648862752412
+      },
+      "VCMD": {
+        "re": 0.2087579561934488,
+        "im": 0.06782815727499103,
+        "mag": 0.2195006678654687,
+        "db": -13.171283080205175,
+        "phaseDeg": 17.999648862752412
+      },
+      "IVAC": {
+        "re": -0.00004901067547219233,
+        "im": -0.000016456233875268496,
+        "mag": 0.00005169965129087516,
+        "db": -85.73024772340526,
+        "phaseDeg": -161.43957822428942
+      },
+      "inputImpedanceOhm": 19342.49023022902
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 0.9322991616010975,
+      "frequency": 100,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.6831140618204199,
+        "im": 0.0850964323855257,
+        "mag": 0.6883939455439283,
+        "db": -3.2432591593481686,
+        "phaseDeg": 7.1008323802529905
+      },
+      "VNB": {
+        "re": 0.6825933830125022,
+        "im": 0.08897248111287143,
+        "mag": 0.6883675100757101,
+        "db": -3.2435927183079505,
+        "phaseDeg": 7.426337142487485
+      },
+      "VCMD": {
+        "re": 0.22753112767083405,
+        "im": 0.029657493704290473,
+        "mag": 0.22945583669190334,
+        "db": -12.7860178127012,
+        "phaseDeg": 7.426337142487485
+      },
+      "IVAC": {
+        "re": -0.00005357865130985507,
+        "im": -0.000007197347158468342,
+        "mag": 0.000054059908271310876,
+        "db": -85.34249391092467,
+        "phaseDeg": -172.3491233162269
+      },
+      "inputImpedanceOhm": 18497.996611116916
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 0.9322991616010975,
+      "frequency": 1000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.6944190441608957,
+        "im": 0.008661773604561105,
+        "mag": 0.6944730629875494,
+        "db": -3.166891897670412,
+        "phaseDeg": 0.7146367009776347
+      },
+      "VNB": {
+        "re": 0.6944137440142484,
+        "im": 0.009056314420224417,
+        "mag": 0.6944727962323392,
+        "db": -3.1668952340226553,
+        "phaseDeg": 0.7471902497377242
+      },
+      "VCMD": {
+        "re": 0.2314712480047494,
+        "im": 0.00301877147340814,
+        "mag": 0.23149093207744634,
+        "db": -12.709320328415906,
+        "phaseDeg": 0.7471902497377245
+      },
+      "IVAC": {
+        "re": -0.00005453740723328408,
+        "im": -7.326396779126322e-7,
+        "mag": 0.00005454232804553467,
+        "db": -85.2653265777039,
+        "phaseDeg": -179.23035144644405
+      },
+      "inputImpedanceOhm": 18334.384244932666
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 0.9322991616010975,
+      "frequency": 5000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.6945306530507777,
+        "im": 0.0017326551051220736,
+        "mag": 0.6945328142865914,
+        "db": -3.166144610422717,
+        "phaseDeg": 0.14293626709384105
+      },
+      "VNB": {
+        "re": 0.694530441008044,
+        "im": 0.0018115769633920622,
+        "mag": 0.6945328036154392,
+        "db": -3.166144743877104,
+        "phaseDeg": 0.1494469828063555
+      },
+      "VCMD": {
+        "re": 0.23151014700268133,
+        "im": 0.0006038589877973542,
+        "mag": 0.23151093453847976,
+        "db": -12.708569838270352,
+        "phaseDeg": 0.14944698280635552
+      },
+      "IVAC": {
+        "re": -0.00005454687263270355,
+        "im": -1.4655341661154117e-7,
+        "mag": 0.000054547069508015776,
+        "db": -85.26457153054473,
+        "phaseDeg": -179.84606134806066
+      },
+      "inputImpedanceOhm": 18332.790542543233
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 0.9322991616010975,
+      "frequency": 15000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.6945347874587692,
+        "im": 0.0005775554099028908,
+        "mag": 0.6945350275980681,
+        "db": -3.166116930595078,
+        "phaseDeg": 0.04764553250925336
+      },
+      "VNB": {
+        "re": 0.6945347638983136,
+        "im": 0.000603862865099153,
+        "mag": 0.6945350264123804,
+        "db": -3.1661169454233473,
+        "phaseDeg": 0.04981577115367809
+      },
+      "VCMD": {
+        "re": 0.23151158796610447,
+        "im": 0.00020128762169971767,
+        "mag": 0.2315116754707934,
+        "db": -12.7085420398166,
+        "phaseDeg": 0.049815771153678114
+      },
+      "IVAC": {
+        "re": -0.00005454722326628548,
+        "im": -4.8851453672217974e-8,
+        "mag": 0.000054547245141496584,
+        "db": -85.26454356331223,
+        "phaseDeg": -179.9486870054501
+      },
+      "inputImpedanceOhm": 18332.73151386438
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 2.5752708166366647,
+      "frequency": 40,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.2881283905642775,
+        "im": 0.1449714741836952,
+        "mag": 0.322544102063818,
+        "db": -9.828217901289634,
+        "phaseDeg": 26.709202884488867
+      },
+      "VNB": {
+        "re": 0.2788824463214168,
+        "im": 0.1583012858470868,
+        "mag": 0.320678524330924,
+        "db": -9.87860247133279,
+        "phaseDeg": 29.580426522889123
+      },
+      "VCMD": {
+        "re": 0.09296081544047224,
+        "im": 0.05276709528236226,
+        "mag": 0.1068928414436413,
+        "db": -19.42102756572604,
+        "phaseDeg": 29.580426522889123
+      },
+      "IVAC": {
+        "re": -0.00007370323557598595,
+        "im": -0.0000511227032956151,
+        "mag": 0.00008969781338818007,
+        "db": -80.94436287713873,
+        "phaseDeg": -145.25370039409955
+      },
+      "inputImpedanceOhm": 11148.543785257702
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 2.5752708166366647,
+      "frequency": 100,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.3659308905328952,
+        "im": 0.07964805563959379,
+        "mag": 0.37449863739854317,
+        "db": -8.530995162567747,
+        "phaseDeg": 12.279404243707695
+      },
+      "VNB": {
+        "re": 0.3638924107337856,
+        "im": 0.08698724675179256,
+        "mag": 0.3741449821754975,
+        "db": -8.53920149836086,
+        "phaseDeg": 13.444071879159683
+      },
+      "VCMD": {
+        "re": 0.12129747024459518,
+        "im": 0.028995748917264204,
+        "mag": 0.12471499405849917,
+        "db": -18.08162659275411,
+        "phaseDeg": 13.444071879159692
+      },
+      "IVAC": {
+        "re": -0.00010144969507805167,
+        "im": -0.00002817792191004483,
+        "mag": 0.00010529024605630973,
+        "db": -79.5522371879005,
+        "phaseDeg": -164.47722545948497
+      },
+      "inputImpedanceOhm": 9497.555922370959
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 2.5752708166366647,
+      "frequency": 1000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.3876958754556303,
+        "im": 0.00857083829876967,
+        "mag": 0.38779060214818417,
+        "db": -8.228054399454695,
+        "phaseDeg": 1.2664382474496776
+      },
+      "VNB": {
+        "re": 0.3876739261984384,
+        "im": 0.00936092116002676,
+        "mag": 0.38778692590013464,
+        "db": -8.228136741925141,
+        "phaseDeg": 1.3832167642542692
+      },
+      "VCMD": {
+        "re": 0.12922464206614612,
+        "im": 0.0031203070533422526,
+        "mag": 0.1292623086333782,
+        "db": -17.77056183631839,
+        "phaseDeg": 1.3832167642542692
+      },
+      "IVAC": {
+        "re": -0.0001092132145567088,
+        "im": -0.0000030340475064318723,
+        "mag": 0.00010925535079839796,
+        "db": -79.23114568388998,
+        "phaseDeg": -178.4086777714383
+      },
+      "inputImpedanceOhm": 9152.86979257645
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 2.5752708166366647,
+      "frequency": 5000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.3879232922785395,
+        "im": 0.0017154341526655725,
+        "mag": 0.3879270851675007,
+        "db": -8.224997935808526,
+        "phaseDeg": 0.2533658026676836
+      },
+      "VNB": {
+        "re": 0.38792241365436664,
+        "im": 0.001873568096553149,
+        "mag": 0.38792693806030276,
+        "db": -8.22500122961599,
+        "phaseDeg": 0.2767221127625889
+      },
+      "VCMD": {
+        "re": 0.1293074712181222,
+        "im": 0.0006245226988510503,
+        "mag": 0.12930897935343424,
+        "db": -17.76742632400924,
+        "phaseDeg": 0.2767221127625893
+      },
+      "IVAC": {
+        "re": -0.00010929433600808571,
+        "im": -6.072614342736567e-7,
+        "mag": 0.00010929602302873557,
+        "db": -79.22791281006322,
+        "phaseDeg": -179.68165633754649
+      },
+      "inputImpedanceOhm": 9149.463743407068
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 2.5752708166366647,
+      "frequency": 15000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.38793172162777056,
+        "im": 0.0005718270317266018,
+        "mag": 0.38793214307561613,
+        "db": -8.224884687347744,
+        "phaseDeg": 0.08445623282027129
+      },
+      "VNB": {
+        "re": 0.3879316240001694,
+        "im": 0.0006245397965076774,
+        "mag": 0.38793212673013594,
+        "db": -8.224885053326801,
+        "phaseDeg": 0.09224167700937791
+      },
+      "VCMD": {
+        "re": 0.12931054133338982,
+        "im": 0.00020817993216922577,
+        "mag": 0.12931070891004534,
+        "db": -17.767310147720046,
+        "phaseDeg": 0.0922416770093779
+      },
+      "IVAC": {
+        "re": -0.00010929734282717758,
+        "im": -2.0242606187226e-7,
+        "mag": 0.000109297530280387,
+        "db": -79.22779302774299,
+        "phaseDeg": -179.89388446738417
+      },
+      "inputImpedanceOhm": 9149.337569061667
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 6.588208595504012,
+      "frequency": 40,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.1472801481492937,
+        "im": 0.054673372183603,
+        "mag": 0.15710066729586056,
+        "db": -16.076439405210138,
+        "phaseDeg": 20.36594518059676
+      },
+      "VNB": {
+        "re": 0.13436779939113647,
+        "im": 0.06872110159209371,
+        "mag": 0.150921487261581,
+        "db": -16.42497847356672,
+        "phaseDeg": 27.08703070313085
+      },
+      "VCMD": {
+        "re": 0.04478926646371216,
+        "im": 0.02290703386403123,
+        "mag": 0.05030716242052701,
+        "db": -25.96740356795997,
+        "phaseDeg": 27.087030703130843
+      },
+      "IVAC": {
+        "re": -0.00007767274857642375,
+        "im": -0.00007139499839862011,
+        "mag": 0.00010550024487059405,
+        "db": -79.53493064697992,
+        "phaseDeg": -137.41149532852327
+      },
+      "inputImpedanceOhm": 9478.650985375378
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 6.588208595504012,
+      "frequency": 100,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.18325667757949404,
+        "im": 0.035135668590656935,
+        "mag": 0.186594547307222,
+        "db": -14.582021028401822,
+        "phaseDeg": 10.853564268731606
+      },
+      "VNB": {
+        "re": 0.17988904438481362,
+        "im": 0.04427920383134304,
+        "mag": 0.1852585117656381,
+        "db": -14.644436581636597,
+        "phaseDeg": 13.828297709694628
+      },
+      "VCMD": {
+        "re": 0.05996301479493787,
+        "im": 0.014759734610447686,
+        "mag": 0.0617528372552127,
+        "db": -24.186861676029846,
+        "phaseDeg": 13.828297709694635
+      },
+      "IVAC": {
+        "re": -0.0001263911578159072,
+        "im": -0.000046550819499329846,
+        "mag": 0.00013469114139432018,
+        "db": -77.4132193357374,
+        "phaseDeg": -159.7808660596045
+      },
+      "inputImpedanceOhm": 7424.39324255492
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 6.588208595504012,
+      "frequency": 1000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.19579791520014414,
+        "im": 0.003976355309687891,
+        "mag": 0.19583828787617533,
+        "db": -14.162047927085643,
+        "phaseDeg": 1.1634294636454263
+      },
+      "VNB": {
+        "re": 0.19575969798258974,
+        "im": 0.0050136601116336395,
+        "mag": 0.1958238906312244,
+        "db": -14.162686502305078,
+        "phaseDeg": 1.4670986077585946
+      },
+      "VCMD": {
+        "re": 0.06525323266086323,
+        "im": 0.0016712200372112178,
+        "mag": 0.06527463021040812,
+        "db": -23.705111596698323,
+        "phaseDeg": 1.4670986077585988
+      },
+      "IVAC": {
+        "re": -0.00014338672239435518,
+        "im": -0.0000052827689160239625,
+        "mag": 0.00014348400540274857,
+        "db": -76.8639301670985,
+        "phaseDeg": -177.89001716881057
+      },
+      "inputImpedanceOhm": 6969.41793054269
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 6.588208595504012,
+      "frequency": 5000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.19593609316678193,
+        "im": 0.0007962909555595688,
+        "mag": 0.19593771123688197,
+        "db": -14.15763938567914,
+        "phaseDeg": 0.23285071730019433
+      },
+      "VNB": {
+        "re": 0.19593456247663052,
+        "im": 0.0010040228770058762,
+        "mag": 0.19593713490516848,
+        "db": -14.157664934415974,
+        "phaseDeg": 0.2935968476184211
+      },
+      "VCMD": {
+        "re": 0.06531152082554349,
+        "im": 0.0003346742923352919,
+        "mag": 0.0653123783017228,
+        "db": -23.700090028809228,
+        "phaseDeg": 0.293596847618421
+      },
+      "IVAC": {
+        "re": -0.00014357399723299814,
+        "im": -0.0000010579370856192874,
+        "mag": 0.00014357789492933125,
+        "db": -76.85824836749916,
+        "phaseDeg": -179.5778188659301
+      },
+      "inputImpedanceOhm": 6964.860436853444
+    },
+    {
+      "scenario": "rsource_10k",
+      "scenarioNote": "moderate B11/S6/S7 reference",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 10000,
+      "cmdDcVolt": 6.588208595504012,
+      "frequency": 15000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.1959412178134343,
+        "im": 0.00026544292682343816,
+        "mag": 0.19594139761203883,
+        "db": -14.157475970753184,
+        "phaseDeg": 0.07761894242799176
+      },
+      "VNB": {
+        "re": 0.1959410477285032,
+        "im": 0.00033469025037967956,
+        "mag": 0.19594133357336135,
+        "db": -14.157478809525301,
+        "phaseDeg": 0.09786780444033531
+      },
+      "VCMD": {
+        "re": 0.06531368257616774,
+        "im": 0.00011156341679322674,
+        "mag": 0.06531377785778712,
+        "db": -23.69990390391855,
+        "phaseDeg": 0.0978678044403355
+      },
+      "IVAC": {
+        "re": -0.00014358094275692765,
+        "im": -3.526627962177948e-7,
+        "mag": 0.00014358137586057592,
+        "db": -76.85803778760356,
+        "phaseDeg": -179.85927067483337
+      },
+      "inputImpedanceOhm": 6964.691583475602
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 0,
+      "frequency": 40,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.9073152116424329,
+        "im": 0.08059378793292485,
+        "mag": 0.9108876176187325,
+        "db": -0.8107040315334935,
+        "phaseDeg": 5.0760708470148135
+      },
+      "VNB": {
+        "re": 0.9070643173828986,
+        "im": 0.08332498820271608,
+        "mag": 0.9108834884485978,
+        "db": -0.8107434058719791,
+        "phaseDeg": 5.248589788119338
+      },
+      "VCMD": {
+        "re": 0.6515532420637723,
+        "im": 0.05985316053997916,
+        "mag": 0.6542965902940632,
+        "db": -3.684506858294758,
+        "phaseDeg": 5.248589788119338
+      },
+      "IVAC": {
+        "re": -0.000015101360917383087,
+        "im": -0.0000013872453101412983,
+        "mag": 0.000015164944810568035,
+        "db": -96.38318331736556,
+        "phaseDeg": -174.7514102118805
+      },
+      "inputImpedanceOhm": 65941.5522108018
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 0,
+      "frequency": 100,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.9135257900429405,
+        "im": 0.03246572230779087,
+        "mag": 0.9141025063955055,
+        "db": -0.7801020051102819,
+        "phaseDeg": 2.035373656980439
+      },
+      "VNB": {
+        "re": 0.9134853627913245,
+        "im": 0.03356593600664056,
+        "mag": 0.9141018433927368,
+        "db": -0.7801083050284275,
+        "phaseDeg": 2.1043814086021606
+      },
+      "VCMD": {
+        "re": 0.656165542286726,
+        "im": 0.02411074276533336,
+        "mag": 0.6566083663806982,
+        "db": -3.653871757451207,
+        "phaseDeg": 2.104381408602161
+      },
+      "IVAC": {
+        "re": -0.000015208262404214088,
+        "im": -5.588262094000185e-7,
+        "mag": 0.00001521852594989883,
+        "db": -96.35254821652202,
+        "phaseDeg": -177.89561859140184
+      },
+      "inputImpedanceOhm": 65709.38626330283
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 0,
+      "frequency": 1000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.914706794590486,
+        "im": 0.0032509118210926817,
+        "mag": 0.9147125715205132,
+        "db": -0.7743070413565472,
+        "phaseDeg": 0.20363109116254471
+      },
+      "VNB": {
+        "re": 0.9147063897775914,
+        "im": 0.0033610802530622402,
+        "mag": 0.9147125648860535,
+        "db": -0.7743071043557748,
+        "phaseDeg": 0.2105318696281274
+      },
+      "VCMD": {
+        "re": 0.6570426180092559,
+        "im": 0.002414297083185553,
+        "mag": 0.6570470536505455,
+        "db": -3.648070556778552,
+        "phaseDeg": 0.2105318696281274
+      },
+      "IVAC": {
+        "re": -0.000015228590807455229,
+        "im": -5.595731748615369e-8,
+        "mag": 0.000015228693614433581,
+        "db": -96.34674701584935,
+        "phaseDeg": -179.78946813031226
+      },
+      "inputImpedanceOhm": 65665.51441104649
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 0,
+      "frequency": 5000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.9147182622121874,
+        "im": 0.000650190792200629,
+        "mag": 0.9147184932931828,
+        "db": -0.7742508098156502,
+        "phaseDeg": 0.040726400178350504
+      },
+      "VNB": {
+        "re": 0.9147182460194618,
+        "im": 0.0006722247641907913,
+        "mag": 0.9147184930278026,
+        "db": -0.7742508123356198,
+        "phaseDeg": 0.04210655587787366
+      },
+      "VCMD": {
+        "re": 0.6570511344646838,
+        "im": 0.00048286567568634305,
+        "mag": 0.6570513118932103,
+        "db": -3.648014264758398,
+        "phaseDeg": 0.04210655587787367
+      },
+      "IVAC": {
+        "re": -0.000015228788197413449,
+        "im": -1.1191608478767119e-8,
+        "mag": 0.000015228792309759153,
+        "db": -96.3466907238292,
+        "phaseDeg": -179.95789344443915
+      },
+      "inputImpedanceOhm": 65665.08884352991
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 0,
+      "frequency": 15000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.9147186869446197,
+        "im": 0.00021673036650790396,
+        "mag": 0.914718712620301,
+        "db": -0.7742487271520446,
+        "phaseDeg": 0.01357546887156276
+      },
+      "VNB": {
+        "re": 0.914718685145427,
+        "im": 0.00022407502736388501,
+        "mag": 0.9147187125908142,
+        "db": -0.7742487274320429,
+        "phaseDeg": 0.01403552077148291
+      },
+      "VCMD": {
+        "re": 0.6570514498931941,
+        "im": 0.00016095530134588927,
+        "mag": 0.6570514696074863,
+        "db": -3.6480121798548204,
+        "phaseDeg": 0.014035520771482912
+      },
+      "IVAC": {
+        "re": -0.000015228795508250687,
+        "im": -3.730538236924483e-9,
+        "mag": 0.000015228795965178331,
+        "db": -96.3466886389256,
+        "phaseDeg": -179.9859644781561
+      },
+      "inputImpedanceOhm": 65665.07308171752
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 0.7776761446099046,
+      "frequency": 40,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.7758976608758285,
+        "im": 0.1528476860172859,
+        "mag": 0.7908094557309117,
+        "db": -2.0385629291196077,
+        "phaseDeg": 11.144266007596404
+      },
+      "VNB": {
+        "re": 0.7746422516321589,
+        "im": 0.15877356446466784,
+        "mag": 0.790746269536921,
+        "db": -2.0392569651237475,
+        "phaseDeg": 11.583131843448573
+      },
+      "VCMD": {
+        "re": 0.5564331666653537,
+        "im": 0.11404861672814168,
+        "mag": 0.5680008414983518,
+        "db": -4.913020417546523,
+        "phaseDeg": 11.583131843448571
+      },
+      "IVAC": {
+        "re": -0.00003276538530559562,
+        "im": -0.000006941412644602915,
+        "mag": 0.000033492591475232166,
+        "db": -89.50102495612947,
+        "phaseDeg": -168.0386285266337
+      },
+      "inputImpedanceOhm": 29857.34922123007
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 0.7776761446099046,
+      "frequency": 100,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.8028803745592181,
+        "im": 0.06343275971514847,
+        "mag": 0.8053822762250421,
+        "db": -1.8799586398997417,
+        "phaseDeg": 4.517354837068643
+      },
+      "VNB": {
+        "re": 0.8026719392574087,
+        "im": 0.06589211865971346,
+        "mag": 0.8053719720555931,
+        "db": -1.8800697690539785,
+        "phaseDeg": 4.692943234300784
+      },
+      "VCMD": {
+        "re": 0.5765671676356035,
+        "im": 0.047330958473878665,
+        "mag": 0.578506627814581,
+        "db": -4.753833221476757,
+        "phaseDeg": 4.692943234300781
+      },
+      "IVAC": {
+        "re": -0.000033995737568256974,
+        "im": -0.0000028812027768194696,
+        "mag": 0.000034117612786520554,
+        "db": -89.34042728157405,
+        "phaseDeg": -175.1556514523084
+      },
+      "inputImpedanceOhm": 29310.374270824937
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 0.7776761446099046,
+      "frequency": 1000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.8081980613466946,
+        "im": 0.0063884803899216065,
+        "mag": 0.8082233101354154,
+        "db": -1.8493725627178117,
+        "phaseDeg": 0.45289064409431273
+      },
+      "VNB": {
+        "re": 0.8081959620748735,
+        "im": 0.006636170464651278,
+        "mag": 0.8082232067149311,
+        "db": -1.8493736741667877,
+        "phaseDeg": 0.47045027786954247
+      },
+      "VCMD": {
+        "re": 0.5805351276875853,
+        "im": 0.004766826671791762,
+        "mag": 0.5805546977811478,
+        "db": -4.723137126589566,
+        "phaseDeg": 0.47045027786954224
+      },
+      "IVAC": {
+        "re": -0.000034238218042065055,
+        "im": -2.9018250496483247e-7,
+        "mag": 0.00003423944772601008,
+        "db": -89.30946498006163,
+        "phaseDeg": -179.51440712483262
+      },
+      "inputImpedanceOhm": 29206.07855600275
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 0.7776761446099046,
+      "frequency": 5000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.8082499994406183,
+        "im": 0.0012777843813859039,
+        "mag": 0.8082510094820078,
+        "db": -1.84907488589777,
+        "phaseDeg": 0.09058037889085153
+      },
+      "VNB": {
+        "re": 0.808249915463917,
+        "im": 0.0013273258229766572,
+        "mag": 0.8082510053450409,
+        "db": -1.8490749303557876,
+        "phaseDeg": 0.09409230718614649
+      },
+      "VCMD": {
+        "re": 0.5805738829388699,
+        "im": 0.0009534312249550638,
+        "mag": 0.5805746658112265,
+        "db": -4.722838382778567,
+        "phaseDeg": 0.09409230718614654
+      },
+      "IVAC": {
+        "re": -0.00003424058636894729,
+        "im": -5.804052932094829e-8,
+        "mag": 0.00003424063556057894,
+        "db": -89.30916365449427,
+        "phaseDeg": -179.9028791694762
+      },
+      "inputImpedanceOhm": 29205.06537417473
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 0.7776761446099046,
+      "frequency": 15000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.808251923212174,
+        "im": 0.00042592921613145325,
+        "mag": 0.8082520354393641,
+        "db": -1.8490638604284417,
+        "phaseDeg": 0.030193487322171593
+      },
+      "VNB": {
+        "re": 0.8082519138814052,
+        "im": 0.00044244307230234124,
+        "mag": 0.8082520349797002,
+        "db": -1.8490638653682248,
+        "phaseDeg": 0.0313641301062854
+      },
+      "VCMD": {
+        "re": 0.5805753184218546,
+        "im": 0.00031781122094956906,
+        "mag": 0.5805754054079538,
+        "db": -4.722827317791,
+        "phaseDeg": 0.03136413010628539
+      },
+      "IVAC": {
+        "re": -0.00003424067409107427,
+        "im": -1.9346893064640022e-8,
+        "mag": 0.000034240679556828836,
+        "db": -89.30915249388585,
+        "phaseDeg": -179.96762636160776
+      },
+      "inputImpedanceOhm": 29205.027848244434
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 1.7758088059309642,
+      "frequency": 40,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.4211738311283775,
+        "im": 0.18466603123061076,
+        "mag": 0.45987926580551547,
+        "db": -6.747123413183003,
+        "phaseDeg": 23.67531797890784
+      },
+      "VNB": {
+        "re": 0.414687110859582,
+        "im": 0.1965820370563653,
+        "mag": 0.45892253944026046,
+        "db": -6.765212238386404,
+        "phaseDeg": 25.363247202939224
+      },
+      "VCMD": {
+        "re": 0.297873840194911,
+        "im": 0.1412068153503469,
+        "mag": 0.32964858466835606,
+        "db": -9.638975690809184,
+        "phaseDeg": 25.363247202939228
+      },
+      "IVAC": {
+        "re": -0.00006588601599768927,
+        "im": -0.00003586639362651869,
+        "mag": 0.00007501576698148295,
+        "db": -82.49694892059503,
+        "phaseDeg": -151.43743791586047
+      },
+      "inputImpedanceOhm": 13330.530903547811
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 1.7758088059309642,
+      "frequency": 100,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.5014539446125648,
+        "im": 0.0914061895595598,
+        "mag": 0.5097167351159851,
+        "db": -5.853422146777403,
+        "phaseDeg": 10.330586670761427
+      },
+      "VNB": {
+        "re": 0.5001676841569744,
+        "im": 0.09730902609493952,
+        "mag": 0.5095456395991399,
+        "db": -5.856338210055534,
+        "phaseDeg": 11.00952316473331
+      },
+      "VCMD": {
+        "re": 0.3592753787606436,
+        "im": 0.06989803282875937,
+        "mag": 0.36601165661346663,
+        "db": -8.730101662478313,
+        "phaseDeg": 11.00952316473331
+      },
+      "IVAC": {
+        "re": -0.000081594954737518,
+        "im": -0.000017779988150696922,
+        "mag": 0.00008350966780712598,
+        "db": -81.56526487781541,
+        "phaseDeg": -167.70709835831255
+      },
+      "inputImpedanceOhm": 11974.661452487167
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 1.7758088059309642,
+      "frequency": 1000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.5211012118868793,
+        "im": 0.009569915137233412,
+        "mag": 0.521189079227211,
+        "db": -5.660093857694417,
+        "phaseDeg": 1.0521067787837137
+      },
+      "VNB": {
+        "re": 0.5210877413424615,
+        "im": 0.01018801373932473,
+        "mag": 0.521187326976914,
+        "db": -5.6601230599146675,
+        "phaseDeg": 1.1200720742265615
+      },
+      "VCMD": {
+        "re": 0.37430246209106394,
+        "im": 0.00731815071416283,
+        "mag": 0.37437399543412136,
+        "db": -8.533886512337444,
+        "phaseDeg": 1.1200720742265606
+      },
+      "IVAC": {
+        "re": -0.00008543981721106399,
+        "im": -0.0000018620343888366876,
+        "mag": 0.00008546010494450165,
+        "db": -81.36473156414897,
+        "phaseDeg": -178.75152090055894
+      },
+      "inputImpedanceOhm": 11701.366393703898
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 1.7758088059309642,
+      "frequency": 5000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.5213008255792323,
+        "im": 0.0019148553582388366,
+        "mag": 0.5213043424149009,
+        "db": -5.658173148535201,
+        "phaseDeg": 0.2104593577984815
+      },
+      "VNB": {
+        "re": 0.5213002865103885,
+        "im": 0.002038531598705139,
+        "mag": 0.5213042723083057,
+        "db": -5.658174316640165,
+        "phaseDeg": 0.2240525560416016
+      },
+      "VCMD": {
+        "re": 0.37445513538070163,
+        "im": 0.0014642973455487613,
+        "mag": 0.3744579984186421,
+        "db": -8.531937769062942,
+        "phaseDeg": 0.22405255604160149
+      },
+      "IVAC": {
+        "re": -0.00008547888106395947,
+        "im": -3.7257763830259064e-7,
+        "mag": 0.00008547969303900834,
+        "db": -81.36274092147997,
+        "phaseDeg": -179.75026590469145
+      },
+      "inputImpedanceOhm": 11698.68496771103
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 1.7758088059309642,
+      "frequency": 15000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.5213082221940006,
+        "im": 0.000638295893549858,
+        "mag": 0.5213086129623385,
+        "db": -5.658101993647769,
+        "phaseDeg": 0.07015358850691922
+      },
+      "VNB": {
+        "re": 0.5213081622964452,
+        "im": 0.0006795220051488529,
+        "mag": 0.5213086051726484,
+        "db": -5.658102123437279,
+        "phaseDeg": 0.07468465630594193
+      },
+      "VCMD": {
+        "re": 0.37446079263547466,
+        "im": 0.000488107355811148,
+        "mag": 0.37446111075781785,
+        "db": -8.531865575860056,
+        "phaseDeg": 0.07468465630594195
+      },
+      "IVAC": {
+        "re": -0.00008548032856141264,
+        "im": -1.2419465534768199e-7,
+        "mag": 0.00008548041878278016,
+        "db": -81.36266717643804,
+        "phaseDeg": -179.916754828833
+      },
+      "inputImpedanceOhm": 11698.585643820545
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 4.035012793117151,
+      "frequency": 40,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.21181681958291454,
+        "im": 0.09961147742198412,
+        "mag": 0.23407009952664057,
+        "db": -12.613081204064256,
+        "phaseDeg": 25.186278618446405
+      },
+      "VNB": {
+        "re": 0.2006394369731116,
+        "im": 0.11338774515475791,
+        "mag": 0.23046250111497,
+        "db": -12.747994584115517,
+        "phaseDeg": 29.472176319193295
+      },
+      "VCMD": {
+        "re": 0.14412128571308017,
+        "im": 0.08144753525200919,
+        "mag": 0.1655434867163869,
+        "db": -15.621758036538294,
+        "phaseDeg": 29.472176319193288
+      },
+      "IVAC": {
+        "re": -0.0000761717818455759,
+        "im": -0.00006180201824424192,
+        "mag": 0.00009808990676207015,
+        "db": -80.16751356556165,
+        "phaseDeg": -140.94583305700002
+      },
+      "inputImpedanceOhm": 10194.728825929362
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 4.035012793117151,
+      "frequency": 100,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.2724399392706136,
+        "im": 0.05957984832496492,
+        "mag": 0.2788786094991896,
+        "db": -11.091695912795135,
+        "phaseDeg": 12.335798051308858
+      },
+      "VNB": {
+        "re": 0.2697510450848637,
+        "im": 0.06785495489691983,
+        "mag": 0.2781544916560565,
+        "db": -11.114278453043699,
+        "phaseDeg": 14.119613487445829
+      },
+      "VCMD": {
+        "re": 0.19376483520180354,
+        "im": 0.048740883094970586,
+        "mag": 0.19980111372477302,
+        "db": -13.988041905466474,
+        "phaseDeg": 14.119613487445829
+      },
+      "IVAC": {
+        "re": -0.00011438686166215497,
+        "im": -0.00003716860496902091,
+        "mag": 0.0001202741007709478,
+        "db": -78.39655762830014,
+        "phaseDeg": -161.99906641096032
+      },
+      "inputImpedanceOhm": 8314.341937209061
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 4.035012793117151,
+      "frequency": 1000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.2914277633785598,
+        "im": 0.006576259066975874,
+        "mag": 0.2915019527398501,
+        "db": -10.707170632075265,
+        "phaseDeg": 1.2926975433887498
+      },
+      "VNB": {
+        "re": 0.2913980532505793,
+        "im": 0.007490380760721723,
+        "mag": 0.29149430739238813,
+        "db": -10.707398443637171,
+        "phaseDeg": 1.4724625429378966
+      },
+      "VCMD": {
+        "re": 0.2093140945884443,
+        "im": 0.005380414349250809,
+        "mag": 0.20938323488749006,
+        "db": -13.58116189605995,
+        "phaseDeg": 1.4724625429378948
+      },
+      "IVAC": {
+        "re": -0.00012635911189259663,
+        "im": -0.000004106833271235571,
+        "mag": 0.000126425832952777,
+        "db": -77.96328352699864,
+        "phaseDeg": -178.13846892937394
+      },
+      "inputImpedanceOhm": 7909.775847579532
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 4.035012793117151,
+      "frequency": 5000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.2916314077243358,
+        "im": 0.0013165780561775675,
+        "mag": 0.291634379573218,
+        "db": -10.703225603045901,
+        "phaseDeg": 0.2586616240633154
+      },
+      "VNB": {
+        "re": 0.29163021810888573,
+        "im": 0.0014995881819998193,
+        "mag": 0.29163407359043597,
+        "db": -10.70323471628582,
+        "phaseDeg": 0.29461733126508965
+      },
+      "VCMD": {
+        "re": 0.20948086089511514,
+        "im": 0.0010771689758026872,
+        "mag": 0.20948363032552447,
+        "db": -13.576998168708599,
+        "phaseDeg": 0.2946173312650896
+      },
+      "IVAC": {
+        "re": -0.0001264875186994618,
+        "im": -8.22203174865765e-7,
+        "mag": 0.00012649019094304292,
+        "db": -77.95886303671706,
+        "phaseDeg": -179.62756714006764
+      },
+      "inputImpedanceOhm": 7905.751367315815
+    },
+    {
+      "scenario": "rsource_51k",
+      "scenarioNote": "detector-side R31 bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 51000,
+      "cmdDcVolt": 4.035012793117151,
+      "frequency": 15000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.29163895807181656,
+        "im": 0.0004388757425629031,
+        "mag": 0.2916392882948595,
+        "db": -10.703079405414183,
+        "phaseDeg": 0.08622204990754742
+      },
+      "VNB": {
+        "re": 0.2916388258873361,
+        "im": 0.0004998814139273258,
+        "mag": 0.29163925429607707,
+        "db": -10.703080417999598,
+        "phaseDeg": 0.0982073190678359
+      },
+      "VCMD": {
+        "re": 0.2094870439472414,
+        "im": 0.00035906974803230477,
+        "mag": 0.20948735167746382,
+        "db": -13.576843870422374,
+        "phaseDeg": 0.098207319067836
+      },
+      "IVAC": {
+        "re": -0.00012649227953061805,
+        "im": -2.7407806330738835e-7,
+        "mag": 0.00012649257646058445,
+        "db": -77.95869922838887,
+        "phaseDeg": -179.87585414882375
+      },
+      "inputImpedanceOhm": 7905.602273123148
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 0,
+      "frequency": 40,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.9389952111145696,
+        "im": 0.05631707785249767,
+        "mag": 0.9406825286747594,
+        "db": -0.5311384412958502,
+        "phaseDeg": 3.4322541795241017
+      },
+      "VNB": {
+        "re": 0.9388805695042638,
+        "im": 0.058167505833391746,
+        "mag": 0.9406807016876282,
+        "db": -0.5311553109872911,
+        "phaseDeg": 3.5451775691066736
+      },
+      "VCMD": {
+        "re": 0.7824004745868866,
+        "im": 0.04847292152782646,
+        "mag": 0.7839005847396902,
+        "db": -2.1147802319397875,
+        "phaseDeg": 3.5451775691066736
+      },
+      "IVAC": {
+        "re": -0.000010231392073361791,
+        "im": -6.338767436898371e-7,
+        "mag": 0.000010251008900837094,
+        "db": -99.78466778776678,
+        "phaseDeg": -176.45482243089313
+      },
+      "inputImpedanceOhm": 97551.3736914559
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 0,
+      "frequency": 100,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.9419242346263808,
+        "im": 0.022599417153643084,
+        "mag": 0.9421953074772648,
+        "db": -0.517181261174658,
+        "phaseDeg": 1.374423544779651
+      },
+      "VNB": {
+        "re": 0.9419058328649738,
+        "im": 0.023341973327500615,
+        "mag": 0.94219501468851,
+        "db": -0.5171839603296914,
+        "phaseDeg": 1.4195929497402158
+      },
+      "VCMD": {
+        "re": 0.7849215273874782,
+        "im": 0.019451644439583853,
+        "mag": 0.7851625122404251,
+        "db": -2.1008088812821866,
+        "phaseDeg": 1.419592949740216
+      },
+      "IVAC": {
+        "re": -0.000010264359690941754,
+        "im": -2.5436768917765203e-7,
+        "mag": 0.000010267511031711992,
+        "db": -99.77069643710914,
+        "phaseDeg": -178.58040705026582
+      },
+      "inputImpedanceOhm": 97394.58734560145
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 0,
+      "frequency": 1000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.9424786813842788,
+        "im": 0.002261315725396096,
+        "mag": 0.9424813941997259,
+        "db": -0.5145442914332825,
+        "phaseDeg": 0.13747111860288447
+      },
+      "VNB": {
+        "re": 0.9424784972547847,
+        "im": 0.0023356164890654123,
+        "mag": 0.9424813912709478,
+        "db": -0.5145443184248428,
+        "phaseDeg": 0.14198806002534808
+      },
+      "VCMD": {
+        "re": 0.7853987477123208,
+        "im": 0.0019463470742211778,
+        "mag": 0.7854011593924567,
+        "db": -2.098169239377337,
+        "phaseDeg": 0.1419880600253481
+      },
+      "IVAC": {
+        "re": -0.000010270600265183962,
+        "im": -2.5452234100738423e-8,
+        "mag": 0.000010270631802543483,
+        "db": -99.76805679520427,
+        "phaseDeg": -179.85801193988542
+      },
+      "inputImpedanceOhm": 97364.9936270088
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 0,
+      "frequency": 5000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.9424840611382139,
+        "im": 0.0004522658119274301,
+        "mag": 0.942484169651642,
+        "db": -0.5145187129617167,
+        "phaseDeg": 0.027494279554399904
+      },
+      "VNB": {
+        "re": 0.9424840537729907,
+        "im": 0.0004671260522714718,
+        "mag": 0.9424841695344907,
+        "db": -0.5145187140413775,
+        "phaseDeg": 0.028397667840689297
+      },
+      "VCMD": {
+        "re": 0.7854033781441592,
+        "im": 0.0003892717102262266,
+        "mag": 0.7854034746120758,
+        "db": -2.098143634993871,
+        "phaseDeg": 0.028397667840689294
+      },
+      "IVAC": {
+        "re": -0.000010270660816992402,
+        "im": -5.090476748493827e-9,
+        "mag": 0.000010270662078496038,
+        "db": -99.76803119082084,
+        "phaseDeg": -179.97160233263344
+      },
+      "inputImpedanceOhm": 97364.70661358112
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 0,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 0,
+      "frequency": 15000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 0,
+      "VNA": {
+        "re": 0.9424842603895707,
+        "im": 0.00015075530185840131,
+        "mag": 0.9424842724466214,
+        "db": -0.5145177656080883,
+        "phaseDeg": 0.009164760436922477
+      },
+      "VNB": {
+        "re": 0.9424842595712123,
+        "im": 0.00015570871638802888,
+        "mag": 0.9424842724336044,
+        "db": -0.5145177657280515,
+        "phaseDeg": 0.009465889865707787
+      },
+      "VCMD": {
+        "re": 0.7854035496426771,
+        "im": 0.00012975726365669076,
+        "mag": 0.7854035603613373,
+        "db": -2.0981426866805455,
+        "phaseDeg": 0.009465889865707787
+      },
+      "IVAC": {
+        "re": -0.000010270663059665518,
+        "im": -1.6968262573775162e-9,
+        "mag": 0.000010270663199832677,
+        "db": -99.76803024250749,
+        "phaseDeg": -179.99053410849277
+      },
+      "inputImpedanceOhm": 97364.69598343867
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 0.6842063481561843,
+      "frequency": 40,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.8479812583044768,
+        "im": 0.11793400797772911,
+        "mag": 0.856142888000207,
+        "db": -1.3490749332960836,
+        "phaseDeg": 7.917691258567568
+      },
+      "VNB": {
+        "re": 0.8473496807563947,
+        "im": 0.12218369526670178,
+        "mag": 0.8561135069995043,
+        "db": -1.3493730196461535,
+        "phaseDeg": 8.205215897493941
+      },
+      "VCMD": {
+        "re": 0.7061247339636625,
+        "im": 0.10181974605558486,
+        "mag": 0.7134279224995871,
+        "db": -2.9329979405986477,
+        "phaseDeg": 8.205215897493943
+      },
+      "IVAC": {
+        "re": -0.000023497384006079087,
+        "im": -0.0000034921205179995897,
+        "mag": 0.00002375546170549785,
+        "db": -92.48473048637194,
+        "phaseDeg": -171.54672308517252
+      },
+      "inputImpedanceOhm": 42095.58258211267
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 0.6842063481561843,
+      "frequency": 100,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.862641324644345,
+        "im": 0.04804870210895306,
+        "mag": 0.8639784330401454,
+        "db": -1.269941968212858,
+        "phaseDeg": 3.1880528579518863
+      },
+      "VNB": {
+        "re": 0.8625383868699402,
+        "im": 0.049780136534635186,
+        "mag": 0.8639736864150467,
+        "db": -1.2699896878936257,
+        "phaseDeg": 3.3030776850598147
+      },
+      "VCMD": {
+        "re": 0.7187819890582837,
+        "im": 0.041483447112195995,
+        "mag": 0.7199780720125392,
+        "db": -2.8536146088461187,
+        "phaseDeg": 3.3030776850598143
+      },
+      "IVAC": {
+        "re": -0.000023933631356340163,
+        "im": -0.0000014229096457245737,
+        "mag": 0.000023975891678122947,
+        "db": -92.40450464357367,
+        "phaseDeg": -176.5976384797076
+      },
+      "inputImpedanceOhm": 41708.5634780566
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 0.6842063481561843,
+      "frequency": 1000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.8654673062998155,
+        "im": 0.004821739587857211,
+        "mag": 0.8654807377674628,
+        "db": -1.2548518677160763,
+        "phaseDeg": 0.3192061306241093
+      },
+      "VNB": {
+        "re": 0.8654662732876179,
+        "im": 0.00499549140681197,
+        "mag": 0.8654806902136831,
+        "db": -1.2548523449616988,
+        "phaseDeg": 0.3307088958898218
+      },
+      "VCMD": {
+        "re": 0.7212218944063484,
+        "im": 0.004162909505676641,
+        "mag": 0.7212339085114028,
+        "db": -2.838477265914193,
+        "phaseDeg": 0.33070889588982166
+      },
+      "IVAC": {
+        "re": -0.000024017727270949854,
+        "im": -1.427933553733673e-7,
+        "mag": 0.000024018151744130254,
+        "db": -92.38920831352401,
+        "phaseDeg": -179.65936159909762
+      },
+      "inputImpedanceOhm": 41635.177038315946
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 0.6842063481561843,
+      "frequency": 5000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.8654948074414872,
+        "im": 0.0009643807510444979,
+        "mag": 0.865495344723708,
+        "db": -1.2547052748068153,
+        "phaseDeg": 0.06384200521595015
+      },
+      "VNB": {
+        "re": 0.8654947661195844,
+        "im": 0.0009991322989265521,
+        "mag": 0.8654953428215226,
+        "db": -1.2547052938966607,
+        "phaseDeg": 0.0661425588171508
+      },
+      "VCMD": {
+        "re": 0.7212456384329872,
+        "im": 0.0008326102491054602,
+        "mag": 0.7212461190179357,
+        "db": -2.8383302148491554,
+        "phaseDeg": 0.0661425588171508
+      },
+      "IVAC": {
+        "re": -0.0000240185456559696,
+        "im": -2.855964881694502e-8,
+        "mag": 0.0000240185626356249,
+        "db": -92.38905972058956,
+        "phaseDeg": -179.93187153819278
+      },
+      "inputImpedanceOhm": 41634.4647750393
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 1,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 0.6842063481561843,
+      "frequency": 15000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": false,
+      "anyDiodeOutOfStatedRange": true,
+      "maxResidual": 1.21452847778869e-10,
+      "VNA": {
+        "re": 0.8654958260384411,
+        "im": 0.00032146065432125546,
+        "mag": 0.8654958857365618,
+        "db": -1.2546998453420577,
+        "phaseDeg": 0.021280677931726336
+      },
+      "VNB": {
+        "re": 0.8654958214471126,
+        "im": 0.0003330445182342019,
+        "mag": 0.8654958855252076,
+        "db": -1.2546998474631526,
+        "phaseDeg": 0.022047529138892734
+      },
+      "VCMD": {
+        "re": 0.721246517872594,
+        "im": 0.00027753709852850166,
+        "mag": 0.7212465712710064,
+        "db": -2.838324768415648,
+        "phaseDeg": 0.022047529138892734
+      },
+      "IVAC": {
+        "re": -0.000024018575967603553,
+        "im": -9.519895259024849e-9,
+        "mag": 0.00002401857785423502,
+        "db": -92.38905421704929,
+        "phaseDeg": -179.97729050248768
+      },
+      "inputImpedanceOhm": 41634.438394681114
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 1.4056029138820714,
+      "frequency": 40,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.5297588314962675,
+        "im": 0.19586577160950752,
+        "mag": 0.5648077726417001,
+        "db": -4.961986706824303,
+        "phaseDeg": 20.290678859646814
+      },
+      "VNB": {
+        "re": 0.5251967770579425,
+        "im": 0.20628594058430905,
+        "mag": 0.5642566294823689,
+        "db": -4.970466593406418,
+        "phaseDeg": 21.443826932927358
+      },
+      "VCMD": {
+        "re": 0.43766398088161884,
+        "im": 0.17190495048692422,
+        "mag": 0.4702138579019741,
+        "db": -6.554091514358914,
+        "phaseDeg": 21.443826932927358
+      },
+      "IVAC": {
+        "re": -0.000057615230288705094,
+        "im": -0.00002522452540734439,
+        "mag": 0.00006289508282247734,
+        "db": -84.02766613291972,
+        "phaseDeg": -156.3557145953869
+      },
+      "inputImpedanceOhm": 15899.49412774478
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 1.4056029138820714,
+      "frequency": 100,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.5994394163251946,
+        "im": 0.09059347603100185,
+        "mag": 0.6062464777165057,
+        "db": -4.347015432543422,
+        "phaseDeg": 8.594093043742904
+      },
+      "VNB": {
+        "re": 0.5985945931241817,
+        "im": 0.09541499323702551,
+        "mag": 0.6061513902086889,
+        "db": -4.348377888915871,
+        "phaseDeg": 9.056662478452132
+      },
+      "VCMD": {
+        "re": 0.49882882760348485,
+        "im": 0.07951249436418792,
+        "mag": 0.5051261585072409,
+        "db": -5.932002809868367,
+        "phaseDeg": 9.056662478452129
+      },
+      "IVAC": {
+        "re": -0.00006664786934784301,
+        "im": -0.00001167799759228967,
+        "mag": 0.00006766324051043281,
+        "db": -83.39294413861695,
+        "phaseDeg": -170.0615595317621
+      },
+      "inputImpedanceOhm": 14779.073429771852
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 1.4056029138820714,
+      "frequency": 1000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.6151122419909197,
+        "im": 0.00933483286475328,
+        "mag": 0.6151830697863105,
+        "db": -4.219912501829427,
+        "phaseDeg": 0.8694437135288482
+      },
+      "VNB": {
+        "re": 0.6151035353166872,
+        "im": 0.009831683168493192,
+        "mag": 0.615182104057825,
+        "db": -4.2199261371488,
+        "phaseDeg": 0.915725490093333
+      },
+      "VCMD": {
+        "re": 0.5125862794305727,
+        "im": 0.00819306930707766,
+        "mag": 0.5126517533815209,
+        "db": -5.803551058101295,
+        "phaseDeg": 0.9157254900933328
+      },
+      "IVAC": {
+        "re": -0.00006867965562317855,
+        "im": -0.0000012035242474384782,
+        "mag": 0.0000686901999351623,
+        "db": -83.26210439059294,
+        "phaseDeg": -178.9960665623789
+      },
+      "inputImpedanceOhm": 14558.117474456541
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 1.4056029138820714,
+      "frequency": 5000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.6152689159549521,
+        "im": 0.0018675173581756091,
+        "mag": 0.6152717501734214,
+        "db": -4.218660496401279,
+        "phaseDeg": 0.1739085648887074
+      },
+      "VNB": {
+        "re": 0.6152685675846407,
+        "im": 0.0019669168061994275,
+        "mag": 0.6152717115383886,
+        "db": -4.218661041818231,
+        "phaseDeg": 0.18316496840221685
+      },
+      "VCMD": {
+        "re": 0.5127238063205339,
+        "im": 0.001639097338499524,
+        "mag": 0.5127264262819905,
+        "db": -5.802285962770727,
+        "phaseDeg": 0.18316496840221697
+      },
+      "IVAC": {
+        "re": -0.00006869996665015287,
+        "im": -2.40776274412979e-7,
+        "mag": 0.00006870038857929725,
+        "db": -83.26081613002665,
+        "phaseDeg": -179.799193383646
+      },
+      "inputImpedanceOhm": 14555.95842585013
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 3,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 1.4056029138820714,
+      "frequency": 15000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.5788881313483216e-10,
+      "VNA": {
+        "re": 0.6152747204797676,
+        "im": 0.0006225125872470658,
+        "mag": 0.6152750353974858,
+        "db": -4.218614118491891,
+        "phaseDeg": 0.05796976632607866
+      },
+      "VNB": {
+        "re": 0.6152746817715298,
+        "im": 0.0006556460995058796,
+        "mag": 0.6152750311046801,
+        "db": -4.218614179093792,
+        "phaseDeg": 0.061055234758989406
+      },
+      "VCMD": {
+        "re": 0.5127289014762749,
+        "im": 0.0005463717495882328,
+        "mag": 0.5127291925872336,
+        "db": -5.802239100046284,
+        "phaseDeg": 0.06105523475898937
+      },
+      "IVAC": {
+        "re": -0.00006870071914194471,
+        "im": -8.025964032717838e-8,
+        "mag": 0.00006870076602360584,
+        "db": -83.26076840932711,
+        "phaseDeg": -179.93306421502746
+      },
+      "inputImpedanceOhm": 14555.878454927217
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 2.923549226265301,
+      "frequency": 40,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.2779541515125181,
+        "im": 0.13530269881980128,
+        "mag": 0.30913642724688034,
+        "db": -10.196996332238486,
+        "phaseDeg": 25.95592210181714
+      },
+      "VNB": {
+        "re": 0.2683947888520839,
+        "im": 0.14863361602304664,
+        "mag": 0.3068024030137984,
+        "db": -10.262824862417744,
+        "phaseDeg": 28.977125577692433
+      },
+      "VCMD": {
+        "re": 0.22366232404340328,
+        "im": 0.12386134668587222,
+        "mag": 0.2556686691781654,
+        "db": -11.846449783370243,
+        "phaseDeg": 28.977125577692433
+      },
+      "IVAC": {
+        "re": -0.00007370934833033992,
+        "im": -0.00005285565737235656,
+        "mag": 0.00009070164578191144,
+        "db": -80.84769665184817,
+        "phaseDeg": -144.3563685310707
+      },
+      "inputImpedanceOhm": 11025.158268952042
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 2.923549226265301,
+      "frequency": 100,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.3526640502731705,
+        "im": 0.07561660736080877,
+        "mag": 0.36067964132154184,
+        "db": -8.857567417632946,
+        "phaseDeg": 12.101861732140007
+      },
+      "VNB": {
+        "re": 0.3505202561236276,
+        "im": 0.0830831690794524,
+        "mag": 0.3602322347281797,
+        "db": -8.868348554471767,
+        "phaseDeg": 13.334624428840046
+      },
+      "VCMD": {
+        "re": 0.2921002134363564,
+        "im": 0.06923597423287702,
+        "mag": 0.30019352894014983,
+        "db": -10.451973475424264,
+        "phaseDeg": 13.334624428840046
+      },
+      "IVAC": {
+        "re": -0.00010321033994860823,
+        "im": -0.000029633682984456187,
+        "mag": 0.00010738030284707957,
+        "db": -79.38150751041147,
+        "phaseDeg": -163.98020469649865
+      },
+      "inputImpedanceOhm": 9312.694912251283
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 2.923549226265301,
+      "frequency": 1000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.37402645839362253,
+        "im": 0.0081763843895508,
+        "mag": 0.3741158174150913,
+        "db": -8.539878593540712,
+        "phaseDeg": 1.2523117114161861
+      },
+      "VNB": {
+        "re": 0.37400326369522335,
+        "im": 0.008984073925769588,
+        "mag": 0.3741111530534508,
+        "db": -8.539986887232443,
+        "phaseDeg": 1.3760589677770223
+      },
+      "VCMD": {
+        "re": 0.3116693864126862,
+        "im": 0.00748672827147466,
+        "mag": 0.31175929421120907,
+        "db": -10.123611808184936,
+        "phaseDeg": 1.3760589677770225
+      },
+      "IVAC": {
+        "re": -0.00011164698658811799,
+        "im": -0.0000032062049401047738,
+        "mag": 0.00011169301394592837,
+        "db": -79.0394797963477,
+        "phaseDeg": -178.35506946411954
+      },
+      "inputImpedanceOhm": 8953.111431697145
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 2.923549226265301,
+      "frequency": 5000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.37425075922965306,
+        "im": 0.0016365677983627889,
+        "mag": 0.3742543375007568,
+        "db": -8.536663152137596,
+        "phaseDeg": 0.2505481358015183
+      },
+      "VNB": {
+        "re": 0.3742498307038782,
+        "im": 0.0017982338758046764,
+        "mag": 0.37425415084799474,
+        "db": -8.536667484073218,
+        "phaseDeg": 0.27529850469523287
+      },
+      "VCMD": {
+        "re": 0.3118748589198985,
+        "im": 0.0014985282298372307,
+        "mag": 0.31187845903999567,
+        "db": -10.120292405025712,
+        "phaseDeg": 0.275298504695233
+      },
+      "IVAC": {
+        "re": -0.00011173557146974548,
+        "im": -6.417509455973883e-7,
+        "mag": 0.00011173741439619397,
+        "db": -79.03602764868074,
+        "phaseDeg": -179.67092649285888
+      },
+      "inputImpedanceOhm": 8949.553785576609
+    },
+    {
+      "scenario": "rsource_100k",
+      "scenarioNote": "high output-impedance sensitivity bound",
+      "status": "BRIDGE_AND_COMMAND_SMALL_SIGNAL_REFERENCE",
+      "driveVolt": 8,
+      "commandSourceOhm": 100000,
+      "cmdDcVolt": 2.923549226265301,
+      "frequency": 15000,
+      "bjtStampMode": "NONE_GUARDED",
+      "scientificBoundary": "B6 full schematic inventory is closed, but active BJT AC stamps are guarded until conditional hypotheses are selected.",
+      "allDiodesInStatedRange": true,
+      "anyDiodeOutOfStatedRange": false,
+      "maxResidual": 1.6676970915341371e-10,
+      "VNA": {
+        "re": 0.374259073518356,
+        "im": 0.0005455385496204407,
+        "mag": 0.37425947112014063,
+        "db": -8.536544009241636,
+        "phaseDeg": 0.08351710493855871
+      },
+      "VNB": {
+        "re": 0.37425897034578665,
+        "im": 0.0005994288257543318,
+        "mag": 0.3742594503806224,
+        "db": -8.536544490568591,
+        "phaseDeg": 0.0917672392323093
+      },
+      "VCMD": {
+        "re": 0.31188247528815555,
+        "im": 0.0004995240214619434,
+        "mag": 0.31188287531718534,
+        "db": -10.120169411521086,
+        "phaseDeg": 0.09176723923230933
+      },
+      "IVAC": {
+        "re": -0.00011173885509742396,
+        "im": -2.1392328287912392e-7,
+        "mag": 0.00011173905987457593,
+        "db": -79.0358997386296,
+        "phaseDeg": -179.8903077513825
+      },
+      "inputImpedanceOhm": 8949.421993727825
+    }
+  ]
+}

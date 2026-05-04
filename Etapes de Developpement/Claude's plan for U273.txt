@@ -1,0 +1,327 @@
+Claude's plan for U273
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+ Plan général — finalisation schéma Siemens U273
+
+ Contexte
+
+ Le projet C:\Users\user\Desktop\Siemens U273\ retranscrit, modélise (MNA DC, MNA AC, transitoire) et valide le limiteur audio Siemens U273. À
+ l'Étape 24 (2026-05-03), les blocages P0.3 (loi diode empirique) et P0.4 (port Thévenin B11→B6) sont fermés ; P0.1 (S6 livraison linéaire, S7
+ Begrenzer dessiné) et P0.2 (Ts2/Ts4 hybrid-pi conditionnels en B6) sont partiellement fermés. Il reste à finir P0.1/P0.2 pour les
+ commutateurs/transistors non lus, à fermer P1 (netlists complètes B6/B11, redresseur/zener, tables S1..S5), puis à construire P2 (orchestrateur,
+ solveurs globaux DC/AC/transitoire, export netlist, rapport).
+
+ L'utilisateur veut un plan exhaustif couvrant toutes les étapes restantes, en suivant la voie hybride : continuer en paramétrique tout en
+ demandant les photos manquantes, en parallélisant fermeture P0/P1 et construction P2. Export final : .txt humain + .json machine (pas de SPICE).
+ La règle Étape 19 §6 reste impérative : toute partie non lue doit rester paramétrique, jamais déduite par compensation numérique.
+
+ Posture & contraintes
+
+ - Règle de prudence : aucune broche B/C/E ni table de contacts ne doit être figée par fit numérique. Si la lecture est ambiguë, on garde un
+ paramètre + plage + commentaire.
+ - Étiquetage : chaque artefact (modules .js, JSON, CSV, txt Étape) marque clairement fermé / partiel / paramétrique.
+ - Documentation : chaque livrable Phase X.Y se conclut par un fichier Etape NN - <titre>.txt (continuité de la convention existante, prochain
+ numéro = 25).
+ - Réutilisation : on étend solver/mna_core.js, solver/complex_ac.js, solver/bjt_small_signal.js, solver/u273_diode_empirical.js plutôt que de
+ dupliquer.
+ - Pas de CLAUDE.md ajouté sauf demande explicite ; les conventions vivent dans Étapes + plan.
+
+ Vue d'ensemble — 8 phases
+
+ ┌───────┬─────────────────────────────────────────────────────────────────────────────┬─────────────────┬─────────────────────────────────────┐
+ │ Phase │                                    Objet                                    │    Dépend de    │           Parallélisable            │
+ ├───────┼─────────────────────────────────────────────────────────────────────────────┼─────────────────┼─────────────────────────────────────┤
+ │ A     │ Clore P0 (S6 hors livraison, S7 Kompressor, broches BJT)                    │ photos          │ Oui avec C/D/E                      │
+ ├───────┼─────────────────────────────────────────────────────────────────────────────┼─────────────────┼─────────────────────────────────────┤
+ │ B     │ Clore P1 (netlists complètes, S1..S5, redresseur/zener, transformateur      │ A partiel       │ Oui avec C/D/E                      │
+ │       │ sortie)                                                                     │                 │                                     │
+ ├───────┼─────────────────────────────────────────────────────────────────────────────┼─────────────────┼─────────────────────────────────────┤
+ │ C     │ Orchestrateur global + solveur DC couplé B11+B6                             │ A§4, B§3        │ Lance dès maintenant en             │
+ │       │                                                                             │ partiel         │ paramétrique                        │
+ ├───────┼─────────────────────────────────────────────────────────────────────────────┼─────────────────┼─────────────────────────────────────┤
+ │ D     │ Solveur AC petit signal global U273                                         │ C               │ Suit C                              │
+ ├───────┼─────────────────────────────────────────────────────────────────────────────┼─────────────────┼─────────────────────────────────────┤
+ │ E     │ Solveur transitoire grand signal                                            │ C               │ Suit C                              │
+ ├───────┼─────────────────────────────────────────────────────────────────────────────┼─────────────────┼─────────────────────────────────────┤
+ │ F     │ Validation contre données Siemens                                           │ C+D+E           │ Termine après C/D/E                 │
+ ├───────┼─────────────────────────────────────────────────────────────────────────────┼─────────────────┼─────────────────────────────────────┤
+ │ G     │ Export netlist humain .txt + machine .json                                  │ A+B             │ Final                               │
+ ├───────┼─────────────────────────────────────────────────────────────────────────────┼─────────────────┼─────────────────────────────────────┤
+ │ H     │ Rapport scientifique final                                                  │ F+G             │ Dernière étape                      │
+ └───────┴─────────────────────────────────────────────────────────────────────────────┴─────────────────┴─────────────────────────────────────┘
+
+ ---
+ Phase A — Fermeture P0 (blocages lecture schéma)
+
+ Objectif : passer chaque P0 de partiel à fermé. Chaque sous-phase produit un Etape NN.txt + un module solveur si pertinent.
+
+ A.1 Tables complètes S6 hors livraison linéaire
+
+ - Action : pour chaque position S6 hors livraison (Vorentzerrung alternatives), lister contacts fermés et rameaux R/C actifs.
+ - Photos requises : zoom milieu-droite B11 sur table de contacts S6 toutes positions ; zoom Drahtbruecken 5/6 et 7/8.
+ - Livrable : extension solver/b11_s6_contact_bound_sweep.js (déjà présent) → table par position. Étape 25 résume.
+ - Branche sans photo : garder positions hors livraison comme paramétriques bornées, marquer NON LU.
+
+ A.2 Table physique S7 mode Kompressor
+
+ - Action : confirmer 17→19 fermé en Kompressor + bypass mécanique ZL10.
+ - Photos requises : crop droit-milieu B11 zoomé sur S7 contacts 17/18/19 dans la position non dessinée + chemin du contact 19.
+ - Livrable : compléter solver/b11_s7_detector_parametric.js avec branche Kompressor non hypothétique. Étape 26.
+ - Branche sans photo : garder l'hypothèse "S7_17_19=closed, ZL10 bypassed" déjà encodée, marquée HYPOTHÈSE.
+
+ A.3 Broches B/C/E des transistors B6 — Ts1, Ts3, Ts5, Ts6
+
+ - Action : prouver topologiquement (pas par fit) chaque broche B/C/E. Étape 8 a montré que les nœuds imprimés seuls ne suffisent pas → il faut
+ lire le routage sur photo.
+ - Photos requises :
+   - Haut/milieu B6 — Ts1/Ts2 trois fils visibles
+   - Milieu B6 — Ts3/Ts4 trois fils visibles
+   - Haut-droite B6 — Ts5/Ts6 trois fils visibles
+ - Livrable : nouveau solver/b6_ts1_ts3_ts5_ts6_pin_topology.js (analogue à b11_ts1_ts2_topology_constraints.js). Étape 27 résume.
+ - Branche sans photo : Ts1/Ts3/Ts5/Ts6 restent symboliques, la MNA active B6 reste partielle, le solveur global paramétrique injecte la borne
+ courant Ts5/Ts6 (déjà connue : 20,833 mA via R36=24Ω).
+
+ A.4 Broches B/C/E des transistors B11 — Ts1, Ts2
+
+ - Action : lever le verrou « base cachée » d'Étape 8 en lisant le nœud entre R14/R17/C10 (chemins encore non figés).
+ - Photos requises : centre B11 — Ts1/Ts2 trois broches + jonctions R10/R11/R12/R13/R14/R15/R16/C5..C10.
+ - Livrable : solver/b11_ts1_ts2_pin_resolved.js (succède à ..._pin_hypothesis_solver.js). Étape 28.
+ - Branche sans photo : conserver b11_ts1_ts2_pin_hypothesis_solver.js, propager les hypothèses dans l'orchestrateur Phase C avec drapeau
+ UNCONFIRMED.
+
+ A.5 Polarité finale du pont B6
+
+ - Action : confirmer photographiquement anode/cathode de chaque branche Ge+Si en série (D1, D2, D3, D4).
+ - Photos requises : crop pont B6 haute résolution avec marquages visibles.
+ - Livrable : annotation dans MNA Pont B6 Siemens U273 - document final.txt + verrou dans solver/b6_parametric.js. Étape 29.
+ - Branche sans photo : garder topologie actuelle (D3+D4 // D2+D1) marquée PAR DÉFAUT, ajouter mode polarity_swap testable dans le sweep.
+
+ ---
+ Phase B — Fermeture P1 (netlists complètes)
+
+ B.1 Redresseur, zener, seuil
+
+ - Compléter modélisation B30 C2200 (réponse pleine onde), ZL10 (loi seuil), SSD55 (chute Si).
+ - Étendre solver/b11_s7_detector_parametric.js avec courbes ZL10/SSD55 réelles (datasheets ou approximation Shockley + facteur).
+ - Livrable : Étape 30 + solver/b11_zener_rectifier_curves.js (nouveau).
+
+ B.2 Tables S1..S5
+
+ - Lecture pages service Siemens (PDF + photos front panel).
+ - Documenter fonction (entrée/sortie/mesure/calibration) + position → contacts.
+ - Livrable : Etape 31 - Tables S1 a S5.txt + solver/u273_switch_tables.js (table de hash réutilisable).
+ - Branche sans photo : marquer S1..S5 BYPASSED dans l'orchestrateur (pas critique pour cœur limiteur).
+
+ B.3 Netlist B6 complète
+
+ - Fermer C4/C6 (valeurs Abgl. — lire pages service ou bornes mesurées).
+ - Vérifier transformateur/liaison sortie B6 (présent dans schéma original ?).
+ - Vérifier R7/R8 (pots ajustables) bornes mesurables.
+ - Livrable : Etape 32 - Netlist B6 complete.txt + mise à jour solver/b6_parametric.js.
+
+ B.4 Netlist B11 complète
+
+ - Fermer R7/R8/R9/R12/R13/C5/R17/C10 routages tous noeuds.
+ - Intégrer S6 et S7 finalisés (post-A.1, A.2).
+ - Livrable : Etape 33 - Netlist B11 complete.txt.
+
+ ---
+ Phase C — Orchestrateur + solveur DC global couplé
+
+ Démarre immédiatement en parallèle (paramétrique) avec ce qui est fermé.
+
+ C.1 Orchestrateur U273
+
+ - Nouveau : solver/u273_orchestrator.js.
+ - Rôle : assembler la netlist (objet JS unique : composants, nœuds, modes commutateurs, paramètres) à partir des modules existants ; exposer une
+ API buildNetlist({s6_position, s7_mode, parameter_overrides}) ; appeler les solveurs DC/AC/transitoire.
+ - Réutilisation : importer b6_parametric.js, b11_s7_detector_parametric.js, u273_diode_empirical.js, mna_core.js.
+
+ C.2 Solveur DC global B11 + B6 couplé
+
+ - Nouveau : solver/u273_dc_global.js.
+ - Boucle Newton-Raphson sur la netlist combinée (suppression du port Thévenin intermédiaire), avec diodes empiriques + BJT linéarisés au point de
+ repos.
+ - Validation : reproduire les tensions imprimées 21,5 / 14,5 / 10 / 9 / 0,5 V (B11) et 22 / 12,2 / 6,4 V (B6) avec tolérance < 5 %.
+ - Sortie : results/u273_dc_global.json + results/u273_dc_global_node_voltages.csv.
+
+ C.3 Validation rétrograde C
+
+ - Module solver/validate_u273_dc_global.js.
+ - Compare les tensions calculées aux tensions imprimées Siemens. Liste les écarts. Marque les nœuds qui ne respectent pas la tolérance comme
+ DEPENDS-ON-P0 (preuve qu'une lecture P0 manque).
+
+ ---
+ Phase D — Solveur AC petit signal global
+
+ D.1 Linéarisation autour du point DC global
+
+ - Nouveau : solver/u273_ac_global.js.
+ - À partir du résultat C.2, calcule gm/rπ/ro de chaque BJT actif, gd de chaque diode, stamps AC.
+ - Réutilise complex_ac.js et bjt_small_signal.js.
+
+ D.2 Sweep gain/fréquence 40 Hz..15 kHz
+
+ - Sortie : results/u273_ac_gain_phase.csv (fréquence, gain dB, phase, niveau commande, atténuation).
+ - Validation cible : entrée 10 kΩ, sortie 30 Ω chargée 300 Ω, atténuation jusqu'à ≈1:100.
+
+ D.3 Étape 34 documente
+
+ - Etape 34 - Solveur AC petit signal global U273.txt : équations, hypothèses linéarisation, courbes.
+
+ ---
+ Phase E — Solveur transitoire grand signal
+
+ E.1 Intégrateur trapézoïdal + diodes non-linéaires
+
+ - Nouveau : solver/u273_transient.js.
+ - Pas adaptatif, méthode trapézoïdale pour C, Newton-Raphson par pas pour les diodes empiriques.
+
+ E.2 Test attaque/relâchement
+
+ - Stimulation : burst 1 kHz au niveau nominal 1,55 V puis dépassement → mesure t_attaque, t_relâchement, dépassement.
+ - Sortie : results/u273_transient_attack_release.csv.
+
+ E.3 Étape 35 documente
+
+ - Etape 35 - Solveur transitoire grand signal U273.txt.
+
+ ---
+ Phase F — Validation contre données Siemens
+
+ F.1 Banc de tests
+
+ - Module solver/validate_u273_full.js qui chaîne C/D/E et compare aux specs Siemens :
+   - Charge nominale (10 k entrée, 30 Ω sortie sur 300 Ω)
+   - Tensions DC imprimées
+   - Atténuation 1:100
+   - Pont ≈ 25 mV
+   - Bande 40 Hz..15 kHz
+   - t_attaque / t_relâchement de la fiche service
+ - Sortie : results/u273_validation_report.json avec écarts par item.
+
+ F.2 Étape 36 documente
+
+ - Etape 36 - Validation contre donnees Siemens.txt : tableau mesure vs simulation, statut PASS/FAIL/DEPENDS-ON-P0 par item.
+
+ ---
+ Phase G — Export netlist humain + machine
+
+ G.1 Format texte humain
+
+ - Nouveau : solver/export_netlist_txt.js.
+ - Tableau colonnes : id | type | valeur | nœud_a | nœud_b | carte | fonction | statut (FERMÉ/PARTIEL/PARAMÉTRIQUE) | source_etape.
+ - Sortie : results/u273_netlist.txt.
+
+ G.2 Format JSON machine
+
+ - Nouveau : solver/export_netlist_json.js.
+ - Schéma : {components: [...], nodes: [...], switches: {...}, transistor_models: {...}, diode_models: {...}, version, date}.
+ - Doit pouvoir être réingéré par u273_orchestrator.js (round-trip test).
+ - Sortie : results/u273_netlist.json.
+
+ G.3 Étape 37 documente
+
+ - Etape 37 - Export netlist .txt et .json.txt.
+
+ ---
+ Phase H — Rapport scientifique final
+
+ H.1 Structure
+
+ - Etape 38 - Rapport final Siemens U273.txt couvrant :
+   a. Schéma logique par blocs
+   b. Équations MNA principales
+   c. Points DC (tableau)
+   d. Linéarisation petit signal
+   e. Courbes gain/fréquence
+   f. Courbes attaque/relâchement
+   g. Comparaison aux specs Siemens
+   h. Liste résiduelle des incertitudes (UNCONFIRMED, PARAMETRIQUE)
+   i. Annexes : netlist .txt + référence .json
+
+ H.2 Recensement final des dettes
+
+ - Toute incertitude restante (S1..S5 non lues, broche manquante, etc.) doit apparaître explicitement dans la conclusion + dans G.1/G.2 avec statut
+  clair.
+
+ ---
+ Fichiers critiques
+
+ Existants à étendre
+
+ - solver/mna_core.js — ajouter API multi-bloc pour C
+ - solver/complex_ac.js — réutilisé tel quel par D
+ - solver/bjt_small_signal.js — réutilisé tel quel par D
+ - solver/u273_diode_empirical.js — réutilisé par C/D/E
+ - solver/b6_parametric.js — fermer A.5/B.3
+ - solver/b11_s7_detector_parametric.js — étendre B.1
+ - solver/b11_s6_contact_bound_sweep.js — étendre A.1
+ - solver/b11_ts1_ts2_pin_hypothesis_solver.js — succédé par A.4
+
+ Nouveaux modules (10)
+
+ 1. solver/b6_ts1_ts3_ts5_ts6_pin_topology.js (A.3)
+ 2. solver/b11_ts1_ts2_pin_resolved.js (A.4)
+ 3. solver/b11_zener_rectifier_curves.js (B.1)
+ 4. solver/u273_switch_tables.js (B.2)
+ 5. solver/u273_orchestrator.js (C.1)
+ 6. solver/u273_dc_global.js (C.2)
+ 7. solver/validate_u273_dc_global.js (C.3)
+ 8. solver/u273_ac_global.js (D.1)
+ 9. solver/u273_transient.js (E.1)
+ 10. solver/validate_u273_full.js (F.1)
+ 11. solver/export_netlist_txt.js (G.1)
+ 12. solver/export_netlist_json.js (G.2)
+
+ Nouvelles Étapes (14)
+
+ - Étape 25 (S6 hors livraison) → 38 (rapport final)
+
+ ---
+ Vérification end-to-end
+
+ À l'issue du plan, on doit pouvoir lancer dans cet ordre, sans erreur :
+
+ node solver/validate_mna_core.js
+ node solver/validate_complex_ac.js
+ node solver/validate_bjt_small_signal.js
+ node solver/validate_u273_empirical_mna.js
+
+ node solver/u273_dc_global.js
+ node solver/validate_u273_dc_global.js          # tensions DC vs Siemens
+ node solver/u273_ac_global.js                   # bande 40 Hz..15 kHz
+ node solver/u273_transient.js                   # attaque/relâchement
+ node solver/validate_u273_full.js               # rapport global
+
+ node solver/export_netlist_txt.js               # results/u273_netlist.txt
+ node solver/export_netlist_json.js              # results/u273_netlist.json
+
+ Critères PASS :
+ - DC global : tous les nœuds imprimés Siemens reproduits à <5 % (ou marqués DEPENDS-ON-P0).
+ - AC : gain plat ±1 dB hors limitation, atténuation atteignable 1:100.
+ - Transitoire : t_attaque et t_relâchement dans la plage Siemens.
+ - Round-trip netlist : export → re-import via orchestrator → re-solve donne mêmes résultats à epsilon.
+
+ ---
+ Branchements selon photos
+
+ ┌──────────────────────────┬─────────────────────────────────────┬───────────────────────────────────────────────┐
+ │      Photo demandée      │              Si reçue               │          Si pas reçue (voie hybride)          │
+ ├──────────────────────────┼─────────────────────────────────────┼───────────────────────────────────────────────┤
+ │ S6 toutes positions      │ A.1 ferme, sweep multi-position     │ rester paramétrique, marquer NON LU           │
+ ├──────────────────────────┼─────────────────────────────────────┼───────────────────────────────────────────────┤
+ │ S7 Kompressor            │ A.2 ferme, contacts physiques figés │ garder hypothèse 17→19, marquer HYPOTHÈSE     │
+ ├──────────────────────────┼─────────────────────────────────────┼───────────────────────────────────────────────┤
+ │ Ts1/Ts3/Ts5/Ts6 B6       │ A.3 ferme, MNA active complète      │ symboliques + bornes courant Ts5/Ts6 connues  │
+ ├──────────────────────────┼─────────────────────────────────────┼───────────────────────────────────────────────┤
+ │ Ts1/Ts2 B11              │ A.4 ferme, hybrid-pi complet        │ hypothèses propagées avec drapeau UNCONFIRMED │
+ ├──────────────────────────┼─────────────────────────────────────┼───────────────────────────────────────────────┤
+ │ Pont B6 polarité         │ A.5 verrou                          │ mode polarity_swap testable                   │
+ ├──────────────────────────┼─────────────────────────────────────┼───────────────────────────────────────────────┤
+ │ Pages service S1..S5     │ B.2 ferme                           │ S1..S5 bypassed dans orchestrateur            │
+ ├──────────────────────────┼─────────────────────────────────────┼───────────────────────────────────────────────┤
+ │ Transformateur sortie B6 │ B.3 ferme                           │ charge 30 Ω // 300 Ω en sortie directe        │
+ └──────────────────────────┴─────────────────────────────────────┴───────────────────────────────────────────────┘
+
+ Chaque incertitude survivante apparaît dans Phase H §H.2 et dans l'export Phase G avec statut explicite.
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌

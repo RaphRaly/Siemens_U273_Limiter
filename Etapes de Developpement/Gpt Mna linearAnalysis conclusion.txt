@@ -1,0 +1,400 @@
+Je n’ai pas encore fait une résolution complète au sens **MNA + linéarisation Newton-Raphson**. Ce que j’ai fait jusqu’ici, c’est une **vérification électrique rigoureuse de premier niveau** : KCL/KVL, cohérence des rails, courants DC, points de polarisation, ordre de grandeur du pont de diodes et logique de boucle. C’est utile, mais ce n’est pas encore un solveur complet de circuit non linéaire.
+
+Pour être précis : j’ai respecté les principes **dans l’esprit**, mais pas encore dans leur forme mathématique complète.
+
+---
+
+# 1. Ce qui a bien été respecté
+
+## KCL : oui, mais souvent en KCL partielle
+
+Quand j’ai vérifié les nœuds d’alimentation de la carte B6, par exemple :
+
+```text
++24 V → R38 68 Ω → 22 V
+22 V → R30 6,8 kΩ → 12,2 V
+12,2 V → R19 30 kΩ → 6,4 V
+```
+
+j’ai appliqué exactement :
+
+```text
+Σ courants = 0
+```
+
+Exemple au nœud 22 V :
+
+```text
+I_R38 = I_R30 + I_R31 + I_R36 + autres courants
+```
+
+Et on avait trouvé :
+
+```text
+I_R30 ≈ 1,44 mA
+I_R31 ≈ 3,07 mA
+I_R36 ≈ 20,8 mA
+Somme ≈ 25,31 mA
+```
+
+Ce résultat colle avec le courant indiqué sur le schéma. Donc là, oui : **KCL a été appliquée correctement** sur un réseau quasi linéaire. Schéma Siemens U273 page 1. 
+
+---
+
+## KVL : oui, sur les boucles résistives simples
+
+Exemple :
+
+```text
+24 V → R38 → 22 V
+```
+
+J’ai vérifié :
+
+```text
+24 V - I_R38·68 Ω - 22 V = 0
+```
+
+Même chose pour :
+
+```text
+22 V → R30 → 12,2 V
+12,2 V → R19 → 6,4 V
+22 V → R36 → 21,5 V
+```
+
+Donc sur les parties résistives DC, oui : **KVL a été respectée**.
+
+---
+
+## Dualité courant/tension : oui
+
+Je n’ai pas raisonné seulement en tension. J’ai systématiquement converti les tensions imprimées du schéma en courants :
+
+```text
+I = ΔV / R
+```
+
+Exemples :
+
+```text
+R36 = 24 Ω
+22 V - 21,5 V = 0,5 V
+I_R36 = 0,5 / 24 ≈ 20,8 mA
+```
+
+ou :
+
+```text
+R25 = 16 kΩ
+12,2 V - 2,4 V = 9,8 V
+I_R25 = 9,8 / 16k ≈ 0,613 mA
+```
+
+Donc oui, j’ai gardé le couple **tension/courant**, ce qui est indispensable en circuit modeling.
+
+---
+
+# 2. Ce qui n’a pas encore été fait complètement
+
+## Je n’ai pas encore fait une vraie MNA complète
+
+Une vraie **Modified Nodal Analysis** demanderait de construire un système complet du type :
+
+```text
+G(x) · x = b(x)
+```
+
+avec comme inconnues :
+
+```text
+tensions de tous les nœuds
+courants dans les sources de tension
+courants dans les transformateurs modélisés
+états des condensateurs
+courants des diodes
+courants des transistors
+```
+
+Pour le U273, ça voudrait dire créer une netlist complète avec :
+
+```text
+U1, U2, Ü
+D1-D4 du pont
+ZL10
+SSD55
+B30 C2200
+Ts1 à Ts6 audio
+Ts1 à Ts6 régulation
+tous les condensateurs transformés en équivalents discrets
+toutes les résistances
+les contacts S1 à S7
+```
+
+Je ne l’ai pas encore fait. J’ai fait une **analyse manuelle nodale**, pas une MNA automatisée complète.
+
+---
+
+## Je n’ai pas linéarisé toutes les non-linéarités
+
+Tu cites exactement le bon principe :
+
+```text
+id = gd·vd + ideq
+```
+
+où :
+
+```text
+gd = conductance dynamique locale
+ideq = source de courant équivalente
+```
+
+Pour une diode, une vraie linéarisation locale donnerait :
+
+```text
+iD(vD) = Is · (e^(vD / nVT) - 1)
+```
+
+Puis autour d’un point `vD0` :
+
+```text
+gd = ∂iD/∂vD au point vD0
+ideq = iD(vD0) - gd·vD0
+```
+
+Et on remplace localement la diode par :
+
+```text
+iD ≈ gd·vD + ideq
+```
+
+Moi, pour le pont de diodes, j’ai seulement utilisé l’approximation d’ordre de grandeur :
+
+```text
+rd ≈ nVT / ID
+```
+
+Donc j’ai bien utilisé l’idée de **résistance dynamique locale**, mais je n’ai pas encore formulé le modèle complet :
+
+```text
+id = gd·vd + ideq
+```
+
+pour chaque diode `OA154Q` et `SSD55`.
+
+---
+
+## Je n’ai pas encore fait de Newton-Raphson
+
+Une vraie résolution non linéaire se ferait comme ça :
+
+```text
+1. choisir un point initial x0
+2. linéariser toutes les diodes/transistors autour de x0
+3. construire la matrice MNA
+4. résoudre le système linéaire
+5. obtenir un nouveau x
+6. recommencer jusqu’à convergence
+```
+
+Je ne l’ai pas encore fait.
+
+Ce que j’ai fait était plutôt :
+
+```text
+prendre les tensions imprimées du schéma
+calculer les courants correspondants
+vérifier que les KCL/KVL locales sont cohérentes
+identifier où les transistors/diodes empêchent une fermeture exacte sans modèle actif
+```
+
+C’est une étape préalable saine, mais ce n’est pas encore un solveur.
+
+---
+
+# 3. Là où j’ai été volontairement prudent
+
+Quand j’ai écrit des choses comme :
+
+```text
+KCL partielle
+```
+
+ou :
+
+```text
+la KCL complète dépend du transistor
+```
+
+c’était justement pour éviter une fausse rigueur.
+
+Exemple autour de Ts4 :
+
+```text
+R31 fournit ≈ 3,07 mA
+R32 tire ≈ 1,8 mA
+```
+
+On pourrait être tenté de dire :
+
+```text
+3,07 mA ≠ 1,8 mA donc erreur
+```
+
+Mais ce serait faux, parce que le transistor et les réseaux de contre-réaction absorbent le courant restant. Donc la bonne écriture est :
+
+```text
+I_R31 = I_R32 + I_Ts4 + I_autres_branches
+```
+
+Ça, c’est conforme à KCL.
+
+---
+
+# 4. Ce qu’il faudrait faire pour respecter totalement les principes que tu cites
+
+Pour passer à une modélisation scientifique complète, il faut maintenant faire ceci :
+
+## Étape 1 — Définir tous les nœuds
+
+Exemple :
+
+```text
+v1 = sortie U1 / avant R5
+v2 = après R5 / avant C1
+v3 = nœud audio 25 mV~
+v14 = nœud 14 du pont
+v15 = nœud 15 du pont
+v22 = rail 22 V
+v12 = rail 12,2 V
+v64 = rail 6,4 V
+...
+```
+
+## Étape 2 — Écrire KCL à chaque nœud
+
+Exemple pour le nœud audio du pont :
+
+```text
+0 = (vNA - vU1)/R5 + i_bridge(vNA, vctrl) + i_in_amp(vNA)
+```
+
+## Étape 3 — Linéariser chaque diode
+
+Pour chaque diode :
+
+```text
+id = Is · (e^(vd / nVT) - 1)
+```
+
+Linéarisation locale :
+
+```text
+gd = Is/(nVT) · e^(vd0 / nVT)
+ideq = id0 - gd·vd0
+```
+
+Puis modèle équivalent :
+
+```text
+id ≈ gd·vd + ideq
+```
+
+## Étape 4 — Linéariser les transistors
+
+Pour les transistors, même principe, mais plus complexe :
+
+```text
+ic ≈ gm·vbe + go·vce + courant équivalent
+```
+
+Il faudrait choisir un modèle :
+
+```text
+Ebers-Moll simplifié
+Gummel-Poon simplifié
+modèle petit signal local
+ou modèle empirique adapté DSP
+```
+
+## Étape 5 — Discrétiser les condensateurs
+
+Pour du DSP, les condensateurs doivent devenir des équivalents dépendant de la méthode numérique :
+
+```text
+Backward Euler
+Trapezoidal / Tustin
+Wave Digital Filter
+State Variable
+```
+
+Exemple avec trapézoïdal :
+
+```text
+iC[n] = Gc·vC[n] + ihistory[n]
+```
+
+avec :
+
+```text
+Gc = 2C / T
+```
+
+Là encore, on retombe sur :
+
+```text
+i = g·v + source historique
+```
+
+C’est exactement la même philosophie que ta citation.
+
+---
+
+# 5. Réponse nette à ta question
+
+Est-ce que j’ai respecté les principes ?
+
+**Oui pour :**
+
+```text
+KCL
+KVL
+raisonnement tension/courant
+vérification nodale
+cohérence des rails
+ordre de grandeur des courants
+identification des zones non linéaires
+utilisation de la notion de résistance dynamique diode
+```
+
+**Non, pas encore complètement pour :**
+
+```text
+MNA complète
+linéarisation explicite gd / ideq de chaque diode
+linéarisation explicite des transistors
+résolution itérative Newton-Raphson
+construction d’une matrice globale
+simulation dynamique temporelle complète
+```
+
+Donc la formulation honnête est :
+
+```text
+Ce que j’ai fait est une analyse circuit rigoureuse de validation,
+mais pas encore une modélisation numérique complète au sens MNA/Newton.
+```
+
+La prochaine étape sérieuse serait de prendre un petit sous-circuit — idéalement le **pont de diodes B6** — et de le formuler exactement en style MNA :
+
+```text
+KCL au nœud NA
+KCL au nœud 14
+KCL au nœud 15
+diodes linéarisées en gd + ideq
+résistances en conductances
+condensateurs en compagnons discrets
+```
+
+Là, on serait pleinement dans les principes que tu cites.

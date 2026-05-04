@@ -1,0 +1,562 @@
+Execution MNA - pont de diodes B6 du Siemens U273
+
+But
+---
+
+Ce document execute la prochaine etape proposee dans :
+
+C:\Users\user\.claude\plans\Gpt Mna linearAnalysis conclusion.txt
+
+Objectif : passer d'une verification KCL/KVL manuelle a une formulation exploitable en
+MNA + linearisation locale de Newton-Raphson, en commencant par le sous-circuit le plus
+important et le plus gerable : le pont de diodes B6.
+
+Point de correction avant MNA
+----------------------------
+
+La valeur de B6/C1 doit etre corrigee avant toute modelisation :
+
+    B6/C1 = 1000 pF
+
+et non :
+
+    B6/C1 = 0,68 uF
+
+La lecture `1000p` est visible sur le crop :
+
+    C:\Users\user\Downloads\siemens_u273_check\B6_R5_C1_focus.png
+
+Donc toutes les analyses AC qui utilisent C1 = 0,68 uF doivent etre reprises. Les KCL DC
+restent en grande partie valables, car C1 est ouvert en continu dans les deux cas.
+
+
+Apport du fichier analog_modeling_guide.md
+------------------------------------------
+
+Le guide est utile pour cadrer l'implementation numerique :
+
+    1. ecrire les KCL nodales ;
+    2. lineariser les non-linearites par tangente locale ;
+    3. utiliser Newton-Raphson avec le sample precedent comme point initial ;
+    4. transformer les condensateurs en conductance + source de courant historique ;
+    5. preferer trapezoidal/midpoint/mix pour l'audio, avec sur-echantillonnage si
+       l'aliasing devient audible.
+
+Mais il ne doit pas etre applique sans verification :
+
+    - les valeurs de diode donnees dans le guide sont generiques, pas celles de OA154Q
+      ou SSD55 ;
+    - le choix trapezoidal est un bon depart audio, pas une garantie de stabilite pour
+      toutes les boucles non lineaires ;
+    - le guide explique la methode, mais ne donne pas la netlist exacte du U273 ;
+    - la topologie exacte des potentiometres R7/R8 et des connexions B11 doit encore
+      venir du schema, pas du guide.
+
+
+1. Perimetre du sous-circuit
+---------------------------
+
+On ne modelise pas encore tout le Siemens U273. On isole le bloc :
+
+    sortie secondaire U1
+    -> R5
+    -> C1
+    -> noeud audio NA, indique 25 mV~
+    -> couplage vers pont D1-D4 via C2
+    -> reseau de commande et equilibrage du pont
+    -> entree haute impedance de l'amplificateur audio B6
+
+Composants inclus dans cette premiere MNA :
+
+    R5  = 5,6 kOhm
+    C1  = 1000 pF
+    C2  = 22 uF
+    D1  = OA154Q
+    D2  = SSD55
+    D3  = SSD55
+    D4  = OA154Q
+    R6  = 39 kOhm
+    R7  = 100 Ohm ajustable
+    R8  = 250 kOhm ajustable
+    R9  = 390 kOhm
+    R10 = 20 kOhm
+    R11 = 39 kOhm
+    C3  = 4,7 uF
+    C4  = Abgl., valeur non lue
+    C5  = 150 uF
+    C6  = Abgl., valeur non lue
+    C7  = 4,7 uF
+
+Les transistors de B6 ne sont pas encore inclus comme modele non lineaire complet. Leur
+entree est representee par une admittance d'entree :
+
+    Yin_amp
+
+qui peut d'abord etre prise comme tres faible, puis remplacee par un modele du premier
+etage Ts1.
+
+
+2. Noeuds de travail
+--------------------
+
+Noeuds proposes pour le solveur :
+
+    0      = masse locale
+    VS     = source equivalente apres U1, avant R5
+    NX     = noeud entre R5 et C1
+    NA     = noeud audio apres C1, marque 25 mV~
+    NB     = noeud de commande couple a NA par C2
+    NL     = noeud interne gauche du pont
+    NR     = noeud interne droit du pont
+    N14    = noeud bas gauche du pont, vers R6/C3/C4/C5
+    N15    = noeud bas droit du pont, vers R11/C7/C6/C5
+    NM     = noeud d'equilibrage autour de R8/R10
+    VCMD   = commande venant de B11
+
+Vecteur d'inconnues minimal :
+
+    x = [
+        vNX,
+        vNA,
+        vNB,
+        vNL,
+        vNR,
+        vN14,
+        vN15,
+        vNM
+    ]^T
+
+VS et VCMD peuvent etre traites comme sources imposees dans une premiere passe. Si on
+les inclut comme sources de tension ideales, la MNA ajoute leurs courants comme
+inconnues supplementaires.
+
+
+3. Regimes separes
+------------------
+
+Il ne faut pas melanger DC, AC petit signal et simulation temporelle.
+
+3.1 DC
+
+En DC :
+
+    C1, C2, C3, C4, C5, C6, C7 sont ouverts.
+
+Donc le pont ne recoit pas de DC depuis U1 par C1/C2. La commande DC vient de B11.
+
+La MNA DC sert a trouver le point de repos des diodes sous une commande donnee VCMD.
+
+3.2 Petit signal AC autour d'un point de repos
+
+Une fois le point de repos trouve :
+
+    chaque diode devient une conductance dynamique gd
+    chaque condensateur devient une admittance sC
+    chaque resistance reste une conductance fixe
+
+On peut alors calculer l'impedance equivalente vue par NA et l'attenuation locale.
+
+3.3 Temporel DSP
+
+Pour une simulation temporelle :
+
+    les diodes sont linearisees a chaque echantillon et iterees par Newton
+    les condensateurs deviennent des compagnons numeriques
+    la matrice est reassemblee ou mise a jour a chaque iteration
+
+
+4. Stamps lineaires de base
+---------------------------
+
+Pour une resistance R entre les noeuds a et b :
+
+    g = 1/R
+    i_ab = g * (va - vb)
+
+Stamp dans la matrice nodale :
+
+    G[a,a] += g
+    G[b,b] += g
+    G[a,b] -= g
+    G[b,a] -= g
+
+Si b = 0, seuls les termes du noeud a restent :
+
+    G[a,a] += g
+
+
+5. Linearisation diode Newton-Raphson
+-------------------------------------
+
+Pour une diode entre anode a et cathode k :
+
+    vd = va - vk
+    id(vd) = Is * (exp(vd / (n*VT)) - 1)
+
+Au point courant de Newton vd0 :
+
+    id0 = Is * (exp(vd0 / (n*VT)) - 1)
+    gd  = Is/(n*VT) * exp(vd0 / (n*VT))
+    ieq = id0 - gd*vd0
+
+Modele local :
+
+    id ~= gd*vd + ieq
+
+Donc la diode est remplacee localement par :
+
+    une conductance gd entre a et k
+    une source de courant ieq de a vers k
+
+Stamp residuel, courant positif de a vers k :
+
+    F[a] += gd*(va - vk) + ieq
+    F[k] -= gd*(va - vk) + ieq
+
+Pour un systeme sous forme G*v = I_injecte :
+
+    G recoit la conductance gd entre a et k
+    I[a] -= ieq
+    I[k] += ieq
+
+Important : les parametres Is et n ne sont pas connus pour OA154Q et SSD55. Une
+implementation honnete doit donc commencer avec des parametres ajustables :
+
+    OA154Q : Is_OA, n_OA
+    SSD55  : Is_SS, n_SS
+
+puis les calibrer avec mesure ou datasheet.
+
+
+6. Compagnon numerique des condensateurs
+----------------------------------------
+
+Le guide analog_modeling_guide.md donne ici une meilleure base pour l'audio que la
+version Backward Euler pure. On utilise une formulation "mix" avec un parametre m :
+
+    m = 1/2  -> trapezoidal/Tustin
+    m = 1    -> Backward Euler
+
+Pour une premiere implementation audio, le choix de depart doit etre :
+
+    m = 1/2
+
+Backward Euler reste utile pour debug ou pour amortir un sous-circuit instable, mais il
+est trop dissipatif dans l'aigu pour etre le modele final du pont B6.
+
+Condensateur C entre a et b, avec orientation a -> b :
+
+    vC[n] = va[n] - vb[n]
+    h     = 1 / sampleRate
+    minv  = 1 / m
+    Gc    = C / (h*m) = C * sampleRate * minv
+
+Modele compagnon Norton :
+
+    iC_ab[n] = Gc * vC[n] - iceq[n]
+
+Mise a jour de l'etat apres convergence Newton :
+
+    iceq[n+1] = iceq[n] + minv * (Gc * vC[n] - iceq[n])
+
+Pour m = 1, on retrouve Backward Euler. Pour m = 1/2, on obtient la forme
+trapezoidale recommandee pour l'audio dans le guide.
+
+
+7. Equations KCL du bloc
+------------------------
+
+Les equations ci-dessous sont la forme MNA du sous-circuit. Elles sont ecrites en termes
+de courants quittant chaque noeud. Les orientations exactes des diodes doivent suivre la
+netlist finale lue sur le schema.
+
+7.1 Noeud NX
+
+NX est entre R5 et C1 :
+
+    0 = (vNX - vVS)/R5 + iC1(NX, NA)
+
+Avec compagnon discret :
+
+    0 = g5*(vNX - vVS) + Gc1*(vNX - vNA) - iceq_C1
+
+7.2 Noeud NA
+
+NA est le noeud audio indique 25 mV~ :
+
+    0 = iC1(NA, NX) + iC2(NA, NB) + Yin_amp*vNA
+
+Avec compagnons :
+
+    0 =
+        Gc1*(vNA - vNX) + iceq_C1
+      + Gc2*(vNA - vNB) - iceq_C2
+      + Yin_amp*vNA
+
+Cette equation remplace la simplification precedente "Rbridge directement en shunt sur
+NA". La version MNA correcte garde C2 explicitement.
+
+7.3 Noeud NB
+
+NB est le noeud de commande couple par C2 :
+
+    0 =
+        iC2(NB, NA)
+      + iD3(NB, NL)
+      + iD2(NB, NR)
+      + courants du reseau R7/R9/R10 selon la position exacte des curseurs
+
+Forme linearisee :
+
+    0 =
+        Gc2*(vNB - vNA) + iceq_C2
+      + [gd3*(vNB - vNL) + ieq3]
+      + [gd2*(vNB - vNR) + ieq2]
+      + I_Rtrim_NB
+
+7.4 Noeud NL
+
+NL est le noeud interne gauche entre D3 et D4 :
+
+    0 = iD4(NL, N14) - iD3(NB, NL) + I_Rtrim_NL
+
+Forme linearisee :
+
+    0 =
+        [gd4*(vNL - vN14) + ieq4]
+      - [gd3*(vNB - vNL) + ieq3]
+      + I_Rtrim_NL
+
+7.5 Noeud NR
+
+NR est le noeud interne droit entre D2 et D1 :
+
+    0 = iD1(NR, N15) - iD2(NB, NR) + I_Rtrim_NR
+
+Forme linearisee :
+
+    0 =
+        [gd1*(vNR - vN15) + ieq1]
+      - [gd2*(vNB - vNR) + ieq2]
+      + I_Rtrim_NR
+
+7.6 Noeud N14
+
+N14 est le bas gauche du pont :
+
+    0 =
+        -iD4(NL, N14)
+      + vN14/R6
+      + iC3(N14, 0)
+      + iC4(N14, 0)
+      + iC5(N14, N15)
+      + I_commande_14
+
+Forme discrete :
+
+    0 =
+      - [gd4*(vNL - vN14) + ieq4]
+      + g6*vN14
+      + Gc3*vN14 - iceq_C3
+      + Gc4*vN14 - iceq_C4
+      + Gc5*(vN14 - vN15) - iceq_C5
+      + I_commande_14
+
+Si C4 reste inconnu, il doit etre parametre :
+
+    C4 = c4_abgl
+
+et non remplace par une valeur inventee.
+
+7.7 Noeud N15
+
+N15 est le bas droit du pont :
+
+    0 =
+        -iD1(NR, N15)
+      + vN15/R11
+      + iC7(N15, 0)
+      + iC6(N15, 0)
+      - iC5(N14, N15)
+      + I_commande_15
+
+Forme discrete :
+
+    0 =
+      - [gd1*(vNR - vN15) + ieq1]
+      + g11*vN15
+      + Gc7*vN15 - iceq_C7
+      + Gc6*vN15 - iceq_C6
+      + Gc5*(vN15 - vN14) + iceq_C5
+      + I_commande_15
+
+Si C6 reste inconnu :
+
+    C6 = c6_abgl
+
+7.8 Noeud NM et reseaux ajustables
+
+Les ajustables doivent etre modelises par position de curseur, pas comme une seule
+resistance vague.
+
+Pour R7 = 100 Ohm :
+
+    alpha7 in [0,1]
+    R7a = max(alpha7*100 Ohm, Rmin)
+    R7b = max((1-alpha7)*100 Ohm, Rmin)
+
+Pour R8 = 250 kOhm :
+
+    alpha8 in [0,1]
+    R8a = max(alpha8*250 kOhm, Rmin)
+    R8b = max((1-alpha8)*250 kOhm, Rmin)
+
+Rmin evite une conductance infinie quand le curseur est exactement en butee.
+
+La KCL de NM s'ecrit seulement apres fixation exacte des bornes du potentiometre sur la
+netlist. La forme generale est :
+
+    0 = somme_j (vNM - vj)/Rj + sources eventuelles de commande B11
+
+
+8. Assemblage matriciel
+-----------------------
+
+A chaque iteration Newton et a chaque echantillon temporel :
+
+    1. remettre G et I a zero
+    2. stamp R5, R6, R11, R9, R10, R7, R8
+    3. stamp les compagnons C1, C2, C3, C4, C5, C6, C7
+    4. calculer vd0 pour D1-D4
+    5. calculer gd et ieq de D1-D4
+    6. stamp les diodes linearisees
+    7. stamp les sources imposees VS et VCMD
+    8. resoudre G*v = I
+    9. tester la convergence
+
+Critere de convergence recommande :
+
+    max(|v_new - v_old|) < 1e-9 V
+
+ou, plus pratique audio :
+
+    max(|v_new - v_old|) < 1e-7 V
+
+avec limite d'iterations :
+
+    20 a 50 iterations
+
+
+9. Pseudo-code Newton
+---------------------
+
+Pour chaque echantillon n :
+
+    v = v_precedent
+
+    pour iter = 1..Nmax :
+
+        G = 0
+        I = 0
+
+        stamp_resistances(G)
+        stamp_capacitors_mix(G, I, iceq_states, m)
+        stamp_sources(G, I, VS[n], VCMD[n])
+
+        pour chaque diode d :
+            vd0  = v[anode] - v[cathode]
+            id0  = Is_d * (exp(vd0/(n_d*VT)) - 1)
+            gd   = Is_d/(n_d*VT) * exp(vd0/(n_d*VT))
+            ieq  = id0 - gd*vd0
+            stamp_diode_linearisee(G, I, anode, cathode, gd, ieq)
+
+        v_new = solve(G, I)
+
+        si max(abs(v_new - v)) < tolerance :
+            break
+
+        v = limiter_pas_newton(v, v_new)
+
+    mettre_a_jour_iceq_condensateurs(v, m)
+
+Le limiteur de pas Newton est important pour eviter l'explosion numerique des exponentielles :
+
+    v = v + lambda*(v_new - v)
+
+avec :
+
+    lambda entre 0,1 et 1
+
+et limitation pratique de tension diode :
+
+    vd limitee dans une fenetre raisonnable, par exemple [-1 V, +1 V]
+
+
+10. Ce que cette MNA permet de verifier
+---------------------------------------
+
+Cette formulation permet de calculer proprement :
+
+    l'impedance equivalente du pont vue depuis NA
+    l'effet de la commande VCMD sur les gd des diodes
+    l'equilibre gauche/droite du pont
+    l'effet des reglages R7/R8
+    le role de C2/C3/C5/C7 en dynamique
+    l'impact exact de la correction C1 = 1000 pF
+
+Elle remplace les phrases trop fortes du type :
+
+    "le pont est valide numeriquement"
+
+par une formulation plus scientifique :
+
+    "le pont devient resoluble numeriquement lorsque les diodes sont linearisees et que
+     les condensateurs sont remplaces par leurs compagnons discrets."
+
+
+11. Limites restantes
+---------------------
+
+La MNA ci-dessus n'est pas encore une simulation complete du Siemens U273 parce qu'il
+manque :
+
+    les parametres diode OA154Q
+    les parametres diode SSD55
+    les valeurs exactes de C4 et C6
+    les positions de R7 et R8
+    la connexion exacte de chaque curseur ajustable
+    le modele de l'entree Ts1 de B6
+    le modele complet de B11 qui produit VCMD
+
+Mais elle est deja la bonne structure mathematique. On peut l'implementer sans changer
+la philosophie :
+
+    tout composant devient soit une conductance,
+    soit une conductance + source equivalente,
+    soit une source imposee avec courant MNA additionnel.
+
+
+12. Conclusion
+--------------
+
+La prochaine version correcte de l'analyse du Siemens U273 doit dire :
+
+    La verification KCL/KVL precedente est utile, mais elle ne suffit pas.
+    Le pont B6 doit etre traite comme un reseau non lineaire resolu par MNA.
+    Les diodes D1-D4 doivent etre linearisees localement :
+
+        id = gd*vd + ieq
+
+    Les condensateurs doivent etre transformes en compagnons discrets :
+
+        iC[n] = Gc*vC[n] - iceq[n]
+
+    avec, pour la formulation mix/trapezoidale :
+
+        Gc = C/(h*m)
+        iceq[n+1] = iceq[n] + (1/m)*(Gc*vC[n] - iceq[n])
+
+    La matrice nodale doit etre resolue iterativement jusqu'a convergence.
+
+Point critique : la valeur corrigee B6/C1 = 1000 pF change fortement l'analyse AC.
+Il ne faut plus utiliser C1 = 0,68 uF dans les modeles du pont B6.

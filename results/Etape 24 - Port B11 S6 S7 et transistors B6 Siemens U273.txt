@@ -1,0 +1,243 @@
+Etape 24 - Port B11/S6/S7 et transistors B6
+============================================
+
+Objet
+-----
+
+Remplacer le VCMD ideal impose au pont B6 par une sortie B11/S6/S7 electriquement
+finie, puis integrer les transistors B6 au niveau scientifiquement justifiable avec
+les informations actuellement lues.
+
+Important:
+
+    On ne ferme pas encore une boucle complete U273 sortie -> B11 -> B6 -> sortie.
+    Les etages actifs B11, la calibration C11 -> commande B6 et plusieurs routages
+    de transistors B6 restent incomplets. Le modele correct a ce stade est donc un
+    port B11/S6/S7 de type Thevenin, pas une source ideale VCMD et pas une boucle
+    inventee.
+
+
+1. Corrections S6/S7 utilisees
+------------------------------
+
+S6, etat livraison lineaire:
+
+    4/5 ferme
+    8/9 ferme
+    5/6 ouvert
+    7/8 ouvert
+    5 -> 3 -> 1 ferme
+    2 ouvert
+
+S7, position dessinee = Begrenzer:
+
+    S7_17_18 = closed
+    S7_17_19 = open
+    ZL10 active
+
+Hypothese fonctionnelle pour Kompressor:
+
+    S7_17_18 = open
+    S7_17_19 = closed
+    ZL10 bypassed
+
+Le script suivant a ete corrige pour cette lecture:
+
+    solver/b11_s7_detector_parametric.js
+
+La sortie du script confirme le seuil nominal limiteur:
+
+    Vth = 11,30 V crete = 7,99 V RMS
+    Iavg @ 8 Vrms = 0,01 uA
+    Iavg @ 12 Vrms = 39,26 uA
+
+
+2. Remplacement de VCMD ideal
+-----------------------------
+
+Avant:
+
+    CMD etait force directement par une source ideale VCMD:
+
+        VCMD -> CMD -> R10 -> pont B6
+
+Cela est utile pour isoler B6, mais ce n'est pas la vraie liaison B11/B6.
+
+Maintenant:
+
+    CMD est alimente par une sortie B11/S6/S7 finie:
+
+        VB11_S6_S7 -> RB11_S6_S7_CMD -> CMD -> R10 -> pont B6
+
+Dans la MNA DC:
+
+    - source de tension: VB11_S6_S7 entre B11_DRV et 0;
+    - resistance de source: RB11_S6_S7_CMD entre B11_DRV et CMD;
+    - plus de court-circuit ideal direct sur CMD en mode Thevenin.
+
+Dans la MNA AC:
+
+    - CMD voit la meme impedance de sortie finie;
+    - le petit-signal de la source B11 est mis a la masse AC par son impedance de
+      sortie, ce qui est le modele Thevenin lineaire standard.
+
+Fichiers modifies/ajoutes:
+
+    solver/b6_parametric.js
+    solver/b6_empirical_b11_port_sweep.js
+
+Resultats generes:
+
+    results/b6_empirical_b11_port_sweep.json
+    results/b6_empirical_b11_port_sweep.csv
+    results/b6_empirical_b11_port_operating_points.csv
+
+Exemples numeriques avec loi empirique Siemens des diodes:
+
+    Rsource = 3k:
+        VDRV = 1 V -> CMD = 0,977356 V, Icmd = 7,548 uA
+        VDRV = 3 V -> CMD = 2,852785 V, Icmd = 49,072 uA
+        VDRV = 3 V, |VNA| @ 1 kHz = -34,29 dB
+
+    Rsource = 10k:
+        VDRV = 1 V -> CMD = 0,932299 V, Icmd = 6,770 uA
+        VDRV = 3 V -> CMD = 2,575271 V, Icmd = 42,473 uA
+        VDRV = 3 V, |VNA| @ 1 kHz = -33,05 dB
+
+    Rsource = 51k:
+        VDRV = 1 V -> CMD = 0,777676 V, Icmd = 4,359 uA
+        VDRV = 3 V -> CMD = 1,775809 V, Icmd = 24,004 uA
+        VDRV = 3 V, |VNA| @ 1 kHz = -28,36 dB
+
+    Rsource = 100k:
+        VDRV = 1 V -> CMD = 0,684206 V, Icmd = 3,158 uA
+        VDRV = 3 V -> CMD = 1,405603 V, Icmd = 15,944 uA
+        VDRV = 3 V, |VNA| @ 1 kHz = -25,03 dB
+
+Conclusion physique:
+
+    Plus l'impedance de sortie B11/S6/S7 est grande, plus CMD chute sous la tension
+    de drive. Le vieux VCMD ideal surestime donc la commande effective du pont.
+
+
+3. Diodes B6 conservees en loi Siemens
+--------------------------------------
+
+Le pont B6 utilise toujours la loi empirique lue dans les donnees Siemens:
+
+    U_D[mV] = 308 * I_D[uA]^0,16
+    I_D[uA] = 2,85e-16 * U_D[mV]^6,25
+    r_d[kOhm] = 48,3 * I_D[uA]^-0,84
+
+Dans B6 extrait, VDRV ou VCMD = 1 V ne signifie pas 1 V directement sur deux
+diodes. R10/R9 et la charge du pont reduisent la tension appliquee aux branches de
+diodes.
+
+Validation deja conservee:
+
+    deux diodes empiriques strictement en serie sous 1 V:
+        I = 21,058 uA
+        r_d serie = 7,470 kOhm
+
+    B6 extrait avec VCMD ideal = 1 V:
+        tension par branche D3+D4 ou D2+D1 = 0,728042 V
+        courant de chaque diode = 2,897 uA
+
+
+4. Integration rigoureuse des transistors B6
+--------------------------------------------
+
+On n'a pas le droit de remplacer Ts1..Ts6 par des resistances arbitraires. Les
+transistors sont donc integres seulement au niveau suivant:
+
+    - KCL DC resistives confirmees;
+    - candidats hybrid-pi autour des points de repos quand VBE/VCE sont coherents;
+    - bornes de courant pour l'etage de sortie;
+    - routages non prouves gardes symboliques.
+
+Fichier ajoute:
+
+    solver/b6_active_hybrid_pi_inventory.js
+
+Resultats generes:
+
+    results/b6_active_hybrid_pi_inventory.json
+    results/b6_active_passive_kcl.csv
+    results/b6_active_hybrid_pi_candidates.csv
+    results/b6_output_stage_bounds.csv
+
+Ts2, candidat conditionnel:
+
+    base probable = N38 = 3,8 V
+    emetteur probable = N32 = 3,2 V
+    VBE = 0,600 V
+    IE ~= I_R22 = 3,2 / 8,2k = 390,2 uA
+
+Pour beta = 50, 100, 200:
+
+    Ic ~= 382,6 a 388,3 uA
+    gm ~= 14,8 a 15,0 mS
+
+Cette ligne est valide seulement si N38 est bien base et N32 emetteur.
+
+Ts4, candidat conditionnel:
+
+    base probable = N24 = 2,4 V
+    emetteur probable = N18 = 1,8 V
+    collecteur probable = N48 = 4,8 V
+    VBE = 0,600 V
+    VCE = 3,000 V
+    IE ~= I_R32 = 1,8 / 1k = 1,8 mA
+
+Pour beta = 50, 100, 200:
+
+    Ic ~= 1,765 a 1,791 mA
+    gm ~= 68,3 a 69,3 mS
+
+Ts5/Ts6, sortie:
+
+    N215 = 21,5 V
+    N105 = 10,5 V
+    R36 donne (22,0 - 21,5) / 24 = 20,833 mA
+
+Mais la topologie de sortie complete n'est pas encore assez prouvee pour estampiller
+Ts5/Ts6 comme hybrid-pi connectes. On garde seulement une borne de courant et un
+sweep de courant de repos.
+
+
+5. Validations executees
+------------------------
+
+Commandes executees sans erreur:
+
+    node solver/validate_mna_core.js
+    node solver/validate_complex_ac.js
+    node solver/validate_bjt_small_signal.js
+    node solver/b11_s7_detector_parametric.js
+    node solver/b6_empirical_b11_port_sweep.js
+    node solver/b6_active_hybrid_pi_inventory.js
+    node solver/b6_empirical_ac_sweep.js
+    node solver/b6_parametric_ac_sweep.js
+    node solver/b6_bridge_ac_sweep.js
+    node solver/b6_with_s6_zcmd_sweep.js
+    node solver/b11_s6_contact_bound_sweep.js
+
+
+6. Ce qui reste ouvert scientifiquement
+---------------------------------------
+
+Il reste a fermer avant de pretendre a une MNA complete U273:
+
+    - impedance de sortie active exacte de B11, pas seulement un Thevenin balaye;
+    - calibration entre tension C11/detecteur et drive de commande B6;
+    - transistors B11 actifs Ts1..Ts6 avec B/C/E et modele choisi;
+    - routage exact Ts1, Ts3, Ts5, Ts6 de B6;
+    - valeurs finales C4/C6 et positions R7/R8;
+    - verification audio par mesure ou par donnees constructeur.
+
+Conclusion:
+
+    Le VCMD ideal n'est plus le modele principal pour B6. Il reste seulement un test
+    de sous-circuit. Le modele principal actuel est B6 + diodes empiriques Siemens +
+    port B11/S6/S7 Thevenin fini + transistors B6 integres au niveau hybrid-pi
+    conditionnel et bornes de courant.

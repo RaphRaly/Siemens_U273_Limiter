@@ -1,0 +1,4 @@
+caseName,c6Treatment,r14DcCurrentAmp,n05DemandLowAmp,n05DemandHighAmp,n05ResidualLowAmp,n05ResidualHighAmp,verdict,note
+incorrect_direct_R14_N10_to_N05_DC_stress_test,ignored,0.00475,0.00459932405165456,0.004910889355742297,-0.0001506759483454398,0.00016088935574229673,not_a_valid_dc_stamp_if_C6_is_series,This is the step-9 stress test only; it must not be used as DC MNA if R14 reaches N10 through C6.
+correct_series_R14_C6_DC,open_circuit_at_dc,0,0.00459932405165456,0.004910889355742297,0.00459932405165456,0.004910889355742297,dc_current_must_be_supplied_by_active_network_not_R14_C6,At DC an ideal capacitor is open; R14-C6 contributes no N10-to-N05 DC current.
+correct_series_R14_C6_DC_with_R17_candidate,open_circuit_at_dc,0,0.004672853463419266,0.004984418767507002,0.004672853463419266,0.004984418767507002,dc_current_must_be_supplied_by_active_network_not_R14_C6,Same as above, with provisional R17=6.8k from N05 to reference.

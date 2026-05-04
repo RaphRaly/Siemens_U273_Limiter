@@ -1,0 +1,293 @@
+Etape 37 - Analyse TDR Kotelnikov oversampling U273
+===================================================
+
+Date: 2026-05-04
+Source:
+
+    https://www.tokyodawn.net/tdr-kotelnikov/
+    https://docs.tokyodawn.net/kotelnikov-manual/
+
+
+1. Pourquoi Kotelnikov est important
+------------------------------------
+
+TDR Kotelnikov n'est pas un modele analogique. Il est explicitement "proudly
+digital". Il n'est donc pas une reference de modelisation component-level comme
+Cytomic.
+
+Mais il est tres important pour U273 comme reference de design dynamique haut de
+gamme:
+
+    - traitement multi-rate;
+    - sidechain haute precision;
+    - gain cell separee;
+    - signal original preserve quand aucune reduction n'a lieu;
+    - oversampling cible sur ce qui en a besoin;
+    - qualite realtime/render explicite;
+    - stereo linking pense pour le bus/mastering.
+
+
+2. Points techniques officiels
+------------------------------
+
+La page produit annonce:
+
+    - 64-bit multi-rate processing structure;
+    - "Delta" oversampled signal path;
+    - bit transparent at 0 dB gain reduction;
+    - click-free, latency compensated bypass;
+    - process quality applicable a toutes les instances;
+    - "Always render at highest quality".
+
+Le manuel detaille la strategie:
+
+    - l'algorithme est divise en deux parties:
+        sidechain;
+        gain cell.
+
+    - sidechain:
+        contient threshold, RMS detection, timing filters;
+        utilise une bande passante jusqu'a 20x plus large que la bande audible
+        pour eviter l'aliasing du signal de controle.
+
+    - gain cell:
+        la multiplication audio par le controle est non-lineaire;
+        elle tourne au minimum a 2x le sample-rate audio;
+        seul le signal compresse, ecoutable via Delta, est oversample.
+
+    - consequence:
+        le signal original reste intact quand il n'y a pas de gain reduction;
+        le plugin est bit-transparent a 0 dB de reduction.
+
+    - resampling:
+        haute qualite;
+        linear-phase;
+        convolution temporelle.
+
+    - qualite:
+        Eco: bande interne environ 100 kHz;
+        Precise: bande interne environ 200 kHz;
+        les modes changent l'inter-sample accuracy et les artefacts d'aliasing.
+
+
+3. Ce que cela corrige dans notre vision
+----------------------------------------
+
+Avant, notre plan oversampling pouvait etre lu comme:
+
+    "oversampler le coeur audio B6/B11".
+
+Kotelnikov montre qu'il faut etre plus fin:
+
+    - l'aliasing du signal de controle est aussi critique que l'aliasing audio;
+    - la sidechain peut demander une bande interne plus haute que le gain cell;
+    - on peut oversampler seulement la partie Delta/wet;
+    - le dry/original peut rester bit-transparent si aucune GR n'est active;
+    - les facteurs de qualite peuvent etre presentes en bande interne cible,
+      pas seulement en multiplicateur brut.
+
+
+4. Application directe au U273
+------------------------------
+
+U273 n'est pas Kotelnikov:
+
+    - U273 est un feedback limiter/compresseur analogique a pont de diodes;
+    - la coloration et la loi de gain viennent du circuit;
+    - on doit conserver la topologie analogique.
+
+Mais la strategie de traitement peut reprendre ces idees:
+
+    A. Deux chemins multi-rate
+
+        Sidechain/Detector path:
+            redressement;
+            S7 / zener;
+            C11;
+            attaque/release;
+            conversion vers commande B6.
+
+        Gain-cell / audio path:
+            pont B6;
+            modulation de conductance;
+            reduction de gain;
+            eventuelle correction audio.
+
+
+    B. Sidechain haute bande passante
+
+        Le detecteur U273 contient des non-linearites rapides.
+        Il faut tester:
+
+            sidechain 4x, 8x, 16x;
+            internal bandwidth cible 100 kHz / 200 kHz;
+            erreur sur attaque 0.5 ms / 1.0 ms;
+            erreur sur peak capture;
+            aliasing de la courbe de gain reduction.
+
+
+    C. Gain cell au minimum 2x
+
+        Pour le chemin audio B6:
+
+            MD:
+                gain cell 2x a 44.1/48 kHz;
+
+            HD:
+                gain cell 4x a 44.1/48 kHz;
+
+            UHD render:
+                gain cell 8x ou plus;
+
+            Diagnostic:
+                16x/32x pour reference.
+
+
+    D. Delta/wet-only processing
+
+        Kotelnikov donne une piste tres forte:
+
+            out = dry + delta_processed
+
+        Pour U273, il faut etudier si on peut formuler:
+
+            delta = processed_by_gain_cell - dry
+            output = dry + delta
+
+        Cela permettrait:
+
+            - dry bit-transparent quand GR = 0;
+            - oversampling concentre sur le delta non-lineaire;
+            - meilleur bypass/dry-wet;
+            - test null beaucoup plus strict.
+
+        Attention:
+
+            U273 analogique reel n'est pas un compresseur numerique parallele.
+            Cette formulation est une implementation numerique equivalente
+            seulement si elle reproduit la reference offline.
+
+
+    E. Stereo linking
+
+        Kotelnikov evite le dual-mono libre parce que cela deplace l'image
+        stereo. Pour U273 plugin:
+
+            - default: linked stereo GR;
+            - option M/S ou stereo sensitivity seulement si testee;
+            - jamais de dual mono par defaut pour un bus/mastering.
+
+
+5. Modification de la strategie U273
+------------------------------------
+
+Ajouter a l'architecture:
+
+    u273::dsp::SidechainOversampler
+    u273::dsp::GainCellOversampler
+    u273::dsp::DeltaPath
+    u273::dsp::InternalBandwidthMode
+
+
+InternalBandwidthMode:
+
+    Eco:
+        cible ~100 kHz interne;
+        tracking/low CPU;
+        sidechain moins fine.
+
+    Precise:
+        cible ~200 kHz interne;
+        default mastering/mix;
+        comparable a Kotelnikov Precise.
+
+    Render:
+        cible >= 300-400 kHz ou facteur 8x/16x selon Fs;
+        offline uniquement.
+
+
+Mapping initial:
+
+    Fs host = 44.1/48:
+        Eco:
+            sidechain 4x, gain cell 2x
+        Precise:
+            sidechain 8x, gain cell 4x
+        Render:
+            sidechain 16x, gain cell 8x
+
+    Fs host = 88.2/96:
+        Eco:
+            sidechain 2x, gain cell 1x/2x selon tests
+        Precise:
+            sidechain 4x, gain cell 2x
+        Render:
+            sidechain 8x, gain cell 4x
+
+    Fs host = 176.4/192:
+        Eco:
+            sidechain 1x, gain cell 1x
+        Precise:
+            sidechain 2x, gain cell 1x
+        Render:
+            sidechain 4x, gain cell 2x
+
+
+6. Tests a ajouter
+------------------
+
+Sidechain aliasing tests:
+
+    - step input;
+    - burst haute frequence;
+    - sine proche Nyquist;
+    - multitone;
+    - attaque 0.5 ms;
+    - attaque 1.0 ms;
+    - release 0.5 s / 1.5 s;
+    - erreur de courbe GR vs reference 16x/32x.
+
+Delta path tests:
+
+    - GR = 0:
+        output doit nuller contre input dans une tolerance bit/float stricte.
+
+    - bypass:
+        bypass doit etre phase-align et click-free.
+
+    - dry/wet:
+        pas de comb filtering du a latence non compensee.
+
+    - GR active:
+        delta path doit reproduire reference offline.
+
+
+Stereo tests:
+
+    - mono center reste centre;
+    - signal gauche fort ne doit pas deplacer un centre vocal de maniere
+      incoherente;
+    - M/S ou stereo sensitivity testee contre image et correlation.
+
+
+7. Conclusion
+-------------
+
+Kotelnikov est une reference majeure pour la partie "plugin compresseur moderne"
+du U273, pas pour la modelisation analogique elle-meme.
+
+La lecon principale:
+
+    oversampling intelligent = architecture multi-rate separee.
+
+Pour U273:
+
+    - sidechain/detector peut demander plus de bande interne que le gain cell;
+    - gain cell doit etre oversamplee au moins 2x a 44.1/48;
+    - render doit utiliser une qualite plus haute automatiquement;
+    - delta/wet-only peut donner un chemin propre et testable;
+    - 0 dB GR devrait viser la transparence stricte;
+    - stereo linking doit etre concu, pas laisse au hasard.
+
+Cette analyse renforce l'Etape 36: la strategie oversampling U273 doit etre
+multi-rate par sous-systeme, pas seulement un gros facteur global.

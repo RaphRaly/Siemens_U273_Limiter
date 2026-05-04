@@ -1,0 +1,2 @@
+node,assumption,iR11IntoN10Amp,iR14LeavingN10Amp,residualActiveCurrentIntoN10Amp,note
+N10,R14 connects N10 to N05,0.00115,0.00475,0.0036,If R14=N10->N05, R11 alone cannot feed R14; Ts1 or another active branch must supply the residual into N10.

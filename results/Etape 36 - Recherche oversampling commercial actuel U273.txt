@@ -1,0 +1,464 @@
+Etape 36 - Recherche oversampling commercial actuel U273
+========================================================
+
+Date: 2026-05-04
+Objet: definir une strategie oversampling U273 au niveau des meilleurs plugins
+       commerciaux actuels, avec sources constructeur et references DSP.
+
+
+0. Verdict
+----------
+
+Le meilleur standard commercial actuel n'est pas:
+
+    "mettre 32x partout".
+
+Le meilleur standard est:
+
+    - oversampling cible uniquement sur les blocs non lineaires;
+    - modes realtime et render/offline separes;
+    - facteur adapte au sample-rate hote;
+    - choix phase/latence: minimum, intermediate, linear;
+    - vrai mode offline tres haute qualite;
+    - true-peak metering/limiting separe de l'oversampling audio;
+    - tests aliasing/phase/latence/CPU obligatoires;
+    - pas d'allocation ni de reconstruction lourde dans le thread audio.
+
+
+1. Sources commerciales analysees
+---------------------------------
+
+1. Cytomic The Glue / The Drop / The Scream
+
+    Points retenus:
+
+        - oversampling realtime et render separes;
+        - x2 realtime et x8 render comme defaults recommandes;
+        - The Drop permet x32/x64 en render;
+        - modes de filtre minimum phase, linear phase, intermediate phase;
+        - latence fixe/reportee pour rester phase-accurate dans le DAW;
+        - facteur defini relativement a 44.1/48 kHz: si le projet est deja a
+          96 kHz, x2 peut ne rien ajouter.
+
+    Sources:
+
+        https://cytomic.com/product/glue/
+        https://cytomic.com/files/TheScream-Manual.pdf
+        https://cytomic.com/files/TheDrop-Manual.pdf
+
+
+2. FabFilter Pro-L 2
+
+    Points retenus:
+
+        - oversampling jusqu'a 32x;
+        - recommandation pratique: 4x ou 8x en usage normal;
+        - 16x/32x plutot pour render/offline;
+        - linear-phase oversampling;
+        - avertissement explicite: CPU plus eleve et possible pre-ringing;
+        - oversampling fortement recommande avec true peak limiting.
+
+    Sources:
+
+        https://www.fabfilter.com/help/pro-l/using/oversampling
+        https://www.fabfilter.com/products/pro-l-brickwall-limiter-plug-in
+
+
+3. FabFilter Saturn 2
+
+    Points retenus:
+
+        - saturation/distortion: Good = 8x, Superb = 32x;
+        - linear phase mode applique aussi l'oversampling interne HQ en linear
+          phase;
+        - les modes HQ reduisent l'aliasing au prix de CPU.
+
+    Sources:
+
+        https://www.fabfilter.com/products/saturn-2
+        https://www.fabfilter.com/help/saturn/intro/fabfiltersaturn
+
+
+4. DMG Audio Limitless
+
+    Points retenus:
+
+        - limiteur mastering haut niveau;
+        - clipper pre-limiter oversample 64x;
+        - true-peak / intersample peak suppression;
+        - approche chirurgicale: oversampling tres haut sur le bloc clipper,
+          pas forcement sur toute la chaine.
+
+    Source:
+
+        https://www.dmgaudio.com/limitless
+
+
+5. Tone Projects Kelvin
+
+    Points retenus:
+
+        - saturation commerciale moderne;
+        - 4 quality modes;
+        - linear phase oversampling;
+        - option d'utiliser la plus haute qualite en offline render;
+        - compromis qualite/latence/CPU expose a l'utilisateur.
+
+    Source:
+
+        https://www.toneprojects.com/kelvin-tone-shaper.html
+
+
+6. TDR / OD Limen
+
+    Points retenus:
+
+        - manuel 2026;
+        - oversampling adapte au sample-rate:
+            Normal: 2x a 44.1/48, 1x au-dessus;
+            High:   4x a 44.1/48, 2x a 88.2/96, 1x au-dessus;
+            Ultra:  8x a 44.1/48, 4x a 88.2/96, 2x au-dessus;
+        - l'algorithme est concu pour minimiser l'aliasing par construction;
+        - les hauts facteurs ne sont utiles que dans les cas extremes.
+
+    Source:
+
+        https://docs.tokyodawn.net/od-limen-manual/
+
+
+7. TDR Kotelnikov
+
+    Points retenus:
+
+        - compresseur "proudly digital", pas une emulation analogique;
+        - 64-bit multi-rate processing;
+        - sidechain et gain cell separes;
+        - sidechain avec bande passante jusqu'a 20x plus large que l'audible;
+        - gain cell au minimum a 2x le sample-rate audio;
+        - seul le signal compresse/Delta est oversample;
+        - bit-transparent a 0 dB de gain reduction;
+        - Eco ~= 100 kHz interne, Precise ~= 200 kHz interne;
+        - option render highest quality.
+
+    Source:
+
+        https://www.tokyodawn.net/tdr-kotelnikov/
+        https://docs.tokyodawn.net/kotelnikov-manual/
+
+    Analyse detaillee:
+
+        results/Etape 37 - Analyse TDR Kotelnikov oversampling U273.txt
+
+
+8. oeksound soothe2
+
+    Points retenus:
+
+        - settings realtime et offline separes;
+        - oversample + resolution comme dimensions de qualite distinctes;
+        - offline settings override quand le host signale un render;
+        - lock quality settings pour eviter qu'un preset change la qualite.
+
+    Source:
+
+        https://oeksound.com/manuals/soothe2/
+
+
+9. iZotope Ozone / true peak
+
+    Points retenus:
+
+        - true peak limiting utilise l'oversampling pour suivre/controler les
+          pics inter-sample;
+        - un limiteur true peak peut oversampler seulement sa sidechain, pas
+          necessairement tout le signal audio;
+        - true peak limiting peut faire plus de gain reduction et ramollir les
+          transitoires si on l'ajoute trop tard.
+
+    Sources:
+
+        https://www.izotope.com/en/learn/true-peak-limiter
+        https://downloads.izotope.com/docs/ozone9/en/maximizer/index.html
+
+
+10. JUCE dsp::Oversampling
+
+    Points retenus pour implementation:
+
+        - oversampling 2x/4x/8x/16x via stages;
+        - filtres HalfBand FIR equiripple ou polyphase allpass IIR;
+        - FIR = linear phase mais plus de latence;
+        - IIR = latence plus faible mais phase compromise pres de Nyquist;
+        - getLatencyInSamples() doit etre reporte/compense;
+        - useIntegerLatency evite les problemes de latence fractionnaire en
+          plugin.
+
+    Source:
+
+        https://docs.juce.com/master/classdsp_1_1Oversampling.html
+
+
+11. Standards true-peak
+
+    Points retenus:
+
+        - ITU-R BS.1770-5 est la recommandation actuelle pour loudness et
+          true-peak;
+        - BS.1770 recommande classiquement une estimation true-peak par
+          oversampling au moins 4x, jusqu'a environ 192 kHz;
+        - AES rappelle que les intersample peaks peuvent etre estimes par
+          upsampling.
+
+    Sources:
+
+        https://www.itu.int/rec/R-REC-BS.1770
+        https://www.aes.org/resources/audio-topics/loudness-project/learn-more/
+
+
+2. Synthese: ce que font les meilleurs
+--------------------------------------
+
+Les meilleurs plugins actuels convergent vers ces choix:
+
+    - separer Realtime et Render;
+    - separer sidechain et gain cell quand le processeur est dynamique;
+    - donner un mode basse latence et un mode mastering;
+    - ne pas oversampler inutilement si le host est deja a 96/192 kHz;
+    - recommander 2x/4x realtime selon le type de signal;
+    - recommander 8x render comme baseline haute qualite;
+    - reserver 16x/32x/64x aux cas extremes/offline;
+    - exposer la latence et la phase comme choix de qualite;
+    - mesurer true peak separement;
+    - oversampler le bloc non-lineaire ou le clipper plutot que toute la chaine;
+    - verifier les artefacts: aliasing, pre-ring, phase, CPU.
+
+
+3. Architecture oversampling recommandee pour U273
+--------------------------------------------------
+
+3.1 Blocs a oversampler
+
+Oversampler audio principal:
+
+    - B6 diode bridge / gain reduction audio path;
+    - eventuels BJT actifs si la reduction realtime en conserve une
+      non-linearite audio-rate;
+    - saturation/clip protection si ajoutee.
+
+Oversampler sidechain / true-peak separe:
+
+    - metering true-peak;
+    - detection de pics si on ajoute une securite output;
+    - ne doit pas forcer tout le moteur audio a 8x.
+
+Pas besoin d'oversampler:
+
+    - UI meters lents;
+    - parametrage lent;
+    - etats de release lents si le coeur audio non-lineaire est deja traite au
+      taux interne correct.
+
+
+3.2 Modes qualite U273
+
+SD / Low Latency:
+
+    - cible tracking;
+    - Off ou 2x a 44.1/48 kHz;
+    - polyphase IIR / minimum phase;
+    - latence minimale;
+    - boundary degradee explicitement.
+
+MD / Realtime default:
+
+    - 2x a 44.1/48 kHz;
+    - 1x a 88.2/96 kHz et au-dessus si aliasing gate passe;
+    - IIR polyphase ou intermediate phase;
+    - cible mix courant;
+    - CPU raisonnable.
+
+HD / Mix-Master:
+
+    - 4x a 44.1/48 kHz;
+    - 2x a 88.2/96 kHz;
+    - 1x a 176.4/192 kHz;
+    - filtre linear phase ou intermediate selon latence;
+    - cible mastering en temps reel.
+
+UHD / Render:
+
+    - 8x render default a 44.1/48 kHz;
+    - 4x render a 88.2/96 kHz;
+    - 2x render a 176.4/192 kHz;
+    - option 16x/32x diagnostic pour stress tests;
+    - 64x uniquement si un clipper/nonlinearite dure est ajoutee ou pour
+      reference offline, pas comme default.
+
+
+3.3 Choix phase/latence
+
+Tracking:
+
+    - minimum phase / IIR;
+    - latence faible;
+    - phase moins parfaite pres de Nyquist acceptee.
+
+Mix:
+
+    - intermediate phase;
+    - compromis latence/phase;
+    - bon default si on implemente un filtre custom.
+
+Master/render:
+
+    - linear phase FIR;
+    - latence reportee;
+    - attention pre-ringing sur transitoires.
+
+
+3.4 Latence plugin
+
+Regles obligatoires:
+
+    - pas de latence qui change silencieusement pendant le playback;
+    - changement de mode qualite = reprepare propre, crossfade ou silence
+      court controle;
+    - report DAW via setLatencySamples();
+    - dry/wet latency compensation;
+    - bypass aligne avec le chemin wet si latence active;
+    - render quality ne doit jamais etre inferieure a realtime quality.
+
+
+4. Tests scientifiques obligatoires
+-----------------------------------
+
+AliasingValidationSuite:
+
+    sample rates:
+        44.1, 48, 88.2, 96, 176.4, 192 kHz.
+
+    modes:
+        Off, 2x, 4x, 8x, 16x, render reference 32x si possible.
+
+    signaux:
+        - sine 40 Hz, 1 kHz, 5 kHz, 10 kHz, 15 kHz;
+        - sine proche Nyquist: 0.3, 0.4, 0.45 * Fs;
+        - multitone non harmonique;
+        - swept sine;
+        - burst + step;
+        - programme audio brillant;
+        - programme audio basse/batterie.
+
+    mesures:
+        - THD;
+        - THD+N;
+        - alias energy ratio;
+        - erreur contre reference 16x/32x offline;
+        - true peak dBTP;
+        - overshoot intersample;
+        - phase/group delay;
+        - pre-ring sur step;
+        - CPU par mode;
+        - latence reportee.
+
+Acceptance gates proposes:
+
+    MD default:
+        alias energy au moins 40 dB sous le signal utile sur cas normaux;
+        aucune regression audible sur 40 Hz..15 kHz.
+
+    HD:
+        alias energy au moins 60 dB sous le signal utile sur cas normaux;
+        THD conforme Siemens;
+        true-peak meter coherent a 4x minimum.
+
+    UHD render:
+        alias energy au moins 80 dB sous le signal utile quand possible;
+        ecart contre reference 32x sous tolerance.
+
+Ces chiffres devront etre calibres avec les premiers renders, mais ils donnent
+une barre haute mesurable.
+
+
+5. Plan d'implementation JUCE
+-----------------------------
+
+Classes a ajouter:
+
+    u273::dsp::OversamplingMode
+    u273::dsp::OversamplingConfig
+    u273::dsp::OversamplingRouter
+    u273::dsp::TruePeakMeter
+    u273::reference::AliasingValidationSuite
+
+OversamplingConfig:
+
+    enum class Quality {
+        off,
+        sdLowLatency,
+        mdDefault,
+        hdMixMaster,
+        uhdRender,
+        diagnostic32x
+    };
+
+    enum class PhaseMode {
+        minimum,
+        intermediate,
+        linear
+    };
+
+    fields:
+        realtimeQuality;
+        renderQuality;
+        phaseMode;
+        hostSampleRate;
+        effectiveFactor;
+        internalSampleRate;
+        latencySamples;
+        truePeakFactor;
+
+
+Implementation:
+
+    - utiliser juce::dsp::Oversampling<float> pour 2x..16x;
+    - IIR polyphase pour minimum/low latency;
+    - FIR equiripple pour linear phase;
+    - useIntegerLatency = true;
+    - custom stages si on veut stopband autour de -120 dB comme Cytomic;
+    - 32x/64x seulement offline/reference via chain multi-stage ou rendu
+      reference, pas necessairement expose realtime.
+
+
+6. Regle finale pour U273
+-------------------------
+
+Pour viser le niveau commercial haut de gamme:
+
+    - default utilisateur:
+        MD = 2x a 44.1/48, 1x a 96+.
+
+    - bouton HQ:
+        HD = 4x a 44.1/48, 2x a 96.
+
+    - render automatique:
+        UHD = 8x a 44.1/48, 4x a 96.
+
+    - mode expert:
+        choix Off/2x/4x/8x/16x + phase minimum/intermediate/linear.
+
+    - true peak:
+        meter 4x minimum, 8x optionnel, separe du coeur analogique.
+
+    - diagnostic:
+        32x/64x offline pour valider aliasing et generer golden references.
+
+Conclusion:
+
+    La strategie "commercial best-in-class" pour U273 doit suivre Cytomic et
+    FabFilter: realtime/render separes, facteurs adaptatifs, phase/latence
+    explicites, et tres haute qualite seulement quand elle est utile.
+
+    Pour un U273 analog limiter, le plus juste est de concentrer l'oversampling
+    sur le coeur non-lineaire B6/B11 et sur le true-peak/metering, puis de
+    prouver par tests que MD/HD/UHD reproduisent la reference offline.

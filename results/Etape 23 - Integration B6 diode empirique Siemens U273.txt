@@ -1,0 +1,187 @@
+Etape 23 - Integration B6 diode empirique
+=========================================
+
+Date: 2026-05-03
+Objet: integration rigoureuse de la loi empirique Siemens dans le solveur B6
+
+
+1. But
+------
+
+Remplacer, pour B6, les diodes Shockley placeholders par la loi Siemens lue dans
+les pages techniques:
+
+    U_D = 308 * I_D^0,16
+    I_D = 2,85e-16 * U_D^6,25
+    r_d = 48,3 * I_D^-0,84
+
+avec:
+
+    U_D en mV
+    I_D en uA
+    r_d en kOhm
+    domaine annonce: 2..500 uA
+
+
+2. Fichiers modifies / ajoutes
+------------------------------
+
+Modifies:
+
+    solver/mna_core.js
+        ajout du modele non lineaire:
+            model = "u273_empirical"
+
+        la linearisation Newton renvoie maintenant aussi:
+            rawVd
+            model
+            currentMicroAmp
+            voltageMilliVolt
+            dynamicResistanceOhm
+            inStatedCurrentRange
+
+    solver/b6_parametric.js
+        ajout de l'option:
+            bridgeDiodeLaw = "u273_empirical"
+
+        les anciens modeles Shockley restent disponibles par defaut:
+            bridgeDiodeLaw = "shockley_placeholder"
+
+Ajoutes:
+
+    solver/b6_empirical_ac_sweep.js
+        sweep B6 avec diodes empiriques Siemens.
+
+    solver/validate_u273_empirical_mna.js
+        test MNA direct de deux diodes empiriques en serie sous 1 V.
+
+Resultats:
+
+    results/b6_empirical_ac_sweep.json
+    results/b6_empirical_ac_sweep.csv
+    results/b6_empirical_operating_points.csv
+
+
+3. Choix de modelisation
+------------------------
+
+La loi empirique est appliquee a chaque symbole diode B6 D1..D4 dans la netlist
+actuelle:
+
+    D3_SSD55:  NB -> NL
+    D4_OA154Q: NL -> N14
+    D2_SSD55:  NB -> NR
+    D1_OA154Q: NR -> N15
+
+Raison:
+
+    - cette topologie garde les noeuds intermediaires NL/NR necessaires a R7;
+    - elle ne force pas une fusion artificielle des diodes en une branche
+      unique qui ferait disparaitre NL/NR;
+    - deux symboles diode en serie sous 1 V donnent un courant du bon ordre
+      pour l'exemple Siemens.
+
+Limite connue:
+
+    le modele ne distingue pas encore des lois separees OA154Q / SSD55. Il
+    applique la loi moyenne Siemens au pont, ce qui est plus defensable que les
+    anciens placeholders Shockley, mais reste une premiere integration.
+
+
+4. Verifications executees
+--------------------------
+
+Commandes:
+
+    node solver\validate_mna_core.js
+    node solver\validate_complex_ac.js
+    node solver\u273_diode_empirical.js
+    node solver\validate_u273_empirical_mna.js
+    node solver\b6_parametric_ac_sweep.js
+    node solver\b6_bridge_ac_sweep.js
+    node solver\b6_with_s6_zcmd_sweep.js
+    node solver\b11_s6_contact_bound_sweep.js
+    node solver\b6_empirical_ac_sweep.js
+
+Resultats:
+
+    mna_core validation passed
+    complex_ac validation passed
+    u273 empirical MNA validation passed
+
+Test direct deux diodes empiriques en serie sous 1 V:
+
+    MID = 0,500000 V
+    I = 21,058 uA
+    I loi directe a 500 mV = 21,058 uA
+
+Remarque:
+
+    l'exemple Siemens donne I1 ~= 18,33 uA. L'ecart vient du fait que les
+    coefficients U(I), I(U) et r_d sont arrondis dans le texte. L'ordre de
+    grandeur est coherent et le test valide surtout le stamp MNA.
+
+
+5. Resultat B6 empirique avec VCMD impose
+-----------------------------------------
+
+Dans le sweep B6 reel, VCMD = 1 V ne veut pas dire 1 V directement sur deux
+diodes, car R10/R9 et le pont chargent le noeud NB.
+
+Pour VCMD = 1 V:
+
+    tension chemin gauche D3+D4 = 0,728042 V
+    tension chemin droit D2+D1 = 0,728042 V
+
+Courants:
+
+    D3_SSD55 = 2,897 uA
+    D4_OA154Q = 2,897 uA
+    D2_SSD55 = 2,897 uA
+    D1_OA154Q = 2,897 uA
+
+Donc:
+
+    VCMD = 1 V dans la netlist B6 extraite est dans le domaine Siemens
+    2..500 uA, mais ne reproduit pas directement l'exemple theorique 1 V
+    applique aux diodes.
+
+
+6. AC petit signal obtenu
+-------------------------
+
+Pour VCMD = 1 V:
+
+    scenario                         | 1 kHz       | 15 kHz
+    ---------------------------------|-------------|-------------
+    empirical_cmd_ideal_c4c6_0       | -24,35 dB   | -5,67 dB
+    empirical_cmd_10k_c4c6_0         | -22,83 dB   | -4,84 dB
+    empirical_cmd_100k_c4c6_0        | -19,89 dB   | -3,49 dB
+    empirical_cmd_open_c4c6_0        | -18,65 dB   | -3,01 dB
+
+Interpretation:
+
+    - l'attenuation augmente bien avec la conductance dynamique des diodes;
+    - le resultat reste sensible a l'impedance AC de commande;
+    - VCMD ideal reste un cas de test, pas le modele final de l'appareil.
+
+
+7. Statut apres integration
+---------------------------
+
+Ferme:
+
+    - B6 sait utiliser la loi empirique Siemens en DC Newton;
+    - B6 sait reutiliser les conductances dynamiques empiriques en AC;
+    - les anciens solveurs Shockley restent disponibles pour comparaison;
+    - les resultats empiriques sont exportes en JSON/CSV.
+
+Reste:
+
+    - connecter la vraie sortie B11 / S6 / S7 au noeud CMD au lieu de VCMD
+      impose;
+    - integrer les transistors B6 Ts1..Ts6;
+    - confirmer les valeurs C4/C6 Abgl.;
+    - calibrer R7/R8;
+    - valider contre une mesure ou une courbe Siemens complete.
+

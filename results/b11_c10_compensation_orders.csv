@@ -1,0 +1,4 @@
+name,resistanceOhm,capacitanceFarad,tauSecond,cornerHz,note
+R14_C10_order,2000,1e-10,2.0000000000000002e-7,795774.7154594767,Order-of-magnitude only; final C10 stamp needs confirmed endpoints.
+R17_C10_order,6800,1e-10,6.800000000000001e-7,234051.38689984608,Order-of-magnitude only; final C10 stamp needs confirmed endpoints.
+R13_C10_order,220000,1e-10,0.000022,7234.315595086152,Order-of-magnitude only; final C10 stamp needs confirmed endpoints.

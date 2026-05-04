@@ -1,0 +1,310 @@
+Etape 18 - Plan scientifique MNA U273
+=====================================
+
+Date: 2026-05-03
+Objet: plan de modelisation apres recherches scientifiques
+
+
+1. Sources retenues
+-------------------
+
+Sources internes U273:
+
+    - schema et crops utilisateur des cartes B6/B11;
+    - pages techniques lues dans les screenshots 2026-05-03 103843..104605;
+    - notes deja produites Etapes 1..17.
+
+Sources scientifiques externes:
+
+    1. TU Delft, Structured Electronics Design, "Modified Nodal Analysis".
+       Utilisation:
+           base MNA, KCL nodale, stamps, traitement DC par s=0, condensateurs
+           ouverts en DC.
+       URL:
+           https://analog-electronics.tudelft.nl/webbook/SED/_build/html/network_theory/NetworkTheory-1_Modified_Nodal_Analysis.html
+
+    2. AES / Giannoulis, Massberg, Reiss, "Digital Dynamic Range Compressor
+       Design - A Tutorial and Analysis", Journal of the Audio Engineering
+       Society, 2012.
+       Utilisation:
+           compresseur/limiteur = systeme non lineaire avec memoire; importance
+           des topologies feedback/feedforward, detection, attaque, relachement.
+       URL:
+           https://aes2.org/publications/elibrary-page/?id=16354
+
+    3. LibreTexts / Wilson, "Small Signal Models".
+       Utilisation:
+           justification de la linearisation locale d'une diode polarisee:
+           pente dI/dV, conductance differentielle, resistance differentielle.
+           Pour le U273, la calibration numerique finale reste celle de la page
+           Siemens lue localement.
+       URL:
+           https://eng.libretexts.org/Bookshelves/Electrical_Engineering/Electronics/Introduction_to_Physical_Electronics_%28Wilson%29/02%3A_Bipolar_Transistors/2.05%3A_Small_Signal_Models
+
+
+2. Contraintes U273 fermees a utiliser
+--------------------------------------
+
+Architecture:
+
+    SV = Signalverstaerker
+    RV = Regelverstaerker
+    DB = Diodenbruecke
+    U273 = regulation par retour, pas feedforward pur.
+
+Position dessinee:
+
+    S1..S7 gezeichnete Stellung = Begrenzer
+
+Donc:
+
+    position dessinee = mode limiteur.
+
+S7:
+
+    Begrenzer:
+        zener active entre redresseur/regulateur et pont de diodes.
+
+    Kompressor:
+        zener bypassed.
+
+Pont de diodes:
+
+    chaque branche = diode germanium + diode silicium en serie.
+
+Loi empirique U273 a 25 deg C:
+
+    U_D = 308 * I_D^0,16
+
+avec:
+
+    U_D en mV
+    I_D en uA
+
+Equivalent:
+
+    I_D = 2,85e-16 * U_D^6,25
+
+Resistance differentielle:
+
+    r_d = 48,3 * I_D^-0,84
+
+avec:
+
+    r_d en kOhm
+    I_D en uA
+
+Domaine d'emploi indique:
+
+    I_D = 2..500 uA, erreur environ < 5 %.
+
+Niveaux:
+
+    niveau nominal studio = +6 dB = 1,55 V
+    tension signal exemple a la Diodenbruecke = 25 mV
+
+Temps:
+
+    attaque limiteur ~= 0,5 ms
+    attaque compresseur ~= 1,0 ms
+    relachement = 0,5..1,5 s
+
+Specs:
+
+    entree = 10 kOhm
+    sortie = 30 Ohm
+    charge = 300 Ohm
+    bande = 40 Hz..15 kHz
+    bruit = 70 dB ref. 1,55 V
+    THD regulation = 1,0 % a 40 Hz, 0,5 % de 1 kHz a 15 kHz
+
+
+3. Contraintes de schema fermees
+--------------------------------
+
+B11 Ts1/Ts2:
+
+    R15 = +24 V -> 1,2k -> N145 = 14,5 V
+    R14/C6 = N145 -> R14 2k -> C6 1n -> N10 = 10 V
+    R16 = N9 = 9 V -> 1,2k -> reference
+    R13 = N9 -> 220k -> N05 = 0,5 V
+    R12 = N05 -> 120 ohm -> reference
+    R9 = N05 -> 56k -> reference
+    C5 isole R7/R8 en DC
+    R17/C10 = N4 -> 6,8k // 100p -> reference
+
+KCL utiles:
+
+    I_R15 = 7,917 mA
+    I_R16 = 7,500 mA
+    I_R13 = 38,636 uA
+    I_N9_passif = 7,539 mA
+    residu R15 - N9_passif = 0,378 mA
+
+    I_N05 = I_R12 + I_R9 = 4,176 mA
+    I_actif_N05_apres_R13 = 4,137 mA
+
+S6:
+
+    R3 = 7,5k
+    R4 = 7,5k
+    R5 = 15k
+    R6 = 3,9k
+    C1 = 5n
+    C2 = 5n
+    C3 = 3,3n
+    C4 = 3n
+    R1 = 3k
+    R2 = 1M ajustable
+
+Garde:
+
+    table exacte S6 position par position;
+    table exacte S7 contacts physiques;
+    broches B/C/E Ts1/Ts2.
+
+
+4. Plan d'execution
+-------------------
+
+Phase A - Noyau diode empirique B6
+
+    A1. Ajouter un module diode empirique Ge+Si:
+
+        entree:
+            U_D ou I_D
+
+        sorties:
+            I_D(U_D)
+            U_D(I_D)
+            r_d(I_D)
+            g_d = 1/r_d
+            linearisation Newton locale: g_d et courant equivalent.
+
+    A2. Verifier numeriquement les exemples Siemens:
+
+        U_signal pont = 25 mV
+        U_DC = 1 V
+        surmodulation facteur 6
+        resultat attendu:
+            I1 ~= 18,33 uA
+            I3 ~= 0,033 uA
+            K ~= 0,18 %
+
+    A3. Garder l'ancien Shockley generique seulement comme modele de secours.
+
+
+Phase B - Recalibrage B6
+
+    B1. Remplacer les diodes du pont B6 par les branches empiriques.
+
+    B2. Ajouter une calibration de niveau:
+
+        sortie nominale 1,55 V
+        tension interne pont cible environ 25 mV
+
+    B3. Relancer les sweeps:
+
+        VCMD / commande DC;
+        gain 40 Hz..15 kHz;
+        verification attenuation jusqu'a environ 1:100;
+        comparaison THD qualitative si possible.
+
+
+Phase C - B11 / S7
+
+    C1. Encoder deux modes:
+
+        Begrenzer:
+            zener active.
+
+        Kompressor:
+            zener bypassed.
+
+    C2. Garder la topologie physique exacte de S7 comme parametre tant que les
+        contacts ne sont pas totalement lus.
+
+    C3. Utiliser les temps:
+
+        attaque limiteur 0,5 ms;
+        attaque compresseur 1,0 ms;
+        relachement 0,5..1,5 s.
+
+
+Phase D - B11 / S6
+
+    D1. Garder S6 comme reseau RC commutable.
+
+    D2. Utiliser le bornage actuel:
+
+        R2 = 1M;
+        R1 = 3k;
+        coeur RC confirme.
+
+    D3. Ne pas figer une seule position S6 sans table mecanique.
+
+
+Phase E - Ts1/Ts2
+
+    E1. Relancer le solveur d'hypotheses B/C/E avec les KCL corrigees:
+
+        Ts2:
+            I_R15 = 7,917 mA
+            I_R16 + I_R13 = 7,539 mA
+            residu = 0,378 mA
+
+        Ts1/N05:
+            I_actif_N05_apres_R13 = 4,137 mA
+
+    E2. Autoriser seulement les hypotheses qui respectent:
+
+        VBE/VEB coherent;
+        VCE/VEC coherent;
+        KCL dans les tolerances;
+        sens courant compatible avec les symboles visibles.
+
+    E3. Ne connecter les stamps BJT definitifs qu'apres cette etape.
+
+
+Phase F - Boucle complete
+
+    F1. Assembler:
+
+        B6 pont empirique;
+        S6 ponderation;
+        detection/redresseur;
+        S7 limiteur/compresseur;
+        etages actifs B11;
+        feedback vers commande du pont.
+
+    F2. Simuler d'abord:
+
+        DC point de repos;
+        petit-signal autour de points fixes;
+        transitoire attaque/relachement.
+
+    F3. Valider contre specs:
+
+        entree 10k;
+        sortie 30 ohm;
+        charge 300 ohm;
+        bande 40 Hz..15 kHz;
+        attenuation jusqu'a environ 1:100;
+        attaque/relachement;
+        THD cible.
+
+
+5. Ordre de priorite
+--------------------
+
+Priorite immediate:
+
+    1. module diode empirique;
+    2. test de la loi U273;
+    3. recalibrage B6;
+    4. solveur B/C/E Ts1/Ts2 corrige;
+    5. modes S7 Begrenzer/Kompressor;
+    6. boucle complete.
+
+Ce plan ne lance pas encore l'implementation. Il fixe l'ordre scientifique pour
+eviter de melanger erreurs de diode, erreurs de topologie et erreurs de boucle.

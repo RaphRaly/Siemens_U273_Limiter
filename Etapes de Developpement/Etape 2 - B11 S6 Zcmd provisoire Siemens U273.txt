@@ -1,0 +1,304 @@
+Etape 2 - B11/S6 et extraction provisoire de Zcmd(s)
+====================================================
+
+Date: 2026-05-01
+
+Objectif
+--------
+
+L'etape 1 a montre que le pont B6 depend fortement de l'impedance de commande:
+
+    Zcmd(s)
+
+La presente etape attaque donc B11, mais seulement la partie qui peut etre
+traitee rigoureusement sans inventer les transistors ni les contacts definitifs:
+
+    le coeur passif du reseau S6
+
+But:
+
+    1. extraire l'impedance de sortie du coeur S6 par MNA;
+    2. utiliser cette impedance comme approximation passive de Zcmd(s);
+    3. recoupler cette impedance a B6;
+    4. identifier ce qui reste ouvert avant B11 complet.
+
+
+1. Fichiers ajoutes
+-------------------
+
+Extraction de l'impedance de sortie S6:
+
+    solver/b11_s6_zout_sweep.js
+
+Couplage B6 avec Zout(S6):
+
+    solver/b6_with_s6_zcmd_sweep.js
+
+Resultats:
+
+    results/b11_s6_zout_sweep.json
+    results/b11_s6_zout_sweep.csv
+    results/b6_with_s6_zcmd_sweep.json
+    results/b6_with_s6_zcmd_sweep.csv
+
+
+2. Methode scientifique pour Zout
+---------------------------------
+
+Pour extraire une impedance de sortie lineaire:
+
+    1. on annule la source d'entree du reseau;
+    2. on applique une source test de 1 V au noeud de sortie;
+    3. on mesure le courant que le reseau absorbe;
+    4. on calcule:
+
+        Zout = Vtest / Itest
+
+Dans la MNA utilisee:
+
+    VIN_SHORT impose VL = 0 V
+    VTEST_OUT impose VR = 1 V
+
+La variable de courant de la source de tension a le signe de la source, donc le
+courant absorbe par le reseau est:
+
+    Ireseau = -I(VTEST_OUT)
+
+Puis:
+
+    Zout = 1 / Ireseau
+
+Ce calcul est une extraction de Thevenin/Norton petit signal du coeur passif S6.
+
+
+3. Reseau S6 utilise
+--------------------
+
+Composants du coeur deja identifies:
+
+    R3 = 7,5 kOhm
+    R4 = 7,5 kOhm
+    R5 = 15 kOhm
+    R6 = 3,9 kOhm
+    C1 = 5 nF
+    C2 = 5 nF
+    C3 = 3,3 nF
+    C4 = 3 nF
+
+Branches:
+
+    LM : R4 // C2 entre VL et VM
+    MR : R3 // C1 entre VM et VR
+    LR : R5 // C3 entre VL et VR
+    M0 : R6 en serie avec C4 entre VM et masse
+
+Attention:
+
+    Les contacts exacts de S6 ne sont pas encore fermes. Le script teste donc
+    quatre hypotheses de contact, non pas comme positions officielles du U273,
+    mais comme bornes de sensibilite.
+
+Hypotheses testees:
+
+    core_all_branches:
+        LM, MR, LR, M0 actives.
+
+    core_without_lr_bridge:
+        LM, MR, M0 actives; LR ouverte.
+
+    core_without_m0_shunt:
+        LM, MR, LR actives; M0 ouverte.
+
+    core_series_lm_mr_only:
+        LM et MR actives seulement.
+
+
+4. Resultats Zout(S6)
+---------------------
+
+Impedance de sortie passive du coeur S6:
+
+    hypothese                  | Zout a 1 kHz        | Zout a 20 kHz
+    ---------------------------|----------------------|----------------------
+    core_all_branches          | 7,14 kOhm / -17,0 deg| 1,29 kOhm / -77,4 deg
+    core_without_lr_bridge     | 14,23 kOhm / -16,8 deg| 2,78 kOhm / -73,4 deg
+    core_without_m0_shunt      | 7,23 kOhm / -15,3 deg| 1,35 kOhm / -79,6 deg
+    core_series_lm_mr_only     | 14,60 kOhm / -13,3 deg| 3,11 kOhm / -78,0 deg
+
+Interpretation:
+
+    Le coeur passif S6 n'est pas une sortie haute impedance dans les hypotheses
+    testees. Son ordre de grandeur est plutot:
+
+        7 kOhm a 15 kOhm a 1 kHz
+        1 kOhm a 3 kOhm a 20 kHz
+
+    Donc, si le pont B6 voit directement ce coeur passif ou une impedance du
+    meme ordre, le cas "VCMD ouvert" de l'etape 1 est trop faible comme
+    approximation physique.
+
+
+5. Couplage B6 avec Zout(S6)
+----------------------------
+
+On reprend le B6 parametrique de l'etape 1:
+
+    C1 = 1000 pF
+    C2 = 22 uF
+    C3/C7 = 4,7 uF
+    C5 = 150 uF
+    C4/C6 = 0 dans ce test
+    R7 = 100 Ohm effectif
+    R8 = 250 kOhm effectif
+
+Mais au lieu de:
+
+    Zcmd = 0, 10k, 100k, 1M, ouvert
+
+on connecte:
+
+    Ycmd(s) = 1 / Zout_S6(s)
+
+au noeud CMD du pont B6.
+
+Important:
+
+    Le couplage utilise l'admittance complexe de S6, pas seulement son module.
+
+
+6. Resultats B6 avec Zcmd = Zout(S6)
+------------------------------------
+
+Gain local |VNA| pour source AC B6 de 1 V.
+
+Hypothese core_all_branches:
+
+    VCMD = 0 V:
+        1 kHz  = -16,27 dB
+        20 kHz = -2,74 dB
+
+    VCMD = 3 V:
+        1 kHz  = -39,37 dB
+        20 kHz = -16,16 dB
+
+Hypothese core_without_lr_bridge:
+
+    VCMD = 0 V:
+        1 kHz  = -14,56 dB
+        20 kHz = -2,77 dB
+
+    VCMD = 3 V:
+        1 kHz  = -39,25 dB
+        20 kHz = -16,14 dB
+
+Hypothese core_without_m0_shunt:
+
+    VCMD = 0 V:
+        1 kHz  = -16,22 dB
+        20 kHz = -2,75 dB
+
+    VCMD = 3 V:
+        1 kHz  = -39,37 dB
+        20 kHz = -16,16 dB
+
+Hypothese core_series_lm_mr_only:
+
+    VCMD = 0 V:
+        1 kHz  = -14,42 dB
+        20 kHz = -2,81 dB
+
+    VCMD = 3 V:
+        1 kHz  = -39,25 dB
+        20 kHz = -16,15 dB
+
+
+7. Comparaison avec l'etape 1
+-----------------------------
+
+Etape 1, VCMD = 0 V a 1 kHz:
+
+    Zcmd ideal 0 Ohm : -18,55 dB
+    Zcmd 10 kOhm     : -15,33 dB
+    Zcmd 100 kOhm    : -6,16 dB
+    Zcmd ouvert      : -0,78 dB
+
+Etape 2, coeur S6 passif:
+
+    selon hypothese : -16,27 dB a -14,42 dB
+
+Conclusion:
+
+    Le coeur S6 passif place le modele B6 pres du cas Zcmd autour de 10 kOhm,
+    pas pres du cas 100 kOhm ou ouvert.
+
+Etape 1, VCMD = 3 V a 1 kHz:
+
+    Zcmd ideal 0 Ohm : -39,56 dB
+    Zcmd ouvert      : -38,80 dB
+
+Etape 2, coeur S6 passif:
+
+    selon hypothese : -39,37 dB a -39,25 dB
+
+Conclusion:
+
+    A forte commande, l'effet de Zcmd reste faible dans les cas testes. Ce sont
+    les conductances dynamiques des diodes du pont qui dominent.
+
+
+8. Ce que cette etape ferme
+---------------------------
+
+FERME pour le coeur S6 passif provisoire:
+
+    - methode d'extraction de Zout par source test MNA;
+    - ordre de grandeur de Zout si les branches S6 identifiees sont actives;
+    - couplage complexe de cette impedance au noeud CMD de B6;
+    - consequence: B6 est fortement sensible a Zcmd a faible commande.
+
+FERME comme conclusion de sensibilite:
+
+    Le cas "VCMD ouvert" n'est pas representatif si B6 voit le coeur passif S6
+    directement ou via une impedance du meme ordre.
+
+
+9. Ce qui reste ouvert
+----------------------
+
+Cette etape ne ferme pas encore le vrai Zcmd(s) complet du U273, car il manque:
+
+    1. la table exacte des contacts S6;
+    2. la position exacte de S7;
+    3. l'impedance de sortie des etages actifs B11 autour de Ts1/Ts2/Ts3/Ts4;
+    4. l'etat dynamique du detecteur/zener/redresseur;
+    5. les parametres reels des diodes et transistors.
+
+Donc:
+
+    Zout(S6 passif) est une approximation utile et maintenant calculee.
+    Zcmd_B11_complet(s) reste ouvert.
+
+
+10. Decision pour la suite
+--------------------------
+
+L'etape 2 montre que la prochaine priorite n'est pas de refaire B6 encore une
+fois. B6 est suffisamment parametre pour continuer.
+
+La prochaine etape rigoureuse est:
+
+    extraire la table de contacts S6/S7 depuis le schema.
+
+Ensuite seulement:
+
+    1. choisir la position S6/S7 a simuler;
+    2. recalculer Zout(S6) position par position;
+    3. ajouter l'impedance des etages actifs B11;
+    4. recoupler a B6;
+    5. comparer aux mesures ou au comportement attendu du limiteur.
+
+Verdict:
+
+    Etape 2 terminee comme extraction passive provisoire.
+    Le modele a progresse: Zcmd n'est plus seulement une variable abstraite; on
+    dispose maintenant d'une premiere plage numerique fondee sur le reseau S6.

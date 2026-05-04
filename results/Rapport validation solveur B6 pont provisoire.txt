@@ -1,0 +1,251 @@
+Rapport de validation - solveur MNA pont B6 provisoire
+======================================================
+
+Date locale : 2026-05-01
+
+Objet
+-----
+
+Cette etape transforme les documents MNA precedents en artefacts executables.
+
+Fichiers crees :
+
+    solver/mna_core.js
+    solver/validate_mna_core.js
+    solver/b6_bridge_provisional.js
+    solver/generate_b6_sweep.js
+
+Resultats generes :
+
+    results/b6_bridge_variantA_dc_sweep.csv
+    results/b6_bridge_variantA_dc_sweep.json
+
+
+1. Validation du moteur MNA
+---------------------------
+
+Le moteur MNA a ete teste sur deux cas independants :
+
+    1. diviseur resistif 10 kOhm / 10 kOhm sous 10 V ;
+    2. diode + resistance serie.
+
+Commande executee :
+
+    node solver/validate_mna_core.js
+
+Resultat :
+
+    mna_core validation passed
+
+Conclusion :
+
+    Le moteur resout correctement au moins :
+    - les stamps resistifs ;
+    - les sources de tension ideales MNA ;
+    - une diode linearisee par Newton ;
+    - la KCL entre resistance et diode.
+
+Cela ne valide pas encore la topologie Siemens, seulement le noyau numerique.
+
+
+2. Netlist B6 provisoire
+------------------------
+
+La netlist executable actuelle est :
+
+    solver/b6_bridge_provisional.js
+
+Statut :
+
+    Variante A provisoire.
+
+Hypotheses :
+
+    - les condensateurs sont ouverts en DC ;
+    - VCMD est imposee comme source de commande externe ;
+    - les diodes D1-D4 sont modelisees par Shockley ;
+    - les parametres OA154Q / SSD55 sont placeholders ;
+    - la topologie R7/R8/R9/R10 est une hypothese de travail ;
+    - le but est de valider le solveur et la methode, pas de declarer le modele final.
+
+Ce qui est volontairement exclu :
+
+    - C1, C2, C3, C5, C7 en dynamique ;
+    - B11 complet ;
+    - entree Ts1 ;
+    - calibration reelle des diodes ;
+    - contacts exacts de R7/R8 si le schema impose une autre connexion.
+
+
+3. Sweep DC execute
+-------------------
+
+Commande executee :
+
+    node solver/generate_b6_sweep.js
+
+Points VCMD :
+
+    0
+    0,1
+    0,25
+    0,5
+    0,75
+    1,0
+    1,25
+    1,5
+    2,0
+    2,5
+    3,0 V
+
+Tous les points convergent.
+
+Les iterations restent environ :
+
+    1 iteration a VCMD = 0 V
+    24 a 25 iterations sur la plupart des autres points
+
+Ce nombre est acceptable pour validation offline. Pour temps reel audio, il faudra
+optimiser : meilleur point initial, damping adaptatif, limitation exponentielle plus fine,
+ou tables / approximations.
+
+
+4. Resultats numeriques principaux
+----------------------------------
+
+Les resultats suivants viennent du CSV :
+
+    results/b6_bridge_variantA_dc_sweep.csv
+
+VCMD = 0 V :
+
+    diodes non polarisees
+    courant source = 0
+
+VCMD = 1 V :
+
+    NB  ~= 0,893 V
+    NL  ~= NR  ~= 0,268 V
+    N14 ~= N15 ~= 0,059 V
+    courant source ~= -5,34 uA
+    D3/D2 id ~= 1,52 uA
+    D3/D2 rd ~= 28,8 kOhm
+    D4/D1 rd ~= 27,0 kOhm
+
+VCMD = 2 V :
+
+    NB  ~= 1,460 V
+    NL  ~= NR  ~= 0,745 V
+    N14 ~= N15 ~= 0,453 V
+    courant source ~= -27,0 uA
+    D3/D2 id ~= 11,6 uA
+    D3/D2 rd ~= 3,78 kOhm
+    D4/D1 rd ~= 3,56 kOhm
+
+VCMD = 3 V :
+
+    NB  ~= 1,971 V
+    NL  ~= NR  ~= 1,225 V
+    N14 ~= N15 ~= 0,905 V
+    courant source ~= -51,5 uA
+    D3/D2 id ~= 23,2 uA
+    D3/D2 rd ~= 1,89 kOhm
+    D4/D1 rd ~= 1,78 kOhm
+
+
+5. Interpretation scientifique
+------------------------------
+
+Le comportement qualitatif est correct :
+
+    VCMD augmente
+    -> courant diode augmente
+    -> conductance dynamique gd augmente
+    -> resistance dynamique rd diminue
+
+C'est exactement le comportement attendu d'un pont de diodes utilise comme resistance
+variable commandee.
+
+La symetrie est egalement presente :
+
+    NL = NR
+    N14 = N15
+    D3 ~= D2
+    D4 ~= D1
+
+Mais cette symetrie est en partie imposee par la netlist provisoire elle-meme. Elle ne
+prouve pas encore que le schema a ete extrait parfaitement.
+
+
+6. Ce qu'il ne faut pas conclure
+--------------------------------
+
+Il ne faut pas encore conclure :
+
+    - que VCMD reel du U273 vaut 1, 2 ou 3 V ;
+    - que les courants diode calcules sont ceux de l'appareil reel ;
+    - que les valeurs rd sont definitives ;
+    - que le pont complet a ete calibre ;
+    - que la reduction de gain audio est deja predite correctement.
+
+Pourquoi :
+
+    - les parametres diode sont placeholders ;
+    - R7/R8 doivent etre confirmes par une netlist exacte ;
+    - les condensateurs sont ignores en DC ;
+    - le signal audio entre par C1/C2 et doit etre traite en petit signal ou temporel ;
+    - B11 n'est pas encore connecte comme source VCMD dynamique.
+
+
+7. Prochaine etape rigoureuse
+-----------------------------
+
+La prochaine etape n'est pas d'ajouter B11 complet tout de suite. Il faut d'abord faire
+le petit signal AC du pont autour d'un point DC donne.
+
+Procedure :
+
+    1. choisir VCMD ;
+    2. resoudre le point DC du pont ;
+    3. recuperer gd des diodes ;
+    4. construire la matrice AC lineaire avec :
+
+        resistances -> g
+        diodes -> gd
+        condensateurs -> j*w*C
+
+    5. injecter un petit signal audio via R5/C1/C2 ;
+    6. calculer l'impedance vue par le noeud audio ;
+    7. calculer l'attenuation locale ;
+    8. repeter pour plusieurs frequences et VCMD.
+
+Cette etape permettra enfin de relier :
+
+    VCMD -> rd diodes -> impedance pont -> attenuation audio
+
+de facon mathematique, au lieu de rester en ordre de grandeur.
+
+
+8. Statut final de cette etape
+------------------------------
+
+Valide :
+
+    - moteur MNA de base ;
+    - diode Newton dans un cas simple ;
+    - netlist B6 provisoire executable ;
+    - sweep DC reproductible ;
+    - artefacts CSV/JSON sauvegardes.
+
+Non valide definitivement :
+
+    - topologie exacte du pont ;
+    - parametres reels de diodes ;
+    - transfert audio ;
+    - boucle feedback complete.
+
+Conclusion :
+
+    On a maintenant une base numerique saine. La suite doit etre le solveur AC petit
+    signal du pont B6 autour du point DC, puis seulement ensuite le raccord dynamique
+    B11 -> VCMD.

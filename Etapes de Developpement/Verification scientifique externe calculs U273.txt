@@ -1,0 +1,267 @@
+Verification scientifique externe des calculs U273
+==================================================
+
+Date de verification: 2026-05-01
+
+Objet
+-----
+Ce document compare les calculs MNA/AC deja produits pour le Siemens U273 avec
+des sources academiques ou scientifiques externes.
+
+Point important:
+Les sources externes valident les methodes generales de calcul. Elles ne peuvent
+pas valider seules les donnees propres au schema U273: valeur lue de C1, contacts
+S6/S7, topologie exacte, parametres SSD55/OA154Q/ZL10/B30 C2200, ni les mesures
+reelles de l'appareil.
+
+
+1. MNA et sources de tension
+----------------------------
+
+Notre formulation:
+    [Y  C] [Vn] = [I]
+    [B  D] [Iv]   [V]
+
+avec:
+- KCL sur les noeuds;
+- tensions nodales comme inconnues principales;
+- courants des sources de tension comme inconnues supplementaires;
+- equation supplementaire pour chaque source de tension.
+
+Verification externe:
+- TU Delft, Structured Electronics Design, section "Modified Nodal Analysis":
+  la MNA est basee sur KCL et ajoute les courants inconnus des branches de type
+  source de tension au vecteur d'inconnues. La matrice est presentee avec les
+  sous-matrices Y, B, C, D.
+- Ho, Ruehli, Brennan, "The Modified Nodal Approach to Network Analysis",
+  IEEE Transactions on Circuits and Systems, 1975, article peer-reviewed.
+
+Verdict:
+    Valide. La structure de notre solveur MNA correspond a la formulation
+    academique classique.
+
+
+2. DC: condensateurs ouverts
+----------------------------
+
+Notre formulation:
+    En DC, les condensateurs sont retires du circuit, donc ouverts.
+
+Verification externe:
+- TU Delft indique que la solution DC s'obtient en remplacant les condensateurs
+  par des circuits ouverts et les inductances par des courts-circuits.
+- Les notes EECS 312 de l'Universite du Kansas donnent la meme idee dans le
+  tableau grand-signal/petit-signal: un grand condensateur est ouvert en DC.
+
+Verdict:
+    Valide. Nos sweeps DC du pont B6 avec C1/C2/C3/C5/C7 ouverts sont
+    methodologiquement corrects.
+
+
+3. AC lineaire: impedance/admittance du condensateur
+----------------------------------------------------
+
+Notre formulation:
+    Zc = 1 / (j*w*C)
+    Yc = j*w*C
+
+Verification externe:
+- UC Berkeley, Physics 111A Instrumentation Laboratory: les condensateurs ont
+  une impedance Zc = 1/(j*w*C), et les circuits lineaires peuvent etre analyses
+  avec ces impedances complexes.
+
+Verdict:
+    Valide. Notre solveur AC complexe qui stamp les condensateurs comme
+    admittances j*w*C est conforme a l'analyse phasorielle standard.
+
+
+4. Validation RC du solveur AC
+------------------------------
+
+Notre test:
+    R = 1000 Ohm
+    C = 1 uF
+    fc = 1/(2*pi*R*C) = 159.154943092 Hz
+    |H(fc)| = 1/sqrt(2) = 0.707106781186548
+    gain = 20*log10(|H|) = -3.010299956640 dB
+
+Verification externe:
+- CUNY/City College, cours PHYS371: la frequence de coupure d'un filtre RC
+  passe-bas est fc = 1/(2*pi*R*C).
+- NJIT ECE291: le point de coupure est le point -3 dB et, pour les tensions,
+  les decibels s'ecrivent 20*log10(V2/V1).
+
+Verdict:
+    Valide. Le test numerique du solveur AC tombe exactement sur la valeur
+    analytique attendue. C'est une verification forte du solveur complexe pour
+    les reseaux lineaires R/C.
+
+
+5. Diode petit signal et point de polarisation
+----------------------------------------------
+
+Notre formulation:
+    1. resoudre le point DC;
+    2. extraire gd = dI/dV au point de polarisation;
+    3. remplacer la diode par une conductance gd en AC petit signal;
+    4. rd = 1/gd.
+
+Verification externe:
+- Notes EECS 312, University of Kansas: le processus petit signal consiste a
+  trouver le point de fonctionnement DC, calculer rd pour chaque diode, remplacer
+  les diodes par rd, puis resoudre le circuit petit signal. Les memes notes
+  donnent rd = n*VT/ID.
+- Ces notes indiquent aussi qu'une source de tension DC devient un court-circuit
+  dans le circuit petit signal. Cela justifie notre traitement de VCMD comme
+  masse AC quand VCMD est impose idealement.
+
+Verdict:
+    Valide pour la methode. Nos conductances dynamiques de diodes sont
+    mathematiquement coherentes. En revanche, les valeurs numeriques finales
+    restent provisoires car Is, n et les parametres reels SSD55/OA154Q n'ont pas
+    encore ete calibres.
+
+
+6. Newton-Raphson et modele compagnon non lineaire
+--------------------------------------------------
+
+Notre formulation diode Newton:
+    id(v) ~= gd*v + ieq
+    gd  = dI/dV au point courant
+    ieq = I(v0) - gd*v0
+
+Verification externe:
+- TU Wien, these de Tibor Grasser, section "The Two-Level Newton Algorithm":
+  pour resoudre un circuit non lineaire, un modele compagnon lineaire est resolu
+  a chaque iteration de Newton. Ce modele contient une conductance equivalente
+  Geq = dI/dV et une source de courant Ieq = I - Geq*V au point d'iteration.
+
+Verdict:
+    Valide. Notre linearisation Shockley/diode utilise exactement la forme
+    compagnon Newton indiquee par cette source.
+
+
+7. Condensateurs compagnons en temporel
+---------------------------------------
+
+Notre documentation:
+    iC[n] = gc*vC[n] - iceq[n]
+    avec integration numerique type Backward Euler / trapezoidale selon le
+    parametre m.
+
+Verification externe:
+- Purdue University, these de Charles A. Thompson:
+  les simulateurs de transitoires comme SPICE et EMTP utilisent l'integration
+  numerique pour approximer les elements dynamiques et s'appuient sur la methode
+  des circuits compagnons.
+
+Verdict:
+    Valide au niveau methode generale. Le rapport Purdue confirme le cadre
+    "integration numerique + circuit compagnon". Avant une simulation temporelle
+    definitive du U273, il faudra encore tester notre implementation pas-a-pas
+    sur des circuits RC/RLC analytiques.
+
+
+8. Verification des resultats B6
+--------------------------------
+
+Ce que les sources valident:
+- MNA;
+- DC avec condensateurs ouverts;
+- AC petit signal;
+- diode remplacee par rd/gd autour du point DC;
+- source DC tenue a la masse AC;
+- calcul des gains en dB.
+
+Ce qu'elles ne valident pas:
+- C1 = 1000 pF comme element serie audio exact;
+- C4/C6 inconnus;
+- parametres reels des diodes SSD55/OA154Q;
+- impedance de sortie reelle de B11;
+- charge exacte de l'etage suivant;
+- topologie exacte du pont si la lecture du schema est incomplete.
+
+Conclusion B6:
+    Le resultat "VCMD augmente -> gd des diodes augmente -> attenuation
+    augmente" est scientifiquement coherent.
+
+    Les chiffres absolus, par exemple -18.55 dB a 1 kHz pour VCMD = 0 V dans
+    notre variante A, ne sont pas encore une conclusion physique finale. Ils
+    dependent trop fortement de l'hypothese C1 = 1000 pF en serie et des
+    parametres de diodes placeholders.
+
+
+9. Verification des resultats B11/S6
+------------------------------------
+
+Ce que les sources valident:
+- analyse AC par impedances complexes;
+- dependance du transfert aux impendances de charge;
+- formule dB pour les rapports de tension.
+
+Ce qu'elles ne valident pas:
+- position exacte des contacts S6;
+- charge reelle de l'etage suivant;
+- couplage exact avec le detecteur, la zener et le redresseur.
+
+Conclusion B11/S6:
+    Le fait que la charge aval modifie fortement la reponse S6 est attendu et
+    coherent avec la theorie des impedances. Les valeurs numeriques actuelles
+    sont donc utiles comme etude de sensibilite, mais pas comme courbe finale
+    du U273.
+
+
+10. Verdict global
+------------------
+
+Verdict scientifique:
+    Les methodes de calcul employees sont correctement fondees.
+
+Niveau de confiance:
+    - solveur MNA DC: fort;
+    - solveur AC lineaire: fort;
+    - diode petit signal autour d'un point DC: fort pour la methode, moyen pour
+      les valeurs faute de parametres reels;
+    - resultats B6 absolus: provisoires;
+    - resultats B11/S6 absolus: provisoires;
+    - tendances qualitatives B6/S6: plausibles.
+
+Prochaine etape rigoureuse:
+    1. confirmer C1/C2/C4/C6 sur le schema original;
+    2. confirmer les positions S6/S7;
+    3. obtenir ou mesurer les parametres SSD55, OA154Q, ZL10, B30 C2200;
+    4. refaire les sweeps avec ces donnees;
+    5. seulement ensuite conclure sur la courbe physique du Siemens U273.
+
+
+Sources consultees
+------------------
+
+1. TU Delft, Structured Electronics Design, "Modified Nodal Analysis"
+   https://analog-electronics.tudelft.nl/webbook/SED/_build/html/network_theory/NetworkTheory-1_Modified_Nodal_Analysis.html
+
+2. Ho, C. W., Ruehli, A. E., Brennan, P. A., "The Modified Nodal Approach
+   to Network Analysis", IEEE Transactions on Circuits and Systems, 22(6),
+   504-509, 1975. DOI: 10.1109/TCS.1975.1084079
+   https://mst.elsevierpure.com/en/publications/the-modified-nodal-approach-to-network-analysis/
+
+3. UC Berkeley, Physics 111A Instrumentation Laboratory, Lab 1,
+   "Introductory Experiments and Linear Circuits I"
+   https://instrumentationlab.berkeley.edu/Lab1
+
+4. CUNY/City College, PHYS371, "Lab 5: A Low Pass Filter"
+   https://hedberg.ccnysites.cuny.edu/PHYS371/experiments/low-pass-filter/
+
+5. NJIT ECE291, "Lab 6: RC Circuits; Passive Filters"
+   https://ecelabs.njit.edu/ece291/lab6.php
+
+6. University of Kansas EECS312, "Diode Small Signal Analysis"
+   https://people.eecs.ku.edu/~leuschen/EECS312_notes_diode_small_signal_analysis.pdf
+
+7. TU Wien, Tibor Grasser, "The Two-Level Newton Algorithm"
+   https://www.iue.tuwien.ac.at/phd/grasser/node48.html
+
+8. Purdue University, Charles A. Thompson, "A Study of Numerical Integration
+   Techniques for Use in the Companion Circuit Method of Transient Circuit
+   Analysis"
+   https://docs.lib.purdue.edu/ecetr/297/

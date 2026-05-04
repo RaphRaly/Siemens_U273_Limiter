@@ -1,0 +1,320 @@
+Etape 4 - B11/S7 detecteur parametrique et verification academique
+=====================================================================
+
+Date: 2026-05-01
+Objet: Siemens U273 limiter, sous-systeme B11/S7
+
+
+1. Position de cette etape
+-------------------------
+
+Les etapes 1 a 3 ont ferme le pont B6 comme modele MNA parametrique,
+puis ont remplace la commande ideale par une impedance B11/S6 bornee.
+Il restait un point central ouvert:
+
+    Ue -> D2 SSD55 -> ZL10/S7 -> Gr B30 C2200 -> C11/charge -> B11
+
+Cette etape construit le detecteur B11/S7 sous forme parametrique. Le but
+n'est pas encore de pretendre fermer toute la carte B11. Le but est de
+tester quantitativement si le seuil imprime autour de 8 V~ est coherent
+avec une zener ZL10 et des chutes de diodes realistes.
+
+Point de nomenclature important:
+
+    R31 utilise ici = B11/R31 = 51 kOhm.
+
+Ce n'est pas le R31 de la zone B6 deja analyse ailleurs.
+
+
+2. Verification scientifique externe
+------------------------------------
+
+Les sources academiques consultes confirment le cadre de calcul:
+
+1. MIT OpenCourseWare, 6.071J, "17_diodes1.pdf".
+   Source: https://ocw.mit.edu/courses/6-071j-introduction-to-electronics-signals-and-measurement-spring-2006/resources/17_diodes1/
+   Points utilises:
+   - diode = composant non lineaire et dependant de la polarite;
+   - modele exponentiel de diode;
+   - approximation a seuil, typiquement 0,7 V silicium et 0,2 V germanium;
+   - redressement demi-onde et pleine-onde;
+   - pont redresseur pleine-onde avec deux chutes de diode dans le chemin conducteur.
+
+2. MIT OpenCourseWare, 6.071J, "18_diodes2.pdf".
+   Source: https://ocw.mit.edu/courses/6-071j-introduction-to-electronics-signals-and-measurement-spring-2006/resources/18_diodes2/
+   Points utilises:
+   - condensateur apres redresseur: charge quand la diode conduit puis decharge exponentielle;
+   - loi de decharge de type exp(-t/RC);
+   - circuit zener + diode: seuil du type Vs > Vz + Vg.
+
+3. TU Delft, Structured Electronics Design, Modified Nodal Analysis.
+   Source: https://analog-electronics.tudelft.nl/webbook/SED/_build/html/network_theory/NetworkTheory-1_Modified_Nodal_Analysis.html
+   Point utilise:
+   - MNA fondee sur KCL, avec ajout des courants inconnus des branches a notation courant;
+   - formulation matricielle compatible avec sources de tension et admittances.
+
+4. UC Berkeley EECS, Laurence W. Nagel, "SPICE2: A Computer Program to
+   Simulate Semiconductor Circuits", UCB/ERL M520, 1975.
+   Source: https://www2.eecs.berkeley.edu/Pubs/TechRpts/1975/9602.html
+   Point utilise:
+   - SPICE structure l'analyse par formulation d'equations, solution lineaire,
+     solution non lineaire et integration numerique.
+
+5. Purdue University, Charles A. Thompson, "A Study of Numerical Integration
+   Techniques for Use in the Companion Circuit Method of Transient Circuit
+   Analysis", 1992.
+   Source: https://docs.lib.purdue.edu/ecetr/297/
+   Point utilise:
+   - SPICE et EMTP utilisent l'integration numerique pour approximer les
+     reponses transitoires des elements de circuit.
+
+6. University of Kansas EECS312, "Diode Small Signal Analysis".
+   Source: https://people.eecs.ku.edu/~leuschen/EECS312_notes_diode_small_signal_analysis.pdf
+   Point utilise:
+   - autour d'un point de repos, une diode peut etre remplacee en petit signal
+     par une resistance dynamique rd = nVT / ID.
+
+Ces sources ne prouvent pas les valeurs Siemens exactes. Elles valident la
+methode: modele a seuil pour une premiere borne, redressement, memoire RC,
+MNA/Newton pour le modele complet futur.
+
+
+3. Hypotheses et limites
+-----------------------
+
+Ce qui est ferme comme valeur de schema:
+
+    D1 = ZL10, zener nominale autour de 10 V
+    D2 = SSD55
+    Gr = B30 C2200
+    B11/R31 = 51 kOhm
+    B11/C11 = 500 uF
+    tension imprimee de detection: environ 8 V~
+
+Ce qui reste ouvert:
+
+    - table exacte des contacts S7 limiteur/compresseur;
+    - courbe reelle ZL10, tolerance et resistance dynamique;
+    - courbe reelle SSD55;
+    - nombre exact de jonctions conductrices dans Gr B30 C2200;
+    - charge equivalente de C11 par les transistors B11;
+    - role exact de C11: reservoir redresse, memoire de commande, ou les deux.
+
+Donc le modele est volontairement parametrique.
+
+
+4. Modele mathematique
+---------------------
+
+La tension detectee Ue est traitee comme une sinusoide RMS:
+
+    Vpeak = sqrt(2) * Ue_rms
+
+Le seuil conducteur est:
+
+    Vth = k_zener * Vz + VD2 + Vrect
+
+Avec:
+
+    k_zener = 1       mode limiteur zener active
+    k_zener = 0..0,5 hypotheses compresseur non fermees
+    Vz      = valeur effective ZL10
+    VD2     = chute D2 SSD55
+    Vrect   = chute equivalente du redresseur Gr
+
+Le courant instantane moyen redresse est calcule sur une periode:
+
+    i(theta) = max(0, Vpeak*abs(sin(theta)) - Vth) / R31
+
+Pour Vpeak > Vth:
+
+    theta0 = asin(Vth / Vpeak)
+    duty = 1 - 2*theta0/pi
+
+    Vexcess_avg =
+        (2/pi) * (Vpeak*cos(theta0) - Vth*(pi/2 - theta0))
+
+    Iavg = Vexcess_avg / R31
+
+La dynamique equivalent C11/charge est:
+
+    dVc/dt = (Iavg - Vc/Rrelease) / C11
+
+Ce dernier point est une experience de sensibilite, pas encore la MNA complete
+de B11.
+
+
+5. Scenarios numeriques
+-----------------------
+
+Script cree:
+
+    solver/b11_s7_detector_parametric.js
+
+Fichiers generes:
+
+    results/b11_s7_detector_parametric.json
+    results/b11_s7_detector_threshold_sweep.csv
+    results/b11_s7_detector_step_response.csv
+    results/b11_s7_detector_step_summary.csv
+
+Table de seuil et courants moyens:
+
+Scenario                       Vth peak    Vth RMS    Iavg @8 Vrms    Iavg @12 Vrms
+-----------------------------------------------------------------------------------
+limiter_low_drop               10,60 V     7,50 V     2,12 uA         46,86 uA
+limiter_nominal                11,30 V     7,99 V     0,01 uA         39,26 uA
+limiter_high_drop              12,10 V     8,56 V     0,00 uA         31,17 uA
+limiter_zener_minus10pct       10,30 V     7,28 V     3,59 uA         50,25 uA
+limiter_zener_plus10pct        12,30 V     8,70 V     0,00 uA         29,25 uA
+compressor_partial_zener        6,30 V     4,45 V     40,22 uA        103,08 uA
+compressor_zener_bypassed       1,30 V     0,92 V     116,67 uA       186,97 uA
+
+
+6. Interpretation scientifique
+------------------------------
+
+6.1 Mode limiteur
+
+Le scenario nominal donne:
+
+    Vth = 10 V + 0,3 V + 1,0 V = 11,3 V peak
+    Vth_rms = 11,3 / sqrt(2) = 7,99 V RMS
+
+C'est pratiquement la valeur imprimee de 8 V~. Cette coherence est forte:
+le seuil de limitation n'est pas arbitraire; il est compatible avec une
+zener ZL10 et des chutes de jonction raisonnables.
+
+L'encadrement conservateur donne environ:
+
+    seuil limiteur bas  ~= 7,28 a 7,50 V RMS
+    seuil limiteur haut ~= 8,56 a 8,70 V RMS
+
+Donc l'ordre de grandeur 8 V~ est ferme comme coherent. Le seuil exact,
+lui, reste ouvert jusqu'aux courbes des diodes et a la table S7.
+
+6.2 Mode compresseur
+
+Les scenarios compresseur ne sont pas des conclusions Siemens definitives.
+Ils representent seulement deux hypotheses topologiques:
+
+    k_zener = 0,5  -> seuil autour de 4,45 V RMS
+    k_zener = 0    -> seuil autour de 0,92 V RMS
+
+Cela montre mathematiquement pourquoi S7 peut transformer un limiteur a seuil
+tardif en compresseur a action plus precoce: il suffit d'abaisser ou de
+contourner une partie du seuil zener.
+
+Mais la vraie position S7 reste ouverte.
+
+6.3 Courants dans R31
+
+Les courants calcules sont faibles:
+
+    autour du seuil limiteur: microamperes
+    a 12 V RMS: dizaines de microamperes
+
+C'est coherent avec R31 = 51 kOhm: cette branche detecte le niveau, mais ne
+peut pas a elle seule fournir une commande de pont B6 forte. Les etages actifs
+B11 doivent amplifier et abaisser l'impedance avant d'attaquer la commande.
+
+
+7. Dynamique C11
+----------------
+
+Le modele RC equivalent montre une contrainte importante.
+
+Pour le scenario limiteur nominal a 12 V RMS:
+
+    Iavg ~= 39,26 uA
+    C11 = 500 uF
+    pente initiale brute I/C ~= 0,0785 V/s
+
+Dans le sweep avec une entree maintenue 1 s:
+
+    Rrelease = 1 kOhm    -> Vc fin attaque ~= 33,9 mV
+    Rrelease = 10 kOhm   -> Vc fin attaque ~= 71,1 mV
+    Rrelease = 100 kOhm  -> Vc fin attaque ~= 77,7 mV
+
+Pour le scenario compresseur avec zener contournee a 8 V RMS:
+
+    Iavg ~= 116,67 uA
+    pente initiale brute I/C ~= 0,233 V/s
+    Vc fin attaque, Rrelease=100 kOhm ~= 231 mV
+
+Conclusion dynamique:
+
+    Si C11 est vraiment le condensateur principal charge par cette seule
+    branche R31, alors l'enveloppe brute est lente et de faible amplitude.
+    Une action rapide et forte exige donc soit:
+
+        - un autre chemin de charge/decharge dans B11;
+        - une amplification active importante;
+        - un role de C11 plus proche d'un reservoir/filtrage que d'un pur
+          condensateur d'enveloppe;
+        - ou une combinaison de ces trois points.
+
+Ce point devient le prochain sujet a fermer.
+
+
+8. Verification interne des calculs
+----------------------------------
+
+Le script compare la formule analytique du courant moyen avec une integration
+numerique sur une periode sinusoidale. Les erreurs de courant moyen observees
+sont de l'ordre de 1e-14 A a 1e-13 A dans le fichier JSON, ce qui valide
+l'implementation de l'integrale.
+
+Les solveurs existants ont ete relances:
+
+    node solver/validate_mna_core.js
+    -> mna_core validation passed
+
+    node solver/validate_complex_ac.js
+    -> complex_ac validation passed
+
+
+9. Statut apres etape 4
+----------------------
+
+Ferme scientifiquement:
+
+    - le seuil 8 V~ est coherent avec ZL10 + D2 + Gr;
+    - le calcul RMS -> peak est correct;
+    - la loi de conduction moyenne est explicite;
+    - R31=51 kOhm place le detecteur dans les microamperes;
+    - S7 peut mathematiquement abaisser le seuil en mode compresseur.
+
+Encore ouvert:
+
+    - table exacte S7;
+    - modele exact de Gr B30 C2200;
+    - courbes ZL10/SSD55;
+    - charge dynamique de C11 par B11;
+    - MNA complete des transistors B11;
+    - couplage final B11 -> VCMD -> B6.
+
+Conclusion:
+
+    L'etape 4 renforce fortement l'hypothese physique du schema: la detection
+    B11/S7 est bien dimensionnee autour de 8 V~ pour le mode limiteur. En
+    revanche, elle ne ferme pas encore le comportement temporel complet ni le
+    mode compresseur exact, car ceux-ci dependent de S7 et des etages actifs.
+
+
+10. Prochaine etape rigoureuse
+------------------------------
+
+La suite logique est:
+
+    1. transformer le detecteur parametrique en sous-netlist B11;
+    2. ajouter une charge active equivalente pour Ts1/Ts2/Ts3/Ts4;
+    3. utiliser S6 deja borne comme impedance/fonction de ponderation;
+    4. produire une relation:
+
+           I_B11_out(VCMD, Vrect, etats_B11) + I_B6_in(VCMD, etats_B6) = 0
+
+    5. refaire ensuite le sweep couple B11 + B6.
+
+Sans table S7, cette prochaine etape restera bornee. Avec une image nette de
+S7, elle pourra devenir une simulation quasi complete.

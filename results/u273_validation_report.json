@@ -1,0 +1,26 @@
+{
+  "title": "Siemens U273 full validation report",
+  "status": "PASS_WITH_GUARDED_BOUNDARIES",
+  "boundary": "PASS means the rigorous current chain runs: DC Thevenin reference, AC bridge/command small-signal, and bounded quasi-static transient. It does not mean full active BJT closure.",
+  "generated": {
+    "dc": [
+      "C:\\Users\\user\\Desktop\\Siemens U273\\results\\u273_dc_global.json",
+      "C:\\Users\\user\\Desktop\\Siemens U273\\results\\u273_dc_global_node_voltages.csv"
+    ],
+    "ac": [
+      "C:\\Users\\user\\Desktop\\Siemens U273\\results\\u273_ac_global.json",
+      "C:\\Users\\user\\Desktop\\Siemens U273\\results\\u273_ac_gain_phase.csv"
+    ],
+    "transient": [
+      "C:\\Users\\user\\Desktop\\Siemens U273\\results\\u273_transient_attack_release.json",
+      "C:\\Users\\user\\Desktop\\Siemens U273\\results\\u273_transient_attack_release.csv"
+    ]
+  },
+  "summary": {
+    "dcScenarios": 4,
+    "acRows": 80,
+    "transientRows": 933,
+    "transientCases": 3
+  },
+  "failures": []
+}

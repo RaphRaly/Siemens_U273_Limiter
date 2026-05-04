@@ -1,0 +1,651 @@
+MNA autres noeuds B6 Siemens U273
+=================================
+
+Objet
+-----
+
+Ce document continue l'analyse MNA apres le document :
+
+    MNA Pont B6 Siemens U273 - document final.txt
+
+Le pont de diodes B6 a deja ete formalise separement. Ici on traite les autres noeuds
+principaux de la carte B6 / Signalverstaerker :
+
+    rails 22 V, 12,2 V, 6,4 V
+    etages Ts1/Ts2
+    etages Ts3/Ts4
+    etage de sortie Ts5/Ts6
+
+Principe important :
+
+    Les transistors ne sont pas remplaces par des resistances arbitraires.
+    Tant qu'un modele transistor complet n'est pas choisi, chaque transistor est garde
+    comme un element non lineaire a trois ports avec courants iB, iC, iE.
+
+Ainsi les KCL sont exactes structurellement, mais certaines restent symboliques.
+
+Correction du 2026-05-03, depuis lecture PDF utilisateur :
+
+    R17 = 6,8 kOhm, pas 68 kOhm.
+    R20 = 1,2 kOhm, pas 12 kOhm.
+
+Cette correction change la KCL du noeud N08 = 0,8 V. La branche R16/R17 n'est plus
+une fuite d'environ 11,7 uA; elle tire environ 109,6 a 117,6 uA selon la position de
+R16. R20 tire environ 50 uA si son raccord N08 -> N074 est confirme.
+
+
+1. Noeuds proposes
+------------------
+
+Noeuds d'alimentation :
+
+    V24      = alimentation +24 V externe
+    V22      = rail local apres R38
+    V12      = rail 12,2 V apres R30
+    V64      = rail 6,4 V apres R19
+    0        = masse locale
+
+Noeuds Ts1/Ts2 :
+
+    N38      = noeud imprime 3,8 V
+    N08      = noeud imprime 0,8 V
+    N32      = noeud imprime 3,2 V
+    N64_T2   = noeud imprime 6,4 V autour de Ts2/R21
+
+Noeuds Ts3/Ts4 :
+
+    N24      = noeud imprime 2,4 V
+    N074     = noeud imprime 0,74 V
+    N48      = noeud imprime 4,8 V
+    N18      = noeud imprime 1,8 V
+
+Noeuds sortie Ts5/Ts6 :
+
+    N215     = noeud imprime 21,5 V
+    N105     = noeud imprime 10,5 V, sortie driver avant C21
+    NOUT_AC  = sortie apres C21 vers U2, DC bloque
+
+Les niveaux marques avec `~`, par exemple 100 mV~, 220 mV~, 2,8 V~, sont des niveaux
+AC. Ils ne doivent pas etre utilises comme tensions DC de polarisation.
+
+
+2. Composants inclus
+--------------------
+
+Resistances principales :
+
+    R38 = 68 Ohm
+    R30 = 6,8 kOhm
+    R19 = 30 kOhm
+    R12 = 51 kOhm
+    R15 = 30 kOhm
+    R18 = 68 kOhm
+    R16 = 500 Ohm ajustable
+    R17 = 6,8 kOhm
+    R21 = 10 kOhm
+    R22 = 8,2 kOhm
+    R20 = 1,2 kOhm
+    R25 = 16 kOhm
+    R26 = 220 Ohm
+    R27 = 620 Ohm
+    R31 = 5,6 kOhm
+    R32 = 1 kOhm
+    R28 = 10 kOhm
+    R29 = 20 kOhm ajustable
+    R33 = 20 kOhm
+    R34 = 3,6 kOhm
+    R35 = 820 Ohm
+    R36 = 24 Ohm
+    R37 = 10 Ohm
+
+Condensateurs principaux :
+
+    C8  = 10 uF
+    C9  = 50 uF
+    C10 = 25 uF
+    C11 = 1 nF
+    C12 = 2 nF
+    C13 = 25 uF
+    C14 = 10 uF
+    C15 = 50 uF
+    C16 = 100 uF
+    C17 = 100 uF
+    C18 = 50 uF
+    C19 = 250 uF
+    C20 = 50 uF
+    C21 = 500 uF
+
+Transistors :
+
+    Ts1 = BCY66
+    Ts2 = BCY66
+    Ts3 = SST117/1
+    Ts4 = SST116/1
+    Ts5 = SST117/1
+    Ts6 = SST117/1
+
+
+3. Stamps MNA generiques
+------------------------
+
+Resistance entre a et b :
+
+    i_ab = g*(va - vb)
+    g = 1/R
+
+Condensateur entre a et b, formulation mix/trapezoidale :
+
+    iC_ab[n] = gc*(va[n] - vb[n]) - iceq[n]
+    gc = C/(h*m)
+
+avec mise a jour apres convergence :
+
+    iceq[n+1] = iceq[n] + (1/m)*(gc*vC[n] - iceq[n])
+
+Transistor a trois ports :
+
+    iB = fB(vB, vC, vE)
+    iC = fC(vB, vC, vE)
+    iE = fE(vB, vC, vE)
+
+Conservation interne :
+
+    iB + iC + iE = 0
+
+Dans la MNA Newton, chaque transistor devra fournir une matrice jacobienne locale :
+
+    d(iB,iC,iE) / d(vB,vC,vE)
+
+Tant que ce modele n'est pas choisi, on ecrit les KCL avec iB/iC/iE symboliques.
+
+
+4. Rails d'alimentation B6
+--------------------------
+
+4.1 Noeud V22
+
+Connexions certaines :
+
+    R38 depuis V24 vers V22
+    R30 de V22 vers V12
+    R31 de V22 vers N48
+    R36 de V22 vers N215
+    C19 de V22 vers masse
+
+KCL temporelle :
+
+    0 =
+        g38*(V22 - V24)
+      + g30*(V22 - V12)
+      + g31*(V22 - N48)
+      + g36*(V22 - N215)
+      + iC19(V22, 0)
+
+Verification DC avec tensions imprimees :
+
+    I_R30 = (22 - 12,2)/6,8k = 1,44 mA
+    I_R31 = (22 - 4,8)/5,6k = 3,07 mA
+    I_R36 = (22 - 21,5)/24 = 20,8 mA
+    somme = 25,31 mA
+
+Ce resultat colle avec le courant indique pour la carte audio. Le noeud V22 est donc
+coherent, mais la MNA complete doit garder C19 et les charges actives.
+
+4.2 Noeud V12
+
+Connexions certaines :
+
+    R30 depuis V22
+    R19 vers V64
+    R21 vers N64_T2
+    R25 vers N24
+    C15 vers masse
+
+KCL :
+
+    0 =
+        g30*(V12 - V22)
+      + g19*(V12 - V64)
+      + g21*(V12 - N64_T2)
+      + g25*(V12 - N24)
+      + iC15(V12, 0)
+
+Verification DC :
+
+    I_R30 = 1,44 mA
+    I_R19 = (12,2 - 6,4)/30k = 193 uA
+    I_R21 = (12,2 - 6,4)/10k = 580 uA
+    I_R25 = (12,2 - 2,4)/16k = 613 uA
+
+Somme sortante :
+
+    193 + 580 + 613 = 1386 uA
+
+C'est proche de 1,44 mA. L'ecart est compatible avec arrondis, courants de base et
+branches non comptees.
+
+4.3 Noeud V64
+
+Connexions certaines :
+
+    R19 depuis V12
+    R12 vers zone Ts1
+    R15 vers N38
+    C10 vers masse
+
+KCL :
+
+    0 =
+        g19*(V64 - V12)
+      + g12*(V64 - N_R12_LOW)
+      + g15*(V64 - N38)
+      + iC10(V64, 0)
+
+Si N_R12_LOW est proche de 1,0 V, alors :
+
+    I_R12 = (6,4 - 1,0)/51k = 106 uA
+
+Avec :
+
+    I_R19 = 193 uA
+    I_R15 = (6,4 - 3,8)/30k = 86,7 uA
+
+KCL :
+
+    193 uA ~= 86,7 uA + 106 uA
+
+Le rail 6,4 V est coherent.
+
+
+5. Noeuds Ts1/Ts2
+-----------------
+
+5.1 Noeud N38
+
+Connexions certaines :
+
+    R15 depuis V64
+    R18 vers N08
+    port transistor Ts1/Ts2
+
+KCL :
+
+    0 =
+        g15*(N38 - V64)
+      + g18*(N38 - N08)
+      + I_Ts12_N38
+
+Verification DC :
+
+    I_R15 = (6,4 - 3,8)/30k = 86,7 uA
+    I_R18 = (3,8 - 0,8)/68k = 44,1 uA
+
+Courant restant vers transistor/reseau :
+
+    I_Ts12_N38 ~= 42,6 uA
+
+5.2 Noeud N08
+
+Connexions certaines :
+
+    R18 depuis N38
+    R16/R17 vers masse
+    C8/C11 ouverts en DC
+    port Ts1
+
+KCL :
+
+    0 =
+        g18*(N08 - N38)
+      + g16_17*N08
+      + iC8(...)
+      + iC11(...)
+      + I_Ts1_N08
+
+Approximation DC corrigee si R16+R17 = 7,3k avec R16 au maximum :
+
+    I_R16_R17 = 0,8/7,3k = 109,6 uA
+
+Si R16 est au minimum :
+
+    I_R17 = 0,8/6,8k = 117,6 uA
+
+    I_R18 = 44,1 uA
+
+Donc, sans R20, N08 demande deja une injection active :
+
+    I_actif_N08 = I_R16_R17 - I_R18
+                = 65,5 a 73,5 uA
+
+Si R20 relie N08 = 0,8 V a N074 = 0,74 V :
+
+    I_R20 = (0,8 - 0,74)/1,2k = 50,0 uA
+
+Alors :
+
+    I_actif_N08 = I_R16_R17 + I_R20 - I_R18
+                = 115,5 a 123,5 uA
+
+Conclusion corrigee :
+
+    L'ancien bilan qui donnait environ 32 uA "restants" etait faux parce que R17 et
+    R20 etaient lus dix fois trop grands. Le noeud N08 n'est pas une fuite faible; il
+    doit etre ferme par une branche active Ts1/Ts2 ou par une connexion encore a
+    identifier.
+
+5.3 Noeud N32
+
+Connexions certaines :
+
+    R22 vers masse
+    C13 vers masse
+    emetteur probable Ts2
+
+KCL :
+
+    0 =
+        g22*N32
+      + iC13(N32, 0)
+      + I_Ts2_N32
+
+Verification DC :
+
+    I_R22 = 3,2/8,2k = 390 uA
+
+Si N38 est la base Ts2 :
+
+    VBE_Ts2 = 3,8 - 3,2 = 0,6 V
+
+Coherent pour transistor silicium.
+
+5.4 Noeud N64_T2
+
+Connexions certaines :
+
+    R21 depuis V12
+    collecteur/charge Ts2
+    liaison vers reseau Ts3
+
+KCL :
+
+    0 =
+        g21*(N64_T2 - V12)
+      + I_Ts2_N64
+      + I_reseau_Ts3
+
+Verification DC :
+
+    I_R21 = (12,2 - 6,4)/10k = 580 uA
+
+Ce courant est du bon ordre, mais la KCL complete demande Ts2 + Ts3.
+
+
+6. Noeuds Ts3/Ts4
+-----------------
+
+6.1 Noeud N24
+
+Connexions certaines :
+
+    R25 depuis V12
+    base/port Ts4
+    reseau Ts3
+
+KCL :
+
+    0 =
+        g25*(N24 - V12)
+      + I_Ts3_N24
+      + I_Ts4_base
+      + I_autres
+
+Verification DC :
+
+    I_R25 = (12,2 - 2,4)/16k = 0,613 mA
+
+6.2 Noeud N074
+
+Connexions probables :
+
+    R26 + R27 vers masse
+    R20 vers N08 ou noeud voisin
+    port Ts3
+    C16/C12 ouverts en DC
+
+KCL simplifiee :
+
+    0 =
+        g26_27*N074
+      + g20*(N074 - N08)
+      + I_Ts3_N074
+      + iC12(...)
+      + iC16(...)
+
+Verification DC avec R26+R27 = 840 Ohm :
+
+    I_R26_R27 = 0,74/840 = 0,881 mA
+
+Si R20 relie N08 = 0,8 V a N074 = 0,74 V :
+
+    I_R20 = (0,8 - 0,74)/1,2k = 50 uA
+
+Le courant de branche principal reste environ 0,88 mA, mais R20 n'est plus
+negligeable devant les courants de polarisation de Ts1/Ts2.
+
+6.3 Noeud N48
+
+Connexions certaines :
+
+    R31 depuis V22
+    port Ts4
+    reseaux R28/R29/C17 a confirmer
+
+KCL :
+
+    0 =
+        g31*(N48 - V22)
+      + I_Ts4_C
+      + I_R28_R29
+      + iC17(...)
+
+Verification DC :
+
+    I_R31 = (22 - 4,8)/5,6k = 3,07 mA
+
+6.4 Noeud N18
+
+Connexions certaines :
+
+    R32 vers masse
+    C18 vers masse
+    emetteur probable Ts4
+
+KCL :
+
+    0 =
+        g32*N18
+      + iC18(N18, 0)
+      + I_Ts4_E
+
+Verification DC :
+
+    I_R32 = 1,8/1k = 1,8 mA
+
+Cohérence transistor :
+
+    VBE_Ts4 = 2,4 - 1,8 = 0,6 V
+    VCE_Ts4 = 4,8 - 1,8 = 3,0 V
+
+La polarisation Ts4 est credible.
+
+
+7. Noeuds Ts5/Ts6 sortie
+------------------------
+
+7.1 Noeud N215
+
+Connexions certaines :
+
+    R36 depuis V22
+    Ts5
+    R33/C20 selon topologie exacte
+
+KCL :
+
+    0 =
+        g36*(N215 - V22)
+      + I_Ts5_N215
+      + I_R33
+      + iC20(...)
+
+Verification DC :
+
+    I_R36 = (22 - 21,5)/24 = 20,8 mA
+
+C'est le courant dominant de l'etage de sortie.
+
+7.2 Noeud N105
+
+Connexions certaines :
+
+    Ts5
+    Ts6
+    R34
+    C21 vers U2, ouvert en DC
+
+KCL :
+
+    0 =
+        I_Ts5_N105
+      + I_Ts6_N105
+      + g34*(N105 - N_R34_OTHER)
+      + iC21(N105, NOUT_AC)
+
+En DC :
+
+    iC21 = 0
+
+Donc U2 ne charge pas le noeud N105 en continu.
+
+Verification de point de repos :
+
+    N105 = 10,5 V
+    N215 = 21,5 V
+    N215/2 = 10,75 V
+
+Le point de sortie est quasiment a mi-alimentation. C'est coherent pour maximiser la
+marge de signal.
+
+7.3 R37 et niveau 220 mV~
+
+Le marquage 220 mV~ pres de R37 est AC, pas DC.
+
+Il ne faut pas calculer :
+
+    I_DC = 220 mV / 10 Ohm
+
+Ce serait une erreur de regime.
+
+
+8. Ce qui devient implementable
+-------------------------------
+
+Ce document donne les KCL nodales pour B6 hors pont, mais il reste deux niveaux :
+
+Niveau 1, validation DC :
+
+    utiliser les tensions imprimees ;
+    calculer les courants resistifs ;
+    verifier les VBE/VCE plausibles ;
+    garder les courants transistor symboliques.
+
+Niveau 2, solveur complet :
+
+    choisir un modele transistor ;
+    remplacer I_Ts par des fonctions non lineaires ;
+    lineariser ces fonctions par Newton ;
+    assembler les jacobiennes dans la MNA globale.
+
+
+9. Modele transistor a choisir
+------------------------------
+
+Pour continuer scientifiquement, il faut choisir entre :
+
+    modele petit signal local autour des tensions imprimees
+    modele Ebers-Moll simplifie
+    modele Gummel-Poon simplifie
+    modele empirique calibre par mesure
+
+Pour une premiere simulation audio stable, je recommande :
+
+    1. commencer par le pont B6 seul ;
+    2. ajouter une admittance d'entree pour Ts1 ;
+    3. modeliser B6 audio comme gain lineaire A_audio(s) ;
+    4. seulement ensuite remplacer les etages Ts1-Ts6 par transistors non lineaires.
+
+Cela evite de confondre erreurs de netlist, erreurs de transistor et erreurs du pont.
+
+
+10. Conclusion
+--------------
+
+Les autres noeuds B6 sont coherents en DC :
+
+    V22, V12, V64 forment des rails plausibles ;
+    Ts1/Ts2 montrent des courants de quelques dizaines a centaines de uA ;
+    Ts3/Ts4 montrent des VBE proches de 0,6 V ;
+    Ts5/Ts6 ont un point de repos proche de mi-alimentation.
+
+Mais la MNA complete ne doit pas fermer ces noeuds avec seulement les resistances.
+Les transistors doivent rester comme elements non lineaires jusqu'a choix explicite du
+modele.
+
+Prochaine etape logique :
+
+    faire le meme travail pour B11 / Regelverstaerker :
+    rails, Ts1-Ts6, ZL10/SSD55, redresseur B30 C2200 et reseau S6/S7.
+
+
+11. Revision 2026-05-03: integration transistor B6 gardee
+---------------------------------------------------------
+
+Le fichier suivant formalise maintenant l'integration transistor au niveau
+scientifiquement justifiable:
+
+    solver/b6_active_hybrid_pi_inventory.js
+
+Resultats:
+
+    results/b6_active_hybrid_pi_inventory.json
+    results/b6_active_passive_kcl.csv
+    results/b6_active_hybrid_pi_candidates.csv
+    results/b6_output_stage_bounds.csv
+
+Ce qui est ferme:
+
+    Ts2 candidat:
+        N38 = base probable
+        N32 = emetteur probable
+        VBE = 0,600 V
+        IE ~= I_R22 = 390,2 uA
+
+    Ts4 candidat:
+        N24 = base probable
+        N18 = emetteur probable
+        N48 = collecteur probable
+        VBE = 0,600 V
+        VCE = 3,000 V
+        IE ~= I_R32 = 1,8 mA
+
+    Ts5/Ts6:
+        N215 = 21,5 V
+        N105 = 10,5 V
+        I_R36 = 20,833 mA
+
+Ce qui reste volontairement garde:
+
+    Ts1, Ts3, Ts5 et Ts6 ne sont pas encore estampilles comme transistors connectes
+    dans la MNA complete, car leurs routes locales ne sont pas toutes prouvees. Le
+    modele hybrid-pi existe, mais il ne doit etre connecte que lorsque B/C/E et les
+    composants de compensation voisins sont confirmes.

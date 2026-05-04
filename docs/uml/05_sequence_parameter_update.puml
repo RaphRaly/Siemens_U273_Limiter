@@ -1,0 +1,35 @@
+@startuml
+title Siemens U273 Plugin - Parameter Update Sequence
+
+actor "User / DAW Automation" as User
+participant "PluginEditor" as Editor
+participant "JUCE APVTS" as APVTS
+participant "ParameterBridge" as Bridge
+participant "Snapshot Backing Store" as Store
+participant "PluginProcessor" as Processor
+participant "U273DspEngine" as DSP
+
+User -> Editor : move control / automate parameter
+Editor -> APVTS : set normalized value
+APVTS -> Bridge : parameter changed
+Bridge -> Bridge : map normalized -> physical\nvalidate, clamp, precompute
+Bridge -> Store : publish complete snapshot\natomic index / safe swap
+
+... later on audio callback ...
+
+Processor -> Bridge : readSnapshot()
+Bridge -> Store : load current snapshot
+Store --> Bridge : immutable snapshot
+Bridge --> Processor : ParameterSnapshot
+Processor -> DSP : process(buffer, snapshot)
+
+note right of Bridge
+Precompute outside processBlock:
+- coefficients
+- mode selection
+- table references
+- validation
+end note
+
+@enduml
+

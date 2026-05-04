@@ -1,0 +1,503 @@
+Etape 35 - Recherche approfondie processus Cytomic U273
+=======================================================
+
+Date: 2026-05-04
+Objet: enrichir l'Etape 34 avec une recherche pratique et scientifique sur
+       les manques restants pour aligner le projet U273 avec le processus
+       Cytomic "circuit -> equations -> discretisation -> code".
+
+
+0. Conclusion courte
+--------------------
+
+Le plan U273 est dans la bonne famille scientifique:
+
+    white-box + MNA/state-space + solveurs implicites + validation audio.
+
+Mais il faut corriger quatre faiblesses avant d'attaquer le moteur final:
+
+    1. integrateurs:
+        ajouter implicit midpoint et TR-BDF2, pas seulement BE/TR.
+
+    2. reduction realtime:
+        le realtime doit etre genere depuis la reference offline calibree.
+
+    3. anti-aliasing:
+        mesurer et controler l'aliasing, pas seulement la THD harmonique.
+
+    4. automation:
+        passer de "loader netlist" a "model compiler" avec sorties reference,
+        reduction et rapports de validation.
+
+
+1. References primaires retenues
+--------------------------------
+
+1. Cytomic / Andrew Simper, "From Circuit To Code", ADC 2020.
+   Point utilise:
+       processus white-box, nodal/MNA, integrateurs implicites,
+       pre-computation, aliasing, code generation, niveaux de detail.
+   URL:
+       https://cytomic.com/technical-papers/
+
+2. Nagel & Pederson, SPICE, UCB/ERL M382, 1973.
+   Point utilise:
+       sequence scientifique classique:
+       nonlinear DC -> small signal -> nonlinear transient.
+   URL:
+       https://www2.eecs.berkeley.edu/Pubs/TechRpts/1973/22871.html
+
+3. TU Delft, Modified Nodal Analysis.
+   Point utilise:
+       MNA accepte les elements voltage-controlled et current-controlled en
+       ajoutant les courants inconnus aux tensions nodales.
+   URL:
+       https://analog-electronics.tudelft.nl/webbook/SED/_build/html/network_theory/NetworkTheory-1_Modified_Nodal_Analysis.html
+
+4. Yeh, Abel, Smith, IEEE TASLP 2010.
+   Point utilise:
+       derivation procedurale depuis schematics/netlists vers filtres
+       non-lineaires temps reel; algorithmes pour circuits fortement satures.
+   DOI:
+       https://doi.org/10.1109/TASL.2009.2033978
+
+5. Dempwolf, Holters, Zoelzer, DAFx-10.
+   Point utilise:
+       state-space pour circuits parametriques, recalcul de coefficients,
+       comparaison reference et cout realtime.
+   URL:
+       https://dafx10.iem.at/proceedings/papers/DempwolfHoltersZoelzer_DAFx10_P7.pdf
+
+6. Holters & Zoelzer, EUSIPCO 2015.
+   Point utilise:
+       derivation generale de modeles state-space non-lineaires depuis
+       schematics; separation linear/nonlinear; element equations + KCL/KVL.
+   URL:
+       https://www.hsu-hh.de/ant/wp-content/uploads/sites/699/2017/10/Holters-Z%C3%B6lzer-2015-A-Generalized-Method-for-the-Derivation-of-Non-linear-State-space-Models-from-Circuit-Schematics.pdf
+
+7. Germain, DAFx-17.
+   Point utilise:
+       comparaison trapezoidal / implicit midpoint pour systemes audio
+       lumped; les deux sont A-stable et second ordre, mais divergent pour
+       les non-linearites.
+   URL:
+       https://www.dafx17.eca.ed.ac.uk/papers/DAFx17_paper_90.pdf
+
+8. Hosea & Shampine, Applied Numerical Mathematics 1996.
+   Point utilise:
+       TR-BDF2, methode issue du contexte circuits/semiconducteurs,
+       trapezoidal + BDF2, one-step, L-stable / strongly S-stable.
+   URL:
+       https://pages.mtu.edu/~struther/Courses/OLD/Other/LessOld/5628_11/TRBDF2_Hosea_AppNumMath_20_pp21-37_1996.pdf
+
+9. Parker, Zavalishin, Le Bivic, DAFx-16.
+   Point utilise:
+       les non-linearites creent des harmoniques au-dessus de Nyquist;
+       l'oversampling aide, et la convolution continue reduit l'aliasing.
+   URL:
+       https://www.dafx.de/paper-archive/2016/dafxpapers/20-DAFx-16_paper_41-PN.pdf
+
+10. Holters, DAFx-19.
+    Point utilise:
+        antiderivative antialiasing et extension aux systemes stateful.
+    URL:
+        https://www.dafx.de/paper-archive/2019/DAFx2019_paper_4.pdf
+
+11. Holters & Zoelzer, EUSIPCO 2016.
+    Point utilise:
+        solution cache par k-d tree pour accelerer Newton sans table MIMO
+        exponentielle.
+    DOI:
+        https://doi.org/10.1109/EUSIPCO.2016.7760404
+
+
+2. Integrateurs: plan corrige
+-----------------------------
+
+2.1 Ce qu'on a
+
+Le C++ actuel sait faire:
+
+    - Backward Euler;
+    - trapezoidal;
+    - Newton sur le systeme non-lineaire.
+
+C'est un bon socle, mais insuffisant pour un plan Cytomic complet.
+
+
+2.2 Ce qu'il faut ajouter
+
+Ajouter une interface:
+
+    enum class IntegrationMethod {
+        backwardEuler,
+        trapezoidal,
+        implicitMidpoint,
+        trBdf2
+    };
+
+Regle scientifique:
+
+    - Backward Euler:
+        robustesse, demarrage, fallback si Newton a du mal.
+        Il est dissipatif; ne pas l'utiliser comme seule reference audio.
+
+    - Trapezoidal:
+        compatible Cytomic/SPICE, second ordre, bon pour filtres.
+        Risque de "ringing" numerique sur modes raides.
+
+    - Implicit midpoint:
+        meme mapping lineaire que trapezoidal sur systemes lineaires, mais
+        erreur non-lineaire differente. A tester sur diode bridge B6.
+
+    - TR-BDF2:
+        reference offline pour raideur BJT/diodes/capacites.
+        Plus dissipatif que trapezoidal sur les modes rapides, mais stable.
+
+
+2.3 Ordre d'utilisation U273
+
+Pour chaque scenario DC/transient:
+
+    1. chercher operating point avec Backward Euler pseudo-transient;
+    2. confirmer avec trapezoidal;
+    3. comparer implicit midpoint vs trapezoidal sur B6 non-lineaire;
+    4. utiliser TR-BDF2 comme reference raide si BJT actifs creent des
+       oscillations numeriques ou des residus lents.
+
+Gate:
+
+    aucun resultat audio ne peut etre considere valide si les methodes
+    trapezoidal, midpoint et TR-BDF2 divergent au-dela d'une tolerance
+    expliquee physiquement.
+
+
+3. Formulation state-space depuis MNA
+-------------------------------------
+
+3.1 Forme cible
+
+Pour le sous-modele non-lineaire discret, viser la forme:
+
+    x[n] = A*x[n-1] + B*u[n] + C*i[n]
+    y[n] = D*x[n-1] + E*u[n] + F*i[n]
+    v[n] = G*x[n-1] + H*u[n] + K*i[n]
+    i[n] = f(v[n], p)
+
+avec:
+
+    x = etats capacites utiles;
+    u = entree audio / commande / modes;
+    i = courants non-lineaires diodes/BJT;
+    v = tensions aux elements non-lineaires;
+    p = parametres calibres.
+
+Cette forme est importante parce qu'elle separe:
+
+    - matrices lineaires precomputables;
+    - petite equation non-lineaire runtime;
+    - etats physiques inspectables.
+
+
+3.2 Decision pour U273
+
+Ne pas tenter de compiler tout le U273 complet en realtime Newton global.
+
+Faire deux niveaux:
+
+    ReferenceModel:
+        MNA/DAE complet B6/B11, lent mais rigoureux.
+
+    RealtimeReducedModel:
+        sous-espace minimal:
+            B6 bridge command;
+            detector envelope;
+            gain reduction;
+            correction audio THD/bande.
+
+Le transformateur reste boundary separee, conformement a la decision de sprint.
+
+
+4. Precompute, cache et reduction
+---------------------------------
+
+4.1 Probleme
+
+Une table globale MIMO explose:
+
+    taille ~= S^(nombre de parametres + non-linearites)
+
+Cytomic le signale dans les slides. Les papiers state-space/solution-cache le
+confirment.
+
+
+4.2 Solution pratique U273
+
+Ne pas faire:
+
+    table globale:
+        audio level x CMD x attack x release x drive x mode x S6 x S7
+
+Faire:
+
+    - reduction dimensionnelle;
+    - tables locales;
+    - interpolation monotone;
+    - Newton offline;
+    - cache de solutions pour accelerer calibration/offline;
+    - realtime sans Newton global.
+
+
+4.3 Modules proposes
+
+    ActiveReferenceModel
+        solve B6/B11 avec MNA.
+
+    SolutionCache
+        k-d tree ou grille adaptative offline;
+        warm-start Newton;
+        jamais source de verite.
+
+    ReductionBuilder
+        echantillonne la reference offline;
+        construit tables/reduction;
+        verifie monotonicite et smoothness.
+
+    RealtimeReduction
+        command/envelope -> gain reduction;
+        correction de niveau/bande/THD;
+        bornes physiques;
+        pas de dependance a allocation memoire.
+
+
+4.4 Regle anti-surfit
+
+Une table realtime n'est pas valide parce qu'elle "sonne bien".
+Elle est valide seulement si:
+
+    - elle reproduit la reference offline;
+    - elle garde les derivees bornees;
+    - elle respecte les specs Siemens;
+    - elle ne cache pas une topologie BJT non fermee.
+
+
+5. Aliasing et smoothness
+-------------------------
+
+5.1 Ce que dit la recherche
+
+Les non-linearites creent des harmoniques au-dessus de Nyquist.
+Ces harmoniques se replient et deviennent de l'aliasing. L'oversampling est le
+baseline, mais pas toujours suffisant ou economique. Les methodes par
+antiderivative / continuous-time convolution reduisent l'aliasing, et Holters
+etend l'idee a certains systemes avec etat.
+
+
+5.2 Decision U273
+
+Le U273 n'est pas un hard clipper moderne, mais il a:
+
+    - pont de diodes non-lineaire;
+    - BJT actifs;
+    - gain reduction time-varying;
+    - possible modulation audio de conductance.
+
+Donc il faut tester aliasing, meme si la THD Siemens est faible.
+
+
+5.3 Tests obligatoires
+
+Ajouter un AliasingValidationSuite:
+
+    1. sine fort niveau:
+        40 Hz, 1 kHz, 5 kHz, 10 kHz, 15 kHz.
+
+    2. multitone:
+        tons non harmoniques dans 40 Hz..15 kHz.
+
+    3. swept sine:
+        20 Hz..22 kHz, niveau faible et fort.
+
+    4. step + burst:
+        excite attaque/release et kinks de tables.
+
+    5. comparaison:
+        realtime 1x/2x/4x/8x contre offline 16x ou reference TR-BDF2.
+
+Metrics:
+
+    - THD;
+    - THD+N;
+    - alias energy ratio;
+    - erreur magnitude/phase;
+    - erreur de gain reduction;
+    - max derivative jump dans les tables.
+
+
+5.4 Smoothness des reductions
+
+Chaque table/reduction doit passer:
+
+    - C0 continuity:
+        pas de saut de valeur.
+
+    - C1 practical continuity:
+        derivee gauche/droite proche aux cellules.
+
+    - monotonicite:
+        plus de commande ne doit pas donner moins de reduction sauf region
+        explicitement justifiee par la physique.
+
+    - bornes:
+        courant diode dans domaine Siemens ou warning;
+        pas de NaN;
+        pas d'inf;
+        pas de clamp brutal audible.
+
+Interpolation recommandee:
+
+    - domaine log pour courants et resistances dynamiques;
+    - monotone cubic / Hermite borne pour tables 1D;
+    - bilinear/bicubic seulement si smoothness testee pour tables 2D;
+    - jamais de spline oscillante non contrainte sur gain reduction.
+
+
+6. Automation: du loader au model compiler
+------------------------------------------
+
+6.1 Etat actuel
+
+On a:
+
+    u273_netlist.json -> U273NetlistLoader -> CircuitGraph.
+
+C'est bien, mais c'est seulement un loader.
+
+
+6.2 Cible Cytomic-compatible
+
+Ajouter un ModelCompiler:
+
+    input:
+        CircuitGraph + CalibrationParameters + IntegrationMethod
+
+    outputs:
+        ReferenceExecutableGraph
+        OperatingPointProblem
+        AcLinearizationProblem
+        TransientProblem
+        ReductionTrainingSet
+        CppRealtimeReductionTables
+        ValidationReport
+
+
+6.3 Pourquoi
+
+La generation reduit les erreurs quand:
+
+    - on change un composant;
+    - on change une topologie BJT candidate;
+    - on change un integrateur;
+    - on regenere des tables HD/MD/SD.
+
+Sans compiler, on risque d'avoir:
+
+    - reference C++ differente du DSP;
+    - tests qui valident un chemin obsolete;
+    - fit realtime independant du circuit.
+
+
+7. Niveaux de detail
+--------------------
+
+Le projet doit declarer des niveaux, pas melanger qualite et vitesse.
+
+UHD:
+
+    - offline seulement;
+    - MNA/DAE B6/B11 complet;
+    - TR-BDF2/implicit midpoint/trapezoidal comparables;
+    - Newton robuste;
+    - output: golden reference.
+
+HD:
+
+    - plugin haute qualite;
+    - oversampling 4x ou 8x selon CPU;
+    - reduction fine generee depuis UHD;
+    - aliasing gate strict.
+
+MD:
+
+    - plugin par defaut;
+    - 2x ou 4x selon cout;
+    - tables reduites;
+    - erreur offline bornee.
+
+SD:
+
+    - low CPU;
+    - boundary explicitement degradee;
+    - pas de promesse "full analog";
+    - utile pour tracking ou vieux CPU.
+
+
+8. Plan theorique final a appliquer
+-----------------------------------
+
+Phase 1 - Integrateurs et solveurs
+
+    - Ajouter implicit midpoint.
+    - Ajouter TR-BDF2 offline.
+    - Ajouter comparaison BE/TR/Midpoint/TRBDF2 sur fixtures RC/diode/BJT.
+
+Phase 2 - Reference B6/B11
+
+    - DCCircuitView capacites ouvertes.
+    - OperatingPointSolver avec damping/gmin/source stepping.
+    - AC linearization autour du DC.
+    - TransientReferenceSolver multi-integrateur.
+
+Phase 3 - Calibration
+
+    - Parametres bornes.
+    - Priors physiques.
+    - Train/validation split.
+    - Sensibilites et identifiability.
+    - Rejet des topologies BJT non identifiables.
+
+Phase 4 - Reduction
+
+    - ReductionBuilder.
+    - SolutionCache offline.
+    - Tables monotones.
+    - Smoothness gate.
+    - Export C++ realtime.
+
+Phase 5 - Audio/Cytomic compliance
+
+    - Oversampling suite.
+    - Aliasing suite.
+    - Comparaison offline 16x vs realtime levels.
+    - Detail levels UHD/HD/MD/SD.
+    - Rapport final avec boundary.
+
+
+9. Critere de passage
+---------------------
+
+On pourra dire que le projet respecte vraiment le processus Cytomic si:
+
+    - le circuit/netlist reste source de verite;
+    - tous les modeles viennent du meme ModelCompiler;
+    - le point DC passe avant AC/transient/audio;
+    - les integrateurs implicites sont compares;
+    - la reduction realtime est derivee de la reference offline;
+    - l'aliasing est mesure;
+    - les tables sont smooth;
+    - les niveaux de detail sont explicites;
+    - la boundary n'est promue qu'apres tests.
+
+Tant que ces points ne passent pas:
+
+    FULL_ACTIVE_MODEL_UNVERIFIED reste la boundary correcte.

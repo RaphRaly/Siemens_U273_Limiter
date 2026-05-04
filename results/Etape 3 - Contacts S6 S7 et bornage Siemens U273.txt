@@ -1,0 +1,279 @@
+Etape 3 - Contacts S6/S7 et bornage scientifique
+=================================================
+
+Date: 2026-05-01
+
+Objectif
+--------
+
+L'etape 2 a donne une premiere impedance de commande fondee sur le coeur passif
+S6. La suite logique etait d'extraire la table exacte des contacts S6/S7.
+
+Cette etape documente l'extraction visuelle, les limites de resolution, puis un
+bornage numerique avec les resistances visibles autour de S6:
+
+    R1 = 3 kOhm
+    R2 = 5,1 kOhm
+
+Principe:
+
+    On ne ferme pas une table de contacts si le schema disponible ne permet pas
+    de lire les positions sans ambiguite.
+
+
+1. Nouvelles images de controle
+-------------------------------
+
+Crops generes dans:
+
+    siemens_u273_check/analysis_crops
+
+Fichiers utiles:
+
+    sidechain_s6_full_x4.png
+    sidechain_s6_contacts_left_x5.png
+    sidechain_s6_contacts_right_s7_x5.png
+    sidechain_s7_only_x5.png
+    regulator_s6_s7_full_x4.png
+    regulator_s6_contacts_x5.png
+    regulator_s7_right_x5.png
+
+Observation:
+
+    Les valeurs R/C du reseau S6 sont visibles. Les pastilles/contacteurs sont
+    visibles. Les petits numeros de contacts et la correspondance mecanique
+    position -> branches ne sont pas suffisamment lisibles pour fermer la table.
+
+
+2. Ce qui est lisible et ferme
+------------------------------
+
+Le coeur passif S6 reste confirme comme reseau R/C a trois noeuds:
+
+    VL = cote gauche du reseau
+    VM = noeud central
+    VR = cote droit / sortie de reseau
+    0  = masse locale
+
+Branches confirmees:
+
+    LM : R4 = 7,5 kOhm en parallele avec C2 = 5 nF
+         entre VL et VM
+
+    MR : R3 = 7,5 kOhm en parallele avec C1 = 5 nF
+         entre VM et VR
+
+    LR : R5 = 15 kOhm en parallele avec C3 = 3,3 nF
+         entre VL et VR
+
+    M0 : R6 = 3,9 kOhm en serie avec C4 = 3 nF
+         entre VM et masse
+
+Les resistances R1/R2 sont aussi visibles dans la zone S6:
+
+    R1 = 3 kOhm
+    R2 = 5,1 kOhm
+
+mais leur etat exact selon les contacts n'est pas ferme.
+
+Statut:
+
+    Valeurs et branches R/C: FERME.
+    Table positionnelle des contacts: OUVERT.
+
+
+3. Ce qui reste illisible
+-------------------------
+
+S6:
+
+    Les crops montrent des contacteurs/pastilles, mais pas une table sure:
+
+        position 1 -> branches actives ?
+        position 2 -> branches actives ?
+        position 3 -> branches actives ?
+
+    Les numeros ou reperes proches des contacts sont trop pixelises pour assigner
+    chaque branche sans risque.
+
+S7:
+
+    La fonction generale est confirmee:
+
+        limiteur / compresseur
+
+    Mais la table de contacts n'est pas fermeable depuis les crops:
+
+        mode limiteur -> contacts exacts ?
+        mode compresseur -> contacts exacts ?
+        zener ZL10 incluse, contournee, ou modifiee par quelle branche ?
+
+Statut:
+
+    S6 table exacte: OUVERT.
+    S7 table exacte: OUVERT.
+
+
+4. Methode de bornage R1/R2
+---------------------------
+
+Comme R1/R2 sont visibles mais leur commutation exacte ne l'est pas, on calcule
+des bornes simples. On applique R1/R2 comme charges possibles au noeud VR:
+
+    r1r2_open:
+        aucune charge R1/R2
+
+    r1_3k:
+        R1 = 3 kOhm vers masse
+
+    r2_5k1:
+        R2 = 5,1 kOhm vers masse
+
+    r1_r2_series_8k1:
+        R1 + R2 = 8,1 kOhm vers masse
+
+    r1_r2_parallel_1k889:
+        R1 || R2 = 1,889 kOhm vers masse
+
+Important:
+
+    Ce n'est pas une table de contacts officielle. C'est un bornage electrique
+    pour savoir si l'incertitude R1/R2 peut casser les conclusions precedentes.
+
+
+5. Fichiers ajoutes
+-------------------
+
+Script:
+
+    solver/b11_s6_contact_bound_sweep.js
+
+Resultats:
+
+    results/b11_s6_contact_bound_sweep.json
+    results/b11_s6_contact_bound_sweep.csv
+
+Le script combine:
+
+    - les quatre hypotheses de branches S6 deja definies;
+    - les cinq hypotheses de charge R1/R2;
+    - l'extraction de Zout;
+    - le recouplage au pont B6 parametrique.
+
+
+6. Resultats a 1 kHz, VCMD = 0 V
+--------------------------------
+
+Plage selon les quatre hypotheses de branches S6:
+
+    charge R1/R2              Zout S6 a 1 kHz          B6 |VNA| a 1 kHz
+    ------------------------- ------------------------ ----------------
+    r1r2_open                 7,14..14,60 kOhm         -16,27..-14,42 dB
+    r1_3k                     2,13..2,50 kOhm          -17,75..-17,61 dB
+    r2_5k1                    3,01..3,80 kOhm          -17,45..-17,17 dB
+    r1_r2_series_8k1          3,84..5,24 kOhm          -17,18..-16,71 dB
+    r1_r2_parallel_1k889      1,50..1,68 kOhm          -17,97..-17,90 dB
+
+Interpretation:
+
+    Si R1/R2 chargent VR, l'impedance de sortie chute nettement.
+    Le pont B6 se rapproche alors du cas commande basse impedance.
+
+Point important:
+
+    Meme le cas ouvert reste dans la zone -16 a -14 dB a 1 kHz, pas dans la zone
+    "VCMD ouvert complet" de l'etape 1 qui donnait environ -0,78 dB.
+
+
+7. Resultats a 20 kHz, VCMD = 0 V
+---------------------------------
+
+Plage selon les quatre hypotheses de branches S6:
+
+    charge R1/R2              Zout S6 a 20 kHz         B6 |VNA| a 20 kHz
+    ------------------------- ------------------------ ----------------
+    r1r2_open                 1,29..3,11 kOhm          -2,81..-2,74 dB
+    r1_3k                     1,10..1,97 kOhm          -2,68..-2,59 dB
+    r2_5k1                    1,19..2,44 kOhm          -2,71..-2,63 dB
+    r1_r2_series_8k1          1,23..2,72 kOhm          -2,72..-2,67 dB
+    r1_r2_parallel_1k889      0,97..1,48 kOhm          -2,65..-2,58 dB
+
+Interpretation:
+
+    A 20 kHz, le coeur S6 est deja assez capacitif. Les variantes R1/R2 changent
+    l'impedance mais le gain B6 bouge peu dans ces bornes.
+
+
+8. Resultats a 1 kHz, VCMD = 3 V
+--------------------------------
+
+Plage B6 |VNA| selon les charges R1/R2:
+
+    r1r2_open                 -39,37..-39,25 dB
+    r1_3k                     -39,49..-39,48 dB
+    r2_5k1                    -39,46..-39,44 dB
+    r1_r2_series_8k1          -39,44..-39,41 dB
+    r1_r2_parallel_1k889      -39,51..-39,50 dB
+
+Interpretation:
+
+    A forte commande, le pont est domine par la conductance dynamique des diodes.
+    La table S6/R1/R2 influence peu le gain local B6 dans ce test.
+
+
+9. Decision scientifique
+------------------------
+
+Ce qui peut etre ferme:
+
+    - les branches R/C du coeur S6;
+    - les valeurs R1 = 3 kOhm et R2 = 5,1 kOhm;
+    - le fait que R1/R2 peuvent fortement baisser Zout s'ils chargent VR;
+    - le fait que les bornes restent compatibles avec une commande basse
+      impedance vue par B6.
+
+Ce qui ne peut pas etre ferme avec les sources actuelles:
+
+    - la table exacte des positions S6;
+    - la table exacte limiteur/compresseur de S7;
+    - le routage exact de R1/R2 position par position;
+    - l'etat "standard livraison" autrement que comme note fonctionnelle.
+
+Conclusion:
+
+    L'etape 3 ne ferme pas la table S6/S7. C'est une conclusion negative mais
+    importante: les crops disponibles ne donnent pas assez de resolution pour
+    assigner les contacts sans inventer.
+
+    En revanche, l'etape 3 ferme une plage numerique utile. Dans les cas testes,
+    le B6 a faible commande reste proche d'une commande basse impedance:
+
+        environ -18,0 dB a -14,4 dB a 1 kHz selon R1/R2 et branches S6
+
+    Cela reduit beaucoup l'incertitude par rapport a l'ancienne alternative
+    "commande ouverte".
+
+
+10. Prochaine etape
+-------------------
+
+Deux chemins sont maintenant possibles.
+
+Chemin A, si on veut fermer le schema:
+
+    Obtenir une image plus haute resolution ou une page service manual plus
+    nette pour S6/S7, puis refaire l'extraction des contacts.
+
+Chemin B, si on continue la modelisation sans attendre:
+
+    Modeliser S7 comme deux modes parametriques:
+
+        mode limiteur: ZL10 active dans le seuil
+        mode compresseur: seuil modifie/contourne par parametre
+
+    Puis construire le detecteur B11 simplifie:
+
+        Ue -> D2 SSD55 -> ZL10/S7 -> Gr B30C2200 -> C11/charge
+
+    Ce chemin permettra de simuler l'effet seuil/commande sans pretendre que la
+    table mecanique S7 est fermee.

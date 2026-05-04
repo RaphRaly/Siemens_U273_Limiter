@@ -1,0 +1,365 @@
+Etape 6 - Stamps BJT MNA et inventaire hybrid-pi B11
+====================================================
+
+Date: 2026-05-01
+Objet: Siemens U273 limiter, passage vers MNA active linearisee
+
+
+1. But de cette etape
+--------------------
+
+L'etape 5 a calcule les grandeurs petit-signal BJT:
+
+    gm
+    re
+    rpi
+
+Cette etape transforme ces grandeurs en elements MNA stampables. L'objectif
+est de ne plus rester au niveau "valeurs calculees", mais de preparer le
+solveur a recevoir les transistors B11 comme sources controlees et admittances.
+
+Important:
+
+    On ne declare pas encore la MNA active complete de B11, car les broches
+    exactes B/C/E et l'orientation NPN/PNP des SST116/SST117 dans le schema
+    doivent etre confirmees avant de connecter les stamps au vrai reseau.
+
+
+2. Verification scientifique externe
+------------------------------------
+
+Sources utilisees:
+
+1. MIT OpenCourseWare, 6.720J, lecture36.
+   Source:
+   https://ocw.mit.edu/courses/6-720j-integrated-microelectronic-devices-spring-2007/resources/lecture36/
+
+   Point utilise:
+   le BJT ideal en petit signal se represente par gm*vbe, gpi et les
+   capacites de jonction/diffusion si necessaires. La relation de base est:
+
+       gm = q*IC/kT = IC/VT
+
+2. MIT OpenCourseWare, 6.101, hybrid-pi.
+   Source:
+   https://ocw.mit.edu/courses/6-101-introductory-analog-electronics-laboratory-spring-2007/resources/hybrid_pi/
+
+   Point utilise:
+   modele hybrid-pi basse frequence.
+
+3. UC Berkeley EE105, Lecture 12, Small Signal Model BJT.
+   Source:
+   https://msdnaa.eecs.berkeley.edu/~ee105/fa14/lectures/Lecture12-Small%20Signal%20Model-BJT.pdf
+
+   Points utilises:
+
+       gm = IC/VT
+       rpi = beta/gm
+       ro ~= VA/IC si Early voltage est connu
+
+4. TU Delft, Modified Nodal Analysis.
+   Source:
+   https://analog-electronics.tudelft.nl/webbook/SED/_build/html/network_theory/NetworkTheory-1_Modified_Nodal_Analysis.html
+
+   Point utilise:
+   MNA accepte les admittances et les sources de courant controlees en tension
+   par estampillage matriciel.
+
+Ces sources valident la methode. Elles ne donnent pas les parametres exacts
+des transistors Siemens; ceux-ci restent calibres par point de repos, mesure
+ou datasheet.
+
+
+3. Stamps mathematiques ajoutes
+-------------------------------
+
+3.1 Source de courant controlee en tension
+
+Le solveur AC supporte maintenant un element:
+
+    I(nPlus -> nMinus) = y * (V(ctrlPlus) - V(ctrlMinus))
+
+Stamp KCL:
+
+    ligne nPlus:
+        + y*V(ctrlPlus) - y*V(ctrlMinus)
+
+    ligne nMinus:
+        - y*V(ctrlPlus) + y*V(ctrlMinus)
+
+Fichier modifie:
+
+    solver/complex_ac.js
+
+Champ netlist ajoute:
+
+    vccs: [
+        {
+            name,
+            nPlus,
+            nMinus,
+            ctrlPlus,
+            ctrlMinus,
+            y
+        }
+    ]
+
+
+3.2 BJT NPN hybrid-pi
+
+Elements:
+
+    rpi entre base et emetteur
+    source gm*vbe du collecteur vers emetteur
+    ro entre collecteur et emetteur si connu
+
+Forme:
+
+    I(C -> E) = gm * (VB - VE)
+
+Donc:
+
+    admittance B-E = 1/rpi
+    VCCS C->E controlee par B-E = gm
+    admittance C-E = 1/ro optionnelle
+
+
+3.3 BJT PNP hybrid-pi
+
+Elements:
+
+    rpi entre base et emetteur
+    source gm*veb de l'emetteur vers collecteur
+    ro entre collecteur et emetteur si connu
+
+Forme:
+
+    I(E -> C) = gm * (VE - VB)
+
+Cette convention evite d'utiliser un gm negatif. Le sens est porte par le type
+NPN/PNP.
+
+
+4. Fichiers crees ou modifies
+-----------------------------
+
+Modifie:
+
+    solver/complex_ac.js
+
+Crees:
+
+    solver/bjt_small_signal.js
+    solver/validate_bjt_small_signal.js
+    solver/b11_active_hybrid_pi_inventory.js
+
+Resultats:
+
+    results/b11_active_hybrid_pi_inventory.json
+    results/b11_active_hybrid_pi_inventory.csv
+
+
+5. Validation analytique des stamps
+-----------------------------------
+
+Validation executee:
+
+    node solver/validate_bjt_small_signal.js
+
+Resultat:
+
+    bjt_small_signal validation passed
+
+Tests effectues:
+
+5.1 Parametres a 1 mA
+
+Avec:
+
+    IC = 1 mA
+    beta = 100
+    VT = 25,85 mV
+
+Le solveur calcule:
+
+    gm = 38,684720 mS
+    re = 25,850000 Ohm
+    rpi = 2585,000000 Ohm
+
+Ce qui correspond exactement a:
+
+    gm = IC/VT
+    re = VT/IC
+    rpi = beta/gm
+
+
+5.2 Emetteur commun sans ro
+
+Circuit de validation:
+
+    base imposee par vin
+    emetteur a la masse AC
+    collecteur charge par Rc
+    transistor NPN hybrid-pi
+
+Formule analytique:
+
+    vout/vin = -gm*Rc
+
+Cas teste:
+
+    gm = 40 mS
+    Rc = 1 kOhm
+
+Attendu:
+
+    gain = -40
+
+Resultat solveur:
+
+    -40,000000000
+
+
+5.3 Emetteur commun avec ro
+
+Formule analytique:
+
+    vout/vin = -gm*(Rc || ro)
+
+Cas teste:
+
+    gm = 40 mS
+    Rc = 1 kOhm
+    ro = 10 kOhm
+
+Attendu:
+
+    gain = -36,363636364
+
+Resultat solveur:
+
+    -36,363636364
+
+Conclusion:
+
+    Le stamp VCCS + rpi + ro est coherent avec l'analyse petit-signal standard.
+
+
+6. Inventaire hybrid-pi B11
+---------------------------
+
+Script:
+
+    solver/b11_active_hybrid_pi_inventory.js
+
+Sortie:
+
+    30 lignes
+
+Pourquoi 30:
+
+    10 points de courant ou bornes de courant
+    x 3 valeurs beta: 50, 100, 200
+
+Chaque ligne contient:
+
+    qPointName
+    transistor
+    device
+    beta
+    currentAmp
+    gmSiemens
+    rPiOhm
+    rPiAdmittanceSiemens
+    emitterDynamicOhm
+    npnVccs
+    pnpVccs
+    rPiStamp
+    terminalMappingStatus
+
+Exemples beta = 100:
+
+    Ts1_from_R11:
+        IC local = 1,15 mA
+        gm = 44,49 mS
+        re = 22,48 Ohm
+        rpi = 2247,83 Ohm
+
+    Ts2_N9_main:
+        IC estime = 7,54 mA
+        gm = 291,68 mS
+        re = 3,43 Ohm
+        rpi = 342,84 Ohm
+
+    Ts3_R23_supply:
+        IC estime = 10 mA
+        gm = 386,85 mS
+        re = 2,585 Ohm
+        rpi = 258,5 Ohm
+
+    Ts5_Ts6_1ohm_50mV:
+        IC hypothetique = 50 mA
+        gm = 1,934 S
+        re = 0,517 Ohm
+        rpi = 51,7 Ohm
+
+
+7. Ce que cette etape ferme
+---------------------------
+
+Ferme:
+
+    - le solveur AC sait maintenant estampiller une source de courant
+      controlee en tension;
+    - le modele hybrid-pi basse frequence est implemente;
+    - les formules gm, re, rpi sont validees numeriquement;
+    - l'effet de ro est valide par comparaison analytique;
+    - B11 dispose d'un inventaire de fragments stampables.
+
+
+8. Ce qui reste ouvert
+----------------------
+
+Ouvert:
+
+    - orientation exacte B/C/E des SST116/SST117/2N3054 sur le schema;
+    - type effectif NPN/PNP de chaque transistor dans la netlist;
+    - Early voltage ou ro mesure;
+    - capacites Cpi/Cmu si on veut le modele haute frequence transistor;
+    - couplage exact Ts1/Ts2/Ts3/Ts4/Ts5/Ts6;
+    - table S6 finale;
+    - raccordement final vers VCMD.
+
+Point critique:
+
+    Il serait scientifiquement incorrect de connecter les transistors au hasard
+    maintenant. Les stamps sont prets, mais la netlist active doit encore etre
+    lue sur le schema.
+
+
+9. Prochaine etape
+------------------
+
+La suite rigoureuse est:
+
+    1. extraire les broches B/C/E de Ts1 et Ts2 sur B11;
+    2. construire la premiere sous-netlist active:
+
+           Ts1 + Ts2 + R10/R11/R12/R13/R14/R15/R16/C5/C6/C7/C8/C9
+
+    3. valider le point DC local contre les tensions imprimees:
+
+           21,5 V
+           14,5 V
+           10 V
+           9 V
+           0,5 V
+
+    4. lineariser cette sous-netlist autour du point DC;
+    5. seulement ensuite ajouter Ts3/Ts4 puis Ts5/Ts6.
+
+Conclusion:
+
+    L'etape 6 ferme la partie mathematique du BJT linearise dans notre solveur.
+    La prochaine difficulte n'est plus la methode MNA; c'est l'extraction
+    topologique exacte des transistors B11 depuis le schema.

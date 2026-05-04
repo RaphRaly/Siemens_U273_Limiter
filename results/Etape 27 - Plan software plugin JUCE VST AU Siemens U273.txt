@@ -1,0 +1,1221 @@
+Etape 27 - Plan software plugin JUCE VST AU Siemens U273
+========================================================
+
+Date: 2026-05-04
+Objet: demarrer le plan software pour transformer le projet Siemens U273 en
+       vrai plugin audio C++/JUCE, VST3/AU, sans perdre la rigueur scientifique
+       du modele analogique.
+
+
+0. Documents integres avant plan
+--------------------------------
+
+Le plan part explicitement de trois sources de methode:
+
+    1. Software Engineering resume du cours.txt
+
+       Regles retenues:
+
+           - partir des besoins et exigences avant le code;
+           - separer requirement, feature, user story et task;
+           - definir acceptance criteria testables;
+           - prioriser avec MoSCoW;
+           - eviter le feature creep;
+           - construire une architecture maintenable;
+           - integrer QA, tests, risques et CI/CD dans le plan, pas a la fin.
+
+    2. Well defined interface.txt
+
+       Regles retenues:
+
+           - une interface est un contrat, pas une simple signature;
+           - le contrat doit definir entrees, sorties, erreurs, invariants,
+             contraintes, performances et effets de bord;
+           - chaque frontiere DSP/JUCE/UI/tests doit etre explicite.
+
+    3. ADC conference Golden Rules Audio prog.txt
+
+       Regles retenues:
+
+           - rester dans le budget CPU audio;
+           - si le temps d'execution n'est pas borne, ne pas le faire sur le
+             thread audio;
+           - aucun lock, aucune allocation dynamique, aucun logging, aucun I/O,
+             aucun appel OS ou reseau sur le thread audio;
+           - respecter les threads et eviter le tearing;
+           - preallouer, preparer hors audio thread, puis publier par swap
+             atomique ou structure equivalent safe;
+           - comprendre float/double, denormals, overflow, underflow et choisir
+             la representation numerique en connaissance de cause.
+
+
+1. Etat scientifique de depart
+------------------------------
+
+La base actuelle du projet est:
+
+    - B6 ferme cote schema constructeur;
+    - C1 B6 corrige a 0.68 uF;
+    - export global:
+
+          results/u273_netlist.json
+          results/u273_netlist.txt
+
+      avec 88 composants et 64 noeuds non-masse;
+
+    - solveurs globaux disponibles:
+
+          solver/u273_dc_global.js
+          solver/u273_ac_global.js
+          solver/u273_transient.js
+
+    - validation:
+
+          results/u273_validation_report.json
+
+      status:
+
+          PASS_WITH_GUARDED_BOUNDARIES
+
+Important:
+
+    Ce status ne signifie pas "modele analogique complet final".
+
+    Il signifie:
+
+        - DC global reference Thevenin disponible;
+        - AC pont B6/commande disponible;
+        - transitoire quasi-statique borne disponible;
+        - limites scientifiques explicites.
+
+Frontieres gardees:
+
+    - B6 Ts1..Ts6 existent dans la netlist schema, mais restent
+      GARDE_NON_STAMPE;
+    - B11 actif reste Thevenin/parametrique;
+    - la calibration C11 -> drive B6 reste parametrique;
+    - les positions non confirmees de certains commutateurs restent hors
+      revendication finale.
+
+Regle de produit:
+
+    Le plugin ne doit jamais masquer ces frontieres. Un mode "U273 Reference"
+    peut etre utilisable musicalement, mais les modes non totalement prouves
+    doivent etre marques comme modeles parametriques ou hypotheses.
+
+
+2. Vision produit
+-----------------
+
+Objectif:
+
+    Construire un plugin audio C++/JUCE VST3/AU qui reproduit de maniere
+    exploitable le comportement limiteur/compresseur inspire du Siemens U273,
+    en gardant une separation stricte entre:
+
+        - reference scientifique;
+        - moteur DSP temps reel;
+        - wrapper plugin;
+        - interface utilisateur;
+        - tests et validation.
+
+Produit vise:
+
+    - effet audio insert mono/stereo;
+    - compatible VST3 et AU;
+    - controls principaux utilisables en DAW;
+    - automation DAW stable;
+    - presets versionnes;
+    - tests numeriques contre les resultats JS existants;
+    - thread audio sans operations non bornees.
+
+Non objectif pour MVP:
+
+    - reproduire physiquement chaque transistor actif B6/B11 en temps reel;
+    - faire une interface graphique complexe;
+    - ajouter oversampling, metering avance, A/B, undo system complet ou cloud;
+    - promettre une exactitude analogique la ou la preuve du schema est encore
+      gardee.
+
+
+3. Personas et scenarios
+------------------------
+
+Persona A: ingenieur mixage
+
+    Besoin:
+
+        Inserer le plugin dans un DAW, regler le niveau, le mode et la quantite
+        de reduction, puis obtenir une reaction stable sans clic ni crash.
+
+    Scenario:
+
+        L'utilisateur charge le plugin sur une piste voix, choisit le mode
+        limiter, regle input/output, ajuste la commande de limitation et verifie
+        le gain reduction meter.
+
+Persona B: sound designer / producteur
+
+    Besoin:
+
+        Utiliser le caractere du pont diode et du timing comme couleur sonore,
+        avec des presets repetables.
+
+    Scenario:
+
+        L'utilisateur parcourt des presets, automatise la commande, compare
+        limiter/compressor hypothesis et sauvegarde l'etat dans le projet DAW.
+
+Persona C: developpeur / mainteneur
+
+    Besoin:
+
+        Modifier le modele sans casser le temps reel ni perdre la regression
+        numerique.
+
+    Scenario:
+
+        Le developpeur change une constante B6, lance les tests C++ et compare
+        les sorties avec les golden files exportes par les solveurs JS.
+
+Persona D: chercheur / validation analogique
+
+    Besoin:
+
+        Distinguer les parties prouvees, parametriques et hypothetiques.
+
+    Scenario:
+
+        Le chercheur inspecte le mapping entre netlist, equations, DSP et
+        tolerance de test, sans devoir deviner ce qui est "fit" ou prouve.
+
+
+4. Exigences fonctionnelles
+---------------------------
+
+FR-01. Le plugin doit charger comme effet audio VST3.
+
+FR-02. Le plugin doit charger comme effet audio AU sur macOS.
+
+FR-03. Le plugin doit traiter l'audio en mono et stereo.
+
+FR-04. Le plugin doit exposer des parametres DAW stables:
+
+    - input gain;
+    - output gain;
+    - mode;
+    - command/drive;
+    - detector scale;
+    - attack/release ou time constants si disponibles;
+    - mix;
+    - calibration/reference level;
+    - bypass;
+    - model quality/mode si plusieurs moteurs existent.
+
+FR-05. Le plugin doit sauvegarder/restaurer son etat.
+
+FR-06. Le plugin doit inclure un moteur DSP temps reel borne.
+
+FR-07. Le projet doit garder un moteur de reference scientifique hors thread
+       audio pour comparer les resultats.
+
+FR-08. Le plugin doit fournir des meters utiles:
+
+    - input level;
+    - output level;
+    - gain reduction ou command equivalent;
+    - clipping/saturation indicator si applicable.
+
+FR-09. Le plugin doit inclure des presets initiaux:
+
+    - U273 Limiter Reference;
+    - Soft Program Leveling;
+    - Fast Control;
+    - Conservative Calibration;
+    - Research/Neutral.
+
+FR-10. Le projet doit pouvoir regenerer ou importer des golden references a
+       partir des resultats JS existants.
+
+
+5. Exigences non fonctionnelles
+-------------------------------
+
+NFR-RT-01. `processBlock` ne doit pas allouer de memoire dynamiquement.
+
+NFR-RT-02. `processBlock` ne doit pas prendre de lock.
+
+NFR-RT-03. `processBlock` ne doit pas faire de logging, file I/O, network I/O,
+           appel OS non necessaire ou appel de bibliotheque non inspecte.
+
+NFR-RT-04. Le cout CPU doit etre borne par sample ou par block.
+
+NFR-RT-05. Le plugin doit fonctionner a 44.1, 48, 88.2, 96 et 192 kHz.
+
+NFR-RT-06. Le plugin doit supporter des buffers petits, incluant 32 et
+           64 samples, sans glitch lie au code interne.
+
+NFR-RT-07. Le moteur doit eviter les denormals.
+
+NFR-RT-08. Les changements de parametres doivent etre lisses ou atomiquement
+           publies pour eviter clics, tearing et etats intermediaires invalides.
+
+NFR-QA-01. Les tests de regression numerique doivent comparer C++ contre JS.
+
+NFR-QA-02. Les tolerances doivent etre definies explicitement par type de test.
+
+NFR-QA-03. Toute frontiere scientifique gardee doit etre marquee dans le code,
+           les docs et les tests.
+
+NFR-MAINT-01. Le DSP core doit etre independant de JUCE autant que possible.
+
+NFR-MAINT-02. L'UI ne doit pas contenir de logique DSP critique.
+
+NFR-MAINT-03. Les parametres doivent etre versionnes pour maintenir la
+              compatibilite des presets.
+
+NFR-PORT-01. Le code doit compiler sur Windows et macOS.
+
+NFR-PORT-02. Les chemins, assets et presets ne doivent pas supposer une
+             machine locale specifique.
+
+
+6. MoSCoW MVP
+-------------
+
+Must have:
+
+    - CMake/JUCE project propre;
+    - plugin VST3 buildable sur Windows;
+    - cible AU preparee pour macOS;
+    - DSP core separe de JUCE;
+    - traitement mono/stereo;
+    - parametres DAW de base;
+    - sauvegarde/restauration d'etat;
+    - moteur temps reel sans allocation/lock/logging dans processBlock;
+    - tests unitaires DSP;
+    - golden reference importee depuis les resultats JS;
+    - documentation des frontieres gardees.
+
+Should have:
+
+    - AU valide sur macOS;
+    - meters input/output/gain reduction;
+    - presets initiaux;
+    - test pluginval;
+    - CI Windows;
+    - benchmarks CPU;
+    - comparaison AC/DC/transient contre JS.
+
+Could have:
+
+    - interface graphique plus proche du hardware;
+    - oversampling;
+    - A/B compare;
+    - undo/redo avance;
+    - analyser interne;
+    - export debug hors audio thread.
+
+Won't have now:
+
+    - cloud;
+    - licence manager;
+    - modele transistor complet temps reel non prouve;
+    - fitting numerique cache;
+    - reseau, telemetrie ou installation complexe;
+    - simulation SPICE complete dans processBlock.
+
+
+7. Architecture cible
+---------------------
+
+Structure proposee:
+
+    u273-plugin/
+
+        CMakeLists.txt
+
+        modules/
+
+            u273_core/
+                include/
+                src/
+                tests/
+
+            u273_reference/
+                include/
+                src/
+                tests/
+
+            u273_dsp/
+                include/
+                src/
+                tests/
+
+            u273_plugin/
+                PluginProcessor.h
+                PluginProcessor.cpp
+                PluginEditor.h
+                PluginEditor.cpp
+
+            u273_assets/
+                presets/
+                calibration/
+                golden/
+
+        tools/
+            export_golden_from_js/
+            compare_golden/
+
+        docs/
+            architecture/
+            interfaces/
+            validation/
+
+Modules:
+
+    u273_core:
+
+        Types communs, units physiques, parametres, math bas niveau,
+        smoothing, denormal guard, sample-rate context.
+
+    u273_reference:
+
+        Port C++ du solveur scientifique quand necessaire.
+        Autorise hors thread audio:
+
+            - allocations;
+            - matrices dynamiques;
+            - Newton;
+            - fichiers de test;
+            - rapports de validation.
+
+        Interdit dans processBlock.
+
+    u273_dsp:
+
+        Moteur audio temps reel.
+        Doit etre:
+
+            - borne;
+            - prealloue;
+            - sans lock;
+            - sans I/O;
+            - sans logging;
+            - stable a petits buffers.
+
+    u273_plugin:
+
+        Adaptateur JUCE/DAW.
+        Responsabilites:
+
+            - AudioProcessor;
+            - AudioProcessorValueTreeState ou equivalent;
+            - serialization state;
+            - creation UI;
+            - bus layout mono/stereo;
+            - conversion parametres DAW -> DSP.
+
+    u273_assets:
+
+        Golden files, presets et tables precomputees.
+
+    tools:
+
+        Outils non temps reel pour generer tables, comparer JS/C++ et exporter
+        des rapports.
+
+
+8. Interfaces bien definies
+---------------------------
+
+8.1 Interface `DspEngine`
+
+Contrat:
+
+    Role:
+
+        Traiter un block audio en temps reel.
+
+    Entrees:
+
+        - pointeurs audio non nuls;
+        - nombre de canaux valide;
+        - nombre de samples >= 0;
+        - snapshot de parametres deja publie;
+        - contexte sampleRate/blockSize deja prepare.
+
+    Sorties:
+
+        - buffer audio modifie en place ou ecrit dans output;
+        - meters ecrits dans structure lock-free ou atomique;
+        - aucun throw.
+
+    Erreurs:
+
+        - configuration invalide detectee hors audio thread;
+        - en audio thread, fallback silencieux ou bypass borne.
+
+    Performance:
+
+        - O(channels * samples);
+        - aucune allocation;
+        - aucun lock;
+        - aucun I/O.
+
+    Effets de bord:
+
+        - met a jour uniquement son etat DSP prealloue;
+        - ne touche pas au ValueTree, fichiers, UI ou logs.
+
+8.2 Interface `ParameterSnapshot`
+
+Contrat:
+
+    Role:
+
+        Transporter un ensemble coherent de parametres vers le DSP.
+
+    Entrees:
+
+        - valeurs normalisees DAW;
+        - mapping vers valeurs physiques;
+        - version de schema de parametres.
+
+    Sorties:
+
+        - structure compacte lue par le moteur audio.
+
+    Invariants:
+
+        - pas de valeur NaN/Inf;
+        - bornes clamp explicites;
+        - enum mode toujours valide;
+        - coefficients soit complets, soit ancien snapshot conserve.
+
+    Publication:
+
+        - calcul hors audio thread;
+        - publication par double buffer / atomic index / lock-free queue
+          inspectee.
+
+8.3 Interface `ScientificReferenceModel`
+
+Contrat:
+
+    Role:
+
+        Evaluer DC/AC/transient de reference pour validation, offline.
+
+    Entrees:
+
+        - netlist;
+        - scenario;
+        - tolerance;
+        - options de modele.
+
+    Sorties:
+
+        - resultats numeriques;
+        - residual;
+        - convergence;
+        - status des frontieres gardees.
+
+    Erreurs:
+
+        - non-convergence;
+        - matrice singuliere;
+        - hypothese interdite;
+        - tolerance depassee.
+
+    Performance:
+
+        - pas temps reel;
+        - peut etre plus lent;
+        - doit etre deterministe pour les tests.
+
+8.4 Interface `PresetManager`
+
+Contrat:
+
+    Role:
+
+        Sauvegarder/restaurer les parametres plugin.
+
+    Entrees:
+
+        - ValueTree ou structure equivalent;
+        - version preset;
+        - valeurs utilisateur.
+
+    Sorties:
+
+        - blob DAW;
+        - preset fichier si besoin;
+        - migration versionnee.
+
+    Erreurs:
+
+        - preset ancien;
+        - champ absent;
+        - valeur hors borne.
+
+    Garantie:
+
+        - aucun acces fichier depuis audio thread;
+        - migration deterministic.
+
+8.5 Interface `MeterBridge`
+
+Contrat:
+
+    Role:
+
+        Transporter des mesures audio vers UI.
+
+    Entrees:
+
+        - niveaux calcules par DSP;
+        - reduction estimee;
+        - flags clip/saturation.
+
+    Sorties:
+
+        - valeurs atomiques ou ring buffer simple lues par UI.
+
+    Contraintes:
+
+        - ecriture audio thread non bloquante;
+        - lecture UI thread non bloquante;
+        - precision suffisante, pas besoin d'historique complet.
+
+
+9. Strategie de modelisation plugin
+-----------------------------------
+
+Principe:
+
+    Ne pas mettre le solveur MNA/Newton complet directement dans processBlock
+    tant que son temps d'execution n'est pas strictement borne et mesure.
+
+Deux moteurs doivent coexister:
+
+    1. Scientific Reference Engine
+
+        - sert a valider;
+        - peut porter les solveurs JS en C++;
+        - peut resoudre DC/AC/transient offline;
+        - produit golden files;
+        - garde les status FERME_SCHEMA / PARAMETRIQUE / GARDE_NON_STAMPE.
+
+    2. Realtime DSP Engine
+
+        - sert au plugin;
+        - utilise equations reduites, tables precomputees ou approximations
+          explicitement validees;
+        - execution bornee;
+        - pas d'allocation, pas de locks, pas d'I/O;
+        - compare contre le moteur de reference sur un corpus de signaux.
+
+Implementation probable du MVP DSP:
+
+    - input/output gain lineaires avec smoothing;
+    - detector envelope borne;
+    - commande pont B6 approximee par modele/tables derivees des sweeps JS;
+    - courbe de gain reduction calibree contre AC/transient reference;
+    - timing attack/release derive de la chaine C11/commande existante;
+    - anti-denormal;
+    - saturation/soft limiting si justifie ou marque comme coloration DSP.
+
+Important:
+
+    Tout ecart musical ajoute par rapport au modele scientifique doit etre
+    nomme et testable:
+
+        - "Reference";
+        - "Realtime Approx";
+        - "Color Extension";
+        - "Hypothesis".
+
+
+10. Backlog initial Agile
+-------------------------
+
+Epic 1: Fondations plugin JUCE
+
+    Feature 1.1: Projet CMake/JUCE
+
+        User Story:
+
+            En tant que developpeur, je veux un projet JUCE buildable, afin de
+            generer un plugin VST3/AU sans dependances cachees.
+
+        Acceptance Criteria:
+
+            - configure CMake reussit;
+            - build Debug reussit;
+            - build Release reussit;
+            - VST3 est produit sur Windows;
+            - la cible AU existe pour macOS.
+
+    Feature 1.2: Wrapper AudioProcessor minimal
+
+        Acceptance Criteria:
+
+            - le plugin charge dans un host;
+            - mono/stereo sont declares;
+            - bypass fonctionne;
+            - aucun crash au changement sample rate/block size.
+
+Epic 2: DSP core temps reel
+
+    Feature 2.1: DspEngine separe de JUCE
+
+        Acceptance Criteria:
+
+            - tests unitaires sans JUCE plugin wrapper;
+            - prepare(sampleRate, blockSize) prealloue;
+            - process() ne fait aucune allocation connue;
+            - reset() deterministic.
+
+    Feature 2.2: Param smoothing et snapshot
+
+        Acceptance Criteria:
+
+            - changements input/output sans clic evident;
+            - valeurs hors bornes clamped;
+            - NaN/Inf rejetes hors audio thread;
+            - publication snapshot sans lock.
+
+Epic 3: Modele U273 temps reel
+
+    Feature 3.1: Detector envelope
+
+        Acceptance Criteria:
+
+            - attack/release testes contre reference transitoire;
+            - coefficients recalcules hors processBlock;
+            - comportement stable a 44.1..192 kHz.
+
+    Feature 3.2: Pont B6 realtime approximation
+
+        Acceptance Criteria:
+
+            - tables ou equations generees depuis references JS;
+            - interpolation bornee;
+            - erreur max documentee;
+            - aucun Newton non borne en audio thread.
+
+    Feature 3.3: Gain reduction et makeup
+
+        Acceptance Criteria:
+
+            - reponse monotone sur corpus de niveaux;
+            - pas de NaN/Inf;
+            - output reste borne;
+            - bypass bit-stable ou tolerance definie.
+
+Epic 4: Validation scientifique
+
+    Feature 4.1: Golden files JS
+
+        Acceptance Criteria:
+
+            - DC references importees;
+            - AC references importees;
+            - transient references importees;
+            - metadata de status gardee.
+
+    Feature 4.2: Tests C++ contre JS
+
+        Acceptance Criteria:
+
+            - tests passent sur corpus fixe;
+            - tolerances explicites;
+            - rapport failures lisible;
+            - aucun test ne revendique les BJT gardes comme fermes.
+
+Epic 5: UI et usage DAW
+
+    Feature 5.1: UI minimale utile
+
+        Acceptance Criteria:
+
+            - controls visibles et lisibles;
+            - pas de logique DSP critique dans UI;
+            - meters non bloquants;
+            - resizing correct.
+
+    Feature 5.2: Presets versionnes
+
+        Acceptance Criteria:
+
+            - presets initiaux charges;
+            - sauvegarde/restauration DAW;
+            - migration version 1 definie.
+
+Epic 6: Performance et distribution
+
+    Feature 6.1: Benchmarks audio
+
+        Acceptance Criteria:
+
+            - benchmark a 32, 64, 128, 512 samples;
+            - CPU par block mesure;
+            - stress multi-instance;
+            - rapport Release.
+
+    Feature 6.2: Validation plugin
+
+        Acceptance Criteria:
+
+            - pluginval ou equivalent passe au niveau choisi;
+            - test automation parametres;
+            - test changement sample rate;
+            - test save/load state.
+
+
+11. Sequencement propose
+------------------------
+
+Phase 0: Gel de reference
+
+    Objectif:
+
+        Figurer l'etat scientifique actuel avant toute traduction C++.
+
+    Taches:
+
+        - conserver Etape 26 comme boundary scientifique;
+        - exporter golden files JSON/CSV utiles;
+        - choisir tolerances initiales;
+        - documenter les modes gardes.
+
+    Sortie:
+
+        docs/validation/reference-boundary.md
+
+Phase 1: Requirements et interfaces
+
+    Objectif:
+
+        Transformer le plan en requirements et contrats d'interface.
+
+    Taches:
+
+        - ecrire exigences FR/NFR;
+        - ecrire contrats DspEngine, ParameterSnapshot, ReferenceModel,
+          PresetManager, MeterBridge;
+        - definir schema de parametres version 1.
+
+    Sortie:
+
+        docs/interfaces/*.md
+
+Phase 2: Scaffold JUCE/CMake
+
+    Objectif:
+
+        Avoir un plugin vide mais propre.
+
+    Taches:
+
+        - creer arborescence;
+        - ajouter CMake;
+        - ajouter JUCE;
+        - creer AudioProcessor minimal;
+        - creer tests natifs core.
+
+    Sortie:
+
+        plugin chargeable et tests core vides mais executables.
+
+Phase 3: Core C++ et golden validation
+
+    Objectif:
+
+        Porter les briques numeriques necessaires hors temps reel.
+
+    Taches:
+
+        - types physiques et units;
+        - complex AC si necessaire;
+        - lecture golden JSON/CSV;
+        - tests de comparaison;
+        - port minimal des equations utiles.
+
+    Sortie:
+
+        tests C++ comparent les references JS.
+
+Phase 4: Realtime DSP MVP
+
+    Objectif:
+
+        Premier son exploitable sans violer les regles audio.
+
+    Taches:
+
+        - DspEngine;
+        - smoothing;
+        - detector envelope;
+        - pont B6 approxime par table/equation bornee;
+        - gain reduction;
+        - anti-denormal;
+        - tests offline signaux.
+
+    Sortie:
+
+        moteur DSP standalone valide sur corpus audio.
+
+Phase 5: Integration plugin
+
+    Objectif:
+
+        Connecter JUCE au DSP proprement.
+
+    Taches:
+
+        - AudioProcessorValueTreeState ou equivalent;
+        - mapping normalise -> physique;
+        - prepareToPlay/releaseResources;
+        - processBlock;
+        - state save/load;
+        - meters atomiques.
+
+    Sortie:
+
+        VST3 MVP chargeable et sonore.
+
+Phase 6: UI minimale et presets
+
+    Objectif:
+
+        Rendre le plugin utilisable.
+
+    Taches:
+
+        - layout sobre;
+        - controls principaux;
+        - meters;
+        - presets v1;
+        - labels de modes scientifiques/hypotheses.
+
+    Sortie:
+
+        plugin utilisable en DAW.
+
+Phase 7: QA audio et performance
+
+    Objectif:
+
+        Prouver que le plugin tient en temps reel.
+
+    Taches:
+
+        - tests petits buffers;
+        - benchmarks Release;
+        - multi-instance;
+        - fuzz parametres;
+        - pluginval;
+        - regression audio.
+
+    Sortie:
+
+        rapport QA.
+
+Phase 8: Packaging et CI/CD
+
+    Objectif:
+
+        Preparer livraison propre.
+
+    Taches:
+
+        - build scripts;
+        - artefacts VST3/AU;
+        - CI Windows;
+        - CI macOS si possible;
+        - versioning;
+        - changelog.
+
+    Sortie:
+
+        build reproductible.
+
+
+12. Chemin critique
+-------------------
+
+Le chemin critique technique est:
+
+    reference boundary
+    -> interfaces
+    -> CMake/JUCE scaffold
+    -> DSP core standalone
+    -> validation contre JS
+    -> integration AudioProcessor
+    -> performance/pluginval
+    -> packaging
+
+Taches a ne pas inverser:
+
+    - ne pas construire une grosse UI avant DspEngine;
+    - ne pas mettre MNA/Newton dans processBlock avant preuve de bornage;
+    - ne pas ajouter oversampling avant validation CPU simple;
+    - ne pas promettre full analog BJT avant fermeture scientifique;
+    - ne pas multiplier les modes avant parameter schema v1.
+
+
+13. Risques et mitigation
+-------------------------
+
+R1. Solveur scientifique non temps reel
+
+    Probabilite: haute
+    Impact: fort
+    Mitigation:
+
+        separer reference engine et realtime engine.
+
+R2. Glitch audio par allocation/lock/logging
+
+    Probabilite: moyenne
+    Impact: critique
+    Mitigation:
+
+        tests/inspection processBlock, preallocation, no logging, no locks.
+
+R3. Ecart entre JS reference et C++ DSP
+
+    Probabilite: haute
+    Impact: fort
+    Mitigation:
+
+        golden files, tolerances, comparaison automatique, status des
+        approximations.
+
+R4. Feature creep UI ou modeles
+
+    Probabilite: haute
+    Impact: moyen/fort
+    Mitigation:
+
+        MoSCoW strict, MVP limite, Won't have now explicite.
+
+R5. Compatibilite DAW/VST3/AU
+
+    Probabilite: moyenne
+    Impact: fort
+    Mitigation:
+
+        pluginval, hosts de test, versioning parametres.
+
+R6. AU macOS bloque par environnement non disponible
+
+    Probabilite: moyenne
+    Impact: moyen
+    Mitigation:
+
+        architecture portable, build macOS separe, ne pas bloquer VST3 Windows.
+
+R7. Mauvaise calibration musicale
+
+    Probabilite: moyenne
+    Impact: moyen
+    Mitigation:
+
+        presets conservateurs, reference level clair, corpus audio de test,
+        separer "scientific reference" et "musical extension".
+
+R8. Denormals ou NaN/Inf
+
+    Probabilite: moyenne
+    Impact: fort
+    Mitigation:
+
+        denormal guard, sanitization parametres, tests silence, fuzz tests.
+
+
+14. Definition of Done MVP
+--------------------------
+
+Le MVP est termine seulement si:
+
+    - le plugin VST3 build en Release;
+    - il charge dans un host ou validator;
+    - il traite mono/stereo;
+    - processBlock respecte les regles temps reel;
+    - les parametres principaux sont automatables;
+    - state save/load fonctionne;
+    - le DSP standalone a des tests;
+    - les tests comparent au moins une partie du comportement contre golden JS;
+    - les frontieres scientifiques gardees restent visibles;
+    - un rapport de performance existe pour petits buffers;
+    - aucun crash connu sur changement sample rate/block size.
+
+
+15. Decision immediate
+----------------------
+
+Avant d'ecrire du C++ DSP ou du JUCE, la prochaine etape concrete doit etre:
+
+    Etape 28 - Scaffold CMake JUCE et contrats d'interfaces
+
+Contenu attendu:
+
+    - creer ou choisir le dossier plugin;
+    - ecrire les docs d'interface;
+    - definir le parameter schema v1;
+    - preparer le squelette CMake/JUCE;
+    - ajouter un test executable minimal;
+    - ne pas encore porter tout le modele analogique.
+
+Pourquoi:
+
+    C'est le minimum qui respecte les cours software:
+
+        - requirements d'abord;
+        - interface comme contrat;
+        - architecture avant implementation lourde;
+        - tests des le debut;
+        - risques audio temps reel pris en compte dans le design.
+
+
+16. Ajout - lecon choix d'architecture
+--------------------------------------
+
+Document ajoute:
+
+    Choix d'architechture lecon.txt
+
+Apport principal:
+
+    Le document clarifie que microservices, monolithe, MVC et 3-Layers ne sont
+    pas au meme niveau.
+
+    - Microservices:
+        architecture distribuee pour domaines independants, scalabilite
+        independante, deploiement independant, equipes separees et isolation
+        des pannes.
+
+    - Monolithic:
+        deploiement unique, souvent preferable pour une petite equipe, un
+        produit local, une complexite operationnelle faible et un besoin de
+        performance directe.
+
+    - MVC:
+        pattern UI / interaction utilisateur.
+
+    - 3-Layers:
+        separation interne presentation / business logic / data access.
+
+Decision pour le plugin U273:
+
+    Le produit ne doit pas etre concu en microservices.
+
+    Raison:
+
+        - un plugin VST/AU est charge dans un processus DAW;
+        - le traitement audio doit etre local, deterministe et temps reel;
+        - la communication reseau/inter-process ajouterait latence, risques et
+          complexite sans benefice pour le MVP;
+        - on n'a pas de domaines deployables independamment comme Billing,
+          Users, Notifications, etc.;
+        - une seule equipe/codebase est plus coherente pour la validation
+          scientifique et audio.
+
+Architecture retenue:
+
+    Monolithe modulaire C++ avec couches internes strictes.
+
+    Forme:
+
+        JUCE Plugin Wrapper
+            -> ParameterBridge / PresetManager / MeterBridge
+            -> Realtime DSP Engine
+            -> Core math / units / tables
+
+        Scientific Reference Engine
+            -> Netlist / MNA / validation offline
+            -> Golden files
+
+    Ce n'est pas un "monolithe spaghetti":
+
+        - le deploiement est unique;
+        - les modules internes restent separes;
+        - les interfaces sont des contrats;
+        - le DSP core reste testable sans JUCE;
+        - le moteur scientifique reste hors thread audio.
+
+Application de 3-Layers au projet:
+
+    On peut utiliser l'esprit 3-Layers en interne:
+
+        Presentation:
+            PluginEditor, widgets, meters visuels.
+
+        Business/Application:
+            ParameterBridge, preset migration, mode selection, calibration.
+
+        Core/Domain:
+            DspEngine, U273 model, detector, B6 bridge approximation,
+            scientific reference.
+
+    Mais on evite une couche "Data Access" lourde:
+
+        les presets/golden files existent hors thread audio et ne doivent jamais
+        devenir une dependance runtime de processBlock.
+
+Application de MVC:
+
+    MVC peut inspirer l'UI, mais ne doit pas guider l'architecture globale.
+
+    Mapping prudent:
+
+        Model:
+            Parameter state + read-only meter state.
+
+        View:
+            PluginEditor controls.
+
+        Controller:
+            Attachments JUCE / callbacks UI.
+
+    Regle:
+
+        L'UI ne controle jamais directement les equations DSP. Elle change des
+        parametres; le ParameterBridge produit un snapshot valide.
+
+ADR-001:
+
+    Titre:
+
+        Choisir un monolithe modulaire JUCE/C++ plutot que microservices.
+
+    Status:
+
+        Accepted for MVP.
+
+    Consequences positives:
+
+        - build plus simple;
+        - latence minimale;
+        - validation scientifique centralisee;
+        - meilleur controle du thread audio;
+        - packaging VST3/AU naturel.
+
+    Consequences negatives:
+
+        - pas de deploiement independant par composant;
+        - discipline necessaire pour eviter le couplage interne;
+        - les modules doivent rester separes par interfaces et tests, pas par
+          processus.
+
+    Mitigation:
+
+        - CMake targets separes;
+        - tests par module;
+        - docs d'interfaces;
+        - pas de dependance JUCE dans le DSP core si evitable;
+        - aucun acces UI/preset/file depuis le thread audio.

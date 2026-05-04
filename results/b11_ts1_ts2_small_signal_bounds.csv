@@ -1,0 +1,16 @@
+name,transistor,status,currentAmp,beta,gmSiemens,reOhm,rPiOhm,warning
+Ts1_R11_local_current,B11/Ts1,local collector-current candidate only,0.00115,50,0.044487427466150864,22.478260869565222,1123.913043478261,Not enough to satisfy N05 demand in isolated model.
+Ts1_R11_local_current,B11/Ts1,local collector-current candidate only,0.00115,100,0.044487427466150864,22.478260869565222,2247.826086956522,Not enough to satisfy N05 demand in isolated model.
+Ts1_R11_local_current,B11/Ts1,local collector-current candidate only,0.00115,200,0.044487427466150864,22.478260869565222,4495.652173913044,Not enough to satisfy N05 demand in isolated model.
+Ts1_N05_demand_low,B11/Ts1,emitter/load demand bound,0.00459932405165456,50,0.17792356099243944,5.620391107406474,281.0195553703237,Demand at N05, not confirmed collector current.
+Ts1_N05_demand_low,B11/Ts1,emitter/load demand bound,0.00459932405165456,100,0.17792356099243944,5.620391107406474,562.0391107406474,Demand at N05, not confirmed collector current.
+Ts1_N05_demand_low,B11/Ts1,emitter/load demand bound,0.00459932405165456,200,0.17792356099243944,5.620391107406474,1124.0782214812948,Demand at N05, not confirmed collector current.
+Ts1_N05_demand_high,B11/Ts1,emitter/load demand bound,0.004910889355742297,50,0.1899763773981546,5.2638123418059966,263.19061709029984,Demand at N05, not confirmed collector current.
+Ts1_N05_demand_high,B11/Ts1,emitter/load demand bound,0.004910889355742297,100,0.1899763773981546,5.2638123418059966,526.3812341805997,Demand at N05, not confirmed collector current.
+Ts1_N05_demand_high,B11/Ts1,emitter/load demand bound,0.004910889355742297,200,0.1899763773981546,5.2638123418059966,1052.7624683611994,Demand at N05, not confirmed collector current.
+Ts2_R15_supply,B11/Ts2,local supply current candidate,0.007916666666666667,50,0.30625402965828497,3.265263157894737,163.26315789473685,R15 current may feed transistor plus other branches.
+Ts2_R15_supply,B11/Ts2,local supply current candidate,0.007916666666666667,100,0.30625402965828497,3.265263157894737,326.5263157894737,R15 current may feed transistor plus other branches.
+Ts2_R15_supply,B11/Ts2,local supply current candidate,0.007916666666666667,200,0.30625402965828497,3.265263157894737,653.0526315789474,R15 current may feed transistor plus other branches.
+Ts2_N9_known_demand,B11/Ts2,known emitter/load demand,0.007538636363636364,50,0.2916300334095305,3.4290021103406696,171.45010551703348,R16+R13 current only.
+Ts2_N9_known_demand,B11/Ts2,known emitter/load demand,0.007538636363636364,100,0.2916300334095305,3.4290021103406696,342.90021103406696,R16+R13 current only.
+Ts2_N9_known_demand,B11/Ts2,known emitter/load demand,0.007538636363636364,200,0.2916300334095305,3.4290021103406696,685.8004220681339,R16+R13 current only.

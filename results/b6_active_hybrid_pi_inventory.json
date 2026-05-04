@@ -1,0 +1,579 @@
+{
+  "title": "Siemens U273 B6 transistor rigorous hybrid-pi inventory",
+  "status": "B6 active transistors integrated at the only justified level: DC KCL checks, guarded hybrid-pi candidates, and output-stage bounds.",
+  "scientificBoundary": "This file does not pretend to be the final nonlinear B6 MNA. Ts1, Ts3, Ts5 and Ts6 routing remains symbolic until transistor terminals and local compensation routes are proven from the schematic/photos.",
+  "nodeVoltages": {
+    "V24": 24,
+    "V22": 22,
+    "V12": 12.2,
+    "V64": 6.4,
+    "N38": 3.8,
+    "N08": 0.8,
+    "N32": 3.2,
+    "N24": 2.4,
+    "N074": 0.74,
+    "N48": 4.8,
+    "N18": 1.8,
+    "N215": 21.5,
+    "N105": 10.5,
+    "GND": 0
+  },
+  "resistorValues": {
+    "R38": 68,
+    "R30": 6800,
+    "R19": 30000,
+    "R12": 51000,
+    "R15": 30000,
+    "R18": 68000,
+    "R16_MIN": 0,
+    "R16_MAX": 500,
+    "R17": 6800,
+    "R20": 1200,
+    "R21": 10000,
+    "R22": 8200,
+    "R25": 16000,
+    "R26": 220,
+    "R27": 620,
+    "R31": 5600,
+    "R32": 1000,
+    "R36": 24
+  },
+  "passiveChecks": {
+    "iR30": 0.0014411764705882354,
+    "iR19": 0.0001933333333333333,
+    "iR21": 0.0005799999999999999,
+    "iR25": 0.0006125,
+    "v12OutgoingKnownAmp": 0.001385833333333333,
+    "v12KclResidualAmp": 0.00005534313725490223,
+    "iR15": 0.00008666666666666668,
+    "iR18": 0.00004411764705882353,
+    "n38ActiveResidualAmp": 0.00004254901960784315,
+    "iR16R17MaxR16": 0.00010958904109589041,
+    "iR16R17MinR16": 0.00011764705882352942,
+    "iR20": 0.00005000000000000004,
+    "n08ActiveInjectionWithoutR20MinAmp": 0.00006547139403706689,
+    "n08ActiveInjectionWithoutR20MaxAmp": 0.00007352941176470588,
+    "n08ActiveInjectionWithR20MinAmp": 0.00011547139403706694,
+    "n08ActiveInjectionWithR20MaxAmp": 0.00012352941176470593,
+    "iR22": 0.0003902439024390244,
+    "iR26R27": 0.0008809523809523809,
+    "iR31": 0.0030714285714285713,
+    "iR32": 0.0018,
+    "iR36": 0.020833333333333332
+  },
+  "hybridPiCandidates": [
+    {
+      "transistor": "Ts2_BCY66",
+      "type": "npn",
+      "terminalStatus": "probable_from_VBE_and_local_KCL_not_pin_proof",
+      "collector": "N64_T2",
+      "base": "N38",
+      "emitter": "N32",
+      "beta": 50,
+      "collectorCurrentAmp": 0.0003825920612147298,
+      "collectorCurrentMilliAmp": 0.38259206121472983,
+      "baseCurrentAmp": 0.000007651841224294596,
+      "baseCurrentMicroAmp": 7.651841224294596,
+      "gmSiemens": 0.014800466584709083,
+      "gmMilliSiemens": 14.800466584709083,
+      "emitterDynamicOhm": 67.5654375,
+      "rPiOhm": 3378.271875,
+      "roOhm": null,
+      "vbeVolt": 0.5999999999999996,
+      "vceVolt": 3.2,
+      "currentBasis": "IE ~= I_R22 = N32/R22 = 390 uA, if N32 is Ts2 emitter.",
+      "evidence": "N38=3.8 V, N32=3.2 V gives VBE=0.6 V; R22 current is coherent with a small transistor stage.",
+      "limit": "Collector node N64_T2 and interaction with Ts3 still require route confirmation before full nonlinear MNA.",
+      "hybridPiStamp": {
+        "admittances": [
+          {
+            "name": "Ts2_BCY66_rpi",
+            "n1": "N38",
+            "n2": "N32",
+            "y": {
+              "re": 0.0002960093316941817,
+              "im": 0
+            }
+          }
+        ],
+        "vccs": [
+          {
+            "name": "Ts2_BCY66_gm",
+            "nPlus": "N64_T2",
+            "nMinus": "N32",
+            "ctrlPlus": "N38",
+            "ctrlMinus": "N32",
+            "y": {
+              "re": 0.014800466584709083,
+              "im": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "transistor": "Ts2_BCY66",
+      "type": "npn",
+      "terminalStatus": "probable_from_VBE_and_local_KCL_not_pin_proof",
+      "collector": "N64_T2",
+      "base": "N38",
+      "emitter": "N32",
+      "beta": 100,
+      "collectorCurrentAmp": 0.00038638010142477664,
+      "collectorCurrentMilliAmp": 0.38638010142477663,
+      "baseCurrentAmp": 0.000003863801014247766,
+      "baseCurrentMicroAmp": 3.863801014247766,
+      "gmSiemens": 0.014947005857825013,
+      "gmMilliSiemens": 14.947005857825014,
+      "emitterDynamicOhm": 66.90303125,
+      "rPiOhm": 6690.303125,
+      "roOhm": null,
+      "vbeVolt": 0.5999999999999996,
+      "vceVolt": 3.2,
+      "currentBasis": "IE ~= I_R22 = N32/R22 = 390 uA, if N32 is Ts2 emitter.",
+      "evidence": "N38=3.8 V, N32=3.2 V gives VBE=0.6 V; R22 current is coherent with a small transistor stage.",
+      "limit": "Collector node N64_T2 and interaction with Ts3 still require route confirmation before full nonlinear MNA.",
+      "hybridPiStamp": {
+        "admittances": [
+          {
+            "name": "Ts2_BCY66_rpi",
+            "n1": "N38",
+            "n2": "N32",
+            "y": {
+              "re": 0.00014947005857825012,
+              "im": 0
+            }
+          }
+        ],
+        "vccs": [
+          {
+            "name": "Ts2_BCY66_gm",
+            "nPlus": "N64_T2",
+            "nMinus": "N32",
+            "ctrlPlus": "N38",
+            "ctrlMinus": "N32",
+            "y": {
+              "re": 0.014947005857825013,
+              "im": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "transistor": "Ts2_BCY66",
+      "type": "npn",
+      "terminalStatus": "probable_from_VBE_and_local_KCL_not_pin_proof",
+      "collector": "N64_T2",
+      "base": "N38",
+      "emitter": "N32",
+      "beta": 200,
+      "collectorCurrentAmp": 0.00038830239048659145,
+      "collectorCurrentMilliAmp": 0.38830239048659143,
+      "baseCurrentAmp": 0.000001941511952432957,
+      "baseCurrentMicroAmp": 1.9415119524329572,
+      "gmSiemens": 0.015021369071048025,
+      "gmMilliSiemens": 15.021369071048024,
+      "emitterDynamicOhm": 66.571828125,
+      "rPiOhm": 13314.365625,
+      "roOhm": null,
+      "vbeVolt": 0.5999999999999996,
+      "vceVolt": 3.2,
+      "currentBasis": "IE ~= I_R22 = N32/R22 = 390 uA, if N32 is Ts2 emitter.",
+      "evidence": "N38=3.8 V, N32=3.2 V gives VBE=0.6 V; R22 current is coherent with a small transistor stage.",
+      "limit": "Collector node N64_T2 and interaction with Ts3 still require route confirmation before full nonlinear MNA.",
+      "hybridPiStamp": {
+        "admittances": [
+          {
+            "name": "Ts2_BCY66_rpi",
+            "n1": "N38",
+            "n2": "N32",
+            "y": {
+              "re": 0.00007510684535524012,
+              "im": 0
+            }
+          }
+        ],
+        "vccs": [
+          {
+            "name": "Ts2_BCY66_gm",
+            "nPlus": "N64_T2",
+            "nMinus": "N32",
+            "ctrlPlus": "N38",
+            "ctrlMinus": "N32",
+            "y": {
+              "re": 0.015021369071048025,
+              "im": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "transistor": "Ts4_SST116_1",
+      "type": "npn",
+      "terminalStatus": "probable_from_VBE_VCE_and_R32_current_not_pin_proof",
+      "collector": "N48",
+      "base": "N24",
+      "emitter": "N18",
+      "beta": 50,
+      "collectorCurrentAmp": 0.001764705882352941,
+      "collectorCurrentMilliAmp": 1.7647058823529411,
+      "baseCurrentAmp": 0.00003529411764705882,
+      "baseCurrentMicroAmp": 35.29411764705882,
+      "gmSiemens": 0.06826715212197064,
+      "gmMilliSiemens": 68.26715212197064,
+      "emitterDynamicOhm": 14.648333333333335,
+      "rPiOhm": 732.4166666666667,
+      "roOhm": null,
+      "vbeVolt": 0.5999999999999999,
+      "vceVolt": 3,
+      "currentBasis": "IE ~= I_R32 = N18/R32 = 1.8 mA, if N18 is Ts4 emitter.",
+      "evidence": "N24=2.4 V, N18=1.8 V gives VBE=0.6 V and N48=4.8 V gives VCE=3.0 V.",
+      "limit": "Ts3/Ts4 coupling and R28/R29/C17 route still need confirmation before large-signal transistor closure.",
+      "hybridPiStamp": {
+        "admittances": [
+          {
+            "name": "Ts4_SST116_1_rpi",
+            "n1": "N24",
+            "n2": "N18",
+            "y": {
+              "re": 0.0013653430424394129,
+              "im": 0
+            }
+          }
+        ],
+        "vccs": [
+          {
+            "name": "Ts4_SST116_1_gm",
+            "nPlus": "N48",
+            "nMinus": "N18",
+            "ctrlPlus": "N24",
+            "ctrlMinus": "N18",
+            "y": {
+              "re": 0.06826715212197064,
+              "im": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "transistor": "Ts4_SST116_1",
+      "type": "npn",
+      "terminalStatus": "probable_from_VBE_VCE_and_R32_current_not_pin_proof",
+      "collector": "N48",
+      "base": "N24",
+      "emitter": "N18",
+      "beta": 100,
+      "collectorCurrentAmp": 0.001782178217821782,
+      "collectorCurrentMilliAmp": 1.782178217821782,
+      "baseCurrentAmp": 0.00001782178217821782,
+      "baseCurrentMicroAmp": 17.82178217821782,
+      "gmSiemens": 0.06894306451921788,
+      "gmMilliSiemens": 68.94306451921787,
+      "emitterDynamicOhm": 14.504722222222224,
+      "rPiOhm": 1450.4722222222224,
+      "roOhm": null,
+      "vbeVolt": 0.5999999999999999,
+      "vceVolt": 3,
+      "currentBasis": "IE ~= I_R32 = N18/R32 = 1.8 mA, if N18 is Ts4 emitter.",
+      "evidence": "N24=2.4 V, N18=1.8 V gives VBE=0.6 V and N48=4.8 V gives VCE=3.0 V.",
+      "limit": "Ts3/Ts4 coupling and R28/R29/C17 route still need confirmation before large-signal transistor closure.",
+      "hybridPiStamp": {
+        "admittances": [
+          {
+            "name": "Ts4_SST116_1_rpi",
+            "n1": "N24",
+            "n2": "N18",
+            "y": {
+              "re": 0.0006894306451921788,
+              "im": 0
+            }
+          }
+        ],
+        "vccs": [
+          {
+            "name": "Ts4_SST116_1_gm",
+            "nPlus": "N48",
+            "nMinus": "N18",
+            "ctrlPlus": "N24",
+            "ctrlMinus": "N18",
+            "y": {
+              "re": 0.06894306451921788,
+              "im": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "transistor": "Ts4_SST116_1",
+      "type": "npn",
+      "terminalStatus": "probable_from_VBE_VCE_and_R32_current_not_pin_proof",
+      "collector": "N48",
+      "base": "N24",
+      "emitter": "N18",
+      "beta": 200,
+      "collectorCurrentAmp": 0.001791044776119403,
+      "collectorCurrentMilliAmp": 1.791044776119403,
+      "baseCurrentAmp": 0.000008955223880597016,
+      "baseCurrentMicroAmp": 8.955223880597016,
+      "gmSiemens": 0.06928606484020901,
+      "gmMilliSiemens": 69.28606484020901,
+      "emitterDynamicOhm": 14.432916666666667,
+      "rPiOhm": 2886.5833333333335,
+      "roOhm": null,
+      "vbeVolt": 0.5999999999999999,
+      "vceVolt": 3,
+      "currentBasis": "IE ~= I_R32 = N18/R32 = 1.8 mA, if N18 is Ts4 emitter.",
+      "evidence": "N24=2.4 V, N18=1.8 V gives VBE=0.6 V and N48=4.8 V gives VCE=3.0 V.",
+      "limit": "Ts3/Ts4 coupling and R28/R29/C17 route still need confirmation before large-signal transistor closure.",
+      "hybridPiStamp": {
+        "admittances": [
+          {
+            "name": "Ts4_SST116_1_rpi",
+            "n1": "N24",
+            "n2": "N18",
+            "y": {
+              "re": 0.000346430324201045,
+              "im": 0
+            }
+          }
+        ],
+        "vccs": [
+          {
+            "name": "Ts4_SST116_1_gm",
+            "nPlus": "N48",
+            "nMinus": "N18",
+            "ctrlPlus": "N24",
+            "ctrlMinus": "N18",
+            "y": {
+              "re": 0.06928606484020901,
+              "im": 0
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "outputStageBounds": [
+    {
+      "transistorGroup": "Ts5_Ts6_output",
+      "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+      "idleCurrentAmp": 0.005,
+      "idleCurrentMilliAmp": 5,
+      "beta": 50,
+      "gmSiemens": 0.19342359767891681,
+      "gmMilliSiemens": 193.42359767891682,
+      "emitterDynamicOhm": 5.17,
+      "rPiOhm": 258.5,
+      "baseCurrentMicroAmp": 100,
+      "r36CurrentAmp": 0.020833333333333332,
+      "r36CurrentMilliAmp": 20.833333333333332,
+      "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+      "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+    },
+    {
+      "transistorGroup": "Ts5_Ts6_output",
+      "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+      "idleCurrentAmp": 0.005,
+      "idleCurrentMilliAmp": 5,
+      "beta": 100,
+      "gmSiemens": 0.19342359767891681,
+      "gmMilliSiemens": 193.42359767891682,
+      "emitterDynamicOhm": 5.17,
+      "rPiOhm": 517,
+      "baseCurrentMicroAmp": 50,
+      "r36CurrentAmp": 0.020833333333333332,
+      "r36CurrentMilliAmp": 20.833333333333332,
+      "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+      "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+    },
+    {
+      "transistorGroup": "Ts5_Ts6_output",
+      "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+      "idleCurrentAmp": 0.005,
+      "idleCurrentMilliAmp": 5,
+      "beta": 200,
+      "gmSiemens": 0.19342359767891681,
+      "gmMilliSiemens": 193.42359767891682,
+      "emitterDynamicOhm": 5.17,
+      "rPiOhm": 1034,
+      "baseCurrentMicroAmp": 25,
+      "r36CurrentAmp": 0.020833333333333332,
+      "r36CurrentMilliAmp": 20.833333333333332,
+      "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+      "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+    },
+    {
+      "transistorGroup": "Ts5_Ts6_output",
+      "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+      "idleCurrentAmp": 0.01,
+      "idleCurrentMilliAmp": 10,
+      "beta": 50,
+      "gmSiemens": 0.38684719535783363,
+      "gmMilliSiemens": 386.84719535783364,
+      "emitterDynamicOhm": 2.585,
+      "rPiOhm": 129.25,
+      "baseCurrentMicroAmp": 200,
+      "r36CurrentAmp": 0.020833333333333332,
+      "r36CurrentMilliAmp": 20.833333333333332,
+      "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+      "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+    },
+    {
+      "transistorGroup": "Ts5_Ts6_output",
+      "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+      "idleCurrentAmp": 0.01,
+      "idleCurrentMilliAmp": 10,
+      "beta": 100,
+      "gmSiemens": 0.38684719535783363,
+      "gmMilliSiemens": 386.84719535783364,
+      "emitterDynamicOhm": 2.585,
+      "rPiOhm": 258.5,
+      "baseCurrentMicroAmp": 100,
+      "r36CurrentAmp": 0.020833333333333332,
+      "r36CurrentMilliAmp": 20.833333333333332,
+      "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+      "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+    },
+    {
+      "transistorGroup": "Ts5_Ts6_output",
+      "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+      "idleCurrentAmp": 0.01,
+      "idleCurrentMilliAmp": 10,
+      "beta": 200,
+      "gmSiemens": 0.38684719535783363,
+      "gmMilliSiemens": 386.84719535783364,
+      "emitterDynamicOhm": 2.585,
+      "rPiOhm": 517,
+      "baseCurrentMicroAmp": 50,
+      "r36CurrentAmp": 0.020833333333333332,
+      "r36CurrentMilliAmp": 20.833333333333332,
+      "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+      "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+    },
+    {
+      "transistorGroup": "Ts5_Ts6_output",
+      "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+      "idleCurrentAmp": 0.020833333333,
+      "idleCurrentMilliAmp": 20.833333333000002,
+      "beta": 50,
+      "gmSiemens": 0.8059316569825918,
+      "gmMilliSiemens": 805.9316569825918,
+      "emitterDynamicOhm": 1.240800000019853,
+      "rPiOhm": 62.04000000099264,
+      "baseCurrentMicroAmp": 416.66666666000003,
+      "r36CurrentAmp": 0.020833333333333332,
+      "r36CurrentMilliAmp": 20.833333333333332,
+      "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+      "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+    },
+    {
+      "transistorGroup": "Ts5_Ts6_output",
+      "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+      "idleCurrentAmp": 0.020833333333,
+      "idleCurrentMilliAmp": 20.833333333000002,
+      "beta": 100,
+      "gmSiemens": 0.8059316569825918,
+      "gmMilliSiemens": 805.9316569825918,
+      "emitterDynamicOhm": 1.240800000019853,
+      "rPiOhm": 124.08000000198528,
+      "baseCurrentMicroAmp": 208.33333333000002,
+      "r36CurrentAmp": 0.020833333333333332,
+      "r36CurrentMilliAmp": 20.833333333333332,
+      "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+      "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+    },
+    {
+      "transistorGroup": "Ts5_Ts6_output",
+      "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+      "idleCurrentAmp": 0.020833333333,
+      "idleCurrentMilliAmp": 20.833333333000002,
+      "beta": 200,
+      "gmSiemens": 0.8059316569825918,
+      "gmMilliSiemens": 805.9316569825918,
+      "emitterDynamicOhm": 1.240800000019853,
+      "rPiOhm": 248.16000000397057,
+      "baseCurrentMicroAmp": 104.16666666500001,
+      "r36CurrentAmp": 0.020833333333333332,
+      "r36CurrentMilliAmp": 20.833333333333332,
+      "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+      "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+    },
+    {
+      "transistorGroup": "Ts5_Ts6_output",
+      "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+      "idleCurrentAmp": 0.03,
+      "idleCurrentMilliAmp": 30,
+      "beta": 50,
+      "gmSiemens": 1.1605415860735009,
+      "gmMilliSiemens": 1160.5415860735009,
+      "emitterDynamicOhm": 0.8616666666666667,
+      "rPiOhm": 43.083333333333336,
+      "baseCurrentMicroAmp": 600,
+      "r36CurrentAmp": 0.020833333333333332,
+      "r36CurrentMilliAmp": 20.833333333333332,
+      "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+      "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+    },
+    {
+      "transistorGroup": "Ts5_Ts6_output",
+      "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+      "idleCurrentAmp": 0.03,
+      "idleCurrentMilliAmp": 30,
+      "beta": 100,
+      "gmSiemens": 1.1605415860735009,
+      "gmMilliSiemens": 1160.5415860735009,
+      "emitterDynamicOhm": 0.8616666666666667,
+      "rPiOhm": 86.16666666666667,
+      "baseCurrentMicroAmp": 300,
+      "r36CurrentAmp": 0.020833333333333332,
+      "r36CurrentMilliAmp": 20.833333333333332,
+      "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+      "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+    },
+    {
+      "transistorGroup": "Ts5_Ts6_output",
+      "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+      "idleCurrentAmp": 0.03,
+      "idleCurrentMilliAmp": 30,
+      "beta": 200,
+      "gmSiemens": 1.1605415860735009,
+      "gmMilliSiemens": 1160.5415860735009,
+      "emitterDynamicOhm": 0.8616666666666667,
+      "rPiOhm": 172.33333333333334,
+      "baseCurrentMicroAmp": 150,
+      "r36CurrentAmp": 0.020833333333333332,
+      "r36CurrentMilliAmp": 20.833333333333332,
+      "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+      "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+    }
+  ],
+  "symbolicBoundaries": [
+    {
+      "transistorGroup": "Ts1_Ts2_front_pair",
+      "status": "symbolic_KCL_required_for_Ts1",
+      "n38ResidualMicroAmp": 42.54901960784315,
+      "n08InjectionWithR20MinMicroAmp": 115.47139403706694,
+      "n08InjectionWithR20MaxMicroAmp": 123.52941176470593,
+      "reason": "Ts2 has a plausible VBE/current candidate, but Ts1 terminal routing is not closed. N08 needs active injection, not a passive resistor patch."
+    },
+    {
+      "transistorGroup": "Ts3_Ts4_middle_pair",
+      "status": "Ts4_hybrid_pi_candidate_only",
+      "r31CurrentMilliAmp": 3.071428571428571,
+      "r32CurrentMilliAmp": 1.8,
+      "reason": "Ts4 has a coherent VBE/VCE candidate. Ts3 and feedback/compensation routes must stay symbolic until routing is proven."
+    },
+    {
+      "transistorGroup": "Ts5_Ts6_output_pair",
+      "status": "current_bounds_only",
+      "r36CurrentMilliAmp": 20.833333333333332,
+      "n105Volt": 10.5,
+      "n215Volt": 21.5,
+      "reason": "The output point is physically coherent but not enough to choose a unique small-signal topology."
+    }
+  ]
+}

@@ -1,0 +1,257 @@
+Etape 29 - Scaffold CMake JUCE architecture UML U273
+=====================================================
+
+Date: 2026-05-04
+Objet: transformer les UML logiciels en scaffold CMake/JUCE reel pour le
+       futur plugin Siemens U273 VST3/AU, avec separation stricte entre coeur,
+       DSP temps reel, reference scientifique, wrapper plugin, assets et tests.
+
+
+1. Entree de conception
+-----------------------
+
+Cette etape materialise les decisions des etapes:
+
+    - Etape 27 - Plan software plugin JUCE VST AU Siemens U273
+    - Etape 28 - Analyse syllabus OOP UML et architecture plugin U273
+    - docs/uml/01_component_overview.puml
+    - docs/uml/02_package_dependencies.puml
+    - docs/uml/03_class_core.puml
+
+Regle d'architecture appliquee:
+
+    u273_core <- u273_dsp <- u273_plugin
+    u273_core <- u273_reference
+    u273_assets est accessible aux tests/reference/plugin, mais ne doit pas
+    devenir une dependance d'I/O dans la boucle audio temps reel.
+
+
+2. Nouveau projet cree
+----------------------
+
+Dossier:
+
+    C:\Users\user\Desktop\Siemens U273\u273-plugin
+
+Fichiers principaux:
+
+    CMakeLists.txt
+    CMakePresets.json
+    cmake/U273Compiler.cmake
+    README.md
+    docs/ARCHITECTURE.md
+
+Packages CMake:
+
+    modules/u273_core
+    modules/u273_dsp
+    modules/u273_reference
+    modules/u273_plugin
+    modules/u273_assets
+    tests
+
+
+3. Configuration JUCE / Visual Studio
+-------------------------------------
+
+JUCE local detecte:
+
+    C:\Users\user\JuceProgram\JUCE
+
+Version JUCE lue par CMake:
+
+    JUCE 7.0.3
+
+Visual Studio detecte:
+
+    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community
+
+Compilateur utilise par CMake:
+
+    MSVC 19.29.30147.0
+
+Preset principal:
+
+    vs2019-x64
+
+Choix important:
+
+    - Windows build: VST3 uniquement.
+    - Apple build: AU ajoute automatiquement par CMake via if(APPLE).
+    - Standalone retire du MVP, car non necessaire pour le vrai plugin et
+      demande des modules JUCE audio_utils/audio_devices supplementaires.
+    - JUCE_VST3_CAN_REPLACE_VST2=0, pour ne pas demander le header VST2
+      historique absent du SDK local.
+
+
+4. Contrats C++ poses
+---------------------
+
+u273_core:
+
+    - ParameterSnapshot
+    - ParameterRanges
+    - ParameterIds
+    - ProcessContext
+    - AudioBlockView
+    - MeterFrame
+    - ModelBoundary
+    - conversions dB/linear
+
+Contrat:
+
+    Ce package n'a aucune dependance JUCE.
+    Il contient les types stables entre plugin, DSP, tests et reference.
+
+u273_dsp:
+
+    - U273DspEngine
+    - DetectorEnvelope
+    - B6BridgeRealtimeModel
+    - GainReductionComputer
+
+Contrat:
+
+    U273DspEngine::process recoit:
+
+        - ProcessContext
+        - ParameterSnapshot immutable
+        - MeterFrame optionnel
+
+    La boucle audio ne fait pas:
+
+        - allocation dynamique;
+        - lock;
+        - logging;
+        - I/O fichier;
+        - appel host;
+        - appel JUCE.
+
+u273_reference:
+
+    - ScientificReferenceModel
+    - ReferenceValidator
+
+Contrat:
+
+    Reference offline uniquement.
+    Elle garde explicitement le status:
+
+        PASS_WITH_GUARDED_BOUNDARIES
+
+    Les solveurs DC/AC/transient sont des interfaces de scaffold a brancher
+    ensuite sur les golden files et solveurs JS existants.
+
+u273_plugin:
+
+    - PluginProcessor
+    - PluginEditor
+    - ParameterBridge
+    - MeterBridge
+    - PresetManager
+
+Contrat:
+
+    Ce package adapte JUCE/APVTS/VST3/AU vers les interfaces stables du coeur.
+    Le DSP ne depend jamais du wrapper plugin.
+
+u273_assets:
+
+    - calibration/model_boundary.json
+    - presets/README.md
+
+Contrat:
+
+    Les assets portent les donnees de calibration, presets et golden files.
+    Ils ne doivent pas provoquer d'I/O dans processBlock.
+
+
+5. Statut scientifique du DSP initial
+-------------------------------------
+
+Le moteur temps reel compile et traite de l'audio, mais il reste volontairement
+nomme:
+
+    GUARDED_REALTIME_SURROGATE
+
+Ce n'est pas encore une revendication de modele complet transistor-level.
+
+Raison:
+
+    - B6 est ferme cote schema, mais Ts1..Ts6 restent gardes/non stampes.
+    - B11 actif reste Thevenin/parametrique.
+    - La calibration exacte entre reference JS, netlist globale et DSP C++
+      reste a construire.
+
+La decision est donc scientifiquement stricte:
+
+    on cree un moteur realtime borne et testable maintenant, sans pretendre que
+    la calibration analogique finale est terminee.
+
+
+6. Verification effectuee
+-------------------------
+
+Mode tests sans plugin/JUCE:
+
+    cmake --preset vs2019-x64-tests-only
+    cmake --build --preset debug-tests-only
+    ctest --preset debug-tests-only
+
+Resultat:
+
+    1/1 test passed
+
+Mode complet avec JUCE:
+
+    cmake --preset vs2019-x64
+    cmake --build --preset debug
+    ctest --preset debug
+
+Resultat:
+
+    - build OK;
+    - VST3 Debug genere;
+    - 1/1 test passed.
+
+Artefact VST3 genere:
+
+    C:\Users\user\Desktop\Siemens U273\u273-plugin\build\vs2019-x64\modules\u273_plugin\u273_plugin_artefacts\Debug\VST3\U273 Limiter.vst3
+
+
+7. Tests C++ actuels
+--------------------
+
+Executable:
+
+    u273_tests
+
+Contrats verifies:
+
+    - ParameterSnapshot par defaut valide;
+    - rejet d'un drive hors plage;
+    - silence stable et sans NaN;
+    - signal fort produit une reduction de gain gardee;
+    - bypass preserve strictement le signal, independamment des gains
+      input/output;
+    - boundary scientifique reste PASS_WITH_GUARDED_BOUNDARIES.
+
+
+8. Prochaine etape recommandee
+------------------------------
+
+Etape 30:
+
+    Brancher les resultats JS existants dans u273_reference/u273_assets:
+
+        - importer results/u273_netlist.json;
+        - importer results/u273_validation_report.json;
+        - creer golden tests DC/AC/transient;
+        - definir une tolerance numerique explicite;
+        - comparer le DSP C++ a la reference JS sur un petit set de points;
+        - documenter les ecarts entre surrogate realtime et reference offline.
+
+Objectif:
+
+    transformer le scaffold compilable en pipeline de validation scientifique
+    continu, avant d'affiner la couleur sonore et l'interface graphique.

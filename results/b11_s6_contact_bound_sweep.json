@@ -1,0 +1,5366 @@
+{
+  "title": "Siemens U273 B11 S6 contact/load bound sweep",
+  "status": "bounded sensitivity because exact S6/S7 contacts are not readable in available crops",
+  "warning": "R1/R2 are applied as possible simple shunt loads at VR. R2 is corrected to the 1 MOhm adjustable value visible in the global crop. This is a bound, not a confirmed contact table.",
+  "contactHypotheses": [
+    {
+      "name": "core_all_branches",
+      "note": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "branches": {
+        "lm": true,
+        "mr": true,
+        "lr": true,
+        "m0": true
+      }
+    },
+    {
+      "name": "core_without_lr_bridge",
+      "note": "Sensitivity case: LR bridge R5/C3 open.",
+      "branches": {
+        "lm": true,
+        "mr": true,
+        "lr": false,
+        "m0": true
+      }
+    },
+    {
+      "name": "core_without_m0_shunt",
+      "note": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "branches": {
+        "lm": true,
+        "mr": true,
+        "lr": true,
+        "m0": false
+      }
+    },
+    {
+      "name": "core_series_lm_mr_only",
+      "note": "Sensitivity case: only LM and MR paths active.",
+      "branches": {
+        "lm": true,
+        "mr": true,
+        "lr": false,
+        "m0": false
+      }
+    }
+  ],
+  "loadHypotheses": [
+    {
+      "name": "r1r2_open",
+      "note": "No R1/R2 load applied at VR.",
+      "rload": null
+    },
+    {
+      "name": "r1_3k",
+      "note": "R1=3 kOhm applied as a shunt load at VR.",
+      "rload": 3000
+    },
+    {
+      "name": "r2_1M",
+      "note": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "rload": 1000000
+    },
+    {
+      "name": "r1_r2_series_1003k",
+      "note": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "rload": 1003000
+    },
+    {
+      "name": "r1_r2_parallel_2k991",
+      "note": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "rload": 2991.026919242273
+    }
+  ],
+  "frequencies": [
+    100,
+    1000,
+    10000,
+    20000
+  ],
+  "commands": [
+    0,
+    3
+  ],
+  "rows": [
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 7492.481207268984,
+        "im": -231.2423505074086,
+        "mag": 7496.048803599607,
+        "phaseDeg": -1.767773046334657
+      },
+      "s6Yout": {
+        "re": 0.00013334012303612048,
+        "im": 0.000004115310084182185,
+        "mag": 0.00013340361385051278,
+        "phaseDeg": 1.767773046334657
+      },
+      "VNA": {
+        "re": 0.0004890813715456,
+        "im": 0.01612417642002171,
+        "mag": 0.01613159216605655,
+        "phaseDeg": 88.26262696761606
+      },
+      "VCMD_NODE": {
+        "re": 0.00021959047320038136,
+        "im": 0.004392654280736751,
+        "mag": 0.004398139561905155,
+        "phaseDeg": 87.1381443703714
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 7492.481207268984,
+        "im": -231.2423505074086,
+        "mag": 7496.048803599607,
+        "phaseDeg": -1.767773046334657
+      },
+      "s6Yout": {
+        "re": 0.00013334012303612048,
+        "im": 0.000004115310084182185,
+        "mag": 0.00013340361385051278,
+        "phaseDeg": 1.767773046334657
+      },
+      "VNA": {
+        "re": 0.00014358219493143442,
+        "im": 0.001078196849033719,
+        "mag": 0.0010877151704226475,
+        "phaseDeg": 82.41461848072865
+      },
+      "VCMD_NODE": {
+        "re": 0.000033347729676520206,
+        "im": 0.00029335123847403015,
+        "mag": 0.00029524061405712047,
+        "phaseDeg": 83.51454268451901
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 6825.573719192004,
+        "im": -2088.7250120586355,
+        "mag": 7138.012942838078,
+        "phaseDeg": -17.014874071056408
+      },
+      "s6Yout": {
+        "re": 0.00013396288732738797,
+        "im": 0.000040994595466977316,
+        "mag": 0.00014009501075552822,
+        "phaseDeg": 17.014874071056404
+      },
+      "VNA": {
+        "re": 0.039706865769856714,
+        "im": 0.14838729839941328,
+        "mag": 0.15360802555707154,
+        "phaseDeg": 75.01923625802436
+      },
+      "VCMD_NODE": {
+        "re": 0.018832963117045094,
+        "im": 0.03613624919983452,
+        "mag": 0.04074934362662203,
+        "phaseDeg": 62.47303279614397
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 6825.573719192004,
+        "im": -2088.7250120586355,
+        "mag": 7138.012942838078,
+        "phaseDeg": -17.014874071056408
+      },
+      "s6Yout": {
+        "re": 0.00013396288732738797,
+        "im": 0.000040994595466977316,
+        "mag": 0.00014009501075552822,
+        "phaseDeg": 17.014874071056404
+      },
+      "VNA": {
+        "re": 0.000684000011780729,
+        "im": 0.010730184854583253,
+        "mag": 0.010751963682492786,
+        "phaseDeg": 86.35259220055376
+      },
+      "VCMD_NODE": {
+        "re": 0.0007846387220400139,
+        "im": 0.0027421154015936744,
+        "mag": 0.0028521666851328703,
+        "phaseDeg": 74.03186620433469
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 861.0265312978718,
+        "im": -2229.586530944346,
+        "mag": 2390.0675276165916,
+        "phaseDeg": -68.88432893487715
+      },
+      "s6Yout": {
+        "re": 0.00015072878242180674,
+        "im": 0.0003903048871290128,
+        "mag": 0.00041839822032024913,
+        "phaseDeg": 68.88432893487715
+      },
+      "VNA": {
+        "re": 0.5578623883400353,
+        "im": 0.3144151546834872,
+        "mag": 0.6403650004638678,
+        "phaseDeg": 29.405912842218008
+      },
+      "VCMD_NODE": {
+        "re": 0.06092031344614969,
+        "im": -0.040132699243741236,
+        "mag": 0.0729514779765682,
+        "phaseDeg": -33.375840424323584
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 861.0265312978718,
+        "im": -2229.586530944346,
+        "mag": 2390.0675276165916,
+        "phaseDeg": -68.88432893487715
+      },
+      "s6Yout": {
+        "re": 0.00015072878242180674,
+        "im": 0.0003903048871290128,
+        "mag": 0.00041839822032024913,
+        "phaseDeg": 68.88432893487715
+      },
+      "VNA": {
+        "re": 0.04080710085017338,
+        "im": 0.08699934341809983,
+        "mag": 0.09609425183108868,
+        "phaseDeg": 64.87104270228727
+      },
+      "VCMD_NODE": {
+        "re": 0.010939781479174763,
+        "im": 0.0004034074309296966,
+        "mag": 0.010947216832027422,
+        "phaseDeg": 2.111840653358002
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 279.9874249106854,
+        "im": -1254.75616781199,
+        "mag": 1285.6150274364202,
+        "phaseDeg": -77.42104251670803
+      },
+      "s6Yout": {
+        "re": 0.00016940126374117106,
+        "im": 0.0007591672396793706,
+        "mag": 0.000777837827544727,
+        "phaseDeg": 77.42104251670804
+      },
+      "VNA": {
+        "re": 0.6983376990610599,
+        "im": 0.20960051257501275,
+        "mag": 0.7291144744150972,
+        "phaseDeg": 16.706711091150108
+      },
+      "VCMD_NODE": {
+        "re": 0.02500887297083091,
+        "im": -0.038765730069735174,
+        "mag": 0.046132695077468935,
+        "phaseDeg": -57.17278931785683
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 279.9874249106854,
+        "im": -1254.75616781199,
+        "mag": 1285.6150274364202,
+        "phaseDeg": -77.42104251670803
+      },
+      "s6Yout": {
+        "re": 0.00016940126374117106,
+        "im": 0.0007591672396793706,
+        "mag": 0.000777837827544727,
+        "phaseDeg": 77.42104251670804
+      },
+      "VNA": {
+        "re": 0.10556534783178032,
+        "im": 0.11423350020184653,
+        "mag": 0.15554206900774478,
+        "phaseDeg": 47.25838906492513
+      },
+      "VCMD_NODE": {
+        "re": 0.008799054879645008,
+        "im": -0.0044081278894926145,
+        "mag": 0.009841491668701815,
+        "phaseDeg": -26.609835694588245
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2142.6593442131602,
+        "im": -18.89481282009501,
+        "mag": 2142.742653539028,
+        "phaseDeg": -0.5052436222479991
+      },
+      "s6Yout": {
+        "re": 0.00046667345636945386,
+        "im": 0.000004115310084182185,
+        "mag": 0.0004666916012281574,
+        "phaseDeg": 0.5052436222479991
+      },
+      "VNA": {
+        "re": 0.0002756248908591984,
+        "im": 0.013159827881641533,
+        "mag": 0.013162713966158006,
+        "phaseDeg": 88.8001488657234
+      },
+      "VCMD_NODE": {
+        "re": 0.000032417816780784424,
+        "im": 0.0012733301457836085,
+        "mag": 0.0012737427428669175,
+        "phaseDeg": 88.54161707915641
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2142.6593442131602,
+        "im": -18.89481282009501,
+        "mag": 2142.742653539028,
+        "phaseDeg": -0.5052436222479991
+      },
+      "s6Yout": {
+        "re": 0.00046667345636945386,
+        "im": 0.000004115310084182185,
+        "mag": 0.0004666916012281574,
+        "phaseDeg": 0.5052436222479991
+      },
+      "VNA": {
+        "re": 0.00014026468093749156,
+        "im": 0.0010623711572753712,
+        "mag": 0.0010715907131592303,
+        "phaseDeg": 82.47874994295132
+      },
+      "VCMD_NODE": {
+        "re": 0.000009994141127232431,
+        "im": 0.00010274930564015723,
+        "mag": 0.00010323421267392648,
+        "phaseDeg": 84.4444739362669
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2123.6266614828787,
+        "im": -186.29985020483562,
+        "mag": 2131.7827824492956,
+        "phaseDeg": -5.013563820594727
+      },
+      "s6Yout": {
+        "re": 0.0004672962206607213,
+        "im": 0.000040994595466977316,
+        "mag": 0.00046909094502163936,
+        "phaseDeg": 5.013563820594727
+      },
+      "VNA": {
+        "re": 0.02235707929335157,
+        "im": 0.12767776979838757,
+        "mag": 0.12962041465455687,
+        "phaseDeg": 80.06788969748415
+      },
+      "VCMD_NODE": {
+        "re": 0.003115164901482951,
+        "im": 0.01209471713947013,
+        "mag": 0.012489452952280327,
+        "phaseDeg": 75.5565907982085
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2123.6266614828787,
+        "im": -186.29985020483562,
+        "mag": 2131.7827824492956,
+        "phaseDeg": -5.013563820594727
+      },
+      "s6Yout": {
+        "re": 0.0004672962206607213,
+        "im": 0.000040994595466977316,
+        "mag": 0.00046909094502163936,
+        "phaseDeg": 5.013563820594727
+      },
+      "VNA": {
+        "re": 0.0006269791152729227,
+        "im": 0.010586373145603244,
+        "mag": 0.010604923346679028,
+        "phaseDeg": 86.61061033906577
+      },
+      "VCMD_NODE": {
+        "re": 0.00013646637853896923,
+        "im": 0.0010126270044506956,
+        "mag": 0.0010217810541472815,
+        "phaseDeg": 82.32479280742652
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 1251.9256742502532,
+        "im": -1009.4421626445359,
+        "mag": 1608.1950670150152,
+        "phaseDeg": -38.87963441055389
+      },
+      "s6Yout": {
+        "re": 0.0004840621157551401,
+        "im": 0.0003903048871290128,
+        "mag": 0.0006218151146652308,
+        "phaseDeg": 38.87963441055389
+      },
+      "VNA": {
+        "re": 0.5646774782215856,
+        "im": 0.3335784671550442,
+        "mag": 0.6558469700777753,
+        "phaseDeg": 30.5721127232083
+      },
+      "VCMD_NODE": {
+        "re": 0.04933845937134199,
+        "im": -0.004825532465264747,
+        "mag": 0.049573877563802576,
+        "phaseDeg": -5.586029330000411
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 1251.9256742502532,
+        "im": -1009.4421626445359,
+        "mag": 1608.1950670150152,
+        "phaseDeg": -38.87963441055389
+      },
+      "s6Yout": {
+        "re": 0.0004840621157551401,
+        "im": 0.0003903048871290128,
+        "mag": 0.0006218151146652308,
+        "phaseDeg": 38.87963441055389
+      },
+      "VNA": {
+        "re": 0.040461680108471704,
+        "im": 0.08728418327300692,
+        "mag": 0.09620642497690139,
+        "phaseDeg": 65.12932630364331
+      },
+      "VCMD_NODE": {
+        "re": 0.006360625541748913,
+        "im": 0.003524843239738889,
+        "mag": 0.0072720064044994905,
+        "phaseDeg": 28.993735514315514
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 606.37867593546,
+        "im": -915.6776324708219,
+        "mag": 1098.253443079789,
+        "phaseDeg": -56.486736913252344
+      },
+      "s6Yout": {
+        "re": 0.0005027345970745044,
+        "im": 0.0007591672396793706,
+        "mag": 0.0009105366400634624,
+        "phaseDeg": 56.48673691325234
+      },
+      "VNA": {
+        "re": 0.7033641874727061,
+        "im": 0.2126015098400351,
+        "mag": 0.7347928838832087,
+        "phaseDeg": 16.81816480683219
+      },
+      "VCMD_NODE": {
+        "re": 0.031194693311587283,
+        "im": -0.023612188094039158,
+        "mag": 0.03912344971231797,
+        "phaseDeg": -37.123158762886206
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 606.37867593546,
+        "im": -915.6776324708219,
+        "mag": 1098.253443079789,
+        "phaseDeg": -56.486736913252344
+      },
+      "s6Yout": {
+        "re": 0.0005027345970745044,
+        "im": 0.0007591672396793706,
+        "mag": 0.0009105366400634624,
+        "phaseDeg": 56.48673691325234
+      },
+      "VNA": {
+        "re": 0.10555647222039463,
+        "im": 0.11449803530233363,
+        "mag": 0.15573043670300735,
+        "phaseDeg": 47.326842361496475
+      },
+      "VCMD_NODE": {
+        "re": 0.00823673491637712,
+        "im": -0.0009534897426995916,
+        "mag": 0.008291739550426036,
+        "phaseDeg": -6.603205555108561
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 7436.813701019126,
+        "im": -227.81573908309903,
+        "mag": 7440.3022811334595,
+        "phaseDeg": -1.7546223670559156
+      },
+      "s6Yout": {
+        "re": 0.00013434012303612048,
+        "im": 0.000004115310084182185,
+        "mag": 0.00013440314146049177,
+        "phaseDeg": 1.7546223670559156
+      },
+      "VNA": {
+        "re": 0.00048614808080033766,
+        "im": 0.01609375577973865,
+        "mag": 0.016101096703465174,
+        "phaseDeg": 88.26977828289786
+      },
+      "VCMD_NODE": {
+        "re": 0.00021688875194802483,
+        "im": 0.004360633921357233,
+        "mag": 0.004366024384587531,
+        "phaseDeg": 87.15257503169043
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 7436.813701019126,
+        "im": -227.81573908309903,
+        "mag": 7440.3022811334595,
+        "phaseDeg": -1.7546223670559156
+      },
+      "s6Yout": {
+        "re": 0.00013434012303612048,
+        "im": 0.000004115310084182185,
+        "mag": 0.00013440314146049177,
+        "phaseDeg": 1.7546223670559156
+      },
+      "VNA": {
+        "re": 0.00014355172037713347,
+        "im": 0.0010780622950589808,
+        "mag": 0.0010875777712196363,
+        "phaseDeg": 82.41527417601795
+      },
+      "VCMD_NODE": {
+        "re": 0.00003312233135917557,
+        "im": 0.00029172841402391844,
+        "mag": 0.0002936027186242965,
+        "phaseDeg": 83.52247663443102
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 6783.575724076704,
+        "im": -2060.4919480831195,
+        "mag": 7089.6069476662915,
+        "phaseDeg": -16.896010427549598
+      },
+      "s6Yout": {
+        "re": 0.00013496288732738797,
+        "im": 0.000040994595466977316,
+        "mag": 0.00014105154310834863,
+        "phaseDeg": 16.896010427549598
+      },
+      "VNA": {
+        "re": 0.03949728600343271,
+        "im": 0.14822886711835606,
+        "mag": 0.1534008886833066,
+        "phaseDeg": 75.07955823752044
+      },
+      "VCMD_NODE": {
+        "re": 0.018631584126690706,
+        "im": 0.035942682228579645,
+        "mag": 0.04048471727522138,
+        "phaseDeg": 62.59916159351257
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 6783.575724076704,
+        "im": -2060.4919480831195,
+        "mag": 7089.6069476662915,
+        "phaseDeg": -16.896010427549598
+      },
+      "s6Yout": {
+        "re": 0.00013496288732738797,
+        "im": 0.000040994595466977316,
+        "mag": 0.00014105154310834863,
+        "phaseDeg": 16.896010427549598
+      },
+      "VNA": {
+        "re": 0.0006833585467395222,
+        "im": 0.010729067158614722,
+        "mag": 0.010750807457929237,
+        "phaseDeg": 86.35562498236668
+      },
+      "VCMD_NODE": {
+        "re": 0.0007772341203667806,
+        "im": 0.0027286291608038635,
+        "mag": 0.0028371658349577522,
+        "phaseDeg": 74.10070585097012
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 865.2440153383039,
+        "im": -2225.7409725126377,
+        "mag": 2388.0054612165886,
+        "phaseDeg": -68.7566931457083
+      },
+      "s6Yout": {
+        "re": 0.00015172878242180674,
+        "im": 0.0003903048871290128,
+        "mag": 0.00041875951133317,
+        "phaseDeg": 68.7566931457083
+      },
+      "VNA": {
+        "re": 0.5579282631778003,
+        "im": 0.3144760508697266,
+        "mag": 0.6404522881708017,
+        "phaseDeg": 29.407765265143112
+      },
+      "VCMD_NODE": {
+        "re": 0.060947394494189795,
+        "im": -0.03997105786047506,
+        "mag": 0.07288532336565326,
+        "phaseDeg": -33.258017179886124
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 865.2440153383039,
+        "im": -2225.7409725126377,
+        "mag": 2388.0054612165886,
+        "phaseDeg": -68.7566931457083
+      },
+      "s6Yout": {
+        "re": 0.00015172878242180674,
+        "im": 0.0003903048871290128,
+        "mag": 0.00041875951133317,
+        "phaseDeg": 68.7566931457083
+      },
+      "VNA": {
+        "re": 0.04080628814352953,
+        "im": 0.08700119258710586,
+        "mag": 0.09609558087462419,
+        "phaseDeg": 64.87194960924253
+      },
+      "VCMD_NODE": {
+        "re": 0.010927677659702779,
+        "im": 0.00042528450358739417,
+        "mag": 0.010935950161890771,
+        "phaseDeg": 2.2287183819980987
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 281.48214275346584,
+        "im": -1254.0518576069255,
+        "mag": 1285.2541609566813,
+        "phaseDeg": -77.3491704449589
+      },
+      "s6Yout": {
+        "re": 0.00017040126374117106,
+        "im": 0.0007591672396793706,
+        "mag": 0.0007780562245024346,
+        "phaseDeg": 77.3491704449589
+      },
+      "VNA": {
+        "re": 0.6983580307242087,
+        "im": 0.2096044125950057,
+        "mag": 0.7291350690073082,
+        "phaseDeg": 16.70654533328682
+      },
+      "VCMD_NODE": {
+        "re": 0.02504774210817805,
+        "im": -0.038722842205207136,
+        "mag": 0.04611776114651672,
+        "phaseDeg": -57.10332545291094
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 281.48214275346584,
+        "im": -1254.0518576069255,
+        "mag": 1285.2541609566813,
+        "phaseDeg": -77.3491704449589
+      },
+      "s6Yout": {
+        "re": 0.00017040126374117106,
+        "im": 0.0007591672396793706,
+        "mag": 0.0007780562245024346,
+        "phaseDeg": 77.3491704449589
+      },
+      "VNA": {
+        "re": 0.1055656392055919,
+        "im": 0.11423439614928146,
+        "mag": 0.1555429247650827,
+        "phaseDeg": 47.25853422899314
+      },
+      "VCMD_NODE": {
+        "re": 0.008801366253275177,
+        "im": -0.004395885640392372,
+        "mag": 0.009838082053311966,
+        "phaseDeg": -26.54006090770232
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 7436.9789717812155,
+        "im": -227.8258743556161,
+        "mag": 7440.467784739201,
+        "phaseDeg": -1.754661409440882
+      },
+      "s6Yout": {
+        "re": 0.00013433713200920123,
+        "im": 0.000004115310084182185,
+        "mag": 0.00013440015183602483,
+        "phaseDeg": 1.754661409440882
+      },
+      "VNA": {
+        "re": 0.00048615676779474316,
+        "im": 0.016093846108449158,
+        "mag": 0.01610118725328405,
+        "phaseDeg": 88.2697570896629
+      },
+      "VCMD_NODE": {
+        "re": 0.00021689675016194065,
+        "im": 0.004360728999862946,
+        "mag": 0.004366119743030018,
+        "phaseDeg": 87.15253218343221
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 7436.9789717812155,
+        "im": -227.8258743556161,
+        "mag": 7440.467784739201,
+        "phaseDeg": -1.754661409440882
+      },
+      "s6Yout": {
+        "re": 0.00013433713200920123,
+        "im": 0.000004115310084182185,
+        "mag": 0.00013440015183602483,
+        "phaseDeg": 1.754661409440882
+      },
+      "VNA": {
+        "re": 0.00014355181096792054,
+        "im": 0.0010780626953000123,
+        "mag": 0.0010875781799161367,
+        "phaseDeg": 82.4152722283904
+      },
+      "VCMD_NODE": {
+        "re": 0.00003312300113621438,
+        "im": 0.00029173324118028144,
+        "mag": 0.00029360759052487367,
+        "phaseDeg": 83.52245303503152
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 6783.700665097019,
+        "im": -2060.575564726122,
+        "mag": 7089.750797565745,
+        "phaseDeg": -16.89636354785198
+      },
+      "s6Yout": {
+        "re": 0.00013495989630046872,
+        "im": 0.000040994595466977316,
+        "mag": 0.0001410486811953036,
+        "phaseDeg": 16.89636354785198
+      },
+      "VNA": {
+        "re": 0.03949790776861257,
+        "im": 0.14822933928819879,
+        "mag": 0.15340150502493047,
+        "phaseDeg": 75.07937924457917
+      },
+      "VCMD_NODE": {
+        "re": 0.01863218129283369,
+        "im": 0.03594325875604333,
+        "mag": 0.040485503945645866,
+        "phaseDeg": 62.5987867817937
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 6783.700665097019,
+        "im": -2060.575564726122,
+        "mag": 7089.750797565745,
+        "phaseDeg": -16.89636354785198
+      },
+      "s6Yout": {
+        "re": 0.00013495989630046872,
+        "im": 0.000040994595466977316,
+        "mag": 0.0001410486811953036,
+        "phaseDeg": 16.89636354785198
+      },
+      "VNA": {
+        "re": 0.0006833604513327655,
+        "im": 0.010729070486427012,
+        "mag": 0.010750810900074695,
+        "phaseDeg": 86.35561597980283
+      },
+      "VCMD_NODE": {
+        "re": 0.000777256103510126,
+        "im": 0.002728669313352437,
+        "mag": 0.0028372104737003573,
+        "phaseDeg": 74.10050102948931
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 865.2314371363251,
+        "im": -2225.752492752172,
+        "mag": 2388.0116412617213,
+        "phaseDeg": -68.75707457909029
+      },
+      "s6Yout": {
+        "re": 0.0001517257913948875,
+        "im": 0.0003903048871290128,
+        "mag": 0.00041875842760617527,
+        "phaseDeg": 68.75707457909029
+      },
+      "VNA": {
+        "re": 0.5579280666961627,
+        "im": 0.31447586848962716,
+        "mag": 0.6404520274537532,
+        "phaseDeg": 29.40775968246528
+      },
+      "VCMD_NODE": {
+        "re": 0.060947314557863376,
+        "im": -0.03997154106197601,
+        "mag": 0.07288552151617206,
+        "phaseDeg": -33.25836927347301
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 865.2314371363251,
+        "im": -2225.752492752172,
+        "mag": 2388.0116412617213,
+        "phaseDeg": -68.75707457909029
+      },
+      "s6Yout": {
+        "re": 0.0001517257913948875,
+        "im": 0.0003903048871290128,
+        "mag": 0.00041875842760617527,
+        "phaseDeg": 68.75707457909029
+      },
+      "VNA": {
+        "re": 0.04080629058308349,
+        "im": 0.08700118706682376,
+        "mag": 0.09609557691271492,
+        "phaseDeg": 64.87194689467809
+      },
+      "VCMD_NODE": {
+        "re": 0.010927713958275468,
+        "im": 0.0004252192095075915,
+        "mag": 0.010935983894008931,
+        "phaseDeg": 2.2283691565240975
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 281.4776759007132,
+        "im": -1254.0539692162995,
+        "mag": 1285.2552430305905,
+        "phaseDeg": -77.34938535604331
+      },
+      "s6Yout": {
+        "re": 0.0001703982727142518,
+        "im": 0.0007591672396793706,
+        "mag": 0.0007780555694462931,
+        "phaseDeg": 77.34938535604331
+      },
+      "VNA": {
+        "re": 0.698357969945318,
+        "im": 0.2096044008599613,
+        "mag": 0.7291350074204426,
+        "phaseDeg": 16.706545823031778
+      },
+      "VCMD_NODE": {
+        "re": 0.025047626042137283,
+        "im": -0.03872297058294954,
+        "mag": 0.0461178059009178,
+        "phaseDeg": -57.10353315411138
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 281.4776759007132,
+        "im": -1254.0539692162995,
+        "mag": 1285.2552430305905,
+        "phaseDeg": -77.34938535604331
+      },
+      "s6Yout": {
+        "re": 0.0001703982727142518,
+        "im": 0.0007591672396793706,
+        "mag": 0.0007780555694462931,
+        "phaseDeg": 77.34938535604331
+      },
+      "VNA": {
+        "re": 0.10556563833764783,
+        "im": 0.11423439346933842,
+        "mag": 0.1555429222078031,
+        "phaseDeg": 47.25853379380698
+      },
+      "VCMD_NODE": {
+        "re": 0.008801359386730405,
+        "im": -0.004395922253005715,
+        "mag": 0.009838092269787789,
+        "phaseDeg": -26.54026953383392
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2138.0785257701928,
+        "im": -18.814102015070343,
+        "mag": 2138.1613018652906,
+        "phaseDeg": -0.5041633438873702
+      },
+      "s6Yout": {
+        "re": 0.0004676734563694539,
+        "im": 0.000004115310084182185,
+        "mag": 0.0004676915624315244,
+        "phaseDeg": 0.50416334388737
+      },
+      "VNA": {
+        "re": 0.0002755028856487562,
+        "im": 0.013157254085220976,
+        "mag": 0.013160138179482193,
+        "phaseDeg": 88.80044528389261
+      },
+      "VCMD_NODE": {
+        "re": 0.00003232188600382957,
+        "im": 0.0012706225875475017,
+        "mag": 0.0012710336204446967,
+        "phaseDeg": 88.54283374082951
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2138.0785257701928,
+        "im": -18.814102015070343,
+        "mag": 2138.1613018652906,
+        "phaseDeg": -0.5041633438873702
+      },
+      "s6Yout": {
+        "re": 0.0004676734563694539,
+        "im": 0.000004115310084182185,
+        "mag": 0.0004676915624315244,
+        "phaseDeg": 0.50416334388737
+      },
+      "VNA": {
+        "re": 0.0001402614773376457,
+        "im": 0.0010623545344663312,
+        "mag": 0.0010715738140352786,
+        "phaseDeg": 82.4788034231582
+      },
+      "VCMD_NODE": {
+        "re": 0.00000997293652279209,
+        "im": 0.00010254938575040956,
+        "mag": 0.00010303317902828169,
+        "phaseDeg": 84.44544747678289
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2119.1609155517644,
+        "im": -185.511094537348,
+        "mag": 2127.26522845616,
+        "phaseDeg": -5.0029122455458
+      },
+      "s6Yout": {
+        "re": 0.00046829622066072135,
+        "im": 0.000040994595466977316,
+        "mag": 0.00047008712718241515,
+        "phaseDeg": 5.0029122455458
+      },
+      "VNA": {
+        "re": 0.022345879328122206,
+        "im": 0.12765565496972714,
+        "mag": 0.1295966996828894,
+        "phaseDeg": 80.07108071069877
+      },
+      "VCMD_NODE": {
+        "re": 0.0031061161318751656,
+        "im": 0.012069963809779842,
+        "mag": 0.01246322525649321,
+        "phaseDeg": 75.56849159499399
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2119.1609155517644,
+        "im": -185.511094537348,
+        "mag": 2127.26522845616,
+        "phaseDeg": -5.0029122455458
+      },
+      "s6Yout": {
+        "re": 0.00046829622066072135,
+        "im": 0.000040994595466977316,
+        "mag": 0.00047008712718241515,
+        "phaseDeg": 5.0029122455458
+      },
+      "VNA": {
+        "re": 0.0006269408653044053,
+        "im": 0.010586211668984656,
+        "mag": 0.01060475989115904,
+        "phaseDeg": 86.6107650564058
+      },
+      "VCMD_NODE": {
+        "re": 0.00013604625390089772,
+        "im": 0.0010106908947140648,
+        "mag": 0.0010198061913218534,
+        "phaseDeg": 82.33365731050921
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 1251.3754710415908,
+        "im": -1006.9183845053304,
+        "mag": 1606.183427438905,
+        "phaseDeg": -38.821869971351894
+      },
+      "s6Yout": {
+        "re": 0.00048506211575514015,
+        "im": 0.0003903048871290128,
+        "mag": 0.0006225938973822699,
+        "phaseDeg": 38.821869971351894
+      },
+      "VNA": {
+        "re": 0.5646715232646858,
+        "im": 0.33361945122555836,
+        "mag": 0.6558626894572548,
+        "phaseDeg": 30.575459959099785
+      },
+      "VCMD_NODE": {
+        "re": 0.049284028069378816,
+        "im": -0.004772978517875033,
+        "mag": 0.04951461144627327,
+        "phaseDeg": -5.531636353811307
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 1251.3754710415908,
+        "im": -1006.9183845053304,
+        "mag": 1606.183427438905,
+        "phaseDeg": -38.821869971351894
+      },
+      "s6Yout": {
+        "re": 0.00048506211575514015,
+        "im": 0.0003903048871290128,
+        "mag": 0.0006225938973822699,
+        "phaseDeg": 38.821869971351894
+      },
+      "VNA": {
+        "re": 0.04046081035450246,
+        "im": 0.08728437730542471,
+        "mag": 0.09620623522484785,
+        "phaseDeg": 65.12984484863523
+      },
+      "VCMD_NODE": {
+        "re": 0.006349685609075508,
+        "im": 0.003526253858352169,
+        "mag": 0.007263124231874612,
+        "phaseDeg": 29.045299799693694
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 606.848145054974,
+        "im": -914.5673810405195,
+        "mag": 1097.5874296018417,
+        "phaseDeg": -56.4343042582066
+      },
+      "s6Yout": {
+        "re": 0.0005037345970745045,
+        "im": 0.0007591672396793706,
+        "mag": 0.000911089151561036,
+        "phaseDeg": 56.4343042582066
+      },
+      "VNA": {
+        "re": 0.7033735674132829,
+        "im": 0.21261306763988752,
+        "mag": 0.7348052067500145,
+        "phaseDeg": 16.81881585161281
+      },
+      "VCMD_NODE": {
+        "re": 0.031196222779464537,
+        "im": -0.0235705996438387,
+        "mag": 0.03909958418290546,
+        "phaseDeg": -37.07321386491615
+      }
+    },
+    {
+      "contactHypothesis": "core_all_branches",
+      "contactNote": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 606.848145054974,
+        "im": -914.5673810405195,
+        "mag": 1097.5874296018417,
+        "phaseDeg": -56.4343042582066
+      },
+      "s6Yout": {
+        "re": 0.0005037345970745045,
+        "im": 0.0007591672396793706,
+        "mag": 0.000911089151561036,
+        "phaseDeg": 56.4343042582066
+      },
+      "VNA": {
+        "re": 0.1055562220011049,
+        "im": 0.11449865530838703,
+        "mag": 0.15573072295014675,
+        "phaseDeg": 47.32706466311186
+      },
+      "VCMD_NODE": {
+        "re": 0.008232407979047875,
+        "im": -0.0009457796224606016,
+        "mag": 0.008286557803319352,
+        "phaseDeg": -6.553689400292763
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 14984.418942082359,
+        "im": -458.8943087090275,
+        "mag": 14991.444060476702,
+        "phaseDeg": -1.7541215369923675
+      },
+      "s6Yout": {
+        "re": 0.00006667345636945381,
+        "im": 0.0000020418589328129216,
+        "mag": 0.00006670471476703105,
+        "phaseDeg": 1.7541215369923675
+      },
+      "VNA": {
+        "re": 0.0007653717896149428,
+        "im": 0.020148161152612157,
+        "mag": 0.020162693069329007,
+        "phaseDeg": 87.82454102129078
+      },
+      "VCMD_NODE": {
+        "re": 0.0004595097200078167,
+        "im": 0.00862684295292647,
+        "mag": 0.008639072202339712,
+        "phaseDeg": 86.95101544599406
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 14984.418942082359,
+        "im": -458.8943087090275,
+        "mag": 14991.444060476702,
+        "phaseDeg": -1.7541215369923675
+      },
+      "s6Yout": {
+        "re": 0.00006667345636945381,
+        "im": 0.0000020418589328129216,
+        "mag": 0.00006670471476703105,
+        "phaseDeg": 1.7541215369923675
+      },
+      "VNA": {
+        "re": 0.00014633880611847057,
+        "im": 0.0010926757165497806,
+        "mag": 0.0011024315251813854,
+        "phaseDeg": 82.37193747129265
+      },
+      "VCMD_NODE": {
+        "re": 0.00005141747203312451,
+        "im": 0.0004674523163644252,
+        "mag": 0.00047027164969275345,
+        "phaseDeg": 83.72297796492589
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 13624.778881806695,
+        "im": -4101.852396466884,
+        "mag": 14228.836658719742,
+        "phaseDeg": -16.754856056143762
+      },
+      "s6Yout": {
+        "re": 0.0000672962206607213,
+        "im": 0.00002026008395328469,
+        "mag": 0.00007027981443494736,
+        "phaseDeg": 16.754856056143762
+      },
+      "VNA": {
+        "re": 0.06118840754288198,
+        "im": 0.1767763097776775,
+        "mag": 0.18706652537599347,
+        "phaseDeg": 70.90748976381087
+      },
+      "VCMD_NODE": {
+        "re": 0.03794902268225129,
+        "im": 0.0688039333865068,
+        "mag": 0.07857550236551394,
+        "phaseDeg": 61.12093166593288
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 13624.778881806695,
+        "im": -4101.852396466884,
+        "mag": 14228.836658719742,
+        "phaseDeg": -16.754856056143762
+      },
+      "s6Yout": {
+        "re": 0.0000672962206607213,
+        "im": 0.00002026008395328469,
+        "mag": 0.00007027981443494736,
+        "phaseDeg": 16.754856056143762
+      },
+      "VNA": {
+        "re": 0.0007091246721429294,
+        "im": 0.010873128038014723,
+        "mag": 0.010896227380690241,
+        "phaseDeg": 86.26856298497529
+      },
+      "VCMD_NODE": {
+        "re": 0.0010522756550036547,
+        "im": 0.004454036960770245,
+        "mag": 0.004576650445688507,
+        "phaseDeg": 76.70748140058909
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2073.5231390983413,
+        "im": -4512.98801299265,
+        "mag": 4966.543970790109,
+        "phaseDeg": -65.32326151116585
+      },
+      "s6Yout": {
+        "re": 0.00008406211575514007,
+        "im": 0.00018295977199208634,
+        "mag": 0.00020134725593517978,
+        "phaseDeg": 65.32326151116584
+      },
+      "VNA": {
+        "re": 0.5770869222988029,
+        "im": 0.28169671638704746,
+        "mag": 0.6421700366036626,
+        "phaseDeg": 26.018654173310235
+      },
+      "VCMD_NODE": {
+        "re": 0.1252806466810631,
+        "im": -0.06590685262480052,
+        "mag": 0.14155901121346015,
+        "phaseDeg": -27.747677386520227
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2073.5231390983413,
+        "im": -4512.98801299265,
+        "mag": 4966.543970790109,
+        "phaseDeg": -65.32326151116585
+      },
+      "s6Yout": {
+        "re": 0.00008406211575514007,
+        "im": 0.00018295977199208634,
+        "mag": 0.00020134725593517978,
+        "phaseDeg": 65.32326151116584
+      },
+      "VNA": {
+        "re": 0.041637142038097916,
+        "im": 0.08721258847355368,
+        "mag": 0.09664205702155852,
+        "phaseDeg": 64.47919955652952
+      },
+      "VCMD_NODE": {
+        "re": 0.020930762631349176,
+        "im": 0.003968311178847173,
+        "mag": 0.021303622178917053,
+        "phaseDeg": 10.735419151994318
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 795.0436867961967,
+        "im": -2665.8426603422986,
+        "mag": 2781.871951333381,
+        "phaseDeg": -73.39365484187174
+      },
+      "s6Yout": {
+        "re": 0.00010273459707450439,
+        "im": 0.0003444770094055177,
+        "mag": 0.0003594701760160777,
+        "phaseDeg": 73.39365484187174
+      },
+      "VNA": {
+        "re": 0.7008773813791037,
+        "im": 0.19160085814962458,
+        "mag": 0.7265947925580681,
+        "phaseDeg": 15.289541973396137
+      },
+      "VCMD_NODE": {
+        "re": 0.06093774207585314,
+        "im": -0.07471127873087062,
+        "mag": 0.09641153239579299,
+        "phaseDeg": -50.797830878256434
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 795.0436867961967,
+        "im": -2665.8426603422986,
+        "mag": 2781.871951333381,
+        "phaseDeg": -73.39365484187174
+      },
+      "s6Yout": {
+        "re": 0.00010273459707450439,
+        "im": 0.0003444770094055177,
+        "mag": 0.0003594701760160777,
+        "phaseDeg": 73.39365484187174
+      },
+      "VNA": {
+        "re": 0.10634851206704542,
+        "im": 0.11395297674655717,
+        "mag": 0.1558694547635165,
+        "phaseDeg": 46.9769762211305
+      },
+      "VCMD_NODE": {
+        "re": 0.019543768432054787,
+        "im": -0.006767300818384037,
+        "mag": 0.02068224467731398,
+        "phaseDeg": -19.09912099336446
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2499.8924265313835,
+        "im": -12.760852599470036,
+        "mag": 2499.9249955924747,
+        "phaseDeg": -0.29246724336043356
+      },
+      "s6Yout": {
+        "re": 0.00040000678970278716,
+        "im": 0.0000020418589328129216,
+        "mag": 0.00040001200106525714,
+        "phaseDeg": 0.29246724336043356
+      },
+      "VNA": {
+        "re": 0.00027819438159191177,
+        "im": 0.013360575365735752,
+        "mag": 0.01336347133859516,
+        "phaseDeg": 88.80715758338765
+      },
+      "VCMD_NODE": {
+        "re": 0.00003259671270002098,
+        "im": 0.0014844233125120678,
+        "mag": 0.0014847811678520668,
+        "phaseDeg": 88.74203406995426
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2499.8924265313835,
+        "im": -12.760852599470036,
+        "mag": 2499.9249955924747,
+        "phaseDeg": -0.29246724336043356
+      },
+      "s6Yout": {
+        "re": 0.00040000678970278716,
+        "im": 0.0000020418589328129216,
+        "mag": 0.00040001200106525714,
+        "phaseDeg": 0.29246724336043356
+      },
+      "VNA": {
+        "re": 0.00014046670209052868,
+        "im": 0.0010636559091867174,
+        "mag": 0.001072890855373468,
+        "phaseDeg": 82.47703480059867
+      },
+      "VCMD_NODE": {
+        "re": 0.00001109365389547397,
+        "im": 0.00011815500994339363,
+        "mag": 0.00011867466255050405,
+        "phaseDeg": 84.63618507759004
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2489.704332203431,
+        "im": -125.90588559037425,
+        "mag": 2492.8858685906234,
+        "phaseDeg": -2.8950167405515246
+      },
+      "s6Yout": {
+        "re": 0.0004006295539940546,
+        "im": 0.00002026008395328469,
+        "mag": 0.0004011415093645499,
+        "phaseDeg": 2.8950167405515246
+      },
+      "VNA": {
+        "re": 0.022625165321968628,
+        "im": 0.1296862719805337,
+        "mag": 0.1316450805995248,
+        "phaseDeg": 80.1037354395683
+      },
+      "VCMD_NODE": {
+        "re": 0.0031461155046426346,
+        "im": 0.014248833474913047,
+        "mag": 0.014592028582906334,
+        "phaseDeg": 77.54897151140133
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2489.704332203431,
+        "im": -125.90588559037425,
+        "mag": 2492.8858685906234,
+        "phaseDeg": -2.8950167405515246
+      },
+      "s6Yout": {
+        "re": 0.0004006295539940546,
+        "im": 0.00002026008395328469,
+        "mag": 0.0004011415093645499,
+        "phaseDeg": 2.8950167405515246
+      },
+      "VNA": {
+        "re": 0.0006256025173504733,
+        "im": 0.010599672495193354,
+        "mag": 0.010618118266202998,
+        "phaseDeg": 86.62226830663722
+      },
+      "VCMD_NODE": {
+        "re": 0.0001170325968102446,
+        "im": 0.0011710648118577899,
+        "mag": 0.0011768982208702969,
+        "phaseDeg": 84.29298597744811
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2009.672779542434,
+        "im": -880.9134702516814,
+        "mag": 2194.263708605844,
+        "phaseDeg": -23.669606259541336
+      },
+      "s6Yout": {
+        "re": 0.0004173954490884734,
+        "im": 0.00018295977199208634,
+        "mag": 0.00045573373705176207,
+        "phaseDeg": 23.669606259541336
+      },
+      "VNA": {
+        "re": 0.576736014514383,
+        "im": 0.33457366726403853,
+        "mag": 0.666756304255492,
+        "phaseDeg": 30.11869708701762
+      },
+      "VCMD_NODE": {
+        "re": 0.06564749274778589,
+        "im": 0.010095970937859017,
+        "mag": 0.06641928886437053,
+        "phaseDeg": 8.743055934316295
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2009.672779542434,
+        "im": -880.9134702516814,
+        "mag": 2194.263708605844,
+        "phaseDeg": -23.669606259541336
+      },
+      "s6Yout": {
+        "re": 0.0004173954490884734,
+        "im": 0.00018295977199208634,
+        "mag": 0.00045573373705176207,
+        "phaseDeg": 23.669606259541336
+      },
+      "VNA": {
+        "re": 0.04053092408830999,
+        "im": 0.08753144358785137,
+        "mag": 0.09645988505086223,
+        "phaseDeg": 65.15377973331857
+      },
+      "VCMD_NODE": {
+        "re": 0.006935241141078369,
+        "im": 0.006650817433416809,
+        "mag": 0.009608899115796094,
+        "phaseDeg": 43.80068985129538
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 1412.0472272207076,
+        "im": -1115.4633763538052,
+        "mag": 1799.4821243592055,
+        "phaseDeg": -38.30738808069843
+      },
+      "s6Yout": {
+        "re": 0.00043606793040783774,
+        "im": 0.0003444770094055177,
+        "mag": 0.0005557154397163569,
+        "phaseDeg": 38.30738808069844
+      },
+      "VNA": {
+        "re": 0.7119665893730275,
+        "im": 0.2075968373577416,
+        "mag": 0.74161504250143,
+        "phaseDeg": 16.25574837059286
+      },
+      "VCMD_NODE": {
+        "re": 0.05882608519917847,
+        "im": -0.020334129814134183,
+        "mag": 0.06224134586558251,
+        "phaseDeg": -19.068486015934614
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 1412.0472272207076,
+        "im": -1115.4633763538052,
+        "mag": 1799.4821243592055,
+        "phaseDeg": -38.30738808069843
+      },
+      "s6Yout": {
+        "re": 0.00043606793040783774,
+        "im": 0.0003444770094055177,
+        "mag": 0.0005557154397163569,
+        "phaseDeg": 38.30738808069844
+      },
+      "VNA": {
+        "re": 0.105935695107722,
+        "im": 0.11472922053569358,
+        "mag": 0.15615750235798487,
+        "phaseDeg": 47.28203675196502
+      },
+      "VCMD_NODE": {
+        "re": 0.012820867073634098,
+        "im": 0.0027179283366944706,
+        "mag": 0.013105791352039821,
+        "phaseDeg": 11.969078017437816
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 14763.402348338906,
+        "im": -445.44473684180997,
+        "mag": 14770.120849624718,
+        "phaseDeg": -1.728216996144844
+      },
+      "s6Yout": {
+        "re": 0.00006767345636945381,
+        "im": 0.0000020418589328129216,
+        "mag": 0.00006770425307829544,
+        "phaseDeg": 1.728216996144844
+      },
+      "VNA": {
+        "re": 0.0007534056095229675,
+        "im": 0.020031682061929828,
+        "mag": 0.020045845111710852,
+        "phaseDeg": 87.8460807906123
+      },
+      "VCMD_NODE": {
+        "re": 0.00044839245958934313,
+        "im": 0.008504229385849046,
+        "mag": 0.008516042111506673,
+        "phaseDeg": 86.98182787936973
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 14763.402348338906,
+        "im": -445.44473684180997,
+        "mag": 14770.120849624718,
+        "phaseDeg": -1.728216996144844
+      },
+      "s6Yout": {
+        "re": 0.00006767345636945381,
+        "im": 0.0000020418589328129216,
+        "mag": 0.00006770425307829544,
+        "phaseDeg": 1.728216996144844
+      },
+      "VNA": {
+        "re": 0.00014626423575915602,
+        "im": 0.0010923348974900922,
+        "mag": 0.0011020838239158125,
+        "phaseDeg": 82.37342795833305
+      },
+      "VCMD_NODE": {
+        "re": 0.00005087755478544561,
+        "im": 0.00046334440942100326,
+        "mag": 0.00046612934612899485,
+        "phaseDeg": 83.73373817115542
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 13457.79504852634,
+        "im": -3992.2568902272114,
+        "mag": 14037.462827936777,
+        "phaseDeg": -16.52299752966603
+      },
+      "s6Yout": {
+        "re": 0.0000682962206607213,
+        "im": 0.00002026008395328469,
+        "mag": 0.00007123794465263634,
+        "phaseDeg": 16.52299752966603
+      },
+      "VNA": {
+        "re": 0.06038824458227045,
+        "im": 0.17622605290528787,
+        "mag": 0.18628569941438186,
+        "phaseDeg": 71.08469966255359
+      },
+      "VCMD_NODE": {
+        "re": 0.037173314086800566,
+        "im": 0.06812257568616809,
+        "mag": 0.07760502946532283,
+        "phaseDeg": 61.379464495983655
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 13457.79504852634,
+        "im": -3992.2568902272114,
+        "mag": 14037.462827936777,
+        "phaseDeg": -16.52299752966603
+      },
+      "s6Yout": {
+        "re": 0.0000682962206607213,
+        "im": 0.00002026008395328469,
+        "mag": 0.00007123794465263634,
+        "phaseDeg": 16.52299752966603
+      },
+      "VNA": {
+        "re": 0.0007077540615810291,
+        "im": 0.010870118055249445,
+        "mag": 0.010893134642826392,
+        "phaseDeg": 86.27472650910047
+      },
+      "VCMD_NODE": {
+        "re": 0.0010365946888890604,
+        "im": 0.004417798735169442,
+        "mag": 0.004537782962361437,
+        "phaseDeg": 76.79496794772311
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2089.4730167053385,
+        "im": -4494.239337056753,
+        "mag": 4956.216773536851,
+        "phaseDeg": -65.0652231417513
+      },
+      "s6Yout": {
+        "re": 0.00008506211575514007,
+        "im": 0.00018295977199208634,
+        "mag": 0.00020176680030207418,
+        "phaseDeg": 65.0652231417513
+      },
+      "VNA": {
+        "re": 0.5772847149636253,
+        "im": 0.28197002540898475,
+        "mag": 0.6424676936311877,
+        "phaseDeg": 26.032820099383166
+      },
+      "VCMD_NODE": {
+        "re": 0.1252608023941416,
+        "im": -0.06529081443046085,
+        "mag": 0.14125565144594063,
+        "phaseDeg": -27.53028256376302
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2089.4730167053385,
+        "im": -4494.239337056753,
+        "mag": 4956.216773536851,
+        "phaseDeg": -65.0652231417513
+      },
+      "s6Yout": {
+        "re": 0.00008506211575514007,
+        "im": 0.00018295977199208634,
+        "mag": 0.00020176680030207418,
+        "phaseDeg": 65.0652231417513
+      },
+      "VNA": {
+        "re": 0.04163212502382432,
+        "im": 0.08721834707340913,
+        "mag": 0.09664509247870268,
+        "phaseDeg": 64.48335454250085
+      },
+      "VCMD_NODE": {
+        "re": 0.02086242421368148,
+        "im": 0.0040336353098612944,
+        "mag": 0.021248787209734186,
+        "phaseDeg": 10.942803035405042
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 801.5018377260507,
+        "im": -2661.58990230228,
+        "mag": 2779.652137213521,
+        "phaseDeg": -73.24103500927669
+      },
+      "s6Yout": {
+        "re": 0.00010373459707450439,
+        "im": 0.0003444770094055177,
+        "mag": 0.00035975724681954483,
+        "phaseDeg": 73.24103500927667
+      },
+      "VNA": {
+        "re": 0.7009601357778016,
+        "im": 0.1916371484870054,
+        "mag": 0.7266841876839378,
+        "phaseDeg": 15.290581454814584
+      },
+      "VCMD_NODE": {
+        "re": 0.061061631176770756,
+        "im": -0.074491101777178,
+        "mag": 0.09631950501298205,
+        "phaseDeg": -50.657940187133484
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 801.5018377260507,
+        "im": -2661.58990230228,
+        "mag": 2779.652137213521,
+        "phaseDeg": -73.24103500927669
+      },
+      "s6Yout": {
+        "re": 0.00010373459707450439,
+        "im": 0.0003444770094055177,
+        "mag": 0.00035975724681954483,
+        "phaseDeg": 73.24103500927667
+      },
+      "VNA": {
+        "re": 0.106348724148136,
+        "im": 0.11395712927528841,
+        "mag": 0.15587263531679035,
+        "phaseDeg": 46.977960672125725
+      },
+      "VCMD_NODE": {
+        "re": 0.019539550416769275,
+        "im": -0.006712479439257355,
+        "mag": 0.02066038263711302,
+        "phaseDeg": -18.95928533261142
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 14764.053701957722,
+        "im": -445.48407910716094,
+        "mag": 14770.773093478536,
+        "phaseDeg": -1.7282933368142617
+      },
+      "s6Yout": {
+        "re": 0.00006767046534253456,
+        "im": 0.0000020418589328129216,
+        "mag": 0.00006770126341196801,
+        "phaseDeg": 1.728293336814262
+      },
+      "VNA": {
+        "re": 0.0007534407083275152,
+        "im": 0.020032025526029406,
+        "mag": 0.02004618965231195,
+        "phaseDeg": 87.84601743828165
+      },
+      "VCMD_NODE": {
+        "re": 0.00044842504560816163,
+        "im": 0.008504590936456771,
+        "mag": 0.008516404876354302,
+        "phaseDeg": 86.98173702716242
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 14764.053701957722,
+        "im": -445.48407910716094,
+        "mag": 14770.773093478536,
+        "phaseDeg": -1.7282933368142617
+      },
+      "s6Yout": {
+        "re": 0.00006767046534253456,
+        "im": 0.0000020418589328129216,
+        "mag": 0.00006770126341196801,
+        "phaseDeg": 1.728293336814262
+      },
+      "VNA": {
+        "re": 0.00014626445665310135,
+        "im": 0.001092335907977882,
+        "mag": 0.0011020848547811054,
+        "phaseDeg": 82.37342354804308
+      },
+      "VCMD_NODE": {
+        "re": 0.00005087915322955302,
+        "im": 0.0004633565886750257,
+        "mag": 0.0004661416270854957,
+        "phaseDeg": 83.73370626973635
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 13458.289104852032,
+        "im": -3992.578306721659,
+        "mag": 14038.027894440278,
+        "phaseDeg": -16.52368172312047
+      },
+      "s6Yout": {
+        "re": 0.00006829322963380205,
+        "im": 0.00002026008395328469,
+        "mag": 0.00007123507714328218,
+        "phaseDeg": 16.52368172312047
+      },
+      "VNA": {
+        "re": 0.060390601082008194,
+        "im": 0.17622768908936817,
+        "mag": 0.18628801115698576,
+        "phaseDeg": 71.08417715658612
+      },
+      "VCMD_NODE": {
+        "re": 0.037175596601948226,
+        "im": 0.06812459883863181,
+        "mag": 0.0776078987580214,
+        "phaseDeg": 61.3787007423434
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 13458.289104852032,
+        "im": -3992.578306721659,
+        "mag": 14038.027894440278,
+        "phaseDeg": -16.52368172312047
+      },
+      "s6Yout": {
+        "re": 0.00006829322963380205,
+        "im": 0.00002026008395328469,
+        "mag": 0.00007123507714328218,
+        "phaseDeg": 16.52368172312047
+      },
+      "VNA": {
+        "re": 0.0007077581128068422,
+        "im": 0.010870126988135644,
+        "mag": 0.010893143820056668,
+        "phaseDeg": 86.27470829822504
+      },
+      "VCMD_NODE": {
+        "re": 0.0010366410302736604,
+        "im": 0.004417906277578258,
+        "mag": 0.004537898247329067,
+        "phaseDeg": 76.79470848890398
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2089.4256608494775,
+        "im": -4494.295511797126,
+        "mag": 4956.247748002117,
+        "phaseDeg": -65.06599333882636
+      },
+      "s6Yout": {
+        "re": 0.00008505912472822082,
+        "im": 0.00018295977199208634,
+        "mag": 0.00020176553934437677,
+        "phaseDeg": 65.06599333882636
+      },
+      "VNA": {
+        "re": 0.5772841277143339,
+        "im": 0.28196920745306037,
+        "mag": 0.6424668069734081,
+        "phaseDeg": 26.032777539310356
+      },
+      "VCMD_NODE": {
+        "re": 0.12526086857705573,
+        "im": -0.06529265284328531,
+        "mag": 0.14125655989012403,
+        "phaseDeg": -27.530931406734513
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2089.4256608494775,
+        "im": -4494.295511797126,
+        "mag": 4956.247748002117,
+        "phaseDeg": -65.06599333882636
+      },
+      "s6Yout": {
+        "re": 0.00008505912472822082,
+        "im": 0.00018295977199208634,
+        "mag": 0.00020176553934437677,
+        "phaseDeg": 65.06599333882636
+      },
+      "VNA": {
+        "re": 0.04163214005324988,
+        "im": 0.08721832994760284,
+        "mag": 0.09664508349762199,
+        "phaseDeg": 64.48334212780468
+      },
+      "VCMD_NODE": {
+        "re": 0.020862628793134833,
+        "im": 0.004033441162046088,
+        "mag": 0.021248951215714774,
+        "phaseDeg": 10.94218433780794
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 801.4825704129298,
+        "im": -2661.602663510682,
+        "mag": 2779.6588008392096,
+        "phaseDeg": -73.24149113559905
+      },
+      "s6Yout": {
+        "re": 0.00010373160604758514,
+        "im": 0.0003444770094055177,
+        "mag": 0.00035975638438001423,
+        "phaseDeg": 73.24149113559905
+      },
+      "VNA": {
+        "re": 0.7009598887566345,
+        "im": 0.19163703944152521,
+        "mag": 0.726683920650255,
+        "phaseDeg": 15.290578297658586
+      },
+      "VCMD_NODE": {
+        "re": 0.06106126257618517,
+        "im": -0.07449176060486737,
+        "mag": 0.09631978086255545,
+        "phaseDeg": -50.65835820546617
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 801.4825704129298,
+        "im": -2661.602663510682,
+        "mag": 2779.6588008392096,
+        "phaseDeg": -73.24149113559905
+      },
+      "s6Yout": {
+        "re": 0.00010373160604758514,
+        "im": 0.0003444770094055177,
+        "mag": 0.00035975638438001423,
+        "phaseDeg": 73.24149113559905
+      },
+      "VNA": {
+        "re": 0.10634872354471296,
+        "im": 0.11395711686647816,
+        "mag": 0.15587262583311398,
+        "phaseDeg": 46.97795772224553
+      },
+      "VCMD_NODE": {
+        "re": 0.01953956341820077,
+        "im": -0.006712643207530591,
+        "mag": 0.02066044814144883,
+        "phaseDeg": -18.959703143668463
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2493.6587100360503,
+        "im": -12.6972895303036,
+        "mag": 2493.6910360548027,
+        "phaseDeg": -0.2917379235845192
+      },
+      "s6Yout": {
+        "re": 0.0004010067897027872,
+        "im": 0.0000020418589328129216,
+        "mag": 0.0004010119880697296,
+        "phaseDeg": 0.29173792358451917
+      },
+      "VNA": {
+        "re": 0.00027805310107586665,
+        "im": 0.013357078202654594,
+        "mag": 0.013359971992442514,
+        "phaseDeg": 88.80745112891124
+      },
+      "VCMD_NODE": {
+        "re": 0.000032492119418522854,
+        "im": 0.0014807447074741997,
+        "mag": 0.0014811011533778376,
+        "phaseDeg": 88.74295508822163
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2493.6587100360503,
+        "im": -12.6972895303036,
+        "mag": 2493.6910360548027,
+        "phaseDeg": -0.2917379235845192
+      },
+      "s6Yout": {
+        "re": 0.0004010067897027872,
+        "im": 0.0000020418589328129216,
+        "mag": 0.0004010119880697296,
+        "phaseDeg": 0.29173792358451917
+      },
+      "VNA": {
+        "re": 0.00014046261669673204,
+        "im": 0.001063633920653374,
+        "mag": 0.001072868521233502,
+        "phaseDeg": 82.47709735898607
+      },
+      "VCMD_NODE": {
+        "re": 0.000011067406850588056,
+        "im": 0.00011789071038846516,
+        "mag": 0.00011840906675712553,
+        "phaseDeg": 84.63687485396018
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2483.536833440576,
+        "im": -125.28128033955821,
+        "mag": 2486.694714326542,
+        "phaseDeg": -2.887820780542079
+      },
+      "s6Yout": {
+        "re": 0.00040162955399405465,
+        "im": 0.00002026008395328469,
+        "mag": 0.00040214023628985123,
+        "phaseDeg": 2.8878207805420786
+      },
+      "VNA": {
+        "re": 0.022612014844187667,
+        "im": 0.1296551068838305,
+        "mag": 0.1316121193369793,
+        "phaseDeg": 80.10704340901592
+      },
+      "VCMD_NODE": {
+        "re": 0.0031361433563964723,
+        "im": 0.014214280551386956,
+        "mag": 0.014556138455833922,
+        "phaseDeg": 77.55797682919113
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2483.536833440576,
+        "im": -125.28128033955821,
+        "mag": 2486.694714326542,
+        "phaseDeg": -2.887820780542079
+      },
+      "s6Yout": {
+        "re": 0.00040162955399405465,
+        "im": 0.00002026008395328469,
+        "mag": 0.00040214023628985123,
+        "phaseDeg": 2.8878207805420786
+      },
+      "VNA": {
+        "re": 0.0006255665976056106,
+        "im": 0.01059945535785423,
+        "mag": 0.010617899389765593,
+        "phaseDeg": 86.62239276323415
+      },
+      "VCMD_NODE": {
+        "re": 0.00011665285078884132,
+        "im": 0.001168464830363731,
+        "mag": 0.0011742733699586763,
+        "phaseDeg": 84.29880778390425
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2006.4134433363272,
+        "im": -877.3827414099004,
+        "mag": 2189.8619546730997,
+        "phaseDeg": -23.619234878576286
+      },
+      "s6Yout": {
+        "re": 0.00041839544908847345,
+        "im": 0.00018295977199208634,
+        "mag": 0.0004566497892097856,
+        "phaseDeg": 23.619234878576286
+      },
+      "VNA": {
+        "re": 0.5766913884613617,
+        "im": 0.3346330629178773,
+        "mag": 0.6667475116738669,
+        "phaseDeg": 30.12503634439677
+      },
+      "VCMD_NODE": {
+        "re": 0.06551660293937879,
+        "im": 0.010131884038985479,
+        "mag": 0.06629540206451474,
+        "phaseDeg": 8.790928034829834
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2006.4134433363272,
+        "im": -877.3827414099004,
+        "mag": 2189.8619546730997,
+        "phaseDeg": -23.619234878576286
+      },
+      "s6Yout": {
+        "re": 0.00041839544908847345,
+        "im": 0.00018295977199208634,
+        "mag": 0.0004566497892097856,
+        "phaseDeg": 23.619234878576286
+      },
+      "VNA": {
+        "re": 0.040529437354135875,
+        "im": 0.08753098824029526,
+        "mag": 0.09645884715548664,
+        "phaseDeg": 65.1544674515201
+      },
+      "VCMD_NODE": {
+        "re": 0.006917428514668774,
+        "im": 0.006643527459497705,
+        "mag": 0.009590999653876163,
+        "phaseDeg": 43.842910412740736
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 1411.295162329528,
+        "im": -1112.318482058624,
+        "mag": 1796.9436387221303,
+        "phaseDeg": -38.24356688201129
+      },
+      "s6Yout": {
+        "re": 0.00043706793040783776,
+        "im": 0.0003444770094055177,
+        "mag": 0.0005565004814013728,
+        "phaseDeg": 38.24356688201129
+      },
+      "VNA": {
+        "re": 0.7119685228410588,
+        "im": 0.2076344331627097,
+        "mag": 0.741627423543169,
+        "phaseDeg": 16.258494971581882
+      },
+      "VCMD_NODE": {
+        "re": 0.0587672118833267,
+        "im": -0.020246884326871696,
+        "mag": 0.062157232221886606,
+        "phaseDeg": -19.010206508232965
+      }
+    },
+    {
+      "contactHypothesis": "core_without_lr_bridge",
+      "contactNote": "Sensitivity case: LR bridge R5/C3 open.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 1411.295162329528,
+        "im": -1112.318482058624,
+        "mag": 1796.9436387221303,
+        "phaseDeg": -38.24356688201129
+      },
+      "s6Yout": {
+        "re": 0.00043706793040783776,
+        "im": 0.0003444770094055177,
+        "mag": 0.0005565004814013728,
+        "phaseDeg": 38.24356688201129
+      },
+      "VNA": {
+        "re": 0.10593426250812427,
+        "im": 0.11473007694498659,
+        "mag": 0.15615715971079497,
+        "phaseDeg": 47.28263610594333
+      },
+      "VCMD_NODE": {
+        "re": 0.012800633740740457,
+        "im": 0.0027267460245352275,
+        "mag": 0.013087832824684982,
+        "phaseDeg": 12.025210278155797
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 7494.401454604976,
+        "im": -204.83590200970497,
+        "mag": 7497.200204712243,
+        "phaseDeg": -1.5656102248429993
+      },
+      "s6Yout": {
+        "re": 0.00013333333333333334,
+        "im": 0.00000364424747816416,
+        "mag": 0.00013338312605970772,
+        "phaseDeg": 1.565610224842999
+      },
+      "VNA": {
+        "re": 0.0004746585783962045,
+        "im": 0.01612573035795628,
+        "mag": 0.0161327145993338,
+        "phaseDeg": 88.3139936954854
+      },
+      "VCMD_NODE": {
+        "re": 0.000204407182749473,
+        "im": 0.004394106814677883,
+        "mag": 0.00439885860140539,
+        "phaseDeg": 87.33660731933765
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 7494.401454604976,
+        "im": -204.83590200970497,
+        "mag": 7497.200204712243,
+        "phaseDeg": -1.5656102248429993
+      },
+      "s6Yout": {
+        "re": 0.00013333333333333334,
+        "im": 0.00000364424747816416,
+        "mag": 0.00013338312605970772,
+        "phaseDeg": 1.565610224842999
+      },
+      "VNA": {
+        "re": 0.00014351862168781113,
+        "im": 0.0010782120465852906,
+        "mag": 0.0010877218450379717,
+        "phaseDeg": 82.41804357228786
+      },
+      "VCMD_NODE": {
+        "re": 0.000032580184420357325,
+        "im": 0.00029346718942125695,
+        "mag": 0.00029527014695643783,
+        "phaseDeg": 83.66506963918594
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 6978.672015225364,
+        "im": -1907.4005919314868,
+        "mag": 7234.641671443737,
+        "phaseDeg": -15.28664686045082
+      },
+      "s6Yout": {
+        "re": 0.00013333333333333334,
+        "im": 0.000036442474781641595,
+        "mag": 0.00013822384651712005,
+        "phaseDeg": 15.28664686045082
+      },
+      "VNA": {
+        "re": 0.039077126146801235,
+        "im": 0.1494464503901031,
+        "mag": 0.15447091416216374,
+        "phaseDeg": 75.34643133815446
+      },
+      "VCMD_NODE": {
+        "re": 0.01803518691322715,
+        "im": 0.03717540902270243,
+        "mag": 0.04131923284622145,
+        "phaseDeg": 64.12023480177761
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 6978.672015225364,
+        "im": -1907.4005919314868,
+        "mag": 7234.641671443737,
+        "phaseDeg": -15.28664686045082
+      },
+      "s6Yout": {
+        "re": 0.00013333333333333334,
+        "im": 0.000036442474781641595,
+        "mag": 0.00013822384651712005,
+        "phaseDeg": 15.28664686045082
+      },
+      "VNA": {
+        "re": 0.0006791698059676859,
+        "im": 0.010733752266424229,
+        "mag": 0.01075521777289077,
+        "phaseDeg": 86.3794808109493
+      },
+      "VCMD_NODE": {
+        "re": 0.0007261774254841466,
+        "im": 0.0027836077648373796,
+        "mag": 0.0028767700362986506,
+        "phaseDeg": 75.37876219671135
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 885.4464231381916,
+        "im": -2420.089420928123,
+        "mag": 2576.9843176737486,
+        "phaseDeg": -69.90376959963548
+      },
+      "s6Yout": {
+        "re": 0.00013333333333333334,
+        "im": 0.00036442474781641607,
+        "mag": 0.000388050479446729,
+        "phaseDeg": 69.90376959963548
+      },
+      "VNA": {
+        "re": 0.5582790902978902,
+        "im": 0.3114368839641987,
+        "mag": 0.6392718321318167,
+        "phaseDeg": 29.155032970304386
+      },
+      "VCMD_NODE": {
+        "re": 0.06485260858371977,
+        "im": -0.04396967549991181,
+        "mag": 0.07835300379488146,
+        "phaseDeg": -34.137032743943486
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 885.4464231381916,
+        "im": -2420.089420928123,
+        "mag": 2576.9843176737486,
+        "phaseDeg": -69.90376959963548
+      },
+      "s6Yout": {
+        "re": 0.00013333333333333334,
+        "im": 0.00036442474781641607,
+        "mag": 0.000388050479446729,
+        "phaseDeg": 69.90376959963548
+      },
+      "VNA": {
+        "re": 0.04087373542896378,
+        "im": 0.08698657411899423,
+        "mag": 0.096111010424801,
+        "phaseDeg": 64.83184610054288
+      },
+      "VCMD_NODE": {
+        "re": 0.01177555949563158,
+        "im": 0.0003211735641155244,
+        "mag": 0.01177993862010519,
+        "phaseDeg": 1.5623315972363745
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 242.8660975195715,
+        "im": -1327.5962451259043,
+        "mag": 1349.6279974114298,
+        "phaseDeg": -79.63312926008594
+      },
+      "s6Yout": {
+        "re": 0.00013333333333333334,
+        "im": 0.0007288494956328321,
+        "mag": 0.0007409449136487892,
+        "phaseDeg": 79.63312926008594
+      },
+      "VNA": {
+        "re": 0.6976626411535588,
+        "im": 0.20882952167377564,
+        "mag": 0.7282464761218259,
+        "phaseDeg": 16.663880799874445
+      },
+      "VCMD_NODE": {
+        "re": 0.02479659774068183,
+        "im": -0.041622931952670354,
+        "mag": 0.048449352150981485,
+        "phaseDeg": -59.21589672491656
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 242.8660975195715,
+        "im": -1327.5962451259043,
+        "mag": 1349.6279974114298,
+        "phaseDeg": -79.63312926008594
+      },
+      "s6Yout": {
+        "re": 0.00013333333333333334,
+        "im": 0.0007288494956328321,
+        "mag": 0.0007409449136487892,
+        "phaseDeg": 79.63312926008594
+      },
+      "VNA": {
+        "re": 0.10558127618857929,
+        "im": 0.11418961585058195,
+        "mag": 0.15552065537963933,
+        "phaseDeg": 47.24310651682216
+      },
+      "VCMD_NODE": {
+        "re": 0.009081941482818488,
+        "im": -0.004956858520059412,
+        "mag": 0.010346598836585136,
+        "phaseDeg": -28.62539535923701
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2142.7264749613223,
+        "im": -16.732769041657242,
+        "mag": 2142.791807913213,
+        "phaseDeg": -0.4474194767211879
+      },
+      "s6Yout": {
+        "re": 0.00046666666666666666,
+        "im": 0.00000364424747816416,
+        "mag": 0.0004666808955994019,
+        "phaseDeg": 0.4474194767211879
+      },
+      "VNA": {
+        "re": 0.0002744106152117427,
+        "im": 0.013159901797381768,
+        "mag": 0.013162762495102339,
+        "phaseDeg": 88.80544002679979
+      },
+      "VCMD_NODE": {
+        "re": 0.00003114022893972578,
+        "im": 0.0012733926002974254,
+        "mag": 0.001273773303359219,
+        "phaseDeg": 88.59913733389132
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2142.7264749613223,
+        "im": -16.732769041657242,
+        "mag": 2142.791807913213,
+        "phaseDeg": -0.4474194767211879
+      },
+      "s6Yout": {
+        "re": 0.00046666666666666666,
+        "im": 0.00000364424747816416,
+        "mag": 0.0004666808955994019,
+        "phaseDeg": 0.4474194767211879
+      },
+      "VNA": {
+        "re": 0.00014025685544354164,
+        "im": 0.0010623727753758122,
+        "mag": 0.00107159129305842,
+        "phaseDeg": 82.47917608061213
+      },
+      "VCMD_NODE": {
+        "re": 0.000009899914667002852,
+        "im": 0.00010276058911766695,
+        "mag": 0.00010323636465036875,
+        "phaseDeg": 84.49712987636889
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2129.868762268629,
+        "im": -166.3236185511015,
+        "mag": 2136.353081907491,
+        "phaseDeg": -4.465223807928022
+      },
+      "s6Yout": {
+        "re": 0.00046666666666666666,
+        "im": 0.000036442474781641595,
+        "mag": 0.0004680874189144463,
+        "phaseDeg": 4.465223807928022
+      },
+      "VNA": {
+        "re": 0.022262454724899662,
+        "im": 0.12774208403848528,
+        "mag": 0.12966748599735264,
+        "phaseDeg": 80.11397616586427
+      },
+      "VCMD_NODE": {
+        "re": 0.003007193451526537,
+        "im": 0.012150740681007544,
+        "mag": 0.012517336439993764,
+        "phaseDeg": 76.09915961318684
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2129.868762268629,
+        "im": -166.3236185511015,
+        "mag": 2136.353081907491,
+        "phaseDeg": -4.465223807928022
+      },
+      "s6Yout": {
+        "re": 0.00046666666666666666,
+        "im": 0.000036442474781641595,
+        "mag": 0.0004680874189144463,
+        "phaseDeg": 4.465223807928022
+      },
+      "VNA": {
+        "re": 0.0006262630624917268,
+        "im": 0.010586643845372095,
+        "mag": 0.010605151263994136,
+        "phaseDeg": 86.61455860994637
+      },
+      "VCMD_NODE": {
+        "re": 0.00012785806648039897,
+        "im": 0.0010156966018473649,
+        "mag": 0.0010237124948775365,
+        "phaseDeg": 82.8252234920493
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 1331.1154113447171,
+        "im": -1039.4815673439502,
+        "mag": 1688.9020596728667,
+        "phaseDeg": -37.98663954773864
+      },
+      "s6Yout": {
+        "re": 0.00046666666666666666,
+        "im": 0.00036442474781641607,
+        "mag": 0.0005921006456666267,
+        "phaseDeg": 37.98663954773865
+      },
+      "VNA": {
+        "re": 0.5659066275638289,
+        "im": 0.3330097842137463,
+        "mag": 0.6566169564538765,
+        "phaseDeg": 30.47483600834191
+      },
+      "VCMD_NODE": {
+        "re": 0.05175019372414316,
+        "im": -0.004272734963508921,
+        "mag": 0.05192628250274362,
+        "phaseDeg": -4.7198985108298634
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 1331.1154113447171,
+        "im": -1039.4815673439502,
+        "mag": 1688.9020596728667,
+        "phaseDeg": -37.98663954773864
+      },
+      "s6Yout": {
+        "re": 0.00046666666666666666,
+        "im": 0.00036442474781641607,
+        "mag": 0.0005921006456666267,
+        "phaseDeg": 37.98663954773865
+      },
+      "VNA": {
+        "re": 0.040482475144952804,
+        "im": 0.08730456321195716,
+        "mag": 0.09623366121837174,
+        "phaseDeg": 65.1231966857562
+      },
+      "VCMD_NODE": {
+        "re": 0.006593966657285044,
+        "im": 0.0037995152122005933,
+        "mag": 0.0076103030245273815,
+        "phaseDeg": 29.951013429668812
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 623.0534876728902,
+        "im": -973.0976148057066,
+        "mag": 1155.4715991498483,
+        "phaseDeg": -57.36943794452854
+      },
+      "s6Yout": {
+        "re": 0.00046666666666666666,
+        "im": 0.0007288494956328321,
+        "mag": 0.0008654474941104236,
+        "phaseDeg": 57.36943794452854
+      },
+      "VNA": {
+        "re": 0.7033662110638269,
+        "im": 0.21186407533425192,
+        "mag": 0.734581794821735,
+        "phaseDeg": 16.763061028804895
+      },
+      "VCMD_NODE": {
+        "re": 0.0324387334000059,
+        "im": -0.025256344614423446,
+        "mag": 0.04111148705506983,
+        "phaseDeg": -37.903826649293215
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 623.0534876728902,
+        "im": -973.0976148057066,
+        "mag": 1155.4715991498483,
+        "phaseDeg": -57.36943794452854
+      },
+      "s6Yout": {
+        "re": 0.00046666666666666666,
+        "im": 0.0007288494956328321,
+        "mag": 0.0008654474941104236,
+        "phaseDeg": 57.36943794452854
+      },
+      "VNA": {
+        "re": 0.10558552003478035,
+        "im": 0.11448209279465729,
+        "mag": 0.15573840763170632,
+        "phaseDeg": 47.31500968529456
+      },
+      "VCMD_NODE": {
+        "re": 0.008644594509554297,
+        "im": -0.0011136251365845575,
+        "mag": 0.008716029783074933,
+        "phaseDeg": -7.340602340223055
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 7438.694229598771,
+        "im": -201.79982149168444,
+        "mag": 7441.430978610239,
+        "phaseDeg": -1.5539612940903742
+      },
+      "s6Yout": {
+        "re": 0.00013433333333333334,
+        "im": 0.00000364424747816416,
+        "mag": 0.000134382755531082,
+        "phaseDeg": 1.5539612940903742
+      },
+      "VNA": {
+        "re": 0.00047193444646247796,
+        "im": 0.016095280303170097,
+        "mag": 0.016102197681042582,
+        "phaseDeg": 88.32049480285552
+      },
+      "VCMD_NODE": {
+        "re": 0.0002019257354586132,
+        "im": 0.00436205815792571,
+        "mag": 0.004366729368276301,
+        "phaseDeg": 87.34959082460148
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 7438.694229598771,
+        "im": -201.79982149168444,
+        "mag": 7441.430978610239,
+        "phaseDeg": -1.5539612940903742
+      },
+      "s6Yout": {
+        "re": 0.00013433333333333334,
+        "im": 0.00000364424747816416,
+        "mag": 0.000134382755531082,
+        "phaseDeg": 1.5539612940903742
+      },
+      "VNA": {
+        "re": 0.00014348884665793847,
+        "im": 0.0010780773079464487,
+        "mag": 0.0010875843558199462,
+        "phaseDeg": 82.41866188276987
+      },
+      "VCMD_NODE": {
+        "re": 0.00003236324926594697,
+        "im": 0.00029184288275603315,
+        "mag": 0.0002936318240899673,
+        "phaseDeg": 83.67216919502037
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 6933.870717205366,
+        "im": -1881.0477078232234,
+        "mag": 7184.4904900782685,
+        "phaseDeg": -15.178118372119785
+      },
+      "s6Yout": {
+        "re": 0.00013433333333333334,
+        "im": 0.000036442474781641595,
+        "mag": 0.00013918871510526648,
+        "phaseDeg": 15.178118372119785
+      },
+      "VNA": {
+        "re": 0.03887136369054626,
+        "im": 0.14927150229706346,
+        "mag": 0.1542496817279859,
+        "phaseDeg": 75.40393611693789
+      },
+      "VCMD_NODE": {
+        "re": 0.017839911005555723,
+        "im": 0.036964883577761024,
+        "mag": 0.041044671305829394,
+        "phaseDeg": 64.23721590808942
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 6933.870717205366,
+        "im": -1881.0477078232234,
+        "mag": 7184.4904900782685,
+        "phaseDeg": -15.178118372119785
+      },
+      "s6Yout": {
+        "re": 0.00013433333333333334,
+        "im": 0.000036442474781641595,
+        "mag": 0.00013918871510526648,
+        "phaseDeg": 15.178118372119785
+      },
+      "VNA": {
+        "re": 0.000678571296820906,
+        "im": 0.010732585943690668,
+        "mag": 0.010754015996062854,
+        "phaseDeg": 86.38227081266355
+      },
+      "VCMD_NODE": {
+        "re": 0.0007192965456325673,
+        "im": 0.0027695507835858307,
+        "mag": 0.0028614330436723193,
+        "phaseDeg": 75.44102856877132
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 890.5043697893726,
+        "im": -2415.7952634484514,
+        "mag": 2574.697028295551,
+        "phaseDeg": -69.76523162794842
+      },
+      "s6Yout": {
+        "re": 0.00013433333333333334,
+        "im": 0.00036442474781641607,
+        "mag": 0.0003883952127221741,
+        "phaseDeg": 69.76523162794842
+      },
+      "VNA": {
+        "re": 0.5583569066768719,
+        "im": 0.31150509839983626,
+        "mag": 0.6393730222357342,
+        "phaseDeg": 29.156974140507916
+      },
+      "VCMD_NODE": {
+        "re": 0.064888759300699,
+        "im": -0.04378410806441016,
+        "mag": 0.07827898314733016,
+        "phaseDeg": -34.00976189179973
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 890.5043697893726,
+        "im": -2415.7952634484514,
+        "mag": 2574.697028295551,
+        "phaseDeg": -69.76523162794842
+      },
+      "s6Yout": {
+        "re": 0.00013433333333333334,
+        "im": 0.00036442474781641607,
+        "mag": 0.0003883952127221741,
+        "phaseDeg": 69.76523162794842
+      },
+      "VNA": {
+        "re": 0.04087283531562049,
+        "im": 0.08698873269196096,
+        "mag": 0.09611258128929465,
+        "phaseDeg": 64.83287898838813
+      },
+      "VCMD_NODE": {
+        "re": 0.011762029230325731,
+        "im": 0.0003467659164415188,
+        "mag": 0.011767139763589214,
+        "phaseDeg": 1.6886941672189246
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 244.56835304779418,
+        "im": -1326.949286103999,
+        "mag": 1349.2991096137368,
+        "phaseDeg": -79.55708211228394
+      },
+      "s6Yout": {
+        "re": 0.00013433333333333334,
+        "im": 0.0007288494956328321,
+        "mag": 0.0007411255168516857,
+        "phaseDeg": 79.55708211228394
+      },
+      "VNA": {
+        "re": 0.6976853160706203,
+        "im": 0.2088322160610691,
+        "mag": 0.7282689714147779,
+        "phaseDeg": 16.663572323265935
+      },
+      "VCMD_NODE": {
+        "re": 0.02484272860778728,
+        "im": -0.041578799012693624,
+        "mag": 0.048435087405910036,
+        "phaseDeg": -59.14229591598523
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 244.56835304779418,
+        "im": -1326.949286103999,
+        "mag": 1349.2991096137368,
+        "phaseDeg": -79.55708211228394
+      },
+      "s6Yout": {
+        "re": 0.00013433333333333334,
+        "im": 0.0007288494956328321,
+        "mag": 0.0007411255168516857,
+        "phaseDeg": 79.55708211228394
+      },
+      "VNA": {
+        "re": 0.1055816669957247,
+        "im": 0.11419058109177598,
+        "mag": 0.15552162941428296,
+        "phaseDeg": 47.243242218991924
+      },
+      "VCMD_NODE": {
+        "re": 0.009085440203253548,
+        "im": -0.004943539816599486,
+        "mag": 0.010343297810911197,
+        "phaseDeg": -28.55135037151884
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 7438.859617466561,
+        "im": -201.80880161484782,
+        "mag": 7441.596549181094,
+        "phaseDeg": -1.5539958779448209
+      },
+      "s6Yout": {
+        "re": 0.00013433034230641409,
+        "im": 0.00000364424747816416,
+        "mag": 0.0001343797656042028,
+        "phaseDeg": 1.5539958779448209
+      },
+      "VNA": {
+        "re": 0.00047194251465092126,
+        "im": 0.016095370718678753,
+        "mag": 0.016102288294178452,
+        "phaseDeg": 88.32047553584326
+      },
+      "VCMD_NODE": {
+        "re": 0.00020193308198445932,
+        "im": 0.004362153319912887,
+        "mag": 0.0043668247681841734,
+        "phaseDeg": 87.34955227338943
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 7438.859617466561,
+        "im": -201.80880161484782,
+        "mag": 7441.596549181094,
+        "phaseDeg": -1.5539958779448209
+      },
+      "s6Yout": {
+        "re": 0.00013433034230641409,
+        "im": 0.00000364424747816416,
+        "mag": 0.0001343797656042028,
+        "phaseDeg": 1.5539958779448209
+      },
+      "VNA": {
+        "re": 0.00014348893517366734,
+        "im": 0.0010780777087348278,
+        "mag": 0.0010875847647830532,
+        "phaseDeg": 82.41866004604736
+      },
+      "VCMD_NODE": {
+        "re": 0.00003236389393841809,
+        "im": 0.0002918477143040598,
+        "mag": 0.00029363669725591393,
+        "phaseDeg": 83.67214807753075
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 6934.003940534259,
+        "im": -1881.1257337699606,
+        "mag": 7184.639495033568,
+        "phaseDeg": -15.17844074000606
+      },
+      "s6Yout": {
+        "re": 0.00013433034230641409,
+        "im": 0.000036442474781641595,
+        "mag": 0.0001391858284178708,
+        "phaseDeg": 15.17844074000606
+      },
+      "VNA": {
+        "re": 0.038871973994833026,
+        "im": 0.14927202334817866,
+        "mag": 0.15425033976207045,
+        "phaseDeg": 75.40376551100786
+      },
+      "VCMD_NODE": {
+        "re": 0.017840489936954577,
+        "im": 0.0369655102730585,
+        "mag": 0.041045487339513596,
+        "phaseDeg": 64.2368683327741
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 6934.003940534259,
+        "im": -1881.1257337699606,
+        "mag": 7184.639495033568,
+        "phaseDeg": -15.17844074000606
+      },
+      "s6Yout": {
+        "re": 0.00013433034230641409,
+        "im": 0.000036442474781641595,
+        "mag": 0.0001391858284178708,
+        "phaseDeg": 15.17844074000606
+      },
+      "VNA": {
+        "re": 0.0006785730737017043,
+        "im": 0.010732589415577668,
+        "mag": 0.010754019573151372,
+        "phaseDeg": 86.38226253177008
+      },
+      "VCMD_NODE": {
+        "re": 0.0007193169718062763,
+        "im": 0.0027695926270643384,
+        "mag": 0.002861478678204277,
+        "phaseDeg": 75.44084331836547
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 890.4892857019042,
+        "im": -2415.8081324240156,
+        "mag": 2574.7038860101757,
+        "phaseDeg": -69.76564563166158
+      },
+      "s6Yout": {
+        "re": 0.00013433034230641409,
+        "im": 0.00036442474781641607,
+        "mag": 0.0003883941782329092,
+        "phaseDeg": 69.76564563166157
+      },
+      "VNA": {
+        "re": 0.5583566745969014,
+        "im": 0.31150489404488535,
+        "mag": 0.6393727200004903,
+        "phaseDeg": 29.156968280705033
+      },
+      "VCMD_NODE": {
+        "re": 0.06488865250292421,
+        "im": -0.04378466281675379,
+        "mag": 0.07827920491179041,
+        "phaseDeg": -34.01014220358544
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 890.4892857019042,
+        "im": -2415.8081324240156,
+        "mag": 2574.7038860101757,
+        "phaseDeg": -69.76564563166158
+      },
+      "s6Yout": {
+        "re": 0.00013433034230641409,
+        "im": 0.00036442474781641607,
+        "mag": 0.0003883941782329092,
+        "phaseDeg": 69.76564563166157
+      },
+      "VNA": {
+        "re": 0.04087283801917044,
+        "im": 0.08698872624851693,
+        "mag": 0.09611257660723056,
+        "phaseDeg": 64.83287589622526
+      },
+      "VCMD_NODE": {
+        "re": 0.011762069823911387,
+        "im": 0.0003466895410167985,
+        "mag": 0.011767178089092443,
+        "phaseDeg": 1.6883166230726296
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 244.56326535721908,
+        "im": -1326.951227439971,
+        "mag": 1349.3000966303352,
+        "phaseDeg": -79.55730951602075
+      },
+      "s6Yout": {
+        "re": 0.00013433034230641409,
+        "im": 0.0007288494956328321,
+        "mag": 0.0007411249747164053,
+        "phaseDeg": 79.55730951602075
+      },
+      "VNA": {
+        "re": 0.6976852482795877,
+        "im": 0.20883220791755053,
+        "mag": 0.7282689041354634,
+        "phaseDeg": 16.663573238845515
+      },
+      "VCMD_NODE": {
+        "re": 0.02484259083874379,
+        "im": -0.04157893115330997,
+        "mag": 0.04843513017875483,
+        "phaseDeg": -59.142515993309004
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 244.56326535721908,
+        "im": -1326.951227439971,
+        "mag": 1349.3000966303352,
+        "phaseDeg": -79.55730951602075
+      },
+      "s6Yout": {
+        "re": 0.00013433034230641409,
+        "im": 0.0007288494956328321,
+        "mag": 0.0007411249747164053,
+        "phaseDeg": 79.55730951602075
+      },
+      "VNA": {
+        "re": 0.1055816658309035,
+        "im": 0.11419057820412587,
+        "mag": 0.15552162650326531,
+        "phaseDeg": 47.24324181185132
+      },
+      "VCMD_NODE": {
+        "re": 0.009085429793135508,
+        "im": -0.0049435796539748274,
+        "mag": 0.010343307706975955,
+        "phaseDeg": -28.55157177156283
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2138.1452932237585,
+        "im": -16.66129136018371,
+        "mag": 2138.210207992821,
+        "phaseDeg": -0.4464628095516946
+      },
+      "s6Yout": {
+        "re": 0.0004676666666666667,
+        "im": 0.00000364424747816416,
+        "mag": 0.00046768086517495375,
+        "phaseDeg": 0.44646280955169465
+      },
+      "VNA": {
+        "re": 0.0002742937669103284,
+        "im": 0.01315732763809828,
+        "mag": 0.01316018645942491,
+        "phaseDeg": 88.8057149996982
+      },
+      "VCMD_NODE": {
+        "re": 0.00003104972456772119,
+        "im": 0.0012706847253582797,
+        "mag": 0.0012710640253954864,
+        "phaseDeg": 88.60023168137946
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2138.1452932237585,
+        "im": -16.66129136018371,
+        "mag": 2138.210207992821,
+        "phaseDeg": -0.4464628095516946
+      },
+      "s6Yout": {
+        "re": 0.0004676666666666667,
+        "im": 0.00000364424747816416,
+        "mag": 0.00046768086517495375,
+        "phaseDeg": 0.44646280955169465
+      },
+      "VNA": {
+        "re": 0.00014025368224059167,
+        "im": 0.0010623561460198362,
+        "mag": 0.0010715743914298085,
+        "phaseDeg": 82.47922791038953
+      },
+      "VCMD_NODE": {
+        "re": 0.000009879076333349872,
+        "im": 0.0001025606223025225,
+        "mag": 0.00010303532111019419,
+        "phaseDeg": 84.49800089480334
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2125.3695501368065,
+        "im": -165.61737612087566,
+        "mag": 2131.8125714804046,
+        "phaseDeg": -4.455714420386674
+      },
+      "s6Yout": {
+        "re": 0.0004676666666666667,
+        "im": 0.000036442474781641595,
+        "mag": 0.00046908439014672155,
+        "phaseDeg": 4.455714420386673
+      },
+      "VNA": {
+        "re": 0.02225162703129514,
+        "im": 0.12771966164185583,
+        "mag": 0.12964353773115728,
+        "phaseDeg": 80.11698903614226
+      },
+      "VCMD_NODE": {
+        "re": 0.002998576308346722,
+        "im": 0.012125709359974103,
+        "mag": 0.01249096823146796,
+        "phaseDeg": 76.1099444709765
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2125.3695501368065,
+        "im": -165.61737612087566,
+        "mag": 2131.8125714804046,
+        "phaseDeg": -4.455714420386674
+      },
+      "s6Yout": {
+        "re": 0.0004676666666666667,
+        "im": 0.000036442474781641595,
+        "mag": 0.00046908439014672155,
+        "phaseDeg": 4.455714420386673
+      },
+      "VNA": {
+        "re": 0.0006262275023645012,
+        "im": 0.010586481113173877,
+        "mag": 0.010604986715894786,
+        "phaseDeg": 86.61469847714532
+      },
+      "VCMD_NODE": {
+        "re": 0.00012747033271626713,
+        "im": 0.0010137461119560857,
+        "mag": 0.001021728860916083,
+        "phaseDeg": 82.83313534867956
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 1330.4221158648797,
+        "im": -1036.7186259375085,
+        "mag": 1686.6560158337381,
+        "phaseDeg": -37.92716083547293
+      },
+      "s6Yout": {
+        "re": 0.0004676666666666667,
+        "im": 0.00036442474781641607,
+        "mag": 0.0005928891194246776,
+        "phaseDeg": 37.92716083547293
+      },
+      "VNA": {
+        "re": 0.5658987371539608,
+        "im": 0.33305452870143987,
+        "mag": 0.6566328500775649,
+        "phaseDeg": 30.47855008513171
+      },
+      "VCMD_NODE": {
+        "re": 0.05168876129138825,
+        "im": -0.004216912257263474,
+        "mag": 0.0518604897086749,
+        "phaseDeg": -4.6640191174798895
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 1330.4221158648797,
+        "im": -1036.7186259375085,
+        "mag": 1686.6560158337381,
+        "phaseDeg": -37.92716083547293
+      },
+      "s6Yout": {
+        "re": 0.0004676666666666667,
+        "im": 0.00036442474781641607,
+        "mag": 0.0005928891194246776,
+        "phaseDeg": 37.92716083547293
+      },
+      "VNA": {
+        "re": 0.04048151608402728,
+        "im": 0.08730474374190317,
+        "mag": 0.09623342155561518,
+        "phaseDeg": 65.12375992864379
+      },
+      "VCMD_NODE": {
+        "re": 0.006581941110398478,
+        "im": 0.0038006586492079384,
+        "mag": 0.007600457548631704,
+        "phaseDeg": 30.00374198921248
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 623.6106840742677,
+        "im": -971.8852442454215,
+        "mag": 1154.7515807625286,
+        "phaseDeg": -57.31371829204611
+      },
+      "s6Yout": {
+        "re": 0.0004676666666666667,
+        "im": 0.0007288494956328321,
+        "mag": 0.0008659871236891141,
+        "phaseDeg": 57.31371829204611
+      },
+      "VNA": {
+        "re": 0.7033769115287065,
+        "im": 0.21187655097290495,
+        "mag": 0.7345956387862889,
+        "phaseDeg": 16.763752023801647
+      },
+      "VCMD_NODE": {
+        "re": 0.03244167039903546,
+        "im": -0.02521048594642038,
+        "mag": 0.04108564931864061,
+        "phaseDeg": -37.85084959453579
+      }
+    },
+    {
+      "contactHypothesis": "core_without_m0_shunt",
+      "contactNote": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 623.6106840742677,
+        "im": -971.8852442454215,
+        "mag": 1154.7515807625286,
+        "phaseDeg": -57.31371829204611
+      },
+      "s6Yout": {
+        "re": 0.0004676666666666667,
+        "im": 0.0007288494956328321,
+        "mag": 0.0008659871236891141,
+        "phaseDeg": 57.31371829204611
+      },
+      "VNA": {
+        "re": 0.1055852612452306,
+        "im": 0.11448278473716382,
+        "mag": 0.1557387408238534,
+        "phaseDeg": 47.31525225746104
+      },
+      "VCMD_NODE": {
+        "re": 0.008640033908038509,
+        "im": -0.0011049859562142304,
+        "mag": 0.00871040641391008,
+        "phaseDeg": -7.288073708283862
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 14991.677141848186,
+        "im": -353.23307080365214,
+        "mag": 14995.83799351416,
+        "phaseDeg": -1.3497502588218946
+      },
+      "s6Yout": {
+        "re": 0.00006666666666666667,
+        "im": 0.0000015707963267948967,
+        "mag": 0.00006668516960722764,
+        "phaseDeg": 1.3497502588218948
+      },
+      "VNA": {
+        "re": 0.0007097343467755384,
+        "im": 0.020154335347616344,
+        "mag": 0.020166828113195458,
+        "phaseDeg": 87.98316416526129
+      },
+      "VCMD_NODE": {
+        "re": 0.00040093632045333424,
+        "im": 0.008632635204245774,
+        "mag": 0.008641940783333461,
+        "phaseDeg": 87.34085103208821
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 14991.677141848186,
+        "im": -353.23307080365214,
+        "mag": 14995.83799351416,
+        "phaseDeg": -1.3497502588218946
+      },
+      "s6Yout": {
+        "re": 0.00006666666666666667,
+        "im": 0.0000015707963267948967,
+        "mag": 0.00006668516960722764,
+        "phaseDeg": 1.3497502588218948
+      },
+      "VNA": {
+        "re": 0.00014617717061611858,
+        "im": 0.0010927128501009656,
+        "mag": 0.0011024468866957307,
+        "phaseDeg": 82.38051974323342
+      },
+      "VCMD_NODE": {
+        "re": 0.00004946749553702311,
+        "im": 0.0004677292977058139,
+        "mag": 0.0004703378881687922,
+        "phaseDeg": 83.96278660204135
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 14211.05179141149,
+        "im": -3348.4001930761797,
+        "mag": 14600.197836713456,
+        "phaseDeg": -13.25818090611812
+      },
+      "s6Yout": {
+        "re": 0.00006666666666666667,
+        "im": 0.000015707963267948964,
+        "mag": 0.00006849222258382098,
+        "phaseDeg": 13.25818090611812
+      },
+      "VNA": {
+        "re": 0.058896686307835774,
+        "im": 0.1808161854002995,
+        "mag": 0.19016653901451508,
+        "phaseDeg": 71.95817962674096
+      },
+      "VCMD_NODE": {
+        "re": 0.035022514090276756,
+        "im": 0.07278139292388296,
+        "mag": 0.08076947225990941,
+        "phaseDeg": 64.30307127438935
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 14211.05179141149,
+        "im": -3348.4001930761797,
+        "mag": 14600.197836713456,
+        "phaseDeg": -13.25818090611812
+      },
+      "s6Yout": {
+        "re": 0.00006666666666666667,
+        "im": 0.000015707963267948964,
+        "mag": 0.00006849222258382098,
+        "phaseDeg": 13.25818090611812
+      },
+      "VNA": {
+        "re": 0.0006957251940645865,
+        "im": 0.01088093908800706,
+        "mag": 0.010903158669971566,
+        "phaseDeg": 86.3414989179179
+      },
+      "VCMD_NODE": {
+        "re": 0.000890568819032441,
+        "im": 0.004544249522547417,
+        "mag": 0.004630692879538143,
+        "phaseDeg": 78.9118682954326
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2289.498726593718,
+        "im": -5394.504284902508,
+        "mag": 5860.245805331529,
+        "phaseDeg": -67.00299232820947
+      },
+      "s6Yout": {
+        "re": 0.00006666666666666667,
+        "im": 0.00015707963267948965,
+        "mag": 0.0001706413063919983,
+        "phaseDeg": 67.00299232820947
+      },
+      "VNA": {
+        "re": 0.5811119079376083,
+        "im": 0.2701836367393095,
+        "mag": 0.6408511895195065,
+        "phaseDeg": 24.935719891428658
+      },
+      "VCMD_NODE": {
+        "re": 0.14396958210016342,
+        "im": -0.07803996648987727,
+        "mag": 0.16376042543861707,
+        "phaseDeg": -28.460292862723072
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2289.498726593718,
+        "im": -5394.504284902508,
+        "mag": 5860.245805331529,
+        "phaseDeg": -67.00299232820947
+      },
+      "s6Yout": {
+        "re": 0.00006666666666666667,
+        "im": 0.00015707963267948965,
+        "mag": 0.0001706413063919983,
+        "phaseDeg": 67.00299232820947
+      },
+      "VNA": {
+        "re": 0.04191219068891862,
+        "im": 0.08724724117518208,
+        "mag": 0.09679211135740692,
+        "phaseDeg": 64.34110881246576
+      },
+      "VCMD_NODE": {
+        "re": 0.024282069755060195,
+        "im": 0.004705728538992325,
+        "mag": 0.024733839020101508,
+        "phaseDeg": 10.967647191340625
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 646.3675678202235,
+        "im": -3045.9354038740744,
+        "mag": 3113.7619557864973,
+        "phaseDeg": -78.01918643231379
+      },
+      "s6Yout": {
+        "re": 0.00006666666666666667,
+        "im": 0.0003141592653589793,
+        "mag": 0.00032115492905346793,
+        "phaseDeg": 78.01918643231379
+      },
+      "VNA": {
+        "re": 0.6984771357342308,
+        "im": 0.187479275093081,
+        "mag": 0.7232003786869323,
+        "phaseDeg": 15.024709459002525
+      },
+      "VCMD_NODE": {
+        "re": 0.06250294820969597,
+        "im": -0.08795407753886887,
+        "mag": 0.10790059448685764,
+        "phaseDeg": -54.6011951591244
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1r2_open",
+      "loadNote": "No R1/R2 load applied at VR.",
+      "loadOhm": null,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 646.3675678202235,
+        "im": -3045.9354038740744,
+        "mag": 3113.7619557864973,
+        "phaseDeg": -78.01918643231379
+      },
+      "s6Yout": {
+        "re": 0.00006666666666666667,
+        "im": 0.0003141592653589793,
+        "mag": 0.00032115492905346793,
+        "phaseDeg": 78.01918643231379
+      },
+      "VNA": {
+        "re": 0.10646976325698754,
+        "im": 0.1137688705564406,
+        "mag": 0.15581773453521622,
+        "phaseDeg": 46.89819115289386
+      },
+      "VCMD_NODE": {
+        "re": 0.021444414560690104,
+        "im": -0.008977622616620802,
+        "mag": 0.023247809008532374,
+        "phaseDeg": -22.71643783186158
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2499.961447452337,
+        "im": -9.817325646967461,
+        "mag": 2499.980723651853,
+        "phaseDeg": -0.22499884341643586
+      },
+      "s6Yout": {
+        "re": 0.00039999999999999996,
+        "im": 0.0000015707963267948967,
+        "mag": 0.00040000308423948465,
+        "phaseDeg": 0.22499884341643583
+      },
+      "VNA": {
+        "re": 0.00027654372467509594,
+        "im": 0.013360663983667602,
+        "mag": 0.013363525676861245,
+        "phaseDeg": 88.81424110921476
+      },
+      "VCMD_NODE": {
+        "re": 0.00003086013977050523,
+        "im": 0.0014844957409545295,
+        "mag": 0.0014848164711972966,
+        "phaseDeg": 88.80908979629805
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2499.961447452337,
+        "im": -9.817325646967461,
+        "mag": 2499.980723651853,
+        "phaseDeg": -0.22499884341643586
+      },
+      "s6Yout": {
+        "re": 0.00039999999999999996,
+        "im": 0.0000015707963267948967,
+        "mag": 0.00040000308423948465,
+        "phaseDeg": 0.22499884341643583
+      },
+      "VNA": {
+        "re": 0.0001404563463061423,
+        "im": 0.0010636579768368184,
+        "mag": 0.0010728915494616707,
+        "phaseDeg": 82.47759752823401
+      },
+      "VCMD_NODE": {
+        "re": 0.00001096903431549324,
+        "im": 0.00011816907034823829,
+        "mag": 0.00011867707824504846,
+        "phaseDeg": 84.6967209394102
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2496.1506220055117,
+        "im": -98.02360570432634,
+        "mag": 2498.0745695462697,
+        "phaseDeg": -2.2488444747250864
+      },
+      "s6Yout": {
+        "re": 0.00039999999999999996,
+        "im": 0.000015707963267948964,
+        "mag": 0.0004003083063215491,
+        "phaseDeg": 2.2488444747250864
+      },
+      "VNA": {
+        "re": 0.02249008166228606,
+        "im": 0.12976464679133148,
+        "mag": 0.13169915462923562,
+        "phaseDeg": 80.16748929951223
+      },
+      "VCMD_NODE": {
+        "re": 0.002993664803447797,
+        "im": 0.014314623534334436,
+        "mag": 0.01462431112514786,
+        "phaseDeg": 78.18778865551361
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2496.1506220055117,
+        "im": -98.02360570432634,
+        "mag": 2498.0745695462697,
+        "phaseDeg": -2.2488444747250864
+      },
+      "s6Yout": {
+        "re": 0.00039999999999999996,
+        "im": 0.000015707963267948964,
+        "mag": 0.0004003083063215491,
+        "phaseDeg": 2.2488444747250864
+      },
+      "VNA": {
+        "re": 0.0006246297979561038,
+        "im": 0.010599964185628037,
+        "mag": 0.010618352184830362,
+        "phaseDeg": 86.62760063859702
+      },
+      "VCMD_NODE": {
+        "re": 0.00010535582935679655,
+        "im": 0.0011743270308137558,
+        "mag": 0.0011790436065215357,
+        "phaseDeg": 84.8733816839435
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2165.978839296999,
+        "im": -850.5779011707999,
+        "mag": 2327.0038887467504,
+        "phaseDeg": -21.43989050175506
+      },
+      "s6Yout": {
+        "re": 0.00039999999999999996,
+        "im": 0.00015707963267948965,
+        "mag": 0.00042973714175379747,
+        "phaseDeg": 21.439890501755063
+      },
+      "VNA": {
+        "re": 0.5791789830727259,
+        "im": 0.3347878248628657,
+        "mag": 0.6689777142099471,
+        "phaseDeg": 30.02957123308104
+      },
+      "VCMD_NODE": {
+        "re": 0.06893756067636554,
+        "im": 0.013137068980624157,
+        "mag": 0.07017812945219656,
+        "phaseDeg": 10.789194197947385
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2165.978839296999,
+        "im": -850.5779011707999,
+        "mag": 2327.0038887467504,
+        "phaseDeg": -21.43989050175506
+      },
+      "s6Yout": {
+        "re": 0.00039999999999999996,
+        "im": 0.00015707963267948965,
+        "mag": 0.00042973714175379747,
+        "phaseDeg": 21.439890501755063
+      },
+      "VNA": {
+        "re": 0.040543981500593525,
+        "im": 0.08758093248308332,
+        "mag": 0.09651028012873485,
+        "phaseDeg": 65.1590905465531
+      },
+      "VCMD_NODE": {
+        "re": 0.007040367692406693,
+        "im": 0.007275573563292155,
+        "mag": 0.010124265302685408,
+        "phaseDeg": 45.94126478352296
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 1546.2161453970907,
+        "im": -1214.3953208103571,
+        "mag": 1966.0977502384583,
+        "phaseDeg": -38.14602598722255
+      },
+      "s6Yout": {
+        "re": 0.00039999999999999996,
+        "im": 0.0003141592653589793,
+        "mag": 0.000508621710125407,
+        "phaseDeg": 38.14602598722255
+      },
+      "VNA": {
+        "re": 0.713136443130378,
+        "im": 0.20606192722638084,
+        "mag": 0.742310652202228,
+        "phaseDeg": 16.11673530389865
+      },
+      "VCMD_NODE": {
+        "re": 0.06401970180550383,
+        "im": -0.02179703571029227,
+        "mag": 0.06762864027186549,
+        "phaseDeg": -18.802367124120686
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_3k",
+      "loadNote": "R1=3 kOhm applied as a shunt load at VR.",
+      "loadOhm": 3000,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 1546.2161453970907,
+        "im": -1214.3953208103571,
+        "mag": 1966.0977502384583,
+        "phaseDeg": -38.14602598722255
+      },
+      "s6Yout": {
+        "re": 0.00039999999999999996,
+        "im": 0.0003141592653589793,
+        "mag": 0.000508621710125407,
+        "phaseDeg": 38.14602598722255
+      },
+      "VNA": {
+        "re": 0.10602004333286785,
+        "im": 0.11474334812674897,
+        "mag": 0.15622511170627942,
+        "phaseDeg": 47.26282382346051
+      },
+      "VCMD_NODE": {
+        "re": 0.013903350692804102,
+        "im": 0.0030454036005538084,
+        "mag": 0.014232977326524569,
+        "phaseDeg": 12.354997046703268
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 14770.365702897892,
+        "im": -342.8754116974778,
+        "mag": 14774.34487702548,
+        "phaseDeg": -1.3298104270181366
+      },
+      "s6Yout": {
+        "re": 0.00006766666666666667,
+        "im": 0.0000015707963267948967,
+        "mag": 0.00006768489623895459,
+        "phaseDeg": 1.3298104270181366
+      },
+      "VNA": {
+        "re": 0.0006993361489515195,
+        "im": 0.020037628686127212,
+        "mag": 0.0200498287876066,
+        "phaseDeg": 88.001123132584
+      },
+      "VCMD_NODE": {
+        "re": 0.0003914704569972042,
+        "im": 0.00850980207825881,
+        "mag": 0.008518801590003112,
+        "phaseDeg": 87.36611933933848
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 14770.365702897892,
+        "im": -342.8754116974778,
+        "mag": 14774.34487702548,
+        "phaseDeg": -1.3298104270181366
+      },
+      "s6Yout": {
+        "re": 0.00006766666666666667,
+        "im": 0.0000015707963267948967,
+        "mag": 0.00006768489623895459,
+        "phaseDeg": 1.3298104270181366
+      },
+      "VNA": {
+        "re": 0.00014610542314999727,
+        "im": 0.0010923713258865397,
+        "mag": 0.0011020988650266167,
+        "phaseDeg": 82.38186259629232
+      },
+      "VCMD_NODE": {
+        "re": 0.00004896169068473737,
+        "im": 0.0004636158832500254,
+        "mag": 0.0004661940951539488,
+        "phaseDeg": 83.9714356142255
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 14022.674506641664,
+        "im": -3255.1870354984967,
+        "mag": 14395.54246825369,
+        "phaseDeg": -13.069020571283238
+      },
+      "s6Yout": {
+        "re": 0.00006766666666666667,
+        "im": 0.000015707963267948964,
+        "mag": 0.00006946594768521489,
+        "phaseDeg": 13.069020571283238
+      },
+      "VNA": {
+        "re": 0.05812093083850839,
+        "im": 0.18014547944318654,
+        "mag": 0.18928929279108794,
+        "phaseDeg": 72.11857079731539
+      },
+      "VCMD_NODE": {
+        "re": 0.03428769078592449,
+        "im": 0.07197593478965261,
+        "mag": 0.07972566041291534,
+        "phaseDeg": 64.52793689164992
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 14022.674506641664,
+        "im": -3255.1870354984967,
+        "mag": 14395.54246825369,
+        "phaseDeg": -13.069020571283238
+      },
+      "s6Yout": {
+        "re": 0.00006766666666666667,
+        "im": 0.000015707963267948964,
+        "mag": 0.00006946594768521489,
+        "phaseDeg": 13.069020571283238
+      },
+      "VNA": {
+        "re": 0.0006945622344974097,
+        "im": 0.010877759704981184,
+        "mag": 0.010899911600416876,
+        "phaseDeg": 86.34653317988217
+      },
+      "VCMD_NODE": {
+        "re": 0.0008774047293190699,
+        "im": 0.0045060361109874845,
+        "mag": 0.004590664493573309,
+        "phaseDeg": 78.98137707711159
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2313.169769022869,
+        "im": -5369.731886355845,
+        "mag": 5846.774744392674,
+        "phaseDeg": -66.6946190048852
+      },
+      "s6Yout": {
+        "re": 0.00006766666666666667,
+        "im": 0.00015707963267948965,
+        "mag": 0.0001710344666448876,
+        "phaseDeg": 66.6946190048852
+      },
+      "VNA": {
+        "re": 0.5813853213596184,
+        "im": 0.2705427696488679,
+        "mag": 0.6412505610927036,
+        "phaseDeg": 24.954517679785102
+      },
+      "VCMD_NODE": {
+        "re": 0.14396302574258005,
+        "im": -0.07721537430336917,
+        "mag": 0.16336329700935937,
+        "phaseDeg": -28.207133067854702
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2313.169769022869,
+        "im": -5369.731886355845,
+        "mag": 5846.774744392674,
+        "phaseDeg": -66.6946190048852
+      },
+      "s6Yout": {
+        "re": 0.00006766666666666667,
+        "im": 0.00015707963267948965,
+        "mag": 0.0001710344666448876,
+        "phaseDeg": 66.6946190048852
+      },
+      "VNA": {
+        "re": 0.04190536383672942,
+        "im": 0.08725494123196177,
+        "mag": 0.09679609644857469,
+        "phaseDeg": 64.34672489113814
+      },
+      "VCMD_NODE": {
+        "re": 0.02418923223724189,
+        "im": 0.004792942515716243,
+        "mag": 0.024659506365419866,
+        "phaseDeg": 11.207625277543324
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 655.2097161216241,
+        "im": -3041.97344442613,
+        "mag": 3111.736204869229,
+        "phaseDeg": -77.84478045838118
+      },
+      "s6Yout": {
+        "re": 0.00006766666666666667,
+        "im": 0.0003141592653589793,
+        "mag": 0.00032136400201122613,
+        "phaseDeg": 77.84478045838118
+      },
+      "VNA": {
+        "re": 0.6985858897029605,
+        "im": 0.18751065005220052,
+        "mag": 0.7233135483143364,
+        "phaseDeg": 15.024876557035522
+      },
+      "VCMD_NODE": {
+        "re": 0.06269318693407493,
+        "im": -0.08770118094711936,
+        "mag": 0.10780506865389138,
+        "phaseDeg": -54.44092041038651
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r2_1M",
+      "loadNote": "R2=1 MOhm adjustable applied as a shunt load at VR.",
+      "loadOhm": 1000000,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 655.2097161216241,
+        "im": -3041.97344442613,
+        "mag": 3111.736204869229,
+        "phaseDeg": -77.84478045838118
+      },
+      "s6Yout": {
+        "re": 0.00006766666666666667,
+        "im": 0.0003141592653589793,
+        "mag": 0.00032136400201122613,
+        "phaseDeg": 77.84478045838118
+      },
+      "VNA": {
+        "re": 0.10647068792479031,
+        "im": 0.11377404225333787,
+        "mag": 0.15582214245043097,
+        "phaseDeg": 46.899242284145465
+      },
+      "VCMD_NODE": {
+        "re": 0.02144782477393833,
+        "im": -0.008908232835505183,
+        "mag": 0.023224250252379206,
+        "phaseDeg": -22.55527904984564
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 14771.01791355328,
+        "im": -342.9057091897251,
+        "mag": 14774.9976151574,
+        "phaseDeg": -1.3298691892771473
+      },
+      "s6Yout": {
+        "re": 0.00006766367563974742,
+        "im": 0.0000015707963267948967,
+        "mag": 0.00006768190601764419,
+        "phaseDeg": 1.329869189277147
+      },
+      "VNA": {
+        "re": 0.000699366657070133,
+        "im": 0.020037972813062386,
+        "mag": 0.020050173769273143,
+        "phaseDeg": 88.00107030536293
+      },
+      "VCMD_NODE": {
+        "re": 0.00039149820815403524,
+        "im": 0.008510164268068521,
+        "mag": 0.008519164672460442,
+        "phaseDeg": 87.36604483489353
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 14771.01791355328,
+        "im": -342.9057091897251,
+        "mag": 14774.9976151574,
+        "phaseDeg": -1.3298691892771473
+      },
+      "s6Yout": {
+        "re": 0.00006766367563974742,
+        "im": 0.0000015707963267948967,
+        "mag": 0.00006768190601764419,
+        "phaseDeg": 1.329869189277147
+      },
+      "VNA": {
+        "re": 0.00014610563571114234,
+        "im": 0.0010923723384536023,
+        "mag": 0.001102099896835649,
+        "phaseDeg": 82.38185862188409
+      },
+      "VCMD_NODE": {
+        "re": 0.00004896318843589285,
+        "im": 0.00046362807873490954,
+        "mag": 0.0004662063804939098,
+        "phaseDeg": 83.9714099720377
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 14023.230975451086,
+        "im": -3255.46011176126,
+        "mag": 14396.146273573337,
+        "phaseDeg": -13.069578446562076
+      },
+      "s6Yout": {
+        "re": 0.00006766367563974742,
+        "im": 0.000015707963267948964,
+        "mag": 0.00006946303413404991,
+        "phaseDeg": 13.069578446562076
+      },
+      "VNA": {
+        "re": 0.05812321348010086,
+        "im": 0.18014746864116002,
+        "mag": 0.18929188678617767,
+        "phaseDeg": 72.11809812572291
+      },
+      "VCMD_NODE": {
+        "re": 0.03428985101994765,
+        "im": 0.07197832136573022,
+        "mag": 0.07972874406133926,
+        "phaseDeg": 64.52727298054238
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 14023.230975451086,
+        "im": -3255.46011176126,
+        "mag": 14396.146273573337,
+        "phaseDeg": -13.069578446562076
+      },
+      "s6Yout": {
+        "re": 0.00006766367563974742,
+        "im": 0.000015707963267948964,
+        "mag": 0.00006946303413404991,
+        "phaseDeg": 13.069578446562076
+      },
+      "VNA": {
+        "re": 0.000694565671555847,
+        "im": 0.010877769136806867,
+        "mag": 0.01089992123209025,
+        "phaseDeg": 86.34651830883817
+      },
+      "VCMD_NODE": {
+        "re": 0.0008774436270326945,
+        "im": 0.004506149470389159,
+        "mag": 0.0045907831976808484,
+        "phaseDeg": 78.98117096633685
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2313.099528262298,
+        "im": -5369.806189439502,
+        "mag": 5846.815196309017,
+        "phaseDeg": -66.6955392394899
+      },
+      "s6Yout": {
+        "re": 0.00006766367563974742,
+        "im": 0.00015707963267948965,
+        "mag": 0.00017103328332171005,
+        "phaseDeg": 66.6955392394899
+      },
+      "VNA": {
+        "re": 0.5813845102784486,
+        "im": 0.27054169448628684,
+        "mag": 0.6412493721222835,
+        "phaseDeg": 24.95446115731783
+      },
+      "VCMD_NODE": {
+        "re": 0.1439630561440046,
+        "im": -0.07721783460755746,
+        "mag": 0.16336448670320586,
+        "phaseDeg": -28.207888442390182
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2313.099528262298,
+        "im": -5369.806189439502,
+        "mag": 5846.815196309017,
+        "phaseDeg": -66.6955392394899
+      },
+      "s6Yout": {
+        "re": 0.00006766367563974742,
+        "im": 0.00015707963267948965,
+        "mag": 0.00017103328332171005,
+        "phaseDeg": 66.6955392394899
+      },
+      "VNA": {
+        "re": 0.04190538429055627,
+        "im": 0.08725491835510593,
+        "mag": 0.09679608468164093,
+        "phaseDeg": 64.34670811508211
+      },
+      "VCMD_NODE": {
+        "re": 0.024189510168387943,
+        "im": 0.00479268359633699,
+        "mag": 0.024659728673307443,
+        "phaseDeg": 11.206909649416072
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 655.1833222346044,
+        "im": -3041.9853672236463,
+        "mag": 3111.7423029770885,
+        "phaseDeg": -77.84530177218375
+      },
+      "s6Yout": {
+        "re": 0.00006766367563974742,
+        "im": 0.0003141592653589793,
+        "mag": 0.0003213633722314578,
+        "phaseDeg": 77.84530177218375
+      },
+      "VNA": {
+        "re": 0.6985855649666235,
+        "im": 0.18751055538528832,
+        "mag": 0.7233132101383437,
+        "phaseDeg": 15.024875983023655
+      },
+      "VCMD_NODE": {
+        "re": 0.06269262053708563,
+        "im": -0.08770193828257285,
+        "mag": 0.10780535537869734,
+        "phaseDeg": -54.441399372740406
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_r2_series_1003k",
+      "loadNote": "R1+R2=1.003 MOhm applied as a shunt load at VR.",
+      "loadOhm": 1003000,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 655.1833222346044,
+        "im": -3041.9853672236463,
+        "mag": 3111.7423029770885,
+        "phaseDeg": -77.84530177218375
+      },
+      "s6Yout": {
+        "re": 0.00006766367563974742,
+        "im": 0.0003141592653589793,
+        "mag": 0.0003213633722314578,
+        "phaseDeg": 77.84530177218375
+      },
+      "VNA": {
+        "re": 0.10647068520523625,
+        "im": 0.11377402679258046,
+        "mag": 0.15582212930348285,
+        "phaseDeg": 46.8992391298731
+      },
+      "VCMD_NODE": {
+        "re": 0.021447815165687015,
+        "im": -0.008908440200279146,
+        "mag": 0.02322432091974755,
+        "phaseDeg": -22.555760592460217
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 100,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2493.7273211886986,
+        "im": -9.76842323229747,
+        "mag": 2493.746453538412,
+        "phaseDeg": -0.22443775479070993
+      },
+      "s6Yout": {
+        "re": 0.000401,
+        "im": 0.0000015707963267948967,
+        "mag": 0.00040100307654817344,
+        "phaseDeg": 0.22443775479070993
+      },
+      "VNA": {
+        "re": 0.0002764106138372802,
+        "im": 0.013357166333805457,
+        "mag": 0.01336002602154606,
+        "phaseDeg": 88.81450143674999
+      },
+      "VCMD_NODE": {
+        "re": 0.000030764142000902186,
+        "im": 0.001480816726787879,
+        "mag": 0.0014811362566515684,
+        "phaseDeg": 88.80984463495946
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 100,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2493.7273211886986,
+        "im": -9.76842323229747,
+        "mag": 2493.746453538412,
+        "phaseDeg": -0.22443775479070993
+      },
+      "s6Yout": {
+        "re": 0.000401,
+        "im": 0.0000015707963267948967,
+        "mag": 0.00040100307654817344,
+        "phaseDeg": 0.22443775479070993
+      },
+      "VNA": {
+        "re": 0.00014045230716919617,
+        "im": 0.0010636359788349958,
+        "mag": 0.001072869212001831,
+        "phaseDeg": 82.47765758304558
+      },
+      "VCMD_NODE": {
+        "re": 0.000010943344150818381,
+        "im": 0.0001179047052343012,
+        "mag": 0.00011841147029570532,
+        "phaseDeg": 84.69727524644901
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 1000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2489.9449053183753,
+        "im": -97.53606761086708,
+        "mag": 2491.8545134108304,
+        "phaseDeg": -2.243242120164294
+      },
+      "s6Yout": {
+        "re": 0.000401,
+        "im": 0.000015707963267948964,
+        "mag": 0.0004013075380677857,
+        "phaseDeg": 2.243242120164294
+      },
+      "VNA": {
+        "re": 0.022477573416469013,
+        "im": 0.12973305747464606,
+        "mag": 0.13166589348959193,
+        "phaseDeg": 80.17050498287136
+      },
+      "VCMD_NODE": {
+        "re": 0.002984423931960025,
+        "im": 0.014279703346297141,
+        "mag": 0.014588238888361594,
+        "phaseDeg": 78.19523863119203
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 1000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2489.9449053183753,
+        "im": -97.53606761086708,
+        "mag": 2491.8545134108304,
+        "phaseDeg": -2.243242120164294
+      },
+      "s6Yout": {
+        "re": 0.000401,
+        "im": 0.000015707963267948964,
+        "mag": 0.0004013075380677857,
+        "phaseDeg": 2.243242120164294
+      },
+      "VNA": {
+        "re": 0.0006245981646554228,
+        "im": 0.01059974557211736,
+        "mag": 0.010618132089068796,
+        "phaseDeg": 86.62770164407584
+      },
+      "VCMD_NODE": {
+        "re": 0.00010502758195045478,
+        "im": 0.0011717103964415736,
+        "mag": 0.001176408112051098,
+        "phaseDeg": 84.87791698286256
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 10000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 2162.0163160098805,
+        "im": -846.904560513455,
+        "mag": 2321.9737046985315,
+        "phaseDeg": -21.391261319353042
+      },
+      "s6Yout": {
+        "re": 0.000401,
+        "im": 0.00015707963267948965,
+        "mag": 0.00043066809842699446,
+        "phaseDeg": 21.39126131935305
+      },
+      "VNA": {
+        "re": 0.5791245670013796,
+        "im": 0.33485040188606363,
+        "mag": 0.6689619239895449,
+        "phaseDeg": 30.036543857468484
+      },
+      "VCMD_NODE": {
+        "re": 0.06878896915425108,
+        "im": 0.013166631395627465,
+        "mag": 0.0700377216906206,
+        "phaseDeg": 10.835706059397076
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 10000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 2162.0163160098805,
+        "im": -846.904560513455,
+        "mag": 2321.9737046985315,
+        "phaseDeg": -21.391261319353042
+      },
+      "s6Yout": {
+        "re": 0.000401,
+        "im": 0.00015707963267948965,
+        "mag": 0.00043066809842699446,
+        "phaseDeg": 21.39126131935305
+      },
+      "VNA": {
+        "re": 0.04054237353463186,
+        "im": 0.08758030531676492,
+        "mag": 0.09650903548994456,
+        "phaseDeg": 65.15980042567114
+      },
+      "VCMD_NODE": {
+        "re": 0.007021254518606918,
+        "im": 0.00726602890323992,
+        "mag": 0.010104117528897612,
+        "phaseDeg": 45.98151389981444
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 20000,
+      "vcmd": 0,
+      "s6Zout": {
+        "re": 1545.2969860541693,
+        "im": -1210.6467977561665,
+        "mag": 1963.060988361126,
+        "phaseDeg": -38.076553713929115
+      },
+      "s6Yout": {
+        "re": 0.000401,
+        "im": 0.0003141592653589793,
+        "mag": 0.0005094085236928154,
+        "phaseDeg": 38.076553713929115
+      },
+      "VNA": {
+        "re": 0.7131383095529155,
+        "im": 0.20610632691044012,
+        "mag": 0.7423247716091004,
+        "phaseDeg": 16.11998758435864
+      },
+      "VCMD_NODE": {
+        "re": 0.06394924237697579,
+        "im": -0.02169470185728062,
+        "mag": 0.06752899887652335,
+        "phaseDeg": -18.73944221822045
+      }
+    },
+    {
+      "contactHypothesis": "core_series_lm_mr_only",
+      "contactNote": "Sensitivity case: only LM and MR paths active.",
+      "loadHypothesis": "r1_r2_parallel_2k991",
+      "loadNote": "R1||R2=2.991 kOhm applied as a shunt load at VR.",
+      "loadOhm": 2991.026919242273,
+      "frequency": 20000,
+      "vcmd": 3,
+      "s6Zout": {
+        "re": 1545.2969860541693,
+        "im": -1210.6467977561665,
+        "mag": 1963.060988361126,
+        "phaseDeg": -38.076553713929115
+      },
+      "s6Yout": {
+        "re": 0.000401,
+        "im": 0.0003141592653589793,
+        "mag": 0.0005094085236928154,
+        "phaseDeg": 38.076553713929115
+      },
+      "VNA": {
+        "re": 0.10601834039665753,
+        "im": 0.11474433508326701,
+        "mag": 0.15622468093794464,
+        "phaseDeg": 47.26352818896494
+      },
+      "VCMD_NODE": {
+        "re": 0.013879351614208004,
+        "im": 0.0030554778365806494,
+        "mag": 0.01421169750735829,
+        "phaseDeg": 12.415374037679674
+      }
+    }
+  ]
+}

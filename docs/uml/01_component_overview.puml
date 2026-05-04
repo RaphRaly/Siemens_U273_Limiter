@@ -1,0 +1,56 @@
+@startuml
+title Siemens U273 Plugin - Component Overview
+
+skinparam componentStyle rectangle
+
+actor "DAW Host" as Host
+
+package "U273 Plugin Binary\nVST3 / AU via JUCE" {
+  [PluginProcessor\nJUCE AudioProcessor] as Processor
+  [PluginEditor\nJUCE UI] as Editor
+  [ParameterBridge] as ParameterBridge
+  [PresetManager] as PresetManager
+  [MeterBridge] as MeterBridge
+  [Realtime DSP Engine] as DSP
+  [U273 Core\nmath / units / tables] as Core
+}
+
+package "Offline / Validation" {
+  [Scientific Reference Engine\nMNA / golden comparison] as Reference
+  database "Golden Files\nJS DC/AC/transient" as Golden
+}
+
+Host --> Processor : prepare/process/state
+Host --> Editor : open editor / user input
+
+Editor --> ParameterBridge : parameter edits
+Editor --> MeterBridge : read meters
+Processor --> ParameterBridge : read published snapshot
+Processor --> PresetManager : get/set state
+Processor --> DSP : prepare/process/reset
+DSP --> Core : constants, math, tables
+ParameterBridge --> Core : ranges, units
+PresetManager --> ParameterBridge : restore/migrate state
+MeterBridge <-- DSP : publish bounded meter values
+
+Reference --> Core : shared units/constants
+Reference --> Golden : read expected results
+Reference ..> DSP : offline regression only
+
+note right of DSP
+Realtime constraints:
+- no allocation
+- no locks
+- no logging
+- no file/network I/O
+- bounded execution
+end note
+
+note bottom of Reference
+Offline only.
+May allocate and solve MNA/Newton.
+Never called by processBlock.
+end note
+
+@enduml
+

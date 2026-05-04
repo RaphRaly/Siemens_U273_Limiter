@@ -1,0 +1,31 @@
+name,transistor,device,status,currentAmp,beta,thermalVoltageVolt,gmSiemens,emitterDynamicOhm,rPiOhm,baseCurrentAmp,note
+Ts1_from_R11,B11/Ts1,SST117,estimate,0.00115,50,0.02585,0.044487427466150864,22.478260869565222,1123.913043478261,0.000023,Current through R11 from N215=21.5 V to N10=10 V. This is a local branch current, not a closed collector current.
+Ts1_from_R11,B11/Ts1,SST117,estimate,0.00115,100,0.02585,0.044487427466150864,22.478260869565222,2247.826086956522,0.0000115,Current through R11 from N215=21.5 V to N10=10 V. This is a local branch current, not a closed collector current.
+Ts1_from_R11,B11/Ts1,SST117,estimate,0.00115,200,0.02585,0.044487427466150864,22.478260869565222,4495.652173913044,0.00000575,Current through R11 from N215=21.5 V to N10=10 V. This is a local branch current, not a closed collector current.
+Ts1_N05_resistive_demand_low,B11/Ts1,SST117,bound,0.0046,50,0.02585,0.17794970986460346,5.6195652173913055,280.97826086956525,0.000092,Lower bound of resistive current demanded around N05=0.5 V from R12, R9, R7/R8.
+Ts1_N05_resistive_demand_low,B11/Ts1,SST117,bound,0.0046,100,0.02585,0.17794970986460346,5.6195652173913055,561.9565217391305,0.000046,Lower bound of resistive current demanded around N05=0.5 V from R12, R9, R7/R8.
+Ts1_N05_resistive_demand_low,B11/Ts1,SST117,bound,0.0046,200,0.02585,0.17794970986460346,5.6195652173913055,1123.913043478261,0.000023,Lower bound of resistive current demanded around N05=0.5 V from R12, R9, R7/R8.
+Ts1_N05_resistive_demand_high,B11/Ts1,SST117,bound,0.00492,50,0.02585,0.19032882011605415,5.254065040650406,262.70325203252037,0.00009839999999999999,Upper bound of resistive current demanded around N05=0.5 V from R12, R9, R7/R8.
+Ts1_N05_resistive_demand_high,B11/Ts1,SST117,bound,0.00492,100,0.02585,0.19032882011605415,5.254065040650406,525.4065040650407,0.000049199999999999997,Upper bound of resistive current demanded around N05=0.5 V from R12, R9, R7/R8.
+Ts1_N05_resistive_demand_high,B11/Ts1,SST117,bound,0.00492,200,0.02585,0.19032882011605415,5.254065040650406,1050.8130081300815,0.000024599999999999998,Upper bound of resistive current demanded around N05=0.5 V from R12, R9, R7/R8.
+Ts2_N9_main,B11/Ts2,SST117,estimate,0.00754,50,0.02585,0.29168278529980657,3.4283819628647216,171.41909814323608,0.0001508,R16 plus R13 current at N9=9 V with N05 about 0.5 V.
+Ts2_N9_main,B11/Ts2,SST117,estimate,0.00754,100,0.02585,0.29168278529980657,3.4283819628647216,342.83819628647217,0.0000754,R16 plus R13 current at N9=9 V with N05 about 0.5 V.
+Ts2_N9_main,B11/Ts2,SST117,estimate,0.00754,200,0.02585,0.29168278529980657,3.4283819628647216,685.6763925729443,0.0000377,R16 plus R13 current at N9=9 V with N05 about 0.5 V.
+Ts2_R15_supply,B11/Ts2,SST117,estimate,0.00792,50,0.02585,0.30638297872340425,3.263888888888889,163.19444444444446,0.0001584,Current supplied by R15 from 24 V to N145=14.5 V.
+Ts2_R15_supply,B11/Ts2,SST117,estimate,0.00792,100,0.02585,0.30638297872340425,3.263888888888889,326.3888888888889,0.0000792,Current supplied by R15 from 24 V to N145=14.5 V.
+Ts2_R15_supply,B11/Ts2,SST117,estimate,0.00792,200,0.02585,0.30638297872340425,3.263888888888889,652.7777777777778,0.0000396,Current supplied by R15 from 24 V to N145=14.5 V.
+Ts3_R23_supply,B11/Ts3,SST116,estimate,0.01,50,0.02585,0.38684719535783363,2.585,129.25,0.0002,Current supplied by R23 from 24 V to N23=23 V.
+Ts3_R23_supply,B11/Ts3,SST116,estimate,0.01,100,0.02585,0.38684719535783363,2.585,258.5,0.0001,Current supplied by R23 from 24 V to N23=23 V.
+Ts3_R23_supply,B11/Ts3,SST116,estimate,0.01,200,0.02585,0.38684719535783363,2.585,517,0.00005,Current supplied by R23 from 24 V to N23=23 V.
+Ts3_Ts4_local_100ohm_if_full_0p45V,B11/Ts3/Ts4,SST116,local_check_only,0.0045,50,0.02585,0.17408123791102512,5.744444444444445,287.2222222222223,0.00008999999999999999,If a 100 ohm resistor really sees 0.45 V, current is 4.5 mA. This is a local check, not a proved transistor current.
+Ts3_Ts4_local_100ohm_if_full_0p45V,B11/Ts3/Ts4,SST116,local_check_only,0.0045,100,0.02585,0.17408123791102512,5.744444444444445,574.4444444444446,0.000044999999999999996,If a 100 ohm resistor really sees 0.45 V, current is 4.5 mA. This is a local check, not a proved transistor current.
+Ts3_Ts4_local_100ohm_if_full_0p45V,B11/Ts3/Ts4,SST116,local_check_only,0.0045,200,0.02585,0.17408123791102512,5.744444444444445,1148.8888888888891,0.000022499999999999998,If a 100 ohm resistor really sees 0.45 V, current is 4.5 mA. This is a local check, not a proved transistor current.
+Ts5_Ts6_1ohm_10mV,B11/Ts5/Ts6,2N3054,sweep,0.01,50,0.02585,0.38684719535783363,2.585,129.25,0.0002,Emitter resistor R28/R29 current if the 1 ohm resistor drop is 10 mV.
+Ts5_Ts6_1ohm_10mV,B11/Ts5/Ts6,2N3054,sweep,0.01,100,0.02585,0.38684719535783363,2.585,258.5,0.0001,Emitter resistor R28/R29 current if the 1 ohm resistor drop is 10 mV.
+Ts5_Ts6_1ohm_10mV,B11/Ts5/Ts6,2N3054,sweep,0.01,200,0.02585,0.38684719535783363,2.585,517,0.00005,Emitter resistor R28/R29 current if the 1 ohm resistor drop is 10 mV.
+Ts5_Ts6_1ohm_50mV,B11/Ts5/Ts6,2N3054,sweep,0.05,50,0.02585,1.9342359767891684,0.517,25.849999999999998,0.001,Emitter resistor R28/R29 current if the 1 ohm resistor drop is 50 mV.
+Ts5_Ts6_1ohm_50mV,B11/Ts5/Ts6,2N3054,sweep,0.05,100,0.02585,1.9342359767891684,0.517,51.699999999999996,0.0005,Emitter resistor R28/R29 current if the 1 ohm resistor drop is 50 mV.
+Ts5_Ts6_1ohm_50mV,B11/Ts5/Ts6,2N3054,sweep,0.05,200,0.02585,1.9342359767891684,0.517,103.39999999999999,0.00025,Emitter resistor R28/R29 current if the 1 ohm resistor drop is 50 mV.
+Ts5_Ts6_1ohm_100mV,B11/Ts5/Ts6,2N3054,sweep,0.1,50,0.02585,3.8684719535783367,0.2585,12.924999999999999,0.002,Emitter resistor R28/R29 current if the 1 ohm resistor drop is 100 mV.
+Ts5_Ts6_1ohm_100mV,B11/Ts5/Ts6,2N3054,sweep,0.1,100,0.02585,3.8684719535783367,0.2585,25.849999999999998,0.001,Emitter resistor R28/R29 current if the 1 ohm resistor drop is 100 mV.
+Ts5_Ts6_1ohm_100mV,B11/Ts5/Ts6,2N3054,sweep,0.1,200,0.02585,3.8684719535783367,0.2585,51.699999999999996,0.0005,Emitter resistor R28/R29 current if the 1 ohm resistor drop is 100 mV.

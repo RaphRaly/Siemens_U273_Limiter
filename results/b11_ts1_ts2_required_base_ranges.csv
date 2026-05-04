@@ -1,0 +1,5 @@
+transistor,type,collector,emitter,vc,ve,softBaseMin,softBaseMax,strictBaseMin,strictBaseMax,outputSoftOk,outputStrictOk,knownSoftBaseCandidates,knownStrictBaseCandidates,reason
+Ts1,npn,N10,N05,10,0.5,0.95,1.35,1.05,1.25,true,true,,,common NPN-like reading: high node collector, low node emitter
+Ts1,pnp,N05,N10,0.5,10,9.15,9.55,9.25,9.45,true,true,,,inverse PNP-like reading: high node emitter, low node collector
+Ts2,npn,N145,N9,14.5,9,9.45,9.85,9.55,9.75,true,true,,,common NPN-like reading: 14.5 V collector, 9 V emitter
+Ts2,pnp,N9,N145,9,14.5,13.65,14.05,13.75,13.95,true,true,,,inverse PNP-like reading: 14.5 V emitter, 9 V collector

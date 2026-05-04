@@ -1,0 +1,11 @@
+{
+  "title": "Validation u273_dc_global",
+  "status": "PASS_WITH_PARAMETRIC_BOUNDARIES",
+  "boundary": "This file starts Phase C but does not claim the full active B11+B6 loop. B11/S6/S7 is still represented by the finite Thevenin port from Etape 24.",
+  "checks": {
+    "scenarioCount": 4,
+    "allConverged": true,
+    "allPrintedTargetsDeferred": true
+  },
+  "failures": []
+}

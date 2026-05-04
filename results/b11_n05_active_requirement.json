@@ -1,0 +1,217 @@
+{
+  "title": "Siemens U273 B11 N05 active DC current requirement",
+  "status": "constraint analysis after R14-C6 DC correction",
+  "nodeVoltages": {
+    "N05": 0.5,
+    "N10": 10,
+    "N145": 14.5
+  },
+  "requirementRows": [
+    {
+      "scenario": "confirmed_dc_without_R14C6_and_without_R17",
+      "requiredActiveCurrentLowAmp": 0.00459932405165456,
+      "requiredActiveCurrentHighAmp": 0.004910889355742297,
+      "includedLoads": "R12+R9+R7/R8",
+      "note": "C6 is open at DC, so R14-C6 contributes zero DC current."
+    },
+    {
+      "scenario": "confirmed_dc_without_R14C6_with_R17_candidate",
+      "requiredActiveCurrentLowAmp": 0.004672853463419266,
+      "requiredActiveCurrentHighAmp": 0.004984418767507002,
+      "includedLoads": "R12+R9+R7/R8+R17(candidate)",
+      "note": "Adds R17 only as a candidate if its endpoint to reference is confirmed."
+    }
+  ],
+  "bjtRows": [
+    {
+      "scenario": "confirmed_dc_without_R14C6_and_without_R17",
+      "point": "low",
+      "beta": 50,
+      "emitterCurrentAmp": 0.00459932405165456,
+      "collectorCurrentAmp": 0.004509141227112314,
+      "baseCurrentAmp": 0.00009018282454224627,
+      "gmSiemens": 0.1744348637180779,
+      "reOhm": 5.732798929554603,
+      "rPiOhm": 286.6399464777301,
+      "note": "If a single forward-active BJT supplies N05 as emitter current; topology still not fixed."
+    },
+    {
+      "scenario": "confirmed_dc_without_R14C6_and_without_R17",
+      "point": "high",
+      "beta": 50,
+      "emitterCurrentAmp": 0.004910889355742297,
+      "collectorCurrentAmp": 0.004814597407590487,
+      "baseCurrentAmp": 0.00009629194815180974,
+      "gmSiemens": 0.18625135039034765,
+      "reOhm": 5.369088588642117,
+      "rPiOhm": 268.4544294321058,
+      "note": "If a single forward-active BJT supplies N05 as emitter current; topology still not fixed."
+    },
+    {
+      "scenario": "confirmed_dc_without_R14C6_and_without_R17",
+      "point": "low",
+      "beta": 100,
+      "emitterCurrentAmp": 0.00459932405165456,
+      "collectorCurrentAmp": 0.00455378618975699,
+      "baseCurrentAmp": 0.000045537861897569904,
+      "gmSiemens": 0.17616194157667273,
+      "reOhm": 5.676595018480538,
+      "rPiOhm": 567.6595018480538,
+      "note": "If a single forward-active BJT supplies N05 as emitter current; topology still not fixed."
+    },
+    {
+      "scenario": "confirmed_dc_without_R14C6_and_without_R17",
+      "point": "high",
+      "beta": 100,
+      "emitterCurrentAmp": 0.004910889355742297,
+      "collectorCurrentAmp": 0.004862266688853759,
+      "baseCurrentAmp": 0.00004862266688853759,
+      "gmSiemens": 0.18809542316648972,
+      "reOhm": 5.316450465224056,
+      "rPiOhm": 531.6450465224057,
+      "note": "If a single forward-active BJT supplies N05 as emitter current; topology still not fixed."
+    },
+    {
+      "scenario": "confirmed_dc_without_R14C6_and_without_R17",
+      "point": "low",
+      "beta": 200,
+      "emitterCurrentAmp": 0.00459932405165456,
+      "collectorCurrentAmp": 0.004576441842442348,
+      "baseCurrentAmp": 0.000022882209212211742,
+      "gmSiemens": 0.17703836914670593,
+      "reOhm": 5.648493062943506,
+      "rPiOhm": 1129.698612588701,
+      "note": "If a single forward-active BJT supplies N05 as emitter current; topology still not fixed."
+    },
+    {
+      "scenario": "confirmed_dc_without_R14C6_and_without_R17",
+      "point": "high",
+      "beta": 200,
+      "emitterCurrentAmp": 0.004910889355742297,
+      "collectorCurrentAmp": 0.004886457070390345,
+      "baseCurrentAmp": 0.000024432285351951726,
+      "gmSiemens": 0.1890312212916961,
+      "reOhm": 5.290131403515027,
+      "rPiOhm": 1058.0262807030053,
+      "note": "If a single forward-active BJT supplies N05 as emitter current; topology still not fixed."
+    },
+    {
+      "scenario": "confirmed_dc_without_R14C6_with_R17_candidate",
+      "point": "low",
+      "beta": 50,
+      "emitterCurrentAmp": 0.004672853463419266,
+      "collectorCurrentAmp": 0.0045812288857051625,
+      "baseCurrentAmp": 0.00009162457771410326,
+      "gmSiemens": 0.17722355457273356,
+      "reOhm": 5.642590808038411,
+      "rPiOhm": 282.1295404019205,
+      "note": "If a single forward-active BJT supplies N05 as emitter current; topology still not fixed."
+    },
+    {
+      "scenario": "confirmed_dc_without_R14C6_with_R17_candidate",
+      "point": "high",
+      "beta": 50,
+      "emitterCurrentAmp": 0.004984418767507002,
+      "collectorCurrentAmp": 0.004886685066183336,
+      "baseCurrentAmp": 0.00009773370132366671,
+      "gmSiemens": 0.18904004124500332,
+      "reOhm": 5.289884584313864,
+      "rPiOhm": 264.49422921569317,
+      "note": "If a single forward-active BJT supplies N05 as emitter current; topology still not fixed."
+    },
+    {
+      "scenario": "confirmed_dc_without_R14C6_with_R17_candidate",
+      "point": "low",
+      "beta": 100,
+      "emitterCurrentAmp": 0.004672853463419266,
+      "collectorCurrentAmp": 0.0046265875875438275,
+      "baseCurrentAmp": 0.00004626587587543828,
+      "gmSiemens": 0.17897824323186953,
+      "reOhm": 5.587271290312544,
+      "rPiOhm": 558.7271290312544,
+      "note": "If a single forward-active BJT supplies N05 as emitter current; topology still not fixed."
+    },
+    {
+      "scenario": "confirmed_dc_without_R14C6_with_R17_candidate",
+      "point": "high",
+      "beta": 100,
+      "emitterCurrentAmp": 0.004984418767507002,
+      "collectorCurrentAmp": 0.0049350680866405965,
+      "baseCurrentAmp": 0.00004935068086640597,
+      "gmSiemens": 0.1909117248216865,
+      "reOhm": 5.2380229707421595,
+      "rPiOhm": 523.802297074216,
+      "note": "If a single forward-active BJT supplies N05 as emitter current; topology still not fixed."
+    },
+    {
+      "scenario": "confirmed_dc_without_R14C6_with_R17_candidate",
+      "point": "low",
+      "beta": 200,
+      "emitterCurrentAmp": 0.004672853463419266,
+      "collectorCurrentAmp": 0.004649605436238075,
+      "baseCurrentAmp": 0.00002324802718119038,
+      "gmSiemens": 0.1798686822529236,
+      "reOhm": 5.559611531449611,
+      "rPiOhm": 1111.922306289922,
+      "note": "If a single forward-active BJT supplies N05 as emitter current; topology still not fixed."
+    },
+    {
+      "scenario": "confirmed_dc_without_R14C6_with_R17_candidate",
+      "point": "high",
+      "beta": 200,
+      "emitterCurrentAmp": 0.004984418767507002,
+      "collectorCurrentAmp": 0.004959620664186072,
+      "baseCurrentAmp": 0.00002479810332093036,
+      "gmSiemens": 0.1918615343979138,
+      "reOhm": 5.2120921639563065,
+      "rPiOhm": 1042.4184327912615,
+      "note": "If a single forward-active BJT supplies N05 as emitter current; topology still not fixed."
+    }
+  ],
+  "supplyRows": [
+    {
+      "scenario": "confirmed_dc_without_R14C6_and_without_R17",
+      "candidateSupply": "R11_into_N10",
+      "supplyAmp": 0.00115,
+      "requiredLowAmp": 0.00459932405165456,
+      "requiredHighAmp": 0.004910889355742297,
+      "deficitLowAmp": 0.00344932405165456,
+      "deficitHighAmp": 0.0037608893557422966,
+      "verdict": "R11_alone_insufficient_for_N05_DC",
+      "note": "R11 can be part of the bias network, but cannot alone be the collector supply for the N05 current."
+    },
+    {
+      "scenario": "confirmed_dc_without_R14C6_and_without_R17",
+      "candidateSupply": "R15_into_N145",
+      "supplyAmp": 0.007916666666666667,
+      "requiredLowAmp": 0.00459932405165456,
+      "requiredHighAmp": 0.004910889355742297,
+      "deficitLowAmp": -0.0033173426150121072,
+      "deficitHighAmp": -0.0030057773109243707,
+      "verdict": "R15_has_enough_magnitude_but_topology_unconfirmed",
+      "note": "R15 has enough current magnitude, but it belongs to the Ts2/N145 side and cannot be assigned without pin/topology proof."
+    },
+    {
+      "scenario": "confirmed_dc_without_R14C6_with_R17_candidate",
+      "candidateSupply": "R11_into_N10",
+      "supplyAmp": 0.00115,
+      "requiredLowAmp": 0.004672853463419266,
+      "requiredHighAmp": 0.004984418767507002,
+      "deficitLowAmp": 0.003522853463419266,
+      "deficitHighAmp": 0.0038344187675070024,
+      "verdict": "R11_alone_insufficient_for_N05_DC",
+      "note": "R11 can be part of the bias network, but cannot alone be the collector supply for the N05 current."
+    },
+    {
+      "scenario": "confirmed_dc_without_R14C6_with_R17_candidate",
+      "candidateSupply": "R15_into_N145",
+      "supplyAmp": 0.007916666666666667,
+      "requiredLowAmp": 0.004672853463419266,
+      "requiredHighAmp": 0.004984418767507002,
+      "deficitLowAmp": -0.0032438132032474015,
+      "deficitHighAmp": -0.002932247899159665,
+      "verdict": "R15_has_enough_magnitude_but_topology_unconfirmed",
+      "note": "R15 has enough current magnitude, but it belongs to the Ts2/N145 side and cannot be assigned without pin/topology proof."
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+Etape 30 - Solveur state-space component-level U273
+===================================================
+
+Date: 2026-05-04
+Objet: ajouter le premier moteur numerique state-space / DAE component-level
+       pour le modele analogique final du Siemens U273, sans WDF et sans
+       modelisation transformateur magnetique dans ce sprint.
+
+
+1. Decision scientifique
+------------------------
+
+Le moteur final doit etre formule comme un systeme dynamique implicite:
+
+    F(z, zdot, u, p) = 0
+
+avec une base MNA/DAE:
+
+    Q(z) * dz/dt + G(z,p) + i_nl(z,p) = B*u
+
+La discretisation initiale privilegie backward Euler pour sa robustesse:
+
+    R(z_k) = Q(z_k) * (z_k - z_(k-1)) / h + G(z_k) + i_nl(z_k) - B*u_k = 0
+
+Chaque pas est resolu par Newton-Raphson amorti:
+
+    J(z_n) * delta = -R(z_n)
+    z_(n+1) = z_n + alpha * delta
+
+Le trapeze est implemente pour les condensateurs, mais backward Euler reste le
+choix par defaut tant que la fermeture non-lineaire U273 n'est pas calibree.
+
+
+2. Implementation C++
+---------------------
+
+Ajout dans:
+
+    u273-plugin/modules/u273_reference/include/u273/reference/state_space
+    u273-plugin/modules/u273_reference/src/state_space
+
+Briques creees:
+
+    DenseMatrix + LU partiel;
+    NewtonSolver amorti;
+    CircuitGraph MNA;
+    StateSpaceSolver implicite;
+    ComponentModels R/C/source/diode/BJT;
+    U273ReferenceCircuitBuilder.
+
+Le solveur reste offline dans u273_reference. Le chemin realtime
+u273_dsp/u273_plugin n'est pas remplace a cette etape.
+
+
+3. Composants couverts
+----------------------
+
+Stamps disponibles:
+
+    resistance;
+    condensateur backward Euler et trapezoidal companion;
+    source courant;
+    source tension ideale;
+    diode Shockley avec conductance analytique;
+    NPN Ebers-Moll simplifie avec jacobien analytique;
+    metadata port transformateur ideal.
+
+Les transformateurs U1/U2 sont volontairement exclus du modele magnetique:
+
+    port ideal fige;
+    pas de saturation;
+    pas d'hysteresis;
+    pas de fuite;
+    pas d'inductance magnetisante;
+    pas de technique personnelle transformateur dans ce sprint.
+
+
+4. Frontiere de validite
+------------------------
+
+Le nouveau solveur declare:
+
+    FULL_ACTIVE_MODEL_UNVERIFIED
+
+Le statut scientifique global du projet ne change pas encore:
+
+    PASS_WITH_GUARDED_BOUNDARIES
+
+Raison:
+
+    le solveur est present et teste sur fixtures;
+    le B6 skeleton converge;
+    mais les golden validations U273 DC/AC/transitoire et la calibration BJT
+    complete ne sont pas encore effectuees.
+
+
+5. Validation executee
+----------------------
+
+Tests ajoutes:
+
+    solveur lineaire dense;
+    Newton sqrt(2);
+    RC backward Euler contre forme fermee;
+    diode Shockley sous source de courant;
+    BJT Ebers-Moll conservation des courants;
+    fixture BJT polarisee;
+    skeleton B6 state-space avec frontiere U1 ideale;
+    tests scaffold DSP existants.
+
+Commande:
+
+    cmake --build --preset debug-tests-only
+    ctest --preset debug-tests-only
+
+Resultat:
+
+    1/1 tests passed
+
+
+6. References scientifiques utilisees
+-------------------------------------
+
+Falaize et Helie, Passive Guaranteed Simulation of Analog Audio Circuits:
+    https://www.mdpi.com/2076-3417/6/10/273
+
+Medine, Dynamical Systems for Audio Synthesis:
+    https://www.mdpi.com/2076-3417/6/5/134
+
+Marz et Tischendorf, DAEs in Circuit Simulation:
+    https://epubs.siam.org/doi/10.1137/S1064827595287250
+
+Ducceschi et Bilbao, Non-iterative simulation methods for virtual analog:
+    https://www.research.ed.ac.uk/en/publications/non-iterative-simulation-methods-for-virtual-analog-modelling
+
+Brambilla, Premoli, Storti Gajani, Recasting MNA:
+    https://doi.org/10.1109/TCSI.2004.842869
+
+
+7. Suite logique
+----------------
+
+Etape 31:
+
+    importer les golden files JS DC/AC/transitoire dans u273_reference;
+    construire les circuits B6/B11 a partir de la netlist U273;
+    comparer residualNorm, tensions de noeuds, niveaux AC, et reponses
+    transitoires;
+    seulement apres, commencer la reduction/optimisation temps reel dans
+    u273_dsp.

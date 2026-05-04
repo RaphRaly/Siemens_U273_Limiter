@@ -1,0 +1,291 @@
+Etape 1 - Netlist parametrique B6 Siemens U273
+==============================================
+
+Date: 2026-05-01
+
+Objectif
+--------
+
+Cette etape transforme l'analyse B6 en modele parametrique executable, sans
+pretendre encore fermer le Siemens U273 complet.
+
+Le but n'est pas de produire la courbe finale du limiteur. Le but est plus
+precis:
+
+    1. fixer ce qui est ferme sur le schema;
+    2. exposer comme parametres ce qui n'est pas ferme;
+    3. mesurer la sensibilite aux hypotheses encore ouvertes;
+    4. empecher les anciennes hypotheses implicites de rester cachees.
+
+
+1. Fichiers ajoutes
+-------------------
+
+Module de netlist parametrique:
+
+    solver/b6_parametric.js
+
+Script de sweep AC de sensibilite:
+
+    solver/b6_parametric_ac_sweep.js
+
+Resultats generes:
+
+    results/b6_parametric_ac_sensitivity.json
+    results/b6_parametric_ac_sensitivity.csv
+
+
+2. Parametres fermes dans B6
+----------------------------
+
+Valeurs maintenant fixees:
+
+    R5  = 5,6 kOhm
+    C1  = 1000 pF
+    C2  = 22 uF
+    R6  = 39 kOhm
+    R9  = 390 kOhm
+    R10 = 20 kOhm
+    R11 = 39 kOhm
+    C3  = 4,7 uF
+    C5  = 150 uF
+    C7  = 4,7 uF
+
+Diodes:
+
+    D3 = SSD55
+    D2 = SSD55
+    D4 = OA154Q
+    D1 = OA154Q
+
+Important:
+
+    C1 = 1000 pF est impose dans le nouveau module.
+    Aucune variante C1 = 0,68 uF n'est utilisee.
+
+
+3. Parametres exposes, non inventes
+-----------------------------------
+
+Capacites d'ajustage:
+
+    C4 = C4_abgl
+    C6 = C6_abgl
+
+Dans le script de sensibilite, les cas testes sont:
+
+    C4 = C6 = 0
+    C4 = C6 = 100 pF
+    C4 = C6 = 1 nF
+
+Ces valeurs ne sont pas declarees comme valeurs Siemens. Elles servent seulement
+a mesurer la sensibilite.
+
+Ajustables:
+
+    R7 = R7_effective
+    R8 = R8_effective
+
+Par defaut:
+
+    R7_effective = 100 Ohm
+    R8_effective = 250 kOhm
+
+Le module permet aussi alpha7/alpha8, mais ce mode est seulement une
+simplification de type rheostat tant que la vraie connexion du curseur n'est pas
+extraite.
+
+Commande B11:
+
+    Zcmd = impedance de sortie AC de B11 vue par B6
+
+Cas testes:
+
+    Zcmd = 0 Ohm, commande idealement a la masse AC
+    Zcmd = 10 kOhm
+    Zcmd = 100 kOhm
+    Zcmd = 1 MOhm
+    Zcmd = ouvert
+
+Charge aval:
+
+    RAMP_INPUT = infini dans cette etape.
+
+La charge reelle de l'etage d'entree B6 reste donc a connecter ensuite.
+
+
+4. Formulation MNA retenue
+--------------------------
+
+4.1 Point de repos DC local
+
+Pour obtenir les conductances dynamiques des diodes, on resout B6 en DC sous
+commande imposee:
+
+    VCMD = valeur de test
+
+En DC:
+
+    C1, C2, C3, C4, C5, C6, C7 sont ouverts.
+
+La source VCMD imposee est acceptable ici parce que cette etape cherche une
+famille locale de points de repos du pont, pas encore la regulation complete
+B11+B6.
+
+4.2 Petit signal AC
+
+Les condensateurs deviennent:
+
+    Yc = j*w*C
+
+Les diodes deviennent:
+
+    Yd = gd = dI/dV au point DC
+
+La nouveaute importante est que le noeud CMD existe explicitement:
+
+    R10 entre NB et CMD
+    Zcmd entre CMD et masse AC, ou source ideale CMD=0 pour le cas limite
+
+Donc l'ancienne approximation:
+
+    R10 directement de NB a la masse AC
+
+est maintenant seulement le cas particulier:
+
+    Zcmd = 0 Ohm
+
+
+5. Resultats numeriques principaux
+----------------------------------
+
+Les resultats ci-dessous donnent |VNA| pour une source AC de test de 1 V. VNA
+est le noeud audio apres C1 dans l'extraction B6.
+
+5.1 Cas VCMD = 0 V
+
+    scenario             | 1 kHz       | 20 kHz
+    ---------------------|-------------|-------------
+    Zcmd = 0 Ohm ideal   | -18,55 dB   | -2,67 dB
+    Zcmd = 10 kOhm       | -15,33 dB   | -1,83 dB
+    Zcmd = 100 kOhm      | -6,16 dB    | -0,54 dB
+    Zcmd = 1 MOhm        | -1,33 dB    | -0,17 dB
+    Zcmd = ouvert        | -0,78 dB    | -0,13 dB
+
+Interpretation:
+
+    A faible commande, l'hypothese "VCMD = masse AC ideale" cree une attenuation
+    tres forte. Si B11 a une impedance de sortie elevee, cette attenuation
+    disparait presque.
+
+Conclusion:
+
+    Le gain absolu a faible commande ne peut pas etre ferme sans Zcmd(s).
+
+5.2 Cas VCMD = 3 V
+
+    scenario             | 1 kHz       | 20 kHz
+    ---------------------|-------------|-------------
+    Zcmd = 0 Ohm ideal   | -39,56 dB   | -16,17 dB
+    Zcmd = 10 kOhm       | -39,31 dB   | -15,95 dB
+    Zcmd = 100 kOhm      | -38,93 dB   | -15,61 dB
+    Zcmd = 1 MOhm        | -38,82 dB   | -15,51 dB
+    Zcmd = ouvert        | -38,80 dB   | -15,49 dB
+
+Interpretation:
+
+    A forte commande, les conductances dynamiques des diodes dominent davantage.
+    Zcmd reste visible, mais son impact devient beaucoup plus faible:
+
+        environ 0,76 dB a 1 kHz entre Zcmd ideal et ouvert
+        environ 0,68 dB a 20 kHz entre Zcmd ideal et ouvert
+
+Conclusion:
+
+    La tendance "plus de commande -> plus d'attenuation" reste robuste, mais les
+    valeurs absolues a faible commande dependent fortement de B11.
+
+
+6. Sensibilite C4/C6
+--------------------
+
+Dans la topologie actuellement codee:
+
+    C4_abgl est place de N14 vers masse
+    C6_abgl est place de N15 vers masse
+
+Avec:
+
+    C3 = C7 = 4,7 uF
+
+Les tests:
+
+    C4 = C6 = 100 pF
+    C4 = C6 = 1 nF
+
+ne changent pratiquement pas les resultats a 1 kHz et 20 kHz, parce que ces
+valeurs sont minuscules devant 4,7 uF si elles sont vraiment en parallele sur
+ces memes noeuds.
+
+Attention:
+
+    Cela ne ferme pas la valeur de C4/C6. Cela dit seulement que, sous la
+    topologie actuellement supposee, des trimmers pF/nF en parallele avec 4,7 uF
+    ne pilotent pas le gain audio global. Si C4/C6 sont connectes autrement sur
+    le schema original, il faudra refaire ce test.
+
+
+7. Verification numerique
+-------------------------
+
+Commandes executees:
+
+    node .\solver\b6_parametric_ac_sweep.js
+    node .\solver\validate_mna_core.js
+    node .\solver\validate_complex_ac.js
+
+Resultats:
+
+    mna_core validation passed
+    complex_ac validation passed
+
+Le solveur AC complexe retombe toujours exactement sur le point -3,0103 dB du
+filtre RC de reference a:
+
+    fc = 159,154943092 Hz
+
+
+8. Decision scientifique apres l'etape 1
+----------------------------------------
+
+Ce qui est maintenant mieux qu'avant:
+
+    - B6 n'utilise plus une commande AC cachee.
+    - Zcmd est explicite.
+    - C4/C6 sont explicites.
+    - C1=1000p est verrouille.
+    - Les resultats sont separes entre cas limite ideal et cas de sensibilite.
+
+Ce que cette etape prouve:
+
+    - Le pont B6 peut produire une attenuation commandee par VCMD.
+    - L'attenuation a forte commande est relativement robuste a Zcmd dans les
+      cas testes.
+    - L'attenuation a faible commande est tres sensible a Zcmd.
+
+Ce que cette etape ne prouve pas encore:
+
+    - la courbe physique finale du Siemens U273;
+    - la vraie impedance de sortie de B11;
+    - la vraie position des contacts S6/S7;
+    - les vraies courbes des diodes;
+    - l'effet exact des reglages C4/C6 si leur topologie est differente.
+
+Conclusion:
+
+    L'etape 1 est terminee. La prochaine etape rigoureuse doit attaquer B11:
+
+        extraire S6/S7 et construire Zcmd(s)
+
+    parce que Zcmd(s) est maintenant prouve comme determinant pour le gain a
+    faible commande.

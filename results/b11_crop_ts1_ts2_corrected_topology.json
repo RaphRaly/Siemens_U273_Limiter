@@ -1,0 +1,234 @@
+{
+  "title": "Siemens U273 B11 Ts1/Ts2 topology corrected from user crop",
+  "status": "topology correction; BJT terminal stamps still guarded",
+  "source": "user supplied Ts1/Ts2 crops in chat, 2026-05-03",
+  "visibleDcNodes": {
+    "V24": 24,
+    "N215": 21.5,
+    "N145": 14.5,
+    "N10": 10,
+    "N9": 9,
+    "N05": 0.5,
+    "REF": 0
+  },
+  "resistorValues": {
+    "R10": 2000,
+    "R11": 10000,
+    "R12": 120,
+    "R13": 220000,
+    "R14": 2000,
+    "R15": 1200,
+    "R16": 1200,
+    "R17": 6800,
+    "R9": 56000,
+    "R7": 500,
+    "R8": 680,
+    "R7R8_MIN": 680,
+    "R7R8_MAX": 1180,
+    "R1": 3000,
+    "R2_VISIBLE": 1000000
+  },
+  "capacitorValues": {
+    "C5": 0.0001,
+    "C6": 1e-9
+  },
+  "topologyRows": [
+    {
+      "item": "R10",
+      "visibleConnection": "V24_to_N215",
+      "dcStamp": "g10 between V24 and N215",
+      "status": "confirmed_by_user_crop"
+    },
+    {
+      "item": "R11",
+      "visibleConnection": "N215_to_N10",
+      "dcStamp": "g11 between N215 and N10",
+      "status": "confirmed_by_user_crop"
+    },
+    {
+      "item": "R15",
+      "visibleConnection": "V24_to_N145",
+      "dcStamp": "g15 between V24 and N145",
+      "status": "corrects_latest_path_file_that_used_N215_to_N145"
+    },
+    {
+      "item": "R14_C6",
+      "visibleConnection": "N145_to_R14_to_X_R14C6_to_C6_to_N10",
+      "dcStamp": "open",
+      "status": "corrects_previous_N05_endpoint_assumption"
+    },
+    {
+      "item": "R13",
+      "visibleConnection": "N9_to_N05",
+      "dcStamp": "g13 between N9 and N05",
+      "status": "confirmed_by_user_crop"
+    },
+    {
+      "item": "R16",
+      "visibleConnection": "N9_to_reference",
+      "dcStamp": "g16 between N9 and REF",
+      "status": "confirmed_by_second_user_crop"
+    },
+    {
+      "item": "R12_R9",
+      "visibleConnection": "N05_to_reference",
+      "dcStamp": "g12 and g9 between N05 and REF",
+      "status": "confirmed_by_second_user_crop"
+    },
+    {
+      "item": "R7_R8",
+      "visibleConnection": "N05_to_C5_100uF_to_N150; N150_to_R7_500_adjustable_to_R8_680_to_reference",
+      "dcStamp": "open from N05 because C5 is series/open in DC",
+      "status": "corrected_by_global_user_crop"
+    },
+    {
+      "item": "R17_C10",
+      "visibleConnection": "N4_to_R17_6k8_parallel_C10_100p_to_reference",
+      "dcStamp": "g17 between N4 and REF; C10 open in DC and dynamic in AC/transient",
+      "status": "confirmed_by_screenshot_092120_not_N05"
+    },
+    {
+      "item": "S6_core",
+      "visibleConnection": "R5/C3 between left and right nodes; R4/C2 and R3/C1 split through VM; C4/R6 from VM to reference",
+      "dcStamp": "S6 contact table still guarded",
+      "status": "visible_in_global_user_crop"
+    },
+    {
+      "item": "R1_R2",
+      "visibleConnection": "right side of S6 shows R1=3k and R2 visible as 1M adjustable",
+      "dcStamp": "guarded until exact S6 position/contact routing is assigned",
+      "status": "corrects_previous_R2_5k1_read_for_this_visible_branch"
+    },
+    {
+      "item": "Ts1_Ts2",
+      "visibleConnection": "SST117 terminals are visible around N145/N10/N9 and N10/N05",
+      "dcStamp": "guarded",
+      "status": "pin names B/C/E still unassigned"
+    }
+  ],
+  "passiveKcl": {
+    "iR10": 0.00125,
+    "iR11": 0.00115,
+    "n215ResidualFromPrintedVoltagesAmp": 0.00010000000000000005,
+    "iR15": 0.007916666666666667,
+    "iR13": 0.000038636363636363636,
+    "iR16": 0.0075,
+    "n9PassiveDemandAmp": 0.007538636363636364,
+    "n145MinusN9PassiveDemandAmp": 0.00037803030303030366,
+    "r14c6DcCurrentAmp": 0,
+    "c5DcCurrentAmp": 0,
+    "iR12": 0.004166666666666667,
+    "iR9": 0.00000892857142857143,
+    "iR7R8Dc": 0,
+    "n05DemandWithoutR17Amp": 0.004175595238095238,
+    "n05PreviousDemandLowIfR7R8MistakenAsDcAmp": 0.00459932405165456,
+    "n05PreviousDemandHighIfR7R8MistakenAsDcAmp": 0.004910889355742297,
+    "n05DeficitAfterR13Amp": 0.004136958874458874
+  },
+  "r14c6AcRows": [
+    {
+      "frequencyHz": 20,
+      "admittanceMagnitudeSiemens": 1.2566370217478851e-7,
+      "phaseDeg": 89.98560000030318,
+      "conductanceR14Ratio": 0.000251327404349577,
+      "note": "AC-only branch N145--R14--C6--N10; DC stamp is open."
+    },
+    {
+      "frequencyHz": 1000,
+      "admittanceMagnitudeSiemens": 0.00000628268926550075,
+      "phaseDeg": 89.28003789569043,
+      "conductanceR14Ratio": 0.0125653785310015,
+      "note": "AC-only branch N145--R14--C6--N10; DC stamp is open."
+    },
+    {
+      "frequencyHz": 20000,
+      "admittanceMagnitudeSiemens": 0.00012187354192985428,
+      "phaseDeg": 75.89219762840987,
+      "conductanceR14Ratio": 0.24374708385970856,
+      "note": "AC-only branch N145--R14--C6--N10; DC stamp is open."
+    },
+    {
+      "frequencyHz": 79577.4715,
+      "admittanceMagnitudeSiemens": 0.00035355339049120377,
+      "phaseDeg": 45.00000001654116,
+      "conductanceR14Ratio": 0.7071067809824075,
+      "note": "AC-only branch N145--R14--C6--N10; DC stamp is open."
+    },
+    {
+      "frequencyHz": 100000,
+      "admittanceMagnitudeSiemens": 0.0003912394929134994,
+      "phaseDeg": 38.51188725396658,
+      "conductanceR14Ratio": 0.7824789858269988,
+      "note": "AC-only branch N145--R14--C6--N10; DC stamp is open."
+    },
+    {
+      "frequencyHz": 1000000,
+      "admittanceMagnitudeSiemens": 0.0004984243360751646,
+      "phaseDeg": 4.549865309121084,
+      "conductanceR14Ratio": 0.9968486721503291,
+      "note": "AC-only branch N145--R14--C6--N10; DC stamp is open."
+    }
+  ],
+  "ts2IfR16LowerRefRows": [
+    {
+      "beta": 10,
+      "r15CurrentAmp": 0.007916666666666667,
+      "n9PassiveDemandAmp": 0.007538636363636364,
+      "residualFromR15AfterN9PassiveAmp": 0.00037803030303030366,
+      "effectiveCurrentRatio": 19.941883767535035,
+      "collectorCurrentForBetaAmp": 0.007196969696969698,
+      "requiredR16CurrentForBetaAmp": 0.007158333333333334,
+      "requiredR16LowerVoltForBeta": 0.40999999999999837,
+      "verdict": "requires_pin_or_beta_review",
+      "note": "R16 lower endpoint is now confirmed as reference. This row is still only a current-sign check, not a B/C/E assignment."
+    },
+    {
+      "beta": 20,
+      "r15CurrentAmp": 0.007916666666666667,
+      "n9PassiveDemandAmp": 0.007538636363636364,
+      "residualFromR15AfterN9PassiveAmp": 0.00037803030303030366,
+      "effectiveCurrentRatio": 19.941883767535035,
+      "collectorCurrentForBetaAmp": 0.007539682539682541,
+      "requiredR16CurrentForBetaAmp": 0.007501046176046177,
+      "requiredR16LowerVoltForBeta": -0.0012554112554123975,
+      "verdict": "coherent_if_R16_lower_is_reference",
+      "note": "R16 lower endpoint is now confirmed as reference. This row is still only a current-sign check, not a B/C/E assignment."
+    },
+    {
+      "beta": 50,
+      "r15CurrentAmp": 0.007916666666666667,
+      "n9PassiveDemandAmp": 0.007538636363636364,
+      "residualFromR15AfterN9PassiveAmp": 0.00037803030303030366,
+      "effectiveCurrentRatio": 19.941883767535035,
+      "collectorCurrentForBetaAmp": 0.007761437908496733,
+      "requiredR16CurrentForBetaAmp": 0.007722801544860369,
+      "requiredR16LowerVoltForBeta": -0.26736185383244226,
+      "verdict": "requires_pin_or_beta_review",
+      "note": "R16 lower endpoint is now confirmed as reference. This row is still only a current-sign check, not a B/C/E assignment."
+    },
+    {
+      "beta": 100,
+      "r15CurrentAmp": 0.007916666666666667,
+      "n9PassiveDemandAmp": 0.007538636363636364,
+      "residualFromR15AfterN9PassiveAmp": 0.00037803030303030366,
+      "effectiveCurrentRatio": 19.941883767535035,
+      "collectorCurrentForBetaAmp": 0.00783828382838284,
+      "requiredR16CurrentForBetaAmp": 0.0077996474647464755,
+      "requiredR16LowerVoltForBeta": -0.35957695769577036,
+      "verdict": "requires_pin_or_beta_review",
+      "note": "R16 lower endpoint is now confirmed as reference. This row is still only a current-sign check, not a B/C/E assignment."
+    },
+    {
+      "beta": 200,
+      "r15CurrentAmp": 0.007916666666666667,
+      "n9PassiveDemandAmp": 0.007538636363636364,
+      "residualFromR15AfterN9PassiveAmp": 0.00037803030303030366,
+      "effectiveCurrentRatio": 19.941883767535035,
+      "collectorCurrentForBetaAmp": 0.007877280265339967,
+      "requiredR16CurrentForBetaAmp": 0.007838643901703603,
+      "requiredR16LowerVoltForBeta": -0.4063726820443243,
+      "verdict": "requires_pin_or_beta_review",
+      "note": "R16 lower endpoint is now confirmed as reference. This row is still only a current-sign check, not a B/C/E assignment."
+    }
+  ]
+}

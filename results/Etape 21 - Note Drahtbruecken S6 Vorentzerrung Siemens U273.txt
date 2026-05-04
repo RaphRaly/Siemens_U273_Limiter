@@ -1,0 +1,104 @@
+Etape 21 - Note Drahtbruecken S6 Vorentzerrung
+==============================================
+
+Date: 2026-05-03
+Objet: lecture de la note allemande liee a S6
+
+
+1. Texte lu
+-----------
+
+Le crop indique:
+
+    *) Drahtbruecken 4/5; 5/6
+       und 7/8; 8/9 zur Umschaltung
+       der Vorentzerrung,
+       Auslieferzustand:
+       Bruecke 4/5 eingelegt.
+       Frequenzgang linear
+
+
+2. Traduction
+-------------
+
+    *) Ponts filaires 4/5; 5/6
+       et 7/8; 8/9 pour commuter
+       la pre-correction / pre-egalisation,
+       etat de livraison:
+       pont 4/5 insere.
+       reponse en frequence lineaire.
+
+
+3. Consequence pour S6
+----------------------
+
+La note explique les pointilles autour de S6:
+
+    - 4/5 et 5/6 sont des options de pont filaire;
+    - 7/8 et 8/9 sont des options de pont filaire;
+    - ces ponts servent a changer la Vorentzerrung;
+    - l'etat de livraison indique explicitement:
+
+        pont 4/5 insere
+        frequence lineaire
+
+Donc:
+
+    - les pointilles ne representent pas un fil commun permanent;
+    - ils representent les emplacements possibles de ponts filaires;
+    - en configuration de livraison lineaire, on doit poser 4/5 ferme;
+    - 5/6 est ouvert en livraison;
+    - 7/8 et 8/9 restent a determiner depuis la note/crop complet: la phrase
+      liste les deux possibilites, mais ne dit pas encore explicitement laquelle
+      est inseree en livraison pour ce groupe, sauf si une autre partie de la
+      page le precise.
+
+
+4. Effet sur la lecture precedente
+----------------------------------
+
+Lecture fermee avant cette note:
+
+    - 3 -> 1 ferme dans la position dessinee;
+    - 2 ouvert;
+    - 3 -> 5 est un trait plein;
+    - la lame gauche semble se poser sur 9.
+
+Correction apportee:
+
+    - 4/5/6 et 7/8/9 doivent etre modelises comme ponts filaires optionnels de
+      pre-egalisation;
+    - pour l'etat de livraison lineaire, 4/5 est ferme.
+
+Hypothese de travail la plus prudente:
+
+    delivery_linear:
+        link_4_5 = closed
+        link_5_6 = open
+        link_7_8 = open
+        link_8_9 = closed
+
+Confirmation utilisateur:
+
+    la ligne oblique cote gauche va bien entre 8 et 9.
+
+Conclusion:
+
+    etat de livraison lineaire:
+        4/5 ferme
+        8/9 ferme
+        5/6 ouvert
+        7/8 ouvert
+
+
+5. Demande utilisateur restante
+-------------------------------
+
+Il faut verifier dans la note complete ou sur le schema:
+
+    - plus necessaire pour S6 livraison lineaire: 8/9 confirme par lecture
+      utilisateur.
+
+La photo utile maintenant:
+
+    passer a S7 ou aux transistors B11/B6.

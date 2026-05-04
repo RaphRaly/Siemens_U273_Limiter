@@ -1,0 +1,81 @@
+@startuml
+title Siemens U273 Plugin - Package Dependencies
+
+skinparam packageStyle rectangle
+
+package "u273_core" as core {
+  [types]
+  [units]
+  [math]
+  [parameter ranges]
+  [tables]
+}
+
+package "u273_dsp" as dsp {
+  [U273DspEngine]
+  [DetectorEnvelope]
+  [B6BridgeRealtimeModel]
+  [GainReductionComputer]
+}
+
+package "u273_reference" as ref {
+  [ScientificReferenceModel]
+  [ReferenceValidator]
+  [GoldenReader]
+}
+
+package "u273_plugin" as plugin {
+  [PluginProcessor]
+  [PluginEditor]
+  [ParameterBridge]
+  [PresetManager]
+  [MeterBridge]
+}
+
+package "u273_assets" as assets {
+  [presets]
+  [golden files]
+  [calibration tables]
+}
+
+package "u273_tests" as tests {
+  [unit tests]
+  [regression tests]
+  [benchmarks]
+}
+
+dsp --> core
+ref --> core
+ref --> assets
+plugin --> core
+plugin --> dsp
+plugin --> assets
+tests ..> core
+tests ..> dsp
+tests ..> ref
+tests ..> plugin
+tests ..> assets
+
+note right of core
+No dependency on JUCE UI.
+No dependency on plugin wrapper.
+Stable, small, reusable.
+end note
+
+note right of dsp
+Realtime package.
+Must stay independent from:
+- PluginEditor
+- APVTS details
+- files
+- logs
+- reference MNA
+end note
+
+note bottom
+Package rule: dependencies must remain acyclic.
+The plugin wraps DSP; DSP never calls the plugin.
+end note
+
+@enduml
+

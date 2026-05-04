@@ -1,0 +1,590 @@
+Etape 19 - Plan general finalisation schema Siemens U273
+=========================================================
+
+Date: 2026-05-03
+Objet: liste generale de ce qui manque pour finir la retranscription, la MNA
+       et la linearisation complete du schema Siemens U273.
+
+On s'est arrete la :"  J’ai remplacé le VCMD imposé par un vrai port électrique fini B11/S6/S7 de type Thévenin dans Desktop/Siemens U273/solver/b6_parametric.js:79 :
+
+  VB11_S6_S7 -> RB11_S6_S7_CMD -> CMD -> R10 -> pont B6
+
+  Le sweep principal est maintenant dans Desktop/Siemens U273/solver/b6_empirical_b11_port_sweep.js:270. Il garde S6/S7 rigoureusement :
+  S7 Begrenzer dessine: 17 -> 18 ferme, 19 ouvert, ZL10 active
+
+  J’ai aussi corrigé l’ancien contresens S7 dans Desktop/Siemens U273/solver/b11_s7_detector_parametric.js:12 et dans le document B11.
+
+  Côté transistors B6, j’ai intégré ce qui est scientifiquement défendable dans Desktop/Siemens U273/solver/b6_active_hybrid_pi_inventory.js:270 :
+
+  Ts2: VBE = 0,600 V, IE ~= 390,2 uA, hybrid-pi conditionnel
+  Ts4: VBE = 0,600 V, VCE = 3,000 V, IE ~= 1,8 mA, hybrid-pi conditionnel
+  Ts5/Ts6: borne de sortie, I_R36 ~= 20,833 mA
+
+  Je n’ai pas inventé la netlist complète de Ts1/Ts3/Ts5/Ts6 : ils restent symboliques tant que leurs routages B/C/E ne sont pas prouvés.
+
+  Résultats importants générés :
+
+  - Desktop/Siemens U273/Etape 24 - Port B11 S6 S7 et transistors B6 Siemens U273.txt:1
+  - Desktop/Siemens U273/results/b6_empirical_b11_port_sweep.json
+  - Desktop/Siemens U273/results/b6_active_hybrid_pi_inventory.json
+  - copies des documents mis à jour dans results
+
+  Validations exécutées sans erreur : validate_mna_core, validate_complex_ac, validate_bjt_small_signal, b11_s7_detector_parametric,
+  b6_empirical_b11_port_sweep, b6_active_hybrid_pi_inventory, et les sweeps B6 existants.
+
+  Point clé : le modèle principal n’est plus VCMD idéal. VCMD reste seulement un test de sous-circuit ; la liaison réaliste actuelle est le port
+  fini B11/S6/S7, avec limites explicitement documentées.
+"
+
+0. Definition de "fini"
+-----------------------
+
+Le travail est fini seulement quand on a:
+
+    1. une netlist topologique complete:
+       chaque composant -> valeur -> deux noeuds -> fonction -> carte/panneau;
+
+    2. une MNA DC complete:
+       point de repos coherent avec les tensions imprimees du schema;
+
+    3. une MNA petit signal:
+       resistances, condensateurs, transistors et diodes linearises autour du
+       point DC;
+
+    4. une simulation temporelle:
+       attaque, relachement, limiteur/compresseur;
+
+    5. une validation contre les donnees Siemens:
+       entree 10k, sortie 30 ohm, charge 300 ohm, 40 Hz..15 kHz,
+       niveau nominal 1,55 V, pont environ 25 mV, attenuation jusqu'a environ
+       1:100, temps d'attaque/relachement et distorsion.
+
+
+1. P0 - Blocages a fermer avant un modele final
+-----------------------------------------------
+
+P0.1 Table exacte des commutateurs S6 et S7
+
+    Statut:
+        valeurs du coeur R/C de S6 fermees;
+        fonction generale de S7 fermee;
+        table de contacts position par position encore ouverte.
+
+    Ce qu'il manque:
+        S6:
+            position -> contacts fermes -> branches R/C actives -> charge R1/R2.
+
+        S7:
+            mode Begrenzer -> contacts physiques fermes;
+            mode Kompressor -> contacts physiques fermes;
+            chemin exact de la zener et du redresseur.
+
+    Pourquoi c'est bloquant:
+        sans S6, la ponderation frequentielle de la commande reste parametrique;
+        sans S7, le seuil limiteur/compresseur reste fonctionnel mais pas
+        topologiquement prouve.
+
+    Photos a demander en priorite:
+        zone milieu-droite du schema B11, autour de S6, R3/R4/R5/R6,
+        C1/C2/C3/C4, R1/R2, et la ligne verticale de droite;
+        zoom tres net, sans compression, avec les petits numeros de contacts.
+
+
+P0.2 Orientation et modele des transistors actifs
+
+    Statut:
+        plusieurs points DC sont coherents;
+        les KCL Ts1/Ts2 B11 ont ete corrigees;
+        les stamps BJT existent comme outillage;
+        les broches finales B/C/E ne doivent pas encore etre figees partout.
+
+    Ce qu'il manque:
+        B11:
+            Ts1/Ts2: broches B/C/E definitives;
+            verification de Ts1 avec le noeud N05 = 0,5 V et le courant actif
+            requis d'environ 4,137 mA;
+            verification de Ts2 avec le residu KCL d'environ 0,378 mA.
+
+        B6:
+            Ts1/Ts2, Ts3/Ts4, Ts5/Ts6:
+            broches exactes, modele petit signal, modele grand signal si
+            simulation temporelle.
+
+    Pourquoi c'est bloquant:
+        une MNA active finale depend directement de gm, rpi, ro et du sens des
+        sources controlees.
+
+    Photos a demander:
+        crop haute resolution de chaque groupe de transistors avec les trois
+        fils visibles et les tensions imprimees:
+            haut/milieu B6 pour Ts1/Ts2;
+            milieu B6 pour Ts3/Ts4;
+            haut droite B6 pour Ts5/Ts6;
+            milieu B11 pour Ts1/Ts2.
+
+
+P0.3 Pont de diodes B6: modele Siemens et polarites
+
+    Statut:
+        loi empirique Siemens lue:
+
+            U_D = 308 * I_D^0,16
+            I_D = 2,85e-16 * U_D^6,25
+            r_d = 48,3 * I_D^-0,84
+
+        chaque branche = germanium + silicium en serie;
+        le domaine indique est 2..500 uA.
+        module local ajoute:
+
+            solver/u273_diode_empirical.js
+            results/u273_diode_empirical_validation.json
+            results/u273_diode_empirical_validation.csv
+
+        integration B6 ajoutee:
+
+            solver/mna_core.js
+            solver/b6_parametric.js
+            solver/b6_empirical_ac_sweep.js
+            solver/validate_u273_empirical_mna.js
+
+            results/b6_empirical_ac_sweep.json
+            results/b6_empirical_ac_sweep.csv
+            results/b6_empirical_operating_points.csv
+
+    Ce qu'il manque:
+        integration avec la vraie sortie B11/S6/S7, au lieu de VCMD impose;
+        validation contre l'exemple Siemens au niveau de la boucle complete;
+        polarite anode/cathode exacte de chaque branche;
+        integration avec C1/C2/C3/C4/C5/C6/R8/R9/R10/R11 selon la netlist B6.
+
+    Resultat du module local:
+        dans le domaine 2..500 uA, la loi donne par exemple:
+
+            ID = 18,33 uA -> UD = 490,520 mV
+            rd = 4,197 kOhm
+            gd = 238,292 uS
+
+        Le point local 1 V / 25 mV donne:
+
+            ID = 1602,673 uA
+            rd = 0,098 kOhm
+            gd = 10188,789 uS
+
+        Attention:
+            ce point 1 V est hors du domaine empirique 2..500 uA. Il doit donc
+            etre traite comme calcul local indicatif tant que le pont complet
+            Siemens n'est pas assemble.
+
+    Resultat apres integration B6:
+
+        validation MNA deux diodes en serie sous 1 V:
+            I = 21,058 uA
+            noeud milieu = 0,500000 V
+
+        B6 extrait avec VCMD = 1 V:
+            chemin D3+D4 = 0,728042 V
+            chemin D2+D1 = 0,728042 V
+            courant de chaque diode = environ 2,897 uA
+
+        Conclusion:
+            VCMD = 1 V dans B6 n'est pas 1 V directement applique aux diodes,
+            a cause de R10/R9 et du chargement du pont.
+
+    Pourquoi c'est bloquant:
+        le pont B6 est l'element non lineaire principal du limiteur.
+        Un mauvais modele diode peut masquer une erreur de boucle.
+
+
+P0.4 Liaison VCMD entre B11 et B6
+
+    Statut:
+        les anciens sweeps ont traite VCMD comme source ideale;
+        c'est utile pour tester B6, mais pas final.
+
+    Ce qu'il manque:
+        remplacer VCMD ideal par le noeud commun entre sortie B11 et entree de
+        commande B6;
+        calculer Zcmd(s) ou assembler directement la MNA B11+B6;
+        inclure les constantes de temps de detection/commande.
+
+    Pourquoi c'est bloquant:
+        la boucle complete est une regulation par retour; il faut donc fermer la
+        source de commande, pas l'imposer.
+
+
+2. P1 - Manques importants apres les blocages P0
+------------------------------------------------
+
+P1.1 Redresseur, zener et seuil
+
+    Ce qu'il manque:
+        courbes ou approximation de:
+            ZL10;
+            SSD55;
+            pont/redresseur B30 C2200;
+        seuil exact en Begrenzer;
+        chemin exact en Kompressor.
+
+    Decision actuelle:
+        S7 dessine = Begrenzer;
+        Begrenzer = zener active;
+        Kompressor = zener contournee.
+
+    Risque:
+        si la zener est modelisee avec un seuil trop ideal, les attaques et
+        seuils de regulation seront bons qualitativement mais faux en niveau.
+
+
+P1.2 Tables S1..S5
+
+    Ce qu'il manque:
+        fonction de chaque commutateur;
+        contacts fermes par position;
+        effet sur signal, mesure, niveau, mode ou calibration.
+
+    Priorite:
+        moins urgente que S6/S7 si on veut d'abord modeliser le coeur limiteur,
+        mais necessaire pour dire que le schema entier est retranscrit.
+
+    Photos a demander:
+        toutes les zones avec S1, S2, S3, S4, S5, surtout les tables de contacts
+        ou renvois mecaniques autour du front panel.
+
+
+P1.3 Netlist complete de B6
+
+    Ce qu'il manque:
+        finir tous les noeuds passifs et actifs de B6;
+        confirmer C4/C6 d'equilibrage, alpha7/alpha8/reglages;
+        integrer la charge de sortie et le transformateur/liaison de sortie si
+        visible dans les pages restantes.
+
+    Validation attendue:
+        DC coherent avec 6,4 V, 12,2 V, 22 V et les autres tensions imprimees;
+        AC coherent sur 40 Hz..15 kHz;
+        sortie 30 ohm sous charge 300 ohm.
+
+
+P1.4 Netlist complete de B11
+
+    Ce qu'il manque:
+        finir la partie detection/redressement;
+        integrer S6 et S7;
+        fermer tous les noeuds autour R7/R8/R9/R12/R13/C5 et R17/C10;
+        modeliser les ajustables comme parametres, pas comme valeurs fixes.
+
+    Validation attendue:
+        tensions 21,5 V, 14,5 V, 10 V, 9 V, 0,5 V coherentes;
+        KCL aux noeuds N145, N10, N9, N05;
+        temps d'attaque et relachement coherents.
+
+
+3. P2 - Finitions pour rendre le modele exploitable
+---------------------------------------------------
+
+P2.1 Export netlist lisible
+
+    A produire:
+        netlist humaine .txt;
+        netlist machine .json;
+        eventuellement netlist SPICE ou pseudo-SPICE.
+
+    Format minimal:
+        id, type, valeur, noeud_a, noeud_b, carte, commentaire, statut.
+
+
+P2.2 Solveur global
+
+    A produire:
+        solveur DC;
+        solveur AC petit signal;
+        solveur transitoire avec capaciteurs et diodes non lineaires;
+        export CSV/JSON de chaque sweep.
+
+
+P2.3 Rapport final
+
+    A produire:
+        schema logique par blocs;
+        equations MNA principales;
+        points DC;
+        linearisation;
+        courbes gain/frequence;
+        courbes attaque/relachement;
+        comparaison aux specs Siemens.
+
+
+4. Ordre de travail recommande
+------------------------------
+
+Ordre sans nouvelle photo:
+
+    1. implementer le module diode empirique B6;
+    2. relancer les sweeps B6 avec la loi Siemens;
+    3. garder S6/S7 parametriques;
+    4. relancer le solveur B/C/E Ts1/Ts2 avec les KCL corrigees;
+    5. assembler une boucle B11+B6 parametrique;
+    6. marquer explicitement toutes les incertitudes restantes.
+
+Ordre avec nouvelles photos:
+
+    1. extraire table S6;
+    2. extraire table S7;
+    3. confirmer B/C/E des transistors;
+    4. confirmer polarites diode/redresseur/zener;
+    5. figer la netlist;
+    6. seulement ensuite figer la MNA finale.
+
+
+5. Photos manquantes a demander
+-------------------------------
+
+Priorite photo 1:
+    milieu-droite B11:
+        S6 complet + R1/R2 + reseau R3/R4/R5/R6/C1/C2/C3/C4.
+        Il faut voir les numeros de contacts et les traits de commutation.
+
+Priorite photo 2:
+    droite/milieu B11:
+        S7 complet + zener + redresseur + liaison vers detection.
+        Il faut voir les contacts physiques limiteur/compresseur.
+        Inclure si possible D1 ZL10, D2 SSD55, R31, contacts 17/18/19 et le
+        routage vers le redresseur.
+
+Priorite photo 3:
+    centre B11:
+        Ts1/Ts2 + R10/R11/R12/R13/R14/R15/R16/C5/C6/C7/C8/C9.
+        Il faut voir les trois broches de chaque transistor et les jonctions.
+
+Priorite photo 4:
+    carte B6 complete en haute resolution:
+        pont de diodes, C1..C7, R8/R9/R10/R11, Ts1..Ts6, entree/sortie.
+
+Priorite photo 5:
+    pages service apres le schema:
+        tables de commutation, reglages, procedure de mesure, courbes,
+        nomenclature composants.
+
+
+6. Regle de prudence
+--------------------
+
+Toute partie non lue doit rester parametrique. On peut simuler des hypotheses,
+mais on ne doit pas presenter comme "schema final" une table de contacts ou une
+orientation transistor deduite par compensation numerique.
+
+
+7. Retours des agents paralleles
+--------------------------------
+
+Agent S6/S7:
+
+    Ferme:
+        pastilles visibles S6:
+            gauche 7,8,9;
+            centre/droite 4,5,6,3;
+            droite 1,2.
+
+        coeur RC:
+            R3 = 7,5k
+            R4 = 7,5k
+            R5 = 15k
+            R6 = 3,9k
+            C1 = 5n
+            C2 = 5n
+            C3 = 3,3n
+            C4 = 3n
+
+        R1 = 3k
+        R2 = 1M ajustable
+        position dessinee = Begrenzer
+        S7 Begrenzer = zener active
+        S7 Kompressor = zener bypassed
+
+    Ouvert:
+        correspondance mecanique position S6 -> contacts fermes;
+        table physique exacte S7;
+        routage R1/R2 par position.
+
+Agent inventaire:
+
+    Confirme les P0:
+        1. S6/S7;
+        2. B/C/E et modele actif des transistors;
+        3. pont B6 empirique et polarites;
+        4. liaison VCMD B11+B6.
+
+    Confirme les P1:
+        redresseur/zener/seuil;
+        netlists completes B6 et B11;
+        tables S1..S5.
+
+Agent diode:
+
+    Ajoute:
+        solver/u273_diode_empirical.js
+        results/u273_diode_empirical_validation.json
+        results/u273_diode_empirical_validation.csv
+
+    Verification executee:
+        node solver\u273_diode_empirical.js
+
+    Decision:
+        le module est pret comme brique de base. La prochaine etape technique
+        est de l'integrer dans le solveur B6 complet, en gardant les polarites
+        parametriques tant que le schema/pont n'est pas ferme.
+
+
+8. Ajout apres photos S6 144312 / 144343
+----------------------------------------
+
+Fichier detail:
+
+    Etape 20 - Lecture nouvelles photos S6 144312 144343 Siemens U273.txt
+
+Ces photos confirment:
+
+    - R1 = 3k;
+    - R2 = 1M ajustable;
+    - la ligne oblique gauche de S6 va entre 8 et 9;
+    - la section droite de S6 relie 3 -> 1 dans la position dessinee;
+    - la liaison 3 -> 5 est un trait plein, donc une liaison electrique reelle;
+    - la chaine 5 -> 3 -> 1 est fermee dans la position dessinee;
+    - le contact 2 est ouvert dans cette position;
+    - la sortie de cette section va vers le reseau R1/R2.
+
+Reste a confirmer par l'utilisateur ou par un zoom plus serre:
+
+    - si le balai central haut relie le noeud haut R5/C3 -> 4;
+    - le routage exact apres le contact 1 vers R1/R2.
+
+Ferme par lecture utilisateur:
+
+    - 4/5/6 sont relies par pointilles;
+    - la note Drahtbruecken explique ces pointilles:
+        4/5 ou 5/6, et 7/8 ou 8/9 sont des ponts filaires pour changer la
+        Vorentzerrung;
+    - etat de livraison lineaire:
+        Bruecke 4/5 eingelegt = pont 4/5 insere.
+    - ces pointilles ne sont pas un noeud electrique commun a traiter comme fil
+      plein.
+
+Reste:
+
+    - pour S6 livraison lineaire, plus rien de bloquant cote ponts:
+        4/5 ferme;
+        8/9 ferme;
+        5/6 ouvert;
+        7/8 ouvert.
+
+
+9. Ajout apres photo S7
+-----------------------
+
+Fichier detail:
+
+    Etape 22 - Lecture S7 ZL10 SSD55 B30 Siemens U273.txt
+
+Ferme par le crop:
+
+    - S7 contacts visibles: 17, 18, 19;
+    - position dessinee S7: 17 -> 18 ferme;
+    - contact 19 ouvert dans la position dessinee;
+    - position dessinee = Begrenzer;
+    - D1 = ZL10;
+    - D2 = SSD55;
+    - R31 = 51k;
+    - redresseur = B30 C2200.
+
+Modele MNA possible:
+
+    Begrenzer_drawn:
+        S7_17_18 = closed
+        S7_17_19 = open
+        ZL10 active
+
+    Kompressor_hypothesis:
+        S7_17_18 = open
+        S7_17_19 = closed
+        ZL10 bypassed
+
+Reste:
+
+    - confirmer physiquement la position Kompressor non dessinee;
+    - lire le chemin exact du contact 19 dans la position non dessinee.
+
+Ajout depuis zoom serre D1/D2:
+
+    D2 SSD55:
+        anode = contact 20
+        cathode = noeud gauche R31
+
+    D1 ZL10:
+        cathode = noeud apres R31
+        anode = branche droite / S7 contact 18.
+
+Ajout depuis zoom serre B30 C2200:
+
+    15 = + DC
+    16 = - DC
+    bornes gauche/droite du pont = entrees AC ~.
+
+Ajout depuis crop large S7:
+
+    18 est sur le rail +;
+    19 est sur le rail -;
+    20 descend vers D2 SSD55;
+    S7 reste un inverseur probable 17 commun vers 18/19.
+
+
+10. Ajout apres integration port B11/S6/S7 et transistors B6
+------------------------------------------------------------
+
+Fichier detail:
+
+    Etape 24 - Port B11 S6 S7 et transistors B6 Siemens U273.txt
+
+Fait:
+
+    - S7 encode avec la lecture corrigee:
+        Begrenzer dessine = 17 -> 18 ferme, 19 ouvert, ZL10 active;
+        Kompressor hypothese = 17 -> 19 ferme, ZL10 bypassed.
+
+    - VCMD ideal remplace dans le solveur B6 par un port Thevenin fini:
+        VB11_S6_S7 -> RB11_S6_S7_CMD -> CMD.
+
+    - Le pont B6 utilise la loi empirique Siemens des diodes dans le nouveau sweep
+      couple:
+        solver/b6_empirical_b11_port_sweep.js
+
+    - Les transistors B6 sont integres au niveau rigoureux disponible:
+        Ts2 et Ts4 = candidats hybrid-pi conditionnels;
+        Ts5/Ts6 = bornes de courant de sortie;
+        Ts1/Ts3/Ts5/Ts6 non prouves = gardes symboliques.
+
+Nouveaux resultats:
+
+    results/b6_empirical_b11_port_sweep.json
+    results/b6_empirical_b11_port_sweep.csv
+    results/b6_empirical_b11_port_operating_points.csv
+    results/b6_active_hybrid_pi_inventory.json
+    results/b6_active_passive_kcl.csv
+    results/b6_active_hybrid_pi_candidates.csv
+    results/b6_output_stage_bounds.csv
+
+Etat du plan:
+
+    - S6 livraison lineaire: ferme pour l'etat de livraison.
+    - S7 Begrenzer dessine: ferme.
+    - VCMD ideal: remplace par un port B11/S6/S7 fini dans le modele principal.
+    - Diodes B6: loi Siemens integree.
+    - Transistors B6: integres seulement la ou les tensions/courants le justifient.
+
+Reste pour finir une MNA complete U273:
+
+    - impedance de sortie active exacte B11, pas seulement des cas Thevenin;
+    - calibration detecteur/C11 vers drive de commande B6;
+    - routage exact Ts1, Ts3, Ts5, Ts6 de B6;
+    - modeles actifs B11 complets;
+    - valeurs/reglages finaux C4/C6/R7/R8;
+    - validation contre mesure audio ou specification constructeur.

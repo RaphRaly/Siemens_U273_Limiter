@@ -1,0 +1,197 @@
+Etape 20 - Lecture nouvelles photos S6 144312 144343
+=====================================================
+
+Date: 2026-05-03
+Objet: lecture des captures utilisateur:
+
+    C:\Users\user\Pictures\Screenshots\Screenshot 2026-05-03 144312.png
+    C:\Users\user\Pictures\Screenshots\Screenshot 2026-05-03 144343.png
+
+
+1. Ce que ces deux photos ferment
+---------------------------------
+
+La vue large confirme encore mieux la zone S6:
+
+    - S6 est bien entre C5/R7/R8 a gauche et R1/R2 a droite;
+    - R1 = 3 kOhm;
+    - R2 = 1 MOhm ajustable;
+    - le reseau S6 visible reste:
+        R3 = 7,5 kOhm
+        R4 = 7,5 kOhm
+        R5 = 15 kOhm
+        R6 = 3,9 kOhm
+        C1 = 5 nF
+        C2 = 5 nF
+        C3 = 3,3 nF
+        C4 = 3 nF
+
+Les groupes de contacts restent lisibles:
+
+    gauche:
+        7, 8, 9
+
+    centre/droite:
+        4, 5, 6, 3
+
+    droite:
+        1, 2
+
+
+2. Lecture nouvelle: section droite de S6
+-----------------------------------------
+
+La section droite, pres du libelle S6, est maintenant la mieux lisible:
+
+    - le balai dessine relie le contact 3 au contact 1;
+    - le contact 2 est en bas et ne semble pas selectionne dans la position
+      dessinee;
+    - la sortie apres 1 va vers la ligne verticale associee au reseau R1/R2.
+
+Donc, pour la position dessinee du schema:
+
+    ferme par lecture utilisateur + crop:
+        S6 section droite = 3 -> 1 ferme.
+        contact 2 ouvert dans la position dessinee.
+
+    a ne pas encore figer sans controle utilisateur:
+        le routage exact apres 1 vers R1/R2, car les traits verticaux se
+        superposent dans la zone de droite.
+
+
+3. Lecture encore incertaine: section centrale S6
+-------------------------------------------------
+
+Les lames obliques dans le coeur S6 sont visibles, mais la resolution ne suffit
+pas a fermer sans risque les deux connexions centrales.
+
+Lecture ajoutee depuis le zoom utilisateur suivant:
+
+    - le contact 3 semble relie au contact 5 par une liaison horizontale;
+    - le contact 5 est dans le groupe vertical avec 4 au-dessus et 6 au-dessous;
+    - 4, 5 et 6 sont relies par des pointilles, pas par un trait plein;
+    - la lecture utilisateur est:
+
+        3 relie a 5
+        4/5/6 appartiennent au meme groupe mecanique pointille
+
+Interpretation electrique prudente:
+
+    - 3-5 est confirme par l'utilisateur comme un vrai trait plein;
+    - donc 3-5 est une liaison electrique fermee dans la position dessinee;
+    - les pointilles 4/5/6 ne doivent pas etre traites comme un fil electrique
+      continu;
+    - 4/5/6 doivent etre traites comme contacts alternatifs d'une meme section
+      de commutateur, sauf preuve contraire par un trait plein.
+
+Conclusion partielle S6:
+
+    position dessinee:
+        la ligne oblique gauche va entre 8 et 9
+        5 -> 3 -> 1 ferme
+        2 ouvert
+        4/5/6 pointilles = positions mecaniques, pas commun electrique
+
+Lecture probable encore a verifier:
+
+    - comment la lame venant de 9 se raccorde exactement au reste du reseau RC;
+    - si le contact 5 choisi est raccorde au reseau R3/C1 par la liaison
+      5-3-1, ou s'il sert seulement de renvoi vers la section droite.
+
+Ce qui doit etre deduit avec une meilleure lecture:
+
+    position dessinee:
+        contact gauche choisi parmi 7/8/9;
+        contact droit choisi parmi 4/5/6/3;
+        liaison exacte vers la section droite 1/2.
+
+Tant que cela n'est pas ferme, la table S6 reste parametrique.
+
+
+4. Ce que je demande maintenant a l'utilisateur
+-----------------------------------------------
+
+Sur la photo ou directement dans le PDF zoome, verifier ces quatre questions:
+
+    Q1:
+        Le balai central bas relie-t-il le contact 8 au contact 3 ?
+
+    Q2:
+        Le balai central haut relie-t-il le noeud haut R5/C3 au contact 4 ?
+
+    Q2bis:
+        Ferme depuis lecture utilisateur:
+        4/5/6 sont relies par pointilles, donc mecanique/positions, pas par un
+        fil electrique plein.
+
+    Q3:
+        Ferme depuis la nouvelle lecture utilisateur:
+        la section droite de S6 relie 3 -> 1, pas 3 -> 2.
+
+    Q4:
+        Apres le contact 1, le fil va-t-il directement vers le haut de R1/R2,
+        ou passe-t-il par une autre ligne verticale?
+
+La reponse peut etre sous forme simple:
+
+    Q1 = oui/non/incertain
+    Q2 = oui/non/incertain
+    Q2bis = ferme: pointilles mecaniques, pas noeud electrique commun
+    Q3 = oui/non/incertain
+    Q4 = description courte
+
+
+5. Photo encore utile
+---------------------
+
+Il faut une seule photo supplementaire, plus serree que 144312:
+
+    zone:
+        uniquement S6, en coupant presque tout Ts1/Ts2 a gauche et presque tout
+        R1/R2 en bas, pour agrandir les pastilles.
+
+    a inclure absolument:
+        7,8,9 a gauche;
+        4,5,6,3 au centre/droite;
+        1,2 a droite;
+        les deux lames obliques;
+        le libelle S6.
+
+But de cette photo:
+    fermer la position dessinee de S6, au moins pour le mode Begrenzer.
+
+
+6. Correction par note Drahtbruecken / Vorentzerrung
+----------------------------------------------------
+
+Le crop de note fourni ensuite indique:
+
+    Drahtbruecken 4/5; 5/6 und 7/8; 8/9 zur Umschaltung der Vorentzerrung.
+    Auslieferzustand: Bruecke 4/5 eingelegt. Frequenzgang linear.
+
+Traduction:
+
+    Ponts filaires 4/5; 5/6 et 7/8; 8/9 pour commuter la pre-correction.
+    Etat de livraison: pont 4/5 insere. Reponse en frequence lineaire.
+
+Correction:
+
+    - les pointilles 4/5/6 et 7/8/9 indiquent les emplacements possibles de
+      ponts filaires;
+    - ils ne sont pas des fils communs permanents;
+    - pour l'etat de livraison lineaire, 4/5 est ferme;
+    - 5/6 est ouvert dans cet etat;
+    - le choix cote gauche est confirme par l'utilisateur: 8/9 ferme.
+
+S6 etat de livraison lineaire:
+
+    4/5 ferme
+    8/9 ferme
+    5/6 ouvert
+    7/8 ouvert
+    5 -> 3 -> 1 ferme
+    2 ouvert
+
+Voir:
+
+    Etape 21 - Note Drahtbruecken S6 Vorentzerrung Siemens U273.txt

@@ -1,0 +1,228 @@
+Etape 10 - Audit R14/C6: correction DC et modele AC
+====================================================
+
+Date: 2026-05-03
+Objet: Siemens U273 limiter, B11 Regelverstaerker
+
+
+1. But de cette etape
+---------------------
+
+L'etape 9 avait teste l'hypothese directe:
+
+    R14 = 2 kOhm entre N10 = 10 V et N05 = 0,5 V
+
+Ce test fermait presque exactement la KCL de N05, mais il fallait encore
+confirmer le trace. La verification de cette etape montre que cette lecture
+directe est trop forte pour le DC: la liaison R14 vers la zone 10 V passe par
+C6 = 1 nF, donc par une liaison capacitive.
+
+Conclusion immediate:
+
+    - le calcul 4,750 mA de l'etape 9 est un stress test, pas un stamp DC;
+    - en DC ideal, R14/C6 ne fournit pas N05 depuis N10;
+    - R14/C6 doit etre modele en AC/transitoire, pas dans la KCL DC directe.
+
+
+2. Verification locale
+----------------------
+
+Elements relus:
+
+    siemens_u273_check/analysis_crops/b11_r14_c6_series_x12.png
+    siemens_u273_check/analysis_crops/b11_r14_r17_ts1_ts2_x8.png
+    KCL,KVL Siemens U273.txt, section "Noeud B11-10 V autour de Ts1"
+
+La retranscription locale indique explicitement:
+
+    C6 = 1 nF, ouvert en DC
+
+Donc, pour le point de repos, C6 doit etre remplace par un circuit ouvert.
+Cette regle est aussi confirmee par la reference MNA externe citee plus bas.
+
+
+3. Sources scientifiques utilisees
+----------------------------------
+
+1. TU Delft, "Modified Nodal Analysis".
+   Source:
+   https://analog-electronics.tudelft.nl/webbook/SED/_build/html/network_theory/NetworkTheory-1_Modified_Nodal_Analysis.html
+
+   Utilisation:
+   la solution DC est obtenue avec s=0; le document indique que le reseau DC
+   s'obtient en retirant les condensateurs, donc en les remplacant par des
+   circuits ouverts.
+
+2. MIT OpenCourseWare ES.1803, "Complex Impedance and Phasors".
+   Source:
+   https://ocw.mit.edu/courses/es-1803-differential-equations-spring-2024/mites_1803_s24_compleximpedance.pdf
+
+   Utilisation:
+   en regime sinusoidal, l'impedance du condensateur est:
+
+       Zc = 1/(j*w*C)
+
+   et les impedances en serie s'additionnent.
+
+3. MIT OpenCourseWare 6.002, "Lecture 12: Capacitors and first-order systems".
+   Source:
+   https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/6002_l12/
+
+   Utilisation:
+   rappel du modele de condensateur ideal et des systemes RC de premier ordre.
+
+
+4. Script cree
+--------------
+
+Script:
+
+    solver/b11_r14_c6_dc_ac_audit.js
+
+Fichiers generes:
+
+    results/b11_r14_c6_dc_ac_audit.json
+    results/b11_r14_c6_dc_audit.csv
+    results/b11_r14_c6_ac_admittance.csv
+
+
+5. Correction DC
+----------------
+
+Hypothese directe invalide en DC si C6 est en serie:
+
+    I_R14_direct = (N10 - N05)/R14
+                 = (10 - 0,5)/2000
+                 = 4,750 mA
+
+Ce nombre explique pourquoi l'etape 9 semblait fermer N05, mais il ignore C6.
+
+Modele DC corrige:
+
+    N05 -- R14 -- X_R14C6 -- C6 -- N10
+
+Avec C6 ouvert en DC:
+
+    I_R14C6_DC = 0 mA
+
+Donc N05 demande toujours:
+
+    I_N05 = 4,599 a 4,911 mA
+
+et, si R17=6,8 kOhm est confirme vers reference:
+
+    I_N05 = 4,673 a 4,984 mA
+
+Conclusion:
+
+    la KCL DC de N05 ne peut pas etre fermee par R14/C6. Elle doit etre
+    fermee par le reseau actif Ts1/Ts2 et/ou par une autre branche DC non
+    encore extraite.
+
+
+6. Modele AC de R14/C6
+----------------------
+
+Pour l'AC, R14 et C6 forment une branche serie. L'impedance equivalente est:
+
+    Z_R14C6(s) = R14 + 1/(s*C6)
+
+L'admittance equivalente entre N05 et N10 est:
+
+    Y_R14C6(s) = 1 / (R14 + 1/(s*C6))
+               = s*C6 / (1 + s*R14*C6)
+
+Avec:
+
+    R14 = 2 kOhm
+    C6  = 1 nF
+
+La frequence de transition RC vaut:
+
+    fc = 1/(2*pi*R14*C6)
+       = 79,577 kHz
+
+Donc cette branche est surtout une compensation HF. A 20 kHz:
+
+    |Y_R14C6| = 1,218735e-4 S
+
+Par comparaison:
+
+    1/R14 = 5,000000e-4 S
+
+Donc a 20 kHz:
+
+    |Y_R14C6| = 24,37 % de la conductance pure de R14
+
+
+7. Stamp MNA correct
+--------------------
+
+En DC:
+
+    ne pas ajouter g14 entre N10 et N05.
+
+En AC, deux options sont correctes.
+
+Option explicite avec noeud intermediaire X_R14C6:
+
+    R14 entre N05 et X_R14C6
+    C6  entre X_R14C6 et N10
+
+Stamps:
+
+    g14 = 1/R14
+    yc6 = s*C6
+
+    N05:      +g14*(VN05 - VX)
+    X_R14C6: +g14*(VX - VN05) + yc6*(VX - VN10)
+    N10:      +yc6*(VN10 - VX)
+
+Option reduite AC seulement:
+
+    Yeq(s) = s*C6/(1 + s*R14*C6)
+
+    N05: +Yeq*(VN05 - VN10)
+    N10: +Yeq*(VN10 - VN05)
+
+Pour une simulation temporelle, l'option explicite est preferable car elle
+garde le condensateur comme etat dynamique.
+
+
+8. Impact sur les conclusions precedentes
+-----------------------------------------
+
+Ce qui est corrige:
+
+    - R14=N10->N05 ne doit pas etre utilise comme fermeture DC;
+    - le courant 4,750 mA ne doit pas entrer dans la KCL DC globale;
+    - la section 16 du document B11 est maintenant remplacee par cette etape.
+
+Ce qui reste vrai:
+
+    - le modele "Ts1 isole fournit N05" reste rejete;
+    - les bases de Ts1/Ts2 restent non confirmees;
+    - il faut un chemin actif ou une autre branche DC pour fournir N05;
+    - R14/C6 est une liaison dynamique/HF plausible entre la zone N05 et la
+      zone N10.
+
+
+9. Decision de modelisation
+---------------------------
+
+Decision ferme:
+
+    ne pas estampiller R14 comme resistance DC directe N10-N05.
+
+Decision provisoire rigoureuse:
+
+    ajouter un noeud cache X_R14C6;
+    placer R14 entre N05 et X_R14C6;
+    placer C6 entre X_R14C6 et N10;
+    garder C10 et R17 hors stamp definitif tant que leurs endpoints ne sont
+    pas suffisamment confirmes.
+
+Prochaine etape:
+
+    reprendre la KCL DC de N05 sans R14 direct, puis chercher le chemin actif
+    exact Ts1/Ts2 qui fournit les 4,599 a 4,911 mA.

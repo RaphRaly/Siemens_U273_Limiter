@@ -1,0 +1,1546 @@
+MNA B11 Regelverstaerker Siemens U273
+=====================================
+
+Objet
+-----
+
+Ce document continue les documents :
+
+    MNA Pont B6 Siemens U273 - document final.txt
+    MNA autres noeuds B6 Siemens U273.txt
+
+Il formalise la carte B11 / Regelverstaerker comme base MNA. B11 est le sidechain :
+
+    sortie audio
+    -> transformateur de regulation Ue
+    -> seuil D1 ZL10 / D2 SSD55 / S7
+    -> redresseur Gr B30 C2200
+    -> etages actifs Ts5/Ts6, Ts3/Ts4, Ts2, Ts1
+    -> reseau S6 de ponderation frequentielle
+    -> commande du pont B6
+
+Important :
+
+    B11 n'est pas un simple reseau resistif.
+    Il contient diodes, zener, redresseur, transistors, transformateur, condensateurs et
+    commutateurs. Une vraie MNA doit garder ces elements comme non lineaires ou
+    parametrables.
+
+
+1. Composants B11 retenus
+-------------------------
+
+Resistances :
+
+    R1  = 3 kOhm
+    R2  = 1 MOhm ajustable
+    R3  = 7,5 kOhm
+    R4  = 7,5 kOhm
+    R5  = 15 kOhm
+    R6  = 3,9 kOhm
+    R7  = 500 Ohm ajustable
+    R8  = 680 Ohm
+    R9  = 56 kOhm
+    R10 = 2 kOhm
+    R11 = 10 kOhm
+    R12 = 120 Ohm
+    R13 = 220 kOhm
+    R14 = 2 kOhm
+    R15 = 1,2 kOhm
+    R16 = 1,2 kOhm
+    R17 = 6,8 kOhm
+    R18 = 10 MOhm ajustable
+    R19 = 33 kOhm
+    R20 = 33 kOhm
+    R21 = 10 kOhm
+    R22 = 1,8 kOhm
+    R23 = 100 Ohm
+    R24 = 100 Ohm
+    R25 = 100 Ohm
+    R26 = 100 Ohm
+    R27 = 500 Ohm ajustable
+    R28 = 1 Ohm
+    R29 = 1 Ohm
+    R30 = 1 Ohm
+    R31 = 51 kOhm
+
+Condensateurs :
+
+    C1  = 5 nF
+    C2  = 5 nF
+    C3  = 3,3 nF
+    C4  = 3 nF
+    C5  = 100 uF
+    C6  = 1 nF
+    C7  = 25 uF
+    C8  = 25 uF
+    C9  = 25 uF
+    C10 = 100 pF
+    C11 = 500 uF
+
+Semi-conducteurs et blocs :
+
+    D1 = ZL10
+    D2 = SSD55
+    Gr = B30 C2200
+    Ts1 = SST117
+    Ts2 = SST117
+    Ts3 = SST116
+    Ts4 = SST116
+    Ts5 = 2N3054
+    Ts6 = 2N3054
+    Ue = transformateur de regulation
+    S6 = commutateur preaccentuation / reponse frequentielle
+    S7 = commutateur limiteur / compresseur
+    Si = fusible 0,8 A
+
+
+2. Noeuds MNA proposes
+----------------------
+
+Noeuds d'alimentation et detection :
+
+    V24       = alimentation +24 V
+    NRECT     = noeud redresse / filtre C11
+    NDET_A    = borne AC transformateur Ue cote detection
+    NDET_B    = autre borne AC transformateur Ue
+    NZ        = noeud seuil D1 ZL10 / D2 SSD55 / R31 / S7
+
+Noeuds Ts1/Ts2 :
+
+    N215      = noeud imprime 21,5 V autour de R10/R11/Ts1
+    N10       = noeud imprime 10 V autour de Ts1
+    N05       = noeud imprime 0,5 V autour de R12/R9/R7/R8/C5
+    N145      = noeud imprime 14,5 V autour de Ts2/R15
+    N9        = noeud imprime 9 V autour de Ts2/R16/R13
+
+Noeuds Ts3/Ts4 :
+
+    N23       = noeud imprime 23 V autour de R23/Ts3
+    N045      = noeud imprime 0,45 V autour de R25/R26/R27/Ts3/Ts4
+    NT34_A    = noeud interne gauche Ts3/Ts4
+    NT34_B    = noeud interne droit Ts3/Ts4
+
+Noeuds Ts5/Ts6 :
+
+    NPWR_P    = noeud cote Ts5/R28
+    NPWR_N    = noeud cote Ts6/R29
+    NPWR_DRV  = noeud commun de commande vers l'etage suivant
+
+Noeuds S6 :
+
+    VL        = entree reseau S6
+    VM        = noeud central reseau S6
+    VR        = sortie reseau S6
+
+Noeud de sortie de commande :
+
+    VCMD      = sortie effective vers le pont B6
+
+Les noms NT34_A, NT34_B, NPWR_P, NPWR_N, NPWR_DRV devront etre remplaces par les noms
+definitifs apres netlist exacte du schema. Ils evitent d'inventer des connexions.
+
+
+3. Stamps MNA generiques
+------------------------
+
+Resistance :
+
+    i_ab = g*(va - vb)
+    g = 1/R
+
+Condensateur en formulation mix/trapezoidale :
+
+    iC_ab[n] = gc*(va[n] - vb[n]) - iceq[n]
+    gc = C/(h*m)
+    m = 1/2 pour trapezoidal
+
+Mise a jour :
+
+    iceq[n+1] = iceq[n] + (1/m)*(gc*vC[n] - iceq[n])
+
+Diode Shockley :
+
+    id = Is*(exp(vd/(n*VT)) - 1)
+    gd = Is/(n*VT)*exp(vd0/(n*VT))
+    ieq = id0 - gd*vd0
+    id ~= gd*vd + ieq
+
+Zener ZL10 :
+
+    La zener doit etre modelisee comme une diode directe plus une branche avalanche
+    inverse. Modele minimal piecewise/Newton :
+
+        courant direct : Shockley classique
+        courant inverse : fonction de claquage autour de Vz ~= 10 V
+
+    Dans une premiere version, Vz peut etre parametre :
+
+        VZL10 = 10 V
+
+    Mais le courant dynamique exact exige une courbe ou une calibration.
+
+Transistors :
+
+    Chaque transistor reste un element non lineaire trois ports :
+
+        iB = fB(vB, vC, vE)
+        iC = fC(vB, vC, vE)
+        iE = fE(vB, vC, vE)
+
+    avec :
+
+        iB + iC + iE = 0
+
+    La MNA complete exige la jacobienne locale :
+
+        d(iB,iC,iE) / d(vB,vC,vE)
+
+
+4. Rails et branches DC solides
+-------------------------------
+
+4.1 Noeud N23, branche R23
+
+Connexion :
+
+    V24 -> R23 100 Ohm -> N23
+
+KCL :
+
+    0 =
+        g23*(N23 - V24)
+      + I_Ts3_N23
+      + I_autres_N23
+
+Verification DC :
+
+    I_R23 = (24 - 23)/100 = 10 mA
+
+Cette branche est solide. Elle impose un courant de l'ordre de 10 mA vers l'etage Ts3.
+
+4.2 Noeud N145, branche R15
+
+Connexion :
+
+    V24 -> R15 1,2 kOhm -> N145
+
+KCL :
+
+    0 =
+        g15*(N145 - V24)
+      + I_Ts2_N145
+      + iC7(...)
+      + iC8(...)
+
+En DC, C7 et C8 sont ouverts.
+
+Verification :
+
+    I_R15 = (24 - 14,5)/1,2k = 7,92 mA
+
+4.3 Noeud N9, branche R16/R13
+
+Connexions :
+
+    R16 = 1,2 kOhm vers masse
+    R13 = 220 kOhm vers zone N05 / commande
+    C9 = 25 uF vers reseau de temps
+    port Ts2
+
+KCL :
+
+    0 =
+        g16*N9
+      + g13*(N9 - N05)
+      + iC9(...)
+      + I_Ts2_N9
+
+Verification DC avec N9 = 9 V et N05 ~= 0,5 V :
+
+    I_R16 = 9/1,2k = 7,5 mA
+    I_R13 = (9 - 0,5)/220k = 38,6 uA
+
+Le courant principal est R16. R13 est une correction faible.
+
+4.4 Noeud N215, branche R10/R11
+
+Connexions :
+
+    V24 -> R10 2 kOhm -> N215
+    N215 -> R11 10 kOhm -> N10
+
+KCL :
+
+    0 =
+        g10*(N215 - V24)
+      + g11*(N215 - N10)
+      + I_Ts1_N215
+      + I_autres_N215
+
+Verification :
+
+    I_R10 = (24 - 21,5)/2k = 1,25 mA
+    I_R11 = (21,5 - 10)/10k = 1,15 mA
+
+Ecart :
+
+    0,10 mA
+
+Cet ecart doit aller dans une autre branche active. Il ne faut pas declarer une erreur.
+
+4.5 Noeud N10
+
+KCL :
+
+    0 =
+        g11*(N10 - N215)
+      + iC6(...)
+      + I_Ts1_N10
+      + I_autres_N10
+
+En DC, C6 est ouvert.
+
+Courant via R11 :
+
+    1,15 mA
+
+Ce courant est plausible pour l'etage de commande Ts1, mais la KCL complete depend de
+Ts1 et des chemins de regulation.
+
+4.6 Noeud N05
+
+Connexions :
+
+    R12 = 120 Ohm vers masse
+    R9 = 56 kOhm vers masse
+    C5 = 100 uF
+    R7 = 500 Ohm ajustable
+    R8 = 680 Ohm
+    port Ts1 / commande
+
+KCL :
+
+    0 =
+        g12*N05
+      + g9*N05
+      + iC5(N05, N150)
+      + iC5(...)
+      + I_Ts1_N05
+      + I_commande
+
+Verification DC a N05 = 0,5 V :
+
+    I_R12 = 0,5/120 = 4,17 mA
+    I_R9 = 0,5/56k = 8,93 uA
+
+Correction crop global 2026-05-03:
+
+    R7/R8 ne sont pas directement en DC sur N05.
+    Ils sont derriere C5 = 100 uF:
+
+        N05 -> C5 -> N150 -> R7/R8 -> reference
+
+    En DC ideal:
+
+        I_C5_R7R8_DC = 0
+
+Donc la demande resistive totale vaut environ :
+
+    I_R12 + I_R9 = 4,176 mA
+
+Il faut donc une source active autour de Ts1/commande. Ce n'est pas un simple etage
+emetteur commun isole.
+
+
+5. Bloc Ts3/Ts4
+---------------
+
+Le bloc Ts3/Ts4 est plus incertain topologiquement dans les crops. On garde donc des
+ports symboliques.
+
+Noeud N045 :
+
+    resistances proches : R25 = 100 Ohm, R26 = 100 Ohm, R27 = 500 Ohm ajustable
+    tension imprimee : environ 0,45 V
+
+KCL generale :
+
+    0 =
+        I_R25(N045, NT34_A)
+      + I_R26(N045, NT34_B)
+      + I_R27(N045, alpha27)
+      + I_Ts3_N045
+      + I_Ts4_N045
+
+Attention :
+
+    Ne pas supposer que chaque resistance de 100 Ohm voit toute la tension 0,45 V.
+
+Si une resistance de 100 Ohm avait reellement 0,45 V a ses bornes :
+
+    I = 4,5 mA
+
+Mais c'est seulement un ordre de grandeur local, pas une KCL complete.
+
+Noeuds NT34_A / NT34_B :
+
+    Ils doivent etre relies aux ports Ts3/Ts4, R19/R20/R21/R22/R24/R25/R26/R27 selon
+    la netlist finale.
+
+Les valeurs plausibles de courant sont de quelques mA a 10 mA, coherentes avec R23.
+
+
+6. Bloc Ts5/Ts6 2N3054
+----------------------
+
+Composants :
+
+    Ts5 = 2N3054
+    Ts6 = 2N3054
+    R28 = 1 Ohm
+    R29 = 1 Ohm
+    R30 = 1 Ohm
+    C11 = 500 uF
+    Si = 0,8 A
+
+KCL generique :
+
+    0 =
+        I_Ts5
+      + I_Ts6
+      + g28*(NPWR_P - ...)
+      + g29*(NPWR_N - ...)
+      + g30*(NRECT - ...)
+      + iC11(NRECT, 0)
+
+Regle de verification pour R28/R29 :
+
+    I_R28 = V_R28 / 1 Ohm
+    I_R29 = V_R29 / 1 Ohm
+
+Donc :
+
+    10 mV  -> 10 mA
+    50 mV  -> 50 mA
+    100 mV -> 100 mA
+
+Ne pas interpreter automatiquement le point 0,45 V comme une chute sur 1 Ohm. Cela
+donnerait 450 mA, beaucoup trop fort sans preuve topologique.
+
+
+7. Detection, zener, redresseur
+-------------------------------
+
+Bloc :
+
+    Ue -> D2 SSD55 -> D1 ZL10 -> S7 -> Gr B30 C2200 -> C11 / etages B11
+
+7.1 Transformateur Ue
+
+Le transformateur doit etre modelise par :
+
+    v_secondary = kUe * v_out
+
+ou en MNA complete par inductances couplees / transformateur ideal. Pour une premiere
+version sidechain :
+
+    NDET_A - NDET_B = source AC de detection
+
+Le schema indique environ 8 V~ dans cette zone. Si RMS :
+
+    Vpeak ~= 8*sqrt(2) = 11,3 V
+
+7.2 Zener D1 ZL10 et diode D2 SSD55
+
+Condition de seuil simplifiee en mode limiteur :
+
+    |Vdet_peak| >= VZL10 + VD2 + VGr + I*R31
+
+Au debut de conduction :
+
+    I ~= 0
+    |Vdet_peak| ~= VZL10 + VD2 + VGr
+
+Avec :
+
+    VZL10 ~= 10 V
+    Vdet_peak ~= 11,3 V
+
+Il reste environ 1,3 V pour les chutes D2/Gr. C'est coherent, mais ce n'est pas une
+preuve de seuil exact en dB.
+
+7.3 R31
+
+R31 = 51 kOhm limite le courant du seuil.
+
+Exemples :
+
+    depassement 1 V -> 19,6 uA
+    depassement 2 V -> 39,2 uA
+    depassement 5 V -> 98 uA
+
+Ce courant faible doit ensuite etre amplifie / bufferise par B11.
+
+7.4 Redresseur Gr B30 C2200
+
+Le redresseur peut etre modelise comme quatre diodes avec parametres propres ou comme
+bloc ideal + chutes parametriques.
+
+KCL au noeud redresse :
+
+    i_Gr(t) =
+        iC11(t)
+      + i_entree_regulation(t)
+      + i_fuites(t)
+
+Avec compagnon condensateur :
+
+    iC11[n] = gc11*vC11[n] - iceq_C11[n]
+
+
+8. Reseau S6 de preaccentuation
+-------------------------------
+
+Composants :
+
+    R1 = 3 kOhm
+    R2 = 1 MOhm ajustable
+    R3 = 7,5 kOhm
+    R4 = 7,5 kOhm
+    R5 = 15 kOhm
+    R6 = 3,9 kOhm
+    C1 = 5 nF
+    C2 = 5 nF
+    C3 = 3,3 nF
+    C4 = 3 nF
+
+Modele nodal generique :
+
+    VL = entree reseau
+    VM = noeud central
+    VR = sortie reseau
+
+Admittances :
+
+    Y_LM = 1/R4 + s*C2
+    Y_MR = 1/R3 + s*C1
+    Y_LR = 1/R5 + s*C3
+    Y_M0 = 1 / (R6 + 1/(s*C4))
+
+KCL VM :
+
+    0 =
+        (VM - VL)*Y_LM
+      + (VM - VR)*Y_MR
+      + VM*Y_M0
+
+KCL VR :
+
+    0 =
+        (VR - VL)*Y_LR
+      + (VR - VM)*Y_MR
+      + VR*Yload_S6
+
+Frequences caracteristiques :
+
+    R5/C3       ~= 3,2 kHz
+    R3/C1/R4/C2 ~= 4,2 kHz
+    R6/C4       ~= 13,6 kHz
+
+Mais la courbe exacte depend des contacts S6 et des ponts de cablage. Ne pas annoncer
+un gain fixe en dB sans table de contacts.
+
+
+9. S7 limiteur / compresseur
+----------------------------
+
+S7 modifie la topologie du seuil.
+
+Lecture corrigee avec les captures utilisateur du 2026-05-03:
+
+    S7 est lu comme un inverseur:
+
+        commun = 17
+        position dessinee = 17 -> 18
+        position inverse probable = 17 -> 19
+
+    Le noeud 17 est le noeud central R31/D1/Gr.
+    Le noeud 18 est le cote droit de D1 ZL10.
+
+Table de commutation:
+
+    Position      Connexion fermee      Connexion ouverte      Effet
+    --------      ----------------      -----------------      -----
+    dessinee      17 -> 18              17 -> 19               ZL10 active
+    inverse       17 -> 19              17 -> 18               ZL10 contournee
+
+Consequence MNA:
+
+    position dessinee:
+        ajouter un court-circuit ideal ou Ron faible entre N17 et N18
+        ne pas court-circuiter D1 ZL10
+
+    position inverse:
+        ajouter un court-circuit ideal ou Ron faible entre N17 et N19
+        D1 ZL10 est bypassed dans le seuil principal
+
+Mode limiteur :
+
+    zener ZL10 active dans la logique de seuil ;
+    action tardive et ferme.
+
+Mode compresseur :
+
+    seuil modifie ou contourne ;
+    action plus progressive.
+
+MNA :
+
+    S7 doit etre encode comme un etat de commutateur qui active/desactive certaines
+    branches. Il ne doit pas etre remplace par une phrase fonctionnelle dans le solveur.
+
+
+10. Assemblage Newton B11
+-------------------------
+
+Pour chaque sample :
+
+    1. imposer ou calculer le signal detecte Ue depuis la sortie audio ;
+    2. assembler resistances ;
+    3. assembler condensateurs gc/iceq ;
+    4. assembler contacts S6/S7 selon mode ;
+    5. lineariser D2 SSD55 ;
+    6. lineariser D1 ZL10 avec modele zener ;
+    7. lineariser les diodes du redresseur Gr ;
+    8. lineariser Ts1-Ts6 selon modele transistor choisi ;
+    9. resoudre G*x = I ;
+    10. iterer Newton ;
+    11. mettre a jour les iceq ;
+    12. produire VCMD vers le pont B6.
+
+Critere :
+
+    max(abs(x_new - x_old)) < 1e-7 V
+
+Point initial :
+
+    utiliser le sample precedent.
+
+
+11. Ce qui est valide maintenant
+--------------------------------
+
+Branches resistives solides :
+
+    R23 : (24 - 23)/100 = 10 mA
+    R15 : (24 - 14,5)/1,2k = 7,92 mA
+    R16 : 9/1,2k = 7,5 mA
+    R10 : (24 - 21,5)/2k = 1,25 mA
+    R11 : (21,5 - 10)/10k = 1,15 mA
+    R12 : 0,5/120 = 4,17 mA
+    R9  : 0,5/56k = 8,93 uA
+
+Ces valeurs sont coherentes en DC. Elles ne suffisent pas a fermer B11, car les etages
+actifs fournissent ou absorbent les courants manquants.
+
+
+12. Ce qui reste ouvert
+-----------------------
+
+Avant implementation definitive :
+
+    1. confirmer les contacts S6 et S7 ;
+    2. definir le modele zener ZL10 ;
+    3. definir les parametres SSD55 et B30 C2200 ;
+    4. choisir un modele transistor pour SST117, SST116, 2N3054 ;
+    5. confirmer la netlist exacte autour de Ts3/Ts4/R25/R26/R27 ;
+    6. confirmer les connexions exactes de R7 et R18 ;
+    7. mesurer ou calibrer VCMD vers le pont B6.
+
+
+13. Conclusion
+--------------
+
+B11 peut etre mise en MNA, mais pas comme simple reseau lineaire.
+
+La formulation correcte est :
+
+    KCL nodale
+    + diodes/zener/redresseur linearises par Newton
+    + transistors gardes comme elements non lineaires trois ports
+    + condensateurs en compagnons gc/iceq
+    + S6/S7 comme commutateurs de topologie
+    + sortie VCMD vers la MNA du pont B6
+
+
+14. Mise a jour Ts1/Ts2: contraintes topologiques
+-------------------------------------------------
+
+Une verification supplementaire a ete effectuee apres validation des stamps
+BJT hybrid-pi.
+
+Fichiers:
+
+    solver/b11_ts1_ts2_topology_constraints.js
+    results/b11_ts1_ts2_topology_constraints.json
+    results/b11_ts1_ts2_small_signal_bounds.csv
+
+Resultats KCL:
+
+    I_R10 = (24 - 21,5)/2k = 1,250 mA
+    I_R11 = (21,5 - 10)/10k = 1,150 mA
+
+    residual N215 = 0,100 mA
+
+    I_N05 = I_R12 + I_R9 + I_R7/R8
+          = 4,599 a 4,911 mA
+
+Test Ts1 isole:
+
+    Si IC(Ts1) etait seulement I_R11 = 1,150 mA
+    et si IE devait fournir N05 = 4,599 a 4,911 mA:
+
+        IB = IE - IC = 3,449 a 3,761 mA
+        beta effectif = 0,333 a 0,306
+
+    Ce beta est physiquement impossible pour un BJT actif normal.
+
+Conclusion Ts1:
+
+    Ts1 ne doit pas etre modele comme un transistor isole R11 -> N05.
+    Il manque une source active, un autre chemin de courant ou une lecture de
+    broches plus complete.
+
+Test Ts2 isole:
+
+    I_R15 = 7,917 mA
+    I_R16 + I_R13 = 7,539 mA
+
+    IB = IE - IC = -0,378 mA si on force l'hypothese isolee.
+
+Conclusion Ts2:
+
+    Les courants connus ne suffisent pas a representer Ts2 comme un BJT isole
+    via seulement R15/R16/R13. La difference doit etre fermee par une branche
+    active ou par une topologie plus complete.
+
+Decision:
+
+    Ne pas encore connecter Ts1/Ts2 dans la MNA globale. La prochaine etape est
+    l'extraction des broches B/C/E et des chemins R14/R17/C10, ou un solveur de
+    hypotheses de broches contraint par VBE, VCE et KCL.
+
+
+15. Mise a jour Ts1/Ts2: solveur d'hypotheses B/C/E
+---------------------------------------------------
+
+Un solveur d'hypotheses a ete ajoute:
+
+    solver/b11_ts1_ts2_pin_hypothesis_solver.js
+
+Fichiers de sortie:
+
+    results/b11_ts1_ts2_pin_hypothesis_solver.json
+    results/b11_ts1_ts2_known_node_hypotheses.csv
+    results/b11_ts1_ts2_required_base_ranges.csv
+    results/b11_ts1_ts2_kcl_hypothesis_checks.csv
+
+Criteres:
+
+    NPN:
+        VBE = VB - VE ~= 0,55..0,75 V en fenetre stricte
+        VCE = VC - VE >= 0,40 V
+        VC > VB pour jonction BC inverse
+
+    PNP:
+        VEB = VE - VB ~= 0,55..0,75 V en fenetre stricte
+        VEC = VE - VC >= 0,40 V
+        VB > VC pour jonction BC inverse
+
+Resultat:
+
+    Hypotheses strictement actives avec seulement les noeuds connus: 0
+    Hypotheses souplement actives avec seulement les noeuds connus: 0
+
+Tensions de base requises:
+
+    Ts1 NPN, C=N10, E=N05:
+        base stricte = 1,05 a 1,25 V
+
+    Ts1 PNP, E=N10, C=N05:
+        base stricte = 9,25 a 9,45 V
+
+    Ts2 NPN, C=N145, E=N9:
+        base stricte = 9,55 a 9,75 V
+
+    Ts2 PNP, E=N145, C=N9:
+        base stricte = 13,75 a 13,95 V
+
+Conclusion:
+
+    Les bases de Ts1/Ts2 ne sont pas simplement les noeuds imprimes deja
+    retenus. Il faut identifier les noeuds caches ou les liaisons R14/R17/C10
+    avant de connecter les stamps BJT dans la MNA globale.
+
+La prochaine etape logique est de creer une netlist minimale executable :
+
+    version 1 : pont B6 + source VCMD imposee
+    version 2 : ajout detecteur B11 simplifie
+    version 3 : ajout transistors B11
+    version 4 : boucle complete feedback U273
+
+
+16. Mise a jour R14/N05: fermeture partielle du bilan Ts1/Ts2
+-------------------------------------------------------------
+
+Un solveur de bilan de noeuds caches a ete ajoute:
+
+    solver/b11_ts1_ts2_hidden_node_balance.js
+
+Fichiers de sortie:
+
+    results/b11_ts1_ts2_hidden_node_balance.json
+    results/b11_r14_n05_balance_candidates.csv
+    results/b11_n10_r14_kcl_candidate.csv
+    results/b11_c10_compensation_orders.csv
+
+Lecture visuelle provisoire:
+
+    R14 = 2 kOhm a son cote gauche sur N05 = 0,5 V.
+    Son cote droit est le candidat fort N10 = 10 V, d'apres les crops
+    b11_ts1_ts2_r14_r17_c10_x4.png et b11_r14_r17_ts1_ts2_x8.png.
+
+Calcul si R14=N10->N05:
+
+    I_R14 = (10 - 0,5)/2k = 4,750 mA
+
+Demande N05:
+
+    sans R17: 4,599 a 4,911 mA
+    avec R17 provisoire: 4,673 a 4,984 mA
+
+Residu N05:
+
+    sans R17: -0,151 a +0,161 mA
+    avec R17: -0,077 a +0,234 mA
+
+Conclusion:
+
+    R14=N10->N05 ferme presque exactement N05. Le rejet precedent de
+    "Ts1 isole fournit N05" reste correct, mais il est maintenant mieux
+    explique: N05 est probablement ferme par R14 depuis N10, pas par Ts1
+    seul.
+
+KCL N10 si R14=N10->N05:
+
+    I_R11 = (21,5 - 10)/10k = 1,150 mA
+    I_R14 = 4,750 mA
+    courant actif requis vers N10 = 3,600 mA
+
+Consequence MNA:
+
+    si le endpoint N10 est confirme:
+
+        g14 = 1/R14 = 0,0005 S
+        N10: +g14*(VN10 - VN05)
+        N05: +g14*(VN05 - VN10)
+
+    si R17 est confirme N05->reference:
+
+        g17 = 1/R17 = 0,0001470588 S
+        N05: +g17*VN05
+
+C10:
+
+    C10 = 100 pF reste non estampille tant que ses endpoints ne sont pas
+    confirmes. Les ordres de grandeur calcules sont:
+
+        R14*C10: fc ~= 795,8 kHz
+        R17*C10: fc ~= 234,1 kHz
+        R13*C10: fc ~= 7,23 kHz
+
+Decision:
+
+    L'etape suivante doit tracer les endpoints exacts de C10 et confirmer le
+    cote droit de R14. Ensuite seulement on connectera Ts1/Ts2 par stamps BJT
+    complets dans la MNA globale.
+
+
+17. Audit R14/C6: correction de la fermeture DC N05
+---------------------------------------------------
+
+L'etape 16 a teste R14 comme si la branche etait directement N10 -> N05.
+La relecture du schema et de la retranscription locale impose une correction:
+
+    C6 = 1 nF est ouvert en DC.
+
+Donc la branche correcte est:
+
+    N05 -- R14 2k -- X_R14C6 -- C6 1nF -- N10
+
+et non:
+
+    N05 -- R14 2k -- N10
+
+Script de controle:
+
+    solver/b11_r14_c6_dc_ac_audit.js
+
+Fichiers de sortie:
+
+    results/b11_r14_c6_dc_ac_audit.json
+    results/b11_r14_c6_dc_audit.csv
+    results/b11_r14_c6_ac_admittance.csv
+
+Resultat DC corrige:
+
+    I_R14C6_DC = 0 mA
+
+Donc N05 demande toujours:
+
+    I_N05 = 4,599 a 4,911 mA
+
+avec R17 provisoire:
+
+    I_N05 = 4,673 a 4,984 mA
+
+Le courant 4,750 mA de l'etape 16 est conserve comme stress test, mais il
+est rejete comme stamp DC.
+
+Modele AC:
+
+    Z_R14C6(s) = R14 + 1/(s*C6)
+    Y_R14C6(s) = s*C6/(1 + s*R14*C6)
+
+Avec R14=2k et C6=1nF:
+
+    fc = 79,577 kHz
+    |Y(20 kHz)| = 1,218735e-4 S
+    |Y(20 kHz)| = 24,37 % de 1/R14
+
+Decision:
+
+    Ne pas ajouter g14 entre N10 et N05 en DC.
+    Pour l'AC/transitoire, ajouter un noeud X_R14C6 et estampiller:
+
+        R14 entre N05 et X_R14C6
+        C6 entre X_R14C6 et N10
+
+    La prochaine KCL DC de N05 doit donc chercher le courant manquant dans le
+    reseau actif Ts1/Ts2, pas dans R14/C6.
+
+
+18. KCL N05 corrigee: courant actif requis
+------------------------------------------
+
+Apres correction R14/C6, un nouveau solveur de contrainte a ete ajoute:
+
+    solver/b11_n05_active_requirement.js
+
+Fichiers de sortie:
+
+    results/b11_n05_active_requirement.json
+    results/b11_n05_active_dc_requirement.csv
+    results/b11_n05_active_bjt_small_signal.csv
+    results/b11_n05_supply_comparison.csv
+
+KCL N05 sans R14/C6 DC:
+
+    I_N05 = I_R12 + I_R9 + I_R7/R8
+          = 4,599 a 4,911 mA
+
+Avec R17 candidat:
+
+    I_N05 = 4,673 a 4,984 mA
+
+Comparaison:
+
+    I_R11 = 1,150 mA
+
+Donc R11 seul manque:
+
+    3,449 a 3,761 mA
+
+R15:
+
+    I_R15 = 7,917 mA
+
+R15 a assez de magnitude, mais il est du cote Ts2/N145 et ne peut pas etre
+assigne sans preuve topologique.
+
+Hypothese de contrainte si un BJT fournit N05, beta=100:
+
+    IE = 4,599 a 4,911 mA
+    IC = 4,554 a 4,862 mA
+    IB = 0,046 a 0,049 mA
+    gm = 176,162 a 188,095 mS
+    re = 5,677 a 5,316 ohm
+
+Decision:
+
+    La MNA DC doit contenir une branche active capable de fournir environ
+    4,6 a 4,9 mA a N05. Cette branche n'est pas R14/C6 et n'est pas R11
+    seul. La prochaine extraction doit donc chercher le chemin actif
+    Ts2/R15 -> Ts1/N05.
+
+
+19. Correction crop utilisateur Ts1/Ts2
+---------------------------------------
+
+Le crop utilisateur fourni le 2026-05-03 corrige la topologie locale de la zone
+Ts1/Ts2.
+
+Script de controle:
+
+    solver/b11_crop_ts1_ts2_corrected_topology.js
+
+Fichiers de sortie:
+
+    results/b11_crop_ts1_ts2_corrected_topology.json
+    results/b11_crop_ts1_ts2_topology_rows.csv
+    results/b11_crop_ts1_ts2_passive_kcl.csv
+    results/b11_crop_ts2_r16_lower_ref_check.csv
+    results/b11_crop_r14_c6_ac_rows.csv
+
+Corrections fermees:
+
+    R15 = +24 V -> R15 1,2k -> N145 = 14,5 V
+
+    R14/C6 = N145 -> R14 2k -> X_R14C6 -> C6 1n -> N10
+
+    R13 = N9 -> R13 220k -> N05
+
+    R16 = N9 -> R16 1,2k -> endpoint bas hors crop
+
+Donc:
+
+    I_R15 = (24 - 14,5)/1,2k
+          = 7,917 mA
+
+    I_R13 = (9 - 0,5)/220k
+          = 38,636 uA
+
+    I_R14C6_DC = 0 mA
+
+La correction importante est que R14/C6 ne doit plus etre considere comme une
+branche N05--N10, meme en AC. Son stamp dynamique est entre N145 et N10.
+
+La demande N05 reste:
+
+    I_N05 = 4,599 a 4,911 mA
+
+Apres R13:
+
+    deficit actif N05 = 4,561 a 4,872 mA
+
+Decision:
+
+    - garder R16 avec endpoint bas non confirme;
+    - garder Ts1/Ts2 sans assignation B/C/E;
+    - relancer l'extraction des broches avec les noeuds Ts2 N145/N10/N9;
+    - ne pas connecter de stamp BJT final avant cette extraction.
+
+
+20. Confirmation R16 et reseau N05
+----------------------------------
+
+Le second crop utilisateur de la zone basse Ts1/Ts2 confirme le bas de R16 et
+les charges DC de N05.
+
+Document:
+
+    Etape 13 - Confirmation R16 et N05 B11 Siemens U273.txt
+
+Script mis a jour:
+
+    solver/b11_crop_ts1_ts2_corrected_topology.js
+
+Topologie confirmee:
+
+    R16 = N9 -> reference
+    R13 = N9 -> N05
+    R12 = N05 -> reference
+    R9  = N05 -> reference
+    R7/R8 = N05 -> R7 500 ohm ajustable -> R8 680 ohm -> reference
+
+Calcul N9:
+
+    I_R16 = 9 / 1,2k
+          = 7,500 mA
+
+    I_R13 = (9 - 0,5) / 220k
+          = 38,636 uA
+
+    I_N9_passif = 7,539 mA
+
+    I_R15 = (24 - 14,5) / 1,2k
+          = 7,917 mA
+
+    residu R15 - N9_passif = 0,378 mA
+
+Ce residu est compatible en ordre de grandeur avec une branche de commande,
+mais il ne prouve pas encore les broches B/C/E de Ts2.
+
+Calcul N05:
+
+    I_N05 = I_R12 + I_R9 + I_R7/R8
+          = 4,599 a 4,911 mA
+
+    apres R13:
+        deficit actif = 4,561 a 4,872 mA
+
+Decision:
+
+    R16 est maintenant ferme dans la netlist passive. La prochaine etape est
+    le solveur d'hypotheses B/C/E corrige pour Ts2 autour de N145/N10/N9 et
+    Ts1 autour de N10/N05. Les endpoints C10/R17 restent gardes.
+
+
+21. Crop global B11: correction C5, R17/C10 et S6
+-------------------------------------------------
+
+Les screenshots utilisateur du 2026-05-03 a 09:21 corrigent trois points.
+
+Document:
+
+    Etape 14 - Crop global B11 C5 R17 S6 Siemens U273.txt
+
+Scripts mis a jour:
+
+    solver/b11_crop_ts1_ts2_corrected_topology.js
+    solver/b11_s6_contact_bound_sweep.js
+
+Correction 1, C5/R7/R8:
+
+    N05 -> C5 100 uF -> N150 -> R7 500 ohm ajustable -> R8 680 ohm -> reference
+
+Donc en DC:
+
+    I_C5_R7R8_DC = 0
+
+La KCL DC N05 corrigee est:
+
+    I_N05 = I_R12 + I_R9
+          = 4,176 mA
+
+Apres R13:
+
+    I_actif_N05 = 4,137 mA
+
+Les valeurs 4,599..4,911 mA restent dans les anciennes etapes comme historique,
+mais elles sont supersedees pour la netlist DC courante.
+
+Correction 2, R17/C10:
+
+    N4 -> R17 6,8k // C10 100p -> reference
+
+R17/C10 ne doivent donc pas etre estampilles sur N05. Le futur stamp est:
+
+    DC:
+        N4: +g17*VN4
+
+    AC/transitoire:
+        N4: +(g17 + s*C10)*VN4
+
+Correction 3, S6/R2:
+
+    R1 = 3 kOhm
+    R2 = 1 MOhm ajustable
+
+Le bornage S6 est recalcule avec R2=1M. La table exacte des contacts S6 reste
+gardee.
+
+Decision:
+
+    La prochaine extraction de broches Ts1/Ts2 doit utiliser:
+
+        I_R15 = 7,917 mA
+        I_R16 + I_R13 = 7,539 mA
+        I_actif_N05_apres_R13 = 4,137 mA
+
+    et non l'ancienne demande N05 incluant R7/R8 en DC.
+
+
+22. Lecture zoom S6
+-------------------
+
+Le crop utilisateur S6 au zoom maximum confirme la position et les valeurs du
+reseau S6.
+
+Document:
+
+    Etape 15 - Lecture zoom S6 B11 Siemens U273.txt
+
+Ferme:
+
+    R3 = 7,5 kOhm
+    R4 = 7,5 kOhm
+    R5 = 15 kOhm
+    R6 = 3,9 kOhm
+
+    C1 = 5 nF
+    C2 = 5 nF
+    C3 = 3,3 nF
+    C4 = 3 nF
+
+    R1 = 3 kOhm
+    R2 = 1 MOhm ajustable
+
+    S6 est situe entre C5/R7/R8 et le routage vers R1/R2.
+
+Garde:
+
+    - table complete position par position de S6;
+    - association position mecanique -> contacts fermes;
+    - netlist S6 definitive pour une position donnee.
+
+Decision:
+
+    Continuer a modeliser S6 comme commutateur parametrique tant que la table
+    des positions n'est pas disponible. Ne pas figer une seule topologie depuis
+    ce zoom.
+
+
+23. Pages theorie apres schema: limiteur a diodes
+-------------------------------------------------
+
+Les screenshots utilisateur des pages apres le schema ont ete lus et resumes.
+
+Document:
+
+    Etape 16 - Lecture pages theorie limiteur Siemens U273.txt
+
+Ce que ces pages confirment:
+
+    - un limiteur bloque la tension de sortie au-dessus d'un seuil;
+    - un compresseur reduit progressivement le gain;
+    - certains appareils sont commutables limiteur/compresseur;
+    - SV = Signalverstaerker, RV = Regelverstaerker, St = organe de commande;
+    - les diodes peuvent etre utilisees comme resistances AC commandees;
+    - le point de repos DC des diodes fixe leur resistance differentielle AC;
+    - un pont de diodes avec condensateurs peut former un diviseur de tension
+      commande avec un rapport jusqu'a environ 1:100;
+    - la ponderation des hautes frequences est necessaire quand le limiteur est
+      utilise avec preaccentuation.
+
+Impact MNA:
+
+    - garder le pont B6 comme attenuateur AC a diodes non lineaires;
+    - lineariser les diodes autour du point de repos pour les calculs AC;
+    - garder B11 comme boucle de regulation/commande;
+    - garder S6 comme ponderation frequentielle parametrique.
+
+Ces pages ne ferment pas:
+
+    - la table exacte S6;
+    - la table exacte S7;
+    - les courbes reelles des diodes;
+    - les broches B/C/E des transistors.
+
+
+24. Donnees techniques: pont de diodes et regulation
+----------------------------------------------------
+
+Les screenshots utilisateur suivants ont ete lus et resumes:
+
+    Screenshot 2026-05-03 104316.png a 104605.png
+
+Document:
+
+    Etape 17 - Donnees techniques diode bridge U273.txt
+
+Architecture confirmee:
+
+    SV = Signalverstaerker
+    RV = Regelverstaerker
+    DB = Diodenbruecke
+
+Le U273 utilise une Rueckwaertsregelung, donc une regulation par retour.
+
+S7 / zener:
+
+    En mode compresseur, la tension continue est appliquee directement a la
+    Diodenbruecke.
+
+    En mode limiteur, la tension de commande passe par une zener qui retarde
+    l'action jusqu'au voisinage du niveau nominal.
+
+    La zener est bypassed en mode compresseur.
+
+Comme la note du schema indique:
+
+    S1...S7 gezeichnete Stellung: Begrenzer
+
+la position dessinee doit etre traitee comme:
+
+    zener active.
+
+Pont de diodes:
+
+    chaque branche utilise une diode germanium et une diode silicium en serie.
+
+Loi empirique moyenne a 25 deg C:
+
+    U_D = 308 * I_D^0,16
+
+avec U_D en mV et I_D en uA.
+
+Equivalent:
+
+    I_D = 2,85e-16 * U_D^6,25
+
+Resistance differentielle:
+
+    R = 48,3 * I_D^-0,84
+
+avec R en kOhm et I_D en uA.
+
+Domaine indique:
+
+    2 a 500 uA, erreur inferieure a environ 5 %.
+
+Niveaux:
+
+    niveau studio usuel:
+        +6 dB = 1,55 V
+
+    exemple de tension signal a la Diodenbruecke:
+        25 mV
+
+Exemple de distorsion:
+
+    signal pont = 25 mV
+    commande DC = 1 V
+    surmodulation = facteur 6
+    I1 = 18,33 uA
+    I3 = 0,033 uA
+    K = 0,18 %
+
+Specifications visibles:
+
+    entree: 10 kOhm
+    sortie: 30 Ohm
+    charge: 300 Ohm
+    bande: 40 Hz a 15 kHz
+    bruit: 70 dB ref. 1,55 V
+    THD avant regulation: 0,5 %
+    THD en regulation: 1,0 % a 40 Hz, 0,5 % de 1 kHz a 15 kHz
+    attaque limiteur: environ 0,5 ms
+    attaque compresseur: environ 1,0 ms
+    relachement: 0,5 s a 1,5 s
+    consommation: 50 mA sous 24 V
+
+Decision MNA:
+
+    - ajouter un modele de diode composite empirique pour le pont B6;
+    - ne pas utiliser une diode silicium Shockley generique comme modele final;
+    - calibrer le pont avec un niveau interne de l'ordre de 25 mV;
+    - encoder S7 avec zener active en Begrenzer et zener bypass en Kompressor,
+      tout en gardant la table exacte des contacts a confirmer.
+
+
+Etape 18 - Plan scientifique MNA U273
+=====================================
+
+Date: 2026-05-03
+Fichier detail:
+
+    Etape 18 - Plan scientifique MNA U273 Siemens U273.txt
+
+Sources scientifiques retenues:
+
+    1. TU Delft / Structured Electronics Design:
+       Modified Nodal Analysis.
+       Usage:
+           KCL nodale, stamps MNA, solution DC avec s=0 et condensateurs ouverts.
+
+    2. AES / Giannoulis, Massberg, Reiss, 2012:
+       Digital Dynamic Range Compressor Design - A Tutorial and Analysis.
+       Usage:
+           compresseur/limiteur = systeme non lineaire avec memoire; importance
+           detection, attaque, relachement, topologie feedback/feedforward.
+
+    3. LibreTexts / Wilson:
+       Small Signal Models.
+       Usage:
+           linearisation locale d'une diode polarisee par pente dI/dV et
+           resistance differentielle.
+
+Decision de modele:
+
+    Le pont B6 ne doit pas etre ferme avec un modele Shockley generique.
+    La loi Siemens lue en Etape 17 devient la reference:
+
+        U_D = 308 * I_D^0,16
+        I_D = 2,85e-16 * U_D^6,25
+        r_d = 48,3 * I_D^-0,84
+
+    avec:
+
+        U_D en mV;
+        I_D en uA;
+        r_d en kOhm;
+        domaine indique: 2..500 uA.
+
+Ordre de travail lance:
+
+    1. module diode empirique Ge+Si pour B6;
+    2. verification numerique de l'exemple Siemens:
+       25 mV au pont, 1 V commande DC, I1 ~= 18,33 uA, I3 ~= 0,033 uA;
+    3. recalibrage B6 avec niveau nominal 1,55 V et tension interne pont
+       de l'ordre de 25 mV;
+    4. correction/relance solveur B/C/E Ts1/Ts2 avec les KCL corrigees;
+    5. S7 encode en deux modes:
+           Begrenzer = zener active;
+           Kompressor = zener bypassed;
+    6. S6 garde comme reseau RC parametrique tant que la table mecanique
+       position par position n'est pas totalement lue.
+
+Consequence:
+
+    On separe maintenant trois problemes:
+
+        - non-linearite du pont de diodes;
+        - topologie exacte S6/S7;
+        - polarisation et orientation B/C/E des transistors B11.
+
+    Cela evite de compenser une erreur de schema par un mauvais modele diode.
+
+
+Etape 21 - Fermeture partielle S6 livraison lineaire
+====================================================
+
+Date: 2026-05-03
+Fichiers details:
+
+    Etape 20 - Lecture nouvelles photos S6 144312 144343 Siemens U273.txt
+    Etape 21 - Note Drahtbruecken S6 Vorentzerrung Siemens U273.txt
+
+Note allemande lue:
+
+    Drahtbruecken 4/5; 5/6 und 7/8; 8/9 zur Umschaltung der Vorentzerrung.
+    Auslieferzustand: Bruecke 4/5 eingelegt. Frequenzgang linear.
+
+Traduction:
+
+    Ponts filaires 4/5; 5/6 et 7/8; 8/9 pour commuter la pre-correction.
+    Etat de livraison: pont 4/5 insere. Reponse en frequence lineaire.
+
+Lecture utilisateur confirmee:
+
+    - 3 -> 5 est un trait plein;
+    - 3 -> 1 est ferme dans la position dessinee;
+    - 2 est ouvert;
+    - la ligne oblique cote gauche va entre 8 et 9.
+
+Donc, pour S6 en etat de livraison lineaire:
+
+    4/5 ferme
+    8/9 ferme
+    5/6 ouvert
+    7/8 ouvert
+    5 -> 3 -> 1 ferme
+    2 ouvert
+
+Decision MNA:
+
+    S6 peut maintenant avoir un cas "delivery_linear" au lieu d'un simple sweep
+    totalement libre. Les autres configurations de Vorentzerrung restent
+    parametriques via les ponts alternatifs 5/6 et 7/8.
+
+
+Etape 22 - Fermeture S7 Begrenzer dessine
+=========================================
+
+Date: 2026-05-03
+Fichier detail:
+
+    Etape 22 - Lecture S7 ZL10 SSD55 B30 Siemens U273.txt
+
+Lecture du crop:
+
+    S7 contacts visibles:
+        17, 18, 19
+
+    position dessinee:
+        17 -> 18 ferme
+        19 ouvert
+
+Crop large supplementaire:
+
+    18 est sur le rail +.
+    19 est sur le rail -.
+    20 descend vers D2 SSD55.
+    S7 reste lu comme inverseur probable 17 commun vers 18/19.
+
+Comme la note schema dit:
+
+    S1...S7 gezeichnete Stellung: Begrenzer
+
+on obtient:
+
+    Begrenzer dessine:
+        S7_17_18 = closed
+        S7_17_19 = open
+        ZL10 active
+
+Composants confirmes dans la zone:
+
+    D1 = ZL10
+    D2 = SSD55
+    R31 = 51k
+    Gr = B30 C2200
+
+Polarites lues depuis le zoom serre:
+
+    D2 SSD55:
+        anode = cote contact 20
+        cathode = cote noeud gauche R31
+
+    D1 ZL10:
+        cathode = cote noeud apres R31
+        anode = cote branche droite / S7 contact 18
+
+Pont Gr B30 C2200:
+
+    15 = + DC
+    16 = - DC
+    bornes gauche/droite du pont = entrees AC ~
+
+Hypothese fonctionnelle pour l'autre mode:
+
+    Kompressor:
+        S7_17_18 = open
+        S7_17_19 = closed
+        ZL10 bypassed
+
+Reste ouvert:
+
+    - confirmation physique stricte de la position Kompressor non dessinee,
+      probablement 17 -> 19.
+
+
+Etape 24 - Liaison vers B6
+--------------------------
+
+Le solveur B6 n'utilise plus VCMD ideal comme modele principal de la liaison B11/B6.
+La liaison est maintenant representee par un port de sortie B11/S6/S7 fini:
+
+    VB11_S6_S7 -> RB11_S6_S7_CMD -> CMD_B6
+
+Ce modele respecte:
+
+    - S6 livraison lineaire: 4/5 ferme et 8/9 ferme;
+    - S7 Begrenzer dessine: 17 -> 18 ferme, 19 ouvert, ZL10 active;
+    - diodes B6 avec loi empirique Siemens.
+
+Mais il reste parametrique:
+
+    - impedance de sortie active exacte de B11;
+    - calibration C11/detecteur vers tension de drive B6;
+    - etages actifs B11 Ts1..Ts6.
+
+Fichier associe:
+
+    solver/b6_empirical_b11_port_sweep.js

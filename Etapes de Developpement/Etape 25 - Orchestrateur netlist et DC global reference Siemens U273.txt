@@ -1,0 +1,255 @@
+Etape 25 - Orchestrateur netlist et DC global reference Siemens U273
+====================================================================
+
+Date: 2026-05-03
+Objet: demarrer la Phase C/G du plan sans inventer la boucle active complete.
+
+1. Decision scientifique
+------------------------
+
+On ne supprime pas le port Thevenin B11/S6/S7 -> B6 a ce stade.
+
+Les agents calcul/physique convergent sur la meme frontiere:
+
+    - B6 avec loi empirique Siemens des diodes est executable.
+    - S7/detecteur est utilisable en modele de seuil parametrique.
+    - B11/S6/S7 -> B6 reste une source de Thevenin finie.
+    - La boucle active complete B11 -> B6 -> sortie reste bloquee par:
+        * calibration detecteur/C11 vers drive B6;
+        * impedance active exacte de B11/S6/S7;
+        * table physique S7 Kompressor;
+        * broches B/C/E non lues de B11 et de plusieurs transistors B6.
+
+Regle conservee:
+
+    aucune broche B/C/E, table de contacts ou loi zener non lue n'est fermee
+    par compensation numerique.
+
+
+2. Fichiers ajoutes
+-------------------
+
+    solver/u273_orchestrator.js
+
+        Assemble un objet netlist machine unique:
+            components;
+            nodes;
+            switches S6/S7;
+            diode_models;
+            transistor_models;
+            dc_execution.
+
+        Le mode executable actuel est:
+
+            B11_DRV -> RB11_S6_S7_CMD -> CMD -> B6
+
+        avec RB11_S6_S7_CMD parametrique.
+
+
+    solver/export_netlist_json.js
+
+        Exporte:
+
+            results/u273_netlist.json
+
+        Le JSON est la reference machine re-ingerable par l'orchestrateur.
+
+
+    solver/export_netlist_txt.js
+
+        Exporte:
+
+            results/u273_netlist.txt
+
+        Colonnes:
+
+            id | type | value | unit | nodes | card | function | status | source_etape
+
+
+    solver/u273_dc_global.js
+
+        Demarre le solveur DC global sous forme de reference Thevenin gardee.
+
+        Exporte:
+
+            results/u273_dc_global.json
+            results/u273_dc_global_node_voltages.csv
+
+        Le statut est explicitement:
+
+            PARAMETRIC_THEVENIN_REFERENCE
+
+        et non pas "full active loop".
+
+
+    solver/validate_u273_dc_global.js
+
+        Valide que:
+
+            - tous les scenarios Thevenin convergent;
+            - CMD chute sous la tension source quand RB11_S6_S7_CMD est fini;
+            - les points de fonctionnement diode existent;
+            - les tensions imprimees Siemens restent DEPENDS-ON-P0.
+
+
+3. Exports generes
+------------------
+
+Commandes executees sans erreur:
+
+    node solver/validate_mna_core.js
+    node solver/validate_complex_ac.js
+    node solver/validate_bjt_small_signal.js
+    node solver/validate_u273_empirical_mna.js
+    node solver/u273_orchestrator.js
+    node solver/export_netlist_json.js
+    node solver/export_netlist_txt.js
+    node solver/u273_dc_global.js
+    node solver/validate_u273_dc_global.js
+
+Sorties:
+
+    results/u273_orchestrator_snapshot.json
+    results/u273_netlist.json
+    results/u273_netlist.txt
+    results/u273_dc_global.json
+    results/u273_dc_global_node_voltages.csv
+    results/u273_dc_global_validation.json
+
+L'export courant contient 30 composants et 14 noeuds non-masse.
+
+
+4. Gestion des BJT
+------------------
+
+Les transistors ne sont pas stampes automatiquement.
+
+Dans l'orchestrateur, B6 expose maintenant une table:
+
+    transistor_models.B6.bjt_candidates
+
+Chaque entree indique:
+
+    id;
+    board;
+    transistor;
+    status;
+    stampMode;
+    terminalStatus;
+    collector/base/emitter si connus;
+    beta;
+    earlyVoltageVolt;
+    roIncluded;
+    gmSiemens;
+    rPiOhm;
+    emitterDynamicOhm;
+    sourceEvidence;
+    notStampedReason.
+
+Regle:
+
+    PARAMETRIQUE ou BOUNDS_ONLY signifie diagnostic/export uniquement.
+    Un stamp AC futur demandera un mode CONDITIONAL_STAMP explicite avec
+    hypothesisId et broches prouvees.
+
+B11 reste:
+
+    UNCONFIRMED
+
+jusqu'a lecture definitive des noeuds caches et des broches Ts1/Ts2.
+
+
+5. Diodes et S7
+---------------
+
+La loi diode Siemens reste:
+
+    UD_mV = 308 * ID_uA^0.16
+    ID_uA = 2.85e-16 * UD_mV^6.25
+    rd_kOhm = 48.3 * ID_uA^-0.84
+    gd_S = 1 / (1000 * rd_kOhm)
+
+Domaine:
+
+    2..500 uA a 25 deg C.
+
+Dans le solveur, les sorties diode conservent:
+
+    inStatedCurrentRange
+    rawVdVolt
+    vdVolt
+    idMicroAmp
+    gdSiemens
+
+S7:
+
+    Begrenzer dessine:
+        17 -> 18 ferme
+        ZL10 active
+
+    Kompressor:
+        17 -> 19 et ZL10 bypassed restent HYPOTHESE
+
+Le seuil nominal actuel reste:
+
+    Vth = 10 + 0.3 + 1.0 = 11.3 V crete = 7.99 V RMS
+
+
+6. Validation DC
+----------------
+
+Les tensions imprimees Siemens sont gardees comme cibles de validation, pas
+comme sources imposees.
+
+Cibles deja referencees par u273_dc_global.js:
+
+    B11:
+        N215 = 21.5 V
+        N145 = 14.5 V
+        N10 = 10 V
+        N9 = 9 V
+        N05 = 0.5 V
+
+    B6:
+        V22 = 22 V
+        V12 = 12.2 V
+        V64 = 6.4 V
+
+Statut actuel:
+
+    DEPENDS-ON-P0
+
+raison:
+
+    le solveur DC executable ne contient pas encore le regulateur actif B11 ni
+    les etages BJT B6/B11 fermes topologiquement.
+
+
+7. Suite immediate
+------------------
+
+Ajout fait dans cette etape:
+
+    mna_core.js calcule maintenant un residu numerique final:
+
+        residual.maxAbs
+        residual.rms
+
+    solveDc ne declare plus la convergence seulement sur delta x; le residu
+    du systeme lineaire final doit aussi rester sous residualTolerance.
+
+Prochaine etape technique recommandee:
+
+    1. ajouter un mode idealB6Reference de regression sous-circuit;
+    2. commencer u273_ac_global.js en reutilisant:
+        complex_ac.js;
+        bjt_small_signal.js;
+        les gd diode issus du point DC;
+        les bjt_candidates seulement en CONDITIONAL_STAMP explicite;
+    3. ne passer a une vraie boucle active B11+B6 qu'apres fermeture P0/P1.
+
+Conclusion:
+
+    Le plan est lance avec une base exploitable: orchestrateur, export JSON/TXT,
+    reference DC Thevenin et validation. La prudence scientifique reste intacte:
+    ce qui n'est pas lu reste parametrique, hypothese ou DEPENDS-ON-P0.

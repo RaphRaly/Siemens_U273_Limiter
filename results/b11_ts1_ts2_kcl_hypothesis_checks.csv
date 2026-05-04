@@ -1,0 +1,3 @@
+transistor,hypothesis,icAmp,ieLowAmp,ieHighAmp,ibLowAmp,ibHighAmp,betaLow,betaHigh,plausible,reason
+Ts1,isolated NPN-like C=N10 E=N05 with Ic=I_R11,0.00115,0.00459932405165456,0.004910889355742297,0.00344932405165456,0.0037608893557422966,0.3333986551505278,0.30577873774566855,false,effective beta is far below any plausible forward-active BJT value
+Ts2,isolated NPN-like C=N145 E=N9 with Ic=I_R15 and Ie=I_R16+I_R13,0.007916666666666667,0.007538636363636364,0.007538636363636364,-0.00037803030303030366,-0.00037803030303030366,Infinity,Infinity,false,known emitter demand is smaller than supply current; missing branch or wrong isolated assumption

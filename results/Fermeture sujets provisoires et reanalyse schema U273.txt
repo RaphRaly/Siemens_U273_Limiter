@@ -1,0 +1,940 @@
+Fermeture des sujets provisoires et reanalyse rigoureuse du schema Siemens U273
+==============================================================================
+
+Date: 2026-05-01
+
+Objet
+-----
+
+Ce document ferme les points qui peuvent etre fermes depuis les documents et les
+crops du schema deja ranges dans:
+
+    C:\Users\user\Desktop\Siemens U273
+
+Il ne remplace pas les fichiers source historiques. Il sert de decision
+technique: chaque point est classe comme FERME, FERME-COMME-PARAMETRE,
+REVISER-MODELE, ou OUVERT.
+
+Definitions
+-----------
+
+FERME:
+    La valeur ou la connexion est suffisamment visible/coherente pour etre
+    employee dans les equations.
+
+FERME-COMME-PARAMETRE:
+    L'element ou la fonction est identifie, mais pas sa valeur numerique ou sa
+    position exacte. Le solveur doit donc exposer un parametre, pas inventer une
+    constante.
+
+REVISER-MODELE:
+    Une approximation precedente reste utile comme test numerique, mais ne doit
+    plus etre presentee comme modele physique du U273.
+
+OUVERT:
+    Le schema disponible ne suffit pas. Il faut une table de contacts, une
+    mesure, une fiche technique fiable, ou une photo/schema de meilleure
+    resolution.
+
+
+1. Problemes a corriger avant de continuer
+------------------------------------------
+
+1.1 Erreur critique C1
+
+Ancienne valeur provisoire:
+
+    B6/C1 = 0,68 uF
+
+Valeur a retenir:
+
+    B6/C1 = 1000 pF
+
+Cette correction est decisive. Le rapport de capacite vaut:
+
+    0,68 uF / 1000 pF = 680
+
+Donc l'ancienne lecture rendait C1 680 fois trop grand.
+
+Reactance de C1 correct:
+
+    Xc = 1 / (2*pi*f*C)
+
+    f        Xc pour C1 = 1000 pF
+    40 Hz    3,98 MOhm
+    100 Hz   1,59 MOhm
+    1 kHz    159 kOhm
+    15 kHz   10,6 kOhm
+    20 kHz   7,96 kOhm
+
+Si C1 etait pris a tort comme 0,68 uF:
+
+    1 kHz    234 Ohm
+    20 kHz   11,7 Ohm
+
+Conclusion:
+
+    L'ancienne valeur ne changeait pas seulement un detail. Elle transformait
+    une liaison fortement capacitive/haute impedance en liaison presque directe
+    en audio. Tous les resultats AC ou temporels qui dependraient de C1 = 0,68
+    uF doivent etre consideres obsoletes.
+
+Statut:
+
+    FERME. B6/C1 = 1000 pF.
+
+
+1.2 Confusion possible autour de "Abgl."
+
+Sur C4 et C6, le schema indique "Abgl.".
+
+Interpretation de modelisation:
+
+    Il ne faut pas remplacer "Abgl." par zero, par une valeur arbitraire, ni par
+    une suppression silencieuse. C'est un element d'ajustage/calibration. La
+    bonne forme pour le solveur est donc:
+
+        C4 = C4_abgl
+        C6 = C6_abgl
+
+    avec valeurs reglees, balayees, ou mesurees.
+
+Consequence:
+
+    Les calculs qui excluent C4/C6 restent des calculs de base utiles, mais pas
+    une conclusion finale sur la balance haute frequence du pont.
+
+Statut:
+
+    FERME-COMME-PARAMETRE.
+
+
+1.3 VCMD ne peut pas rester une source ideale dans le modele final
+
+Dans les sweeps precedents, la commande venant de B11 a ete traitee comme une
+source DC ideale. En petit signal AC, cela revient a mettre le noeud CMD a la
+masse AC.
+
+Cette hypothese est mathematiquement valide pour un test isole, mais elle n'est
+pas une preuve physique. B11 contient des transistors, condensateurs, un reseau
+S6, S7, une zener, un redresseur et des constantes de temps. Son impedance de
+sortie n'est donc pas determinee par le pont B6 seul.
+
+Consequence:
+
+    Toute branche B6 connectee a VCMD peut etre trop chargee dans le modele si
+    VCMD est impose par une source ideale. Il faut remplacer l'idealisation par:
+
+        Zcmd(s)
+
+    ou par la MNA complete de B11 couplee a B6.
+
+Statut:
+
+    REVISER-MODELE. L'hypothese VCMD ideale reste un cas de test, pas le modele
+    final.
+
+
+1.4 Les diodes ne sont pas fermees numeriquement
+
+Les identites du pont B6 sont lisibles:
+
+    D3 = SSD55
+    D2 = SSD55
+    D4 = OA154Q
+    D1 = OA154Q
+
+Mais un modele Shockley exige au minimum:
+
+    Is
+    n
+    eventuellement Rs, Cj, fuite, temperature
+
+Ces parametres ne peuvent pas etre deduits du nom seul. Ils changent la
+conductance dynamique:
+
+    gd = dI/dV
+
+et donc l'attenuation du pont.
+
+Statut:
+
+    FERME pour les identites et la symetrie de placement.
+    OUVERT pour les parametres numeriques reels.
+
+
+1.5 S6 et S7 ne sont pas des resistances fixes
+
+S6 est un commutateur de reseau frequentiel. S7 change la fonction de
+limiteur/compresseur ou le chemin de seuil selon la position.
+
+Consequence:
+
+    Un seul reseau fixe ne peut pas representer le U273 complet. Il faut une
+    table de contacts position par position:
+
+        position -> contacts fermes -> netlist active
+
+Statut:
+
+    FERME pour l'existence et les valeurs visibles des composants autour de S6.
+    OUVERT pour la table exacte des contacts S6/S7.
+
+
+1.6 Les potentiometres et ajustables doivent rester des parametres
+
+Les resistances marquees ajustables ne doivent pas etre reduites a une seule
+resistance fixe si le curseur influence la topologie.
+
+Exemples:
+
+    B6/R7  = 100 Ohm ajustable
+    B6/R8  = 250 kOhm ajustable
+    B6/R16 = 500 Ohm ajustable
+    B6/R29 = 20 kOhm ajustable
+    B11/R7, R18, R27 = ajustables
+
+Modele attendu:
+
+    Rhaut = alpha * Rtotal
+    Rbas  = (1 - alpha) * Rtotal
+    0 <= alpha <= 1
+
+Statut:
+
+    FERME-COMME-PARAMETRE.
+
+
+1.7 Ne pas melanger marquages AC et tensions DC
+
+Les indications avec "~" sont des niveaux alternatifs:
+
+    25 mV~
+    100 mV~
+    220 mV~
+    2,8 V~
+    8 V~
+
+Elles ne doivent pas etre employees comme tensions continues de polarisation.
+Les tensions imprimees sans "~" servent aux verifications DC. Les tensions avec
+"~" servent aux niveaux de signal.
+
+Statut:
+
+    FERME. Les regimes DC, AC petit signal et temporel doivent rester separes.
+
+
+2. Reanalyse B6: entree, pont et commande
+-----------------------------------------
+
+2.1 Entree audio locale
+
+Lecture du schema:
+
+    secondaire U1
+    -> R5 = 5,6 kOhm
+    -> C1 = 1000 pF
+    -> noeud audio marque 25 mV~
+    -> C2 / pont / entree de l'amplificateur B6
+
+Decision:
+
+    C1 est bien un condensateur serie de 1000 pF dans cette branche. Le sujet
+    "C1 vaut-il 0,68 uF ?" est ferme: non.
+
+Ce qui reste a determiner:
+
+    Le role global de C1 depend de l'impedance vue apres C1:
+
+        Z_apres_C1 = impedance du pont + entree B6 + commande B11 + reglages
+
+    Donc C1 est ferme, mais le transfert absolu de cette branche n'est pas
+    ferme tant que Z_apres_C1 n'est pas complet.
+
+Equation AC locale:
+
+    0 = (vNX - vVS)/R5 + s*C1*(vNX - vNA)
+
+    0 = s*C1*(vNA - vNX) + s*C2*(vNA - vNB) + Yamp(s)*vNA
+
+Statut:
+
+    C1/R5/NA: FERME.
+    Yamp(s) et charge complete apres C1: OUVERT/parametrique.
+
+
+2.2 C2 et couplage vers le pont
+
+Lecture:
+
+    C2 = 22 uF entre le noeud audio apres C1 et le noeud de pont/commande.
+
+Reactance:
+
+    f        Xc pour C2 = 22 uF
+    40 Hz    181 Ohm
+    100 Hz   72,3 Ohm
+    1 kHz    7,23 Ohm
+    15 kHz   0,482 Ohm
+    20 kHz   0,362 Ohm
+
+Interpretation:
+
+    En DC, C2 est ouvert.
+    En audio, C2 est une liaison de faible impedance par rapport aux dizaines de
+    kOhm du pont. Il couple fortement le noeud audio au pont pour le signal.
+
+Statut:
+
+    FERME.
+
+
+2.3 Diodes du pont
+
+Lecture retenue:
+
+    D3 = SSD55, branche haute gauche
+    D2 = SSD55, branche haute droite
+    D4 = OA154Q, branche basse gauche
+    D1 = OA154Q, branche basse droite
+
+Structure:
+
+    Le pont est forme de deux branches symetriques par famille de diode:
+
+        branche gauche  : SSD55 + OA154Q
+        branche droite  : SSD55 + OA154Q
+
+Modele non lineaire:
+
+    id(vd) = Is * (exp(vd/(n*VT)) - 1)
+
+Newton:
+
+    gd  = Is/(n*VT) * exp(vd0/(n*VT))
+    ieq = id(vd0) - gd*vd0
+    id  ~= gd*vd + ieq
+
+Petit signal AC:
+
+    diode -> conductance dynamique gd au point DC
+
+Decision:
+
+    L'identite et la symetrie des diodes sont fermees.
+
+Reserve:
+
+    Pour une netlist SPICE ou un solveur final, il faut encore verifier la
+    polarite exacte anode/cathode sur un crop haute resolution ou le schema
+    original. Les equations MNA peuvent rester correctes avec une convention
+    explicite, mais une inversion de polarite changerait le comportement.
+
+Statut:
+
+    Identites: FERME.
+    Parametres Is/n/Rs/Cj: OUVERT.
+    Polarite finale SPICE: A VERIFIER SUR SOURCE HAUTE RESOLUTION.
+
+
+2.4 Noeuds bas du pont et condensateurs de reference
+
+Valeurs retenues:
+
+    R6  = 39 kOhm
+    R11 = 39 kOhm
+    C3  = 4,7 uF
+    C5  = 150 uF
+    C7  = 4,7 uF
+
+Reactances:
+
+    f        C3/C7 = 4,7 uF      C5 = 150 uF
+    40 Hz    847 Ohm             26,5 Ohm
+    100 Hz   339 Ohm             10,6 Ohm
+    1 kHz    33,9 Ohm            1,06 Ohm
+    15 kHz   2,26 Ohm            0,0707 Ohm
+    20 kHz   1,69 Ohm            0,0531 Ohm
+
+Interpretation:
+
+    En DC, ces condensateurs sont ouverts.
+    En audio, C3/C7 et surtout C5 deviennent des chemins de tres faible
+    impedance. Ils influencent donc fortement la symetrie dynamique du pont et
+    ne doivent pas etre remplaces par des constantes DC.
+
+Statut:
+
+    R6/R11/C3/C5/C7: FERME.
+
+
+2.5 C4 et C6
+
+Lecture:
+
+    C4 = Abgl.
+    C6 = Abgl.
+
+Decision:
+
+    C4 et C6 sont des capacites d'ajustage. Leur presence est fermee, leur
+    valeur numerique ne l'est pas.
+
+Forme de netlist:
+
+    C4_abgl entre ses deux noeuds reels
+    C6_abgl entre ses deux noeuds reels
+
+Verification requise:
+
+    service manual, valeur de trimmer, mesure in situ, ou balayage de calibration
+    jusqu'a reproduire une courbe mesuree.
+
+Statut:
+
+    FERME-COMME-PARAMETRE.
+
+
+2.6 Resistances et ajustages du pont
+
+Valeurs deja retenues:
+
+    R7  = 100 Ohm ajustable
+    R8  = 250 kOhm ajustable
+    R9  = 390 kOhm
+    R10 = 20 kOhm
+
+Decision:
+
+    Les valeurs nominales sont utilisables pour les equations, mais les
+    ajustables doivent etre representes avec curseur si le schema les connecte
+    comme potentiometres ou trimmers.
+
+Modele:
+
+    R7a = alpha7 * 100
+    R7b = (1 - alpha7) * 100
+
+    R8a = alpha8 * 250k
+    R8b = (1 - alpha8) * 250k
+
+Statut:
+
+    Valeurs: FERME.
+    Positions de curseur: FERME-COMME-PARAMETRE.
+
+
+2.7 Noeuds MNA du pont B6
+
+Noeuds conserves:
+
+    0      = masse locale
+    VS     = source equivalente apres U1
+    NX     = entre R5 et C1
+    NA     = audio apres C1, marque 25 mV~
+    NB     = pont cote commande/audio via C2
+    NL     = noeud interne gauche
+    NR     = noeud interne droit
+    N14    = bas gauche du pont
+    N15    = bas droit du pont
+    NM     = noeud d'equilibrage/reglage
+    VCMD   = commande venant de B11
+
+KCL structurelles:
+
+    NX:
+        courant R5 + courant C1 = 0
+
+    NA:
+        courant C1 + courant C2 + courant entree ampli B6 = 0
+
+    NB:
+        courant C2 + courants D3/D2 + courants reseau R9/R10/reglage = 0
+
+    NL / NR:
+        courants diode haute + diode basse + reseau d'equilibrage = 0
+
+    N14 / N15:
+        courants diode basse + R6/R11 + C3/C7 + C5 + C4/C6 + R8 = 0
+
+    VCMD:
+        courant venant de B11 + courant demande par B6 = 0
+
+Point important:
+
+    Dans le modele final, VCMD doit etre un noeud commun entre B11 et B6, pas
+    seulement une tension imposee. Une tension imposee reste utile pour balayer
+    le pont, mais pas pour conclure sur l'appareil complet.
+
+Statut:
+
+    Nomenclature B6: FERME.
+    Equation VCMD finale: REVISER-MODELE avec B11 ou Zcmd(s).
+
+
+2.8 Consequence pour le sweep AC B6 deja produit
+
+Ce qui reste valide:
+
+    - le solveur AC complexe;
+    - la transformation R -> 1/R, C -> sC;
+    - la methode diode petit signal gd;
+    - la tendance "VCMD augmente -> gd augmente -> attenuation augmente".
+
+Ce qui ne doit pas etre surinterprete:
+
+    - les dB absolus a 1 kHz et 20 kHz;
+    - l'impedance vue par la source si B11 est idealise;
+    - la reponse haute frequence sans C4/C6;
+    - les resultats bases sur parametres diode placeholders.
+
+Correction de langage:
+
+    Il ne faut plus ecrire "C1/C2 doivent etre revalides" comme si C1 etait
+    inconnu. La formulation correcte est:
+
+        C1 = 1000 pF et sa position serie sont fermes.
+        Le transfert absolu reste provisoire parce que la charge apres C1,
+        C4/C6, les reglages, les diodes et Zcmd(s) ne sont pas fermes.
+
+
+3. Reanalyse B6: autres noeuds de l'amplificateur audio
+-------------------------------------------------------
+
+3.1 Rails V22, V12, V64
+
+Les verifications resistives deja faites sont coherentes.
+
+Rail V22:
+
+    I_R30 = (22 - 12,2) / 6,8k = 1,44 mA
+    I_R31 = (22 - 4,8) / 5,6k = 3,07 mA
+    I_R36 = (22 - 21,5) / 24  = 20,8 mA
+
+    Somme = 25,31 mA
+
+Rail V12:
+
+    I_R19 = (12,2 - 6,4) / 30k = 193 uA
+    I_R21 = (12,2 - 6,4) / 10k = 580 uA
+    I_R25 = (12,2 - 2,4) / 16k = 613 uA
+
+    Somme sortante = 1,386 mA
+    Courant entrant par R30 = 1,44 mA
+
+Rail V64:
+
+    I_R19 = 193 uA
+    I_R15 = (6,4 - 3,8) / 30k = 86,7 uA
+    I_R12 approximatif = (6,4 - 1,0) / 51k = 106 uA
+
+    193 uA ~= 86,7 uA + 106 uA
+
+Decision:
+
+    Les rails DC sont coherents avec les valeurs imprimees et les resistances
+    visibles. Les petits ecarts sont compatibles avec les courants de base, les
+    branches non comptees et les arrondis du schema.
+
+Statut:
+
+    Verifications DC des rails: FERME.
+    Modele dynamique complet des rails: OUVERT tant que tous les condensateurs
+    et charges actives ne sont pas inclus.
+
+
+3.2 Etage Ts1/Ts2 B6
+
+Points coherents:
+
+    N38 = 3,8 V
+    N08 = 0,8 V
+    N32 = 3,2 V
+
+Si N38 est la base de Ts2 et N32 son emetteur:
+
+    VBE_Ts2 = 3,8 - 3,2 = 0,6 V
+
+Ce resultat est coherent avec un transistor silicium en conduction.
+
+Courants d'ordre de grandeur:
+
+    I_R15 = (6,4 - 3,8) / 30k = 86,7 uA
+    I_R18 = (3,8 - 0,8) / 68k = 44,1 uA
+    courant restant vers transistor/reseau ~= 42,6 uA
+
+Decision:
+
+    Les points DC imprimes sont coherents. Ils ne suffisent pas a remplacer les
+    transistors par des resistances.
+
+Statut:
+
+    Coherence DC: FERME.
+    Modele transistor Ts1/Ts2: OUVERT, choisir modele BJT petit signal ou
+    Ebers-Moll/Gummel-Poon.
+
+
+3.3 Etage Ts3/Ts4 B6
+
+Points coherents:
+
+    N24  = 2,4 V
+    N18  = 1,8 V
+    N48  = 4,8 V
+
+Pour Ts4:
+
+    VBE_Ts4 = 2,4 - 1,8 = 0,6 V
+    VCE_Ts4 = 4,8 - 1,8 = 3,0 V
+
+Courants:
+
+    I_R25 = (12,2 - 2,4) / 16k = 0,613 mA
+    I_R31 = (22 - 4,8) / 5,6k = 3,07 mA
+    I_R32 = 1,8 / 1k = 1,8 mA
+
+Decision:
+
+    La polarisation est plausible et coherente. La netlist exacte des ports
+    Ts3/Ts4 reste necessaire pour un solveur final.
+
+Statut:
+
+    Coherence DC: FERME.
+    Connexions fines et modele transistor: OUVERT/PARAMETRIQUE.
+
+
+3.4 Etage de sortie Ts5/Ts6 B6
+
+Points:
+
+    V22  ~= 22 V
+    N215 ~= 21,5 V
+    N105 ~= 10,5 V
+
+Interpretation:
+
+    N105 est proche du milieu utile de l'alimentation locale, ce qui est
+    coherent avec une sortie audio cherchant une marge positive et negative.
+
+Courant dominant:
+
+    I_R36 = (22 - 21,5) / 24 = 20,8 mA
+
+Attention:
+
+    Le marquage 220 mV~ pres de la sortie est un niveau AC. Il ne doit pas
+    servir a calculer un courant DC dans R37 = 10 Ohm.
+
+Statut:
+
+    Coherence DC: FERME.
+    Modele grand signal Ts5/Ts6 et charge de sortie: OUVERT.
+
+
+4. Reanalyse B11: sidechain, S6, S7 et commande
+-----------------------------------------------
+
+4.1 Fonction globale B11
+
+Chaine structurelle:
+
+    sortie audio
+    -> transformateur de regulation Ue
+    -> seuil D1 ZL10 / D2 SSD55 / S7
+    -> redresseur Gr B30 C2200
+    -> filtrage C11 et etages actifs
+    -> reseau S6 de ponderation
+    -> sortie VCMD vers pont B6
+
+Decision:
+
+    B11 n'est pas une simple source de tension. C'est un sous-systeme dynamique
+    et non lineaire. Le modele final doit soit l'inclure completement, soit
+    remplacer sa sortie par une impedance de Thevenin/Norton mesuree:
+
+        Vcmd0(s), Zcmd(s)
+
+Statut:
+
+    Structure generale: FERME.
+    Equivalent de sortie numerique: OUVERT.
+
+
+4.2 Seuil D1 ZL10, D2 SSD55, S7
+
+Lecture:
+
+    D1 = ZL10
+    D2 = SSD55
+    S7 = commutateur limiteur/compresseur
+
+Modele minimal:
+
+    La zener ZL10 doit etre modelisee par une conduction directe plus une
+    branche avalanche inverse. La valeur nominale peut etre notee:
+
+        VZL10 ~= 10 V
+
+    mais la pente dynamique et le courant de test doivent rester parametriques.
+
+Condition de seuil simplifiee:
+
+    |Vdet_peak| >= VZL10 + VD2 + Vrect + I*R31
+
+Si le schema indique environ 8 V~ sur la detection et si cette valeur est RMS:
+
+    Vpeak ~= 8*sqrt(2) = 11,3 V
+
+Cela rend plausible un seuil autour de la zener 10 V, mais ne ferme pas le seuil
+exact en dB.
+
+Statut:
+
+    Identite ZL10/SSD55/S7: FERME.
+    Courbe zener, position S7 et seuil exact: OUVERT.
+
+
+4.3 Redresseur Gr B30 C2200 et C11
+
+Lecture:
+
+    Gr = B30 C2200
+    C11 = 500 uF
+
+Equation du noeud redresse:
+
+    i_Gr(t) = iC11(t) + i_entree_regulation(t) + i_fuites(t)
+
+avec:
+
+    iC11[n] = gc11*vC11[n] - iceq_C11[n]
+
+Decision:
+
+    La fonction redressement + stockage est claire. Le modele exact du
+    redresseur reste parametrique: pont ideal + chutes, ou quatre diodes avec
+    courbes propres.
+
+Statut:
+
+    Fonction: FERME.
+    Modele numerique du B30 C2200: OUVERT.
+
+
+4.4 Reseau S6
+
+Valeurs retenues dans le modele AC provisoire:
+
+    R3 = 7,5 kOhm
+    R4 = 7,5 kOhm
+    R5 = 15 kOhm
+    R6 = 3,9 kOhm
+    C1 = 5 nF
+    C2 = 5 nF
+    C3 = 3,3 nF
+    C4 = 3 nF
+
+Forme AC d'un coeur possible:
+
+    Y_LM = 1/R4 + s*C2
+    Y_MR = 1/R3 + s*C1
+    Y_LR = 1/R5 + s*C3
+    Y_M0 = 1 / (R6 + 1/(s*C4))
+
+Ce que le sweep precedent a montre:
+
+    La reponse depend fortement de la charge aval. Par exemple, a 1 kHz, une
+    charge de 10 kOhm donnait une attenuation bien plus forte qu'une charge de
+    1 MOhm.
+
+Decision:
+
+    Le calcul AC de S6 est valide comme etude de sensibilite. Il n'est pas la
+    courbe finale tant que les contacts de S6 et la charge aval ne sont pas
+    fixes.
+
+Statut:
+
+    Valeurs R/C du coeur: FERME.
+    Contacts position par position: OUVERT.
+    Charge aval: OUVERT.
+
+
+4.5 Sortie B11 vers VCMD
+
+Equation correcte au couplage B11/B6:
+
+    I_B11_out(VCMD, etats_B11) + I_B6_in(VCMD, etats_B6) = 0
+
+Modele de test acceptable:
+
+    VCMD impose pour balayer le pont B6.
+
+Modele final attendu:
+
+    B11 complet couple a B6
+
+ou:
+
+    equivalent petit signal:
+        Vcmd0
+        Zcmd(s)
+
+Decision:
+
+    Fermer B6 sans fermer l'impedance de sortie B11 donne seulement une loi
+    locale du pont. Cela ne ferme pas la courbe du limiteur complet.
+
+Statut:
+
+    REVISER-MODELE.
+
+
+5. Tableau de fermeture
+-----------------------
+
+Sujet                                   Statut                    Action
+-----                                   ------                    ------
+B6/C1 = 1000 pF                         FERME                     Ne plus utiliser 0,68 uF
+B6/R5 = 5,6 kOhm                        FERME                     Garder dans toutes les netlists
+Noeud 25 mV~ apres C1                   FERME                     Marquage AC, pas DC
+B6/C2 = 22 uF                           FERME                     Inclure en AC/temporel
+B6/D1-D4 identites                      FERME                     D1/D4 OA154Q, D2/D3 SSD55
+B6/D1-D4 parametres                     OUVERT                    Datasheet, mesure I-V ou calibration
+B6/D1-D4 polarite finale SPICE          A VERIFIER                Source haute resolution
+B6/R6/R11 = 39 kOhm                     FERME                     Inclure
+B6/C3/C7 = 4,7 uF                       FERME                     Inclure
+B6/C5 = 150 uF                          FERME                     Inclure
+B6/C4/C6 = Abgl.                        FERME-COMME-PARAMETRE     C4_abgl, C6_abgl
+B6/R7/R8 ajustables                     FERME-COMME-PARAMETRE     alpha7, alpha8
+B6/VCMD source ideale                   REVISER-MODELE            Remplacer par B11 ou Zcmd(s)
+B6 rails V22/V12/V64                    FERME pour DC             Garder charges actives en dynamique
+B6 transistors                          OUVERT                    Choisir modele BJT
+B11/ZL10 nominal                        FERME-COMME-PARAMETRE     Vz nominal, courbe ouverte
+B11/B30 C2200                           FERME-COMME-PARAMETRE     Redresseur parametrique
+B11/S6 valeurs R/C                      FERME                     Contact table encore ouverte
+B11/S6 contacts                         OUVERT                    Table position -> netlist
+B11/S7 contacts                         OUVERT                    Table limiteur/compresseur
+B11 sortie vers VCMD                    OUVERT                    Extraire Vcmd0 et Zcmd(s)
+
+
+6. Regles pour la suite du solveur
+----------------------------------
+
+Regle 1:
+
+    C1 = 1000 pF partout. Toute occurrence active de C1 = 0,68 uF est obsolete.
+
+Regle 2:
+
+    C4 et C6 ne sont pas inconnus au sens "a ignorer"; ce sont des parametres
+    de reglage.
+
+Regle 3:
+
+    Les ajustables doivent etre modelises par curseur alpha si leur curseur est
+    connecte au circuit.
+
+Regle 4:
+
+    Les diodes peuvent etre symboliques ou calibrees. Les valeurs Is/n
+    placeholders ne doivent jamais etre presentees comme donnees Siemens.
+
+Regle 5:
+
+    Les calculs DC, AC petit signal et temporels doivent etre separes:
+
+        DC: condensateurs ouverts
+        AC: C -> sC, diode -> gd au point DC
+        temporel: condensateur compagnon, diode Newton
+
+Regle 6:
+
+    VCMD impose est un outil de balayage. Le modele physique final doit inclure
+    B11 ou Zcmd(s).
+
+Regle 7:
+
+    S6 et S7 exigent une table de contacts. Sans cette table, les resultats sont
+    des etudes de sensibilite, pas des positions reelles du U273.
+
+
+7. Conclusion technique
+-----------------------
+
+Les sujets suivants sont maintenant fermes:
+
+    - B6/C1 vaut 1000 pF, pas 0,68 uF.
+    - B6/C1 est en serie apres R5 vers le noeud audio marque 25 mV~.
+    - B6/C2 vaut 22 uF.
+    - B6/C3 et C7 valent 4,7 uF.
+    - B6/C5 vaut 150 uF.
+    - D1/D4 sont OA154Q; D2/D3 sont SSD55.
+    - Les verifications DC principales des rails et etages B6 sont coherentes.
+    - Le coeur R/C de S6 est modelisable par admittances complexes.
+
+Les sujets suivants ne doivent plus etre appeles "provisoires flous"; ils ont
+un statut precis:
+
+    - C4/C6: parametres d'ajustage, pas valeurs a deviner.
+    - R7/R8 et autres ajustables: parametres de curseur.
+    - Diodes: identites fermees, courbes electriques ouvertes.
+    - VCMD: modele ideal a remplacer par B11 ou Zcmd(s).
+    - S6/S7: contacts ouverts jusqu'a table de commutation.
+    - Transistors: points DC coherents, modeles non lineaires encore a choisir.
+
+La direction rigoureuse est donc:
+
+    1. figer la netlist B6 avec C1=1000p, C4_abgl, C6_abgl, alpha7, alpha8;
+    2. extraire la table S6/S7;
+    3. obtenir ou mesurer les courbes OA154Q, SSD55, ZL10, B30 C2200;
+    4. remplacer VCMD ideal par Zcmd(s) ou par la MNA B11 complete;
+    5. refaire ensuite les sweeps B6+B11 couples.
+
+Sources et artefacts utilises
+-----------------------------
+
+Fichiers locaux principaux:
+
+    siemens_u273_check/full_top_B6.png
+    siemens_u273_check/B6_R5_C1_focus.png
+    siemens_u273_check/B6_diodes_labels_zoom.png
+    siemens_u273_check/B6_R7_R8_R9_R10_zoom.png
+    siemens_u273_check/B11_regulator.png
+    siemens_u273_check/B11_sidechain.png
+    MNA Pont B6 Siemens U273 - document final.txt
+    MNA autres noeuds B6 Siemens U273.txt
+    MNA B11 Regelverstaerker Siemens U273.txt
+    MNA AC petit signal pont B6 Siemens U273.txt
+    MNA AC B11 S6 Siemens U273.txt
+    Verification scientifique externe calculs U273.txt
+
+Sources externes deja employees pour la methode:
+
+    TU Delft, Modified Nodal Analysis
+    https://analog-electronics.tudelft.nl/webbook/SED/_build/html/network_theory/NetworkTheory-1_Modified_Nodal_Analysis.html
+
+    Ho, Ruehli, Brennan, The Modified Nodal Approach to Network Analysis
+    https://mst.elsevierpure.com/en/publications/the-modified-nodal-approach-to-network-analysis/
+
+    UC Berkeley Physics 111A, Linear Circuits
+    https://instrumentationlab.berkeley.edu/Lab1
+
+    University of Kansas EECS312, Diode Small Signal Analysis
+    https://people.eecs.ku.edu/~leuschen/EECS312_notes_diode_small_signal_analysis.pdf
+
+Sources historiques utiles pour les composants, a confirmer par datasheet ou mesure:
+
+    OA154Q
+    https://www.radiomuseum.org/tubes/tube_oa154q.html
+
+    SSD55
+    https://www.radiomuseum.org/tubes/tube_ssd55.html
+
+    ZL10
+    https://www.radiomuseum.org/tubes/tube_zl10.html
+
+    B30C2200
+    https://www.radiomuseum.org/tubes/tube_b30c2200.html

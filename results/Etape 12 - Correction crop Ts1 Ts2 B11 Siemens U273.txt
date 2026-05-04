@@ -1,0 +1,201 @@
+Etape 12 - Correction crop Ts1/Ts2 B11
+======================================
+
+Date: 2026-05-03
+Objet: Siemens U273 limiter, B11 Regelverstaerker
+Source: crop utilisateur Ts1/Ts2 fourni dans le fil de travail
+
+
+1. But de cette etape
+---------------------
+
+Le crop utilisateur montre plus clairement la zone:
+
+    +24 V, R10, R11, R15, R14, C6, Ts1, Ts2, R13, R16, C7, C8, C9.
+
+Cette etape corrige la topologie locale avant d'autoriser des stamps BJT.
+Elle remplace les hypotheses precedentes qui avaient place certaines branches
+sur le mauvais noeud.
+
+
+2. Topologie visible sur le crop
+--------------------------------
+
+Branches confirmees:
+
+    R10 = 2 kOhm:
+        +24 V -> R10 -> N215 = 21,5 V
+
+    R11 = 10 kOhm:
+        N215 = 21,5 V -> R11 -> N10 = 10 V
+
+    R15 = 1,2 kOhm:
+        +24 V -> R15 -> N145 = 14,5 V
+
+    R14/C6:
+        N145 = 14,5 V -> R14 2 kOhm -> X_R14C6 -> C6 1 nF -> N10 = 10 V
+
+    R13 = 220 kOhm:
+        N9 = 9 V -> R13 -> N05 = 0,5 V
+
+    R16 = 1,2 kOhm:
+        N9 = 9 V -> R16 -> endpoint bas hors crop
+
+    C7, C8, C9:
+        branches capacitives; ouvertes en DC ideal.
+
+Branches gardees:
+
+    Ts1/Ts2:
+        les trois terminaux visibles sont autour de N145/N10/N9 et N10/N05,
+        mais les noms B/C/E restent non assignes.
+
+
+3. Corrections par rapport a l'etat precedent
+---------------------------------------------
+
+Correction ferme 1:
+
+    R15 ne part pas de N215.
+    R15 part du rail +24 V vers N145.
+
+Donc:
+
+    I_R15 = (24 - 14,5) / 1,2k
+          = 7,917 mA
+
+Le fichier recent b11_sst117_corrected_path_kcl.json reste utile comme
+historique, mais sa ligne R15=N215->N145 est remplacee.
+
+Correction ferme 2:
+
+    R14/C6 ne relie pas N05 a N10.
+    Le crop montre R14/C6 entre N145 et N10.
+
+En DC, la conclusion reste:
+
+    I_R14C6_DC = 0 mA
+
+Mais le stamp AC correct est maintenant:
+
+    N145 -- R14 -- X_R14C6 -- C6 -- N10
+
+et non:
+
+    N05 -- R14 -- X_R14C6 -- C6 -- N10
+
+Correction ferme 3:
+
+    R16 ne doit pas etre force comme N145->N9.
+    Le crop montre son haut a N9 et son bas hors crop.
+
+Decision:
+
+    garder R16 = N9 -> X_R16_LOW tant que le bas de R16 n'est pas confirme.
+
+
+4. Script cree
+--------------
+
+Script:
+
+    solver/b11_crop_ts1_ts2_corrected_topology.js
+
+Fichiers generes:
+
+    results/b11_crop_ts1_ts2_corrected_topology.json
+    results/b11_crop_ts1_ts2_topology_rows.csv
+    results/b11_crop_ts1_ts2_passive_kcl.csv
+    results/b11_crop_ts2_r16_lower_ref_check.csv
+    results/b11_crop_r14_c6_ac_rows.csv
+
+
+5. KCL DC recalculees
+---------------------
+
+R10/R11:
+
+    I_R10 = (24 - 21,5) / 2k
+          = 1,250 mA
+
+    I_R11 = (21,5 - 10) / 10k
+          = 1,150 mA
+
+    residu par tensions imprimees:
+        0,100 mA
+
+Ce residu peut venir des arrondis de tensions imprimees ou d'une branche active.
+Il ne suffit pas a fermer N05.
+
+R15:
+
+    I_R15 = 7,917 mA
+
+R13:
+
+    I_R13 = (9 - 0,5) / 220k
+          = 38,636 uA
+
+N05:
+
+    I_N05 = I_R12 + I_R9 + I_R7/R8
+          = 4,599..4,911 mA
+
+Apres contribution passive de R13:
+
+    deficit actif N05 = 4,561..4,872 mA
+
+Donc R13 ne ferme presque rien de N05.
+
+
+6. Controle R16 si son bas est la reference
+-------------------------------------------
+
+Si, et seulement si, le bas de R16 est la reference:
+
+    I_R16 = 9 / 1,2k
+          = 7,500 mA
+
+    demande passive N9 = I_R16 + I_R13
+                       = 7,539 mA
+
+Comparaison a R15:
+
+    I_R15 - demande_N9
+        = 7,917 - 7,539
+        = 0,378 mA
+
+Ce nombre est compatible en ordre de grandeur avec une branche de base/commande
+si le transistor et les sens de courant le permettent. Le beta effectif du bilan
+I_N9 / residu vaut environ:
+
+    beta_eff ~= 19,94
+
+Mais ce n'est pas encore une assignation B/C/E.
+
+
+7. Decision de modelisation
+---------------------------
+
+Ferme:
+
+    - R15 = +24 V -> N145;
+    - R14/C6 = N145 -> N10 en AC seulement;
+    - R13 = N9 -> N05;
+    - R14/C6 ne peut pas fermer N05 en DC;
+    - R13 ne couvre que 38,6 uA de la demande N05.
+
+Garde:
+
+    - endpoint bas de R16;
+    - endpoints exacts R17/C10;
+    - broches B/C/E de Ts1/Ts2;
+    - stamp BJT complet.
+
+La prochaine etape doit donc etre:
+
+    1. verifier le bas de R16 sur le schema complet;
+    2. extraire les trois terminaux Ts2 parmi N145, N10, N9;
+    3. extraire les trois terminaux Ts1 autour de N10/N05;
+    4. relancer le solveur d'hypotheses B/C/E avec cette topologie corrigee;
+    5. seulement ensuite connecter les stamps BJT dans la MNA B11.

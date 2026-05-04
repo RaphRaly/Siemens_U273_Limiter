@@ -1,0 +1,4012 @@
+{
+  "title": "Siemens U273 orchestrated parametric netlist",
+  "version": "u273_orchestrator_v0_1",
+  "generated_at": "2026-05-03T16:47:33.733Z",
+  "status": "PARTIEL",
+  "coupling_mode": "thevenin_b11_s6_s7_reference",
+  "scientific_boundary": "The current executable DC netlist keeps the B11/S6/S7 command path as a finite Thevenin reference. Full active B11+B6 closure waits for unread transistor routes and complete B11 netlist proof.",
+  "selected_modes": {
+    "s6_position": "delivery_linear",
+    "s7_mode": "limiter_drawn_17_to_18",
+    "command_source_volt": 1,
+    "command_source_ohm": 10000
+  },
+  "parameters": {
+    "b6": {
+      "r1": 5100,
+      "r2": 5100,
+      "r3Total": 1000,
+      "r4Total": 200,
+      "r5": 5600,
+      "r6": 39000,
+      "r7Total": 100,
+      "r8Total": 250000,
+      "r9": 390000,
+      "r10": 20000,
+      "r11": 39000,
+      "c1": 6.8e-7,
+      "c2": 0.000022,
+      "c3": 0.0000047,
+      "c4Abgl": 0,
+      "c5": 0.00015,
+      "c6Abgl": 0,
+      "c7": 0.0000047,
+      "r12": 51000,
+      "r13": 5600,
+      "r14": 8200,
+      "r15": 30000,
+      "r16Total": 500,
+      "r17": 6800,
+      "r18": 68000,
+      "r19": 30000,
+      "r20": 1200,
+      "r21": 10000,
+      "r22": 8200,
+      "r23": 33000,
+      "r24": 9100,
+      "r25": 16000,
+      "r26": 220,
+      "r27": 620,
+      "r28": 10000,
+      "r29": 20000,
+      "r30": 6800,
+      "r31": 5600,
+      "r32": 1000,
+      "r33": 20000,
+      "r34": 3600,
+      "r35": 820,
+      "r36": 24,
+      "r37": 10,
+      "r38": 68,
+      "c8": 0.00001,
+      "c9": 0.00005,
+      "c10": 0.000025,
+      "c11": 1.7e-8,
+      "c12": 2e-9,
+      "c13": 0.000025,
+      "c14": 0.00007,
+      "c15": 0.00015,
+      "c16": 1e-7,
+      "c17": 0.0001,
+      "c18": 0.00005,
+      "c19": 0.00022,
+      "c20": 0.00015,
+      "c21": 0.0005,
+      "gminResistance": 1000000000000,
+      "rAmpInput": "Infinity",
+      "zcmd": 0,
+      "commandSourceOhm": 10000,
+      "r7": 100,
+      "r8": 250000,
+      "bridgeDiodeLaw": "u273_empirical",
+      "commandDcMode": "thevenin",
+      "commandAcMode": "ideal",
+      "adjustmentModel": "R7/R8 are effective two-terminal resistances unless alpha7/alpha8 is explicitly supplied as a rheostat simplification."
+    }
+  },
+  "components": [
+    {
+      "id": "B11_S6_S7.VB11_S6_S7",
+      "type": "voltage_source",
+      "value": 1,
+      "unit": "volt",
+      "nodes": {
+        "n_plus": "B11_DRV",
+        "n_minus": "0"
+      },
+      "card": "B11/B6",
+      "function": "finite command source replacing old ideal VCMD",
+      "status": "PARAMETRIQUE",
+      "source_etape": "Etape 24"
+    },
+    {
+      "id": "B11_S6_S7.RB11_S6_S7_CMD",
+      "type": "resistor",
+      "value": 10000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "B11_DRV",
+        "n2": "CMD"
+      },
+      "card": "B11/B6",
+      "function": "Thevenin output resistance of not-yet-closed active B11/S6/S7 path",
+      "status": "PARAMETRIQUE",
+      "source_etape": "Etape 24"
+    },
+    {
+      "id": "B6.S1",
+      "type": "switch",
+      "value": null,
+      "unit": null,
+      "nodes": {
+        "common": "B6_IN_H",
+        "positions": [
+          "2",
+          "6"
+        ],
+        "out": "B6_IN_H_SW"
+      },
+      "card": "B6",
+      "status": "COMMUTATEUR_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "input range/source switch upper leg"
+    },
+    {
+      "id": "B6.S2",
+      "type": "switch",
+      "value": null,
+      "unit": null,
+      "nodes": {
+        "common": "B6_IN_L",
+        "positions": [
+          "1",
+          "8"
+        ],
+        "out": "B6_IN_L_SW"
+      },
+      "card": "B6",
+      "status": "COMMUTATEUR_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "input range/source switch lower leg"
+    },
+    {
+      "id": "B6.R1",
+      "type": "resistor",
+      "value": 5100,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "B6_IN_H_SW",
+        "n2": "U1_PRI_H"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "input series resistor"
+    },
+    {
+      "id": "B6.R2",
+      "type": "resistor",
+      "value": 5100,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "B6_IN_L_SW",
+        "n2": "U1_PRI_L"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "input series resistor"
+    },
+    {
+      "id": "B6.R3",
+      "type": "potentiometer",
+      "value": 1000,
+      "unit": "ohm",
+      "nodes": {
+        "end1": "U1_PRI_H",
+        "wiper": "S5_TOP",
+        "end2": "S5_BUS"
+      },
+      "card": "B6",
+      "status": "PARAMETRIQUE",
+      "source_etape": "Etape 26",
+      "function": "input trim"
+    },
+    {
+      "id": "B6.R4",
+      "type": "potentiometer",
+      "value": 200,
+      "unit": "ohm",
+      "nodes": {
+        "end1": "U1_PRI_H",
+        "wiper": "S5_BOTTOM",
+        "end2": "S5_BUS"
+      },
+      "card": "B6",
+      "status": "PARAMETRIQUE",
+      "source_etape": "Etape 26",
+      "function": "input trim"
+    },
+    {
+      "id": "B6.S5",
+      "type": "switch",
+      "value": null,
+      "unit": null,
+      "nodes": {
+        "common": "S5_BUS",
+        "contacts": [
+          "8",
+          "9",
+          "10"
+        ]
+      },
+      "card": "B6",
+      "status": "COMMUTATEUR_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "input calibration/range switch"
+    },
+    {
+      "id": "B6.U1",
+      "type": "transformer",
+      "value": null,
+      "unit": null,
+      "nodes": {
+        "primary": "U1_PRI_H/U1_PRI_L",
+        "secondary": "U1_SEC_H/U1_SEC_L"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "input transformer",
+      "winding_labels": "rt/bl/ge/sw as printed"
+    },
+    {
+      "id": "B6.R5",
+      "type": "resistor",
+      "value": 5600,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "U1_SEC_H",
+        "n2": "NX"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "bridge input feed"
+    },
+    {
+      "id": "B6.C1",
+      "type": "capacitor",
+      "value": 6.8e-7,
+      "unit": "farad",
+      "nodes": {
+        "n1": "NX",
+        "n2": "NA_25MV"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "bridge input coupling; corrected from provisional 1000p to schematic 0.68u"
+    },
+    {
+      "id": "B6.C2",
+      "type": "capacitor",
+      "value": 0.000022,
+      "unit": "farad",
+      "nodes": {
+        "n1": "NA_25MV",
+        "n2": "NB"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "bridge feed coupling"
+    },
+    {
+      "id": "B6.R9",
+      "type": "resistor",
+      "value": 390000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "NB",
+        "n2": "D2_D1_RIGHT_RAIL"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "bridge bias/feed"
+    },
+    {
+      "id": "B6.R7",
+      "type": "potentiometer",
+      "value": 100,
+      "unit": "ohm",
+      "nodes": {
+        "end1": "D3_D4_LEFT_RAIL",
+        "wiper": "NB",
+        "end2": "D2_D1_RIGHT_RAIL"
+      },
+      "card": "B6",
+      "status": "PARAMETRIQUE",
+      "source_etape": "Etape 26",
+      "function": "bridge balance, effective value used in MNA"
+    },
+    {
+      "id": "B6.R8",
+      "type": "potentiometer",
+      "value": 250000,
+      "unit": "ohm",
+      "nodes": {
+        "end1": "N14",
+        "wiper": "R10_LEFT",
+        "end2": "N15"
+      },
+      "card": "B6",
+      "status": "PARAMETRIQUE",
+      "source_etape": "Etape 26",
+      "function": "bridge balance/command trim, effective value used in MNA"
+    },
+    {
+      "id": "B6.R10",
+      "type": "resistor",
+      "value": 20000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "CMD",
+        "n2": "R10_LEFT"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "B11/S7 command injection"
+    },
+    {
+      "id": "B6.D3",
+      "type": "diode",
+      "value": "SSD55",
+      "unit": null,
+      "nodes": {
+        "anode": "NB",
+        "cathode": "NL"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "left upper bridge diode"
+    },
+    {
+      "id": "B6.D4",
+      "type": "diode",
+      "value": "OA154Q",
+      "unit": null,
+      "nodes": {
+        "anode": "NL",
+        "cathode": "N14"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "left lower bridge diode"
+    },
+    {
+      "id": "B6.D2",
+      "type": "diode",
+      "value": "SSD55",
+      "unit": null,
+      "nodes": {
+        "anode": "NB",
+        "cathode": "NR"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "right upper bridge diode"
+    },
+    {
+      "id": "B6.D1",
+      "type": "diode",
+      "value": "OA154Q",
+      "unit": null,
+      "nodes": {
+        "anode": "NR",
+        "cathode": "N15"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "right lower bridge diode"
+    },
+    {
+      "id": "B6.R6",
+      "type": "resistor",
+      "value": 39000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "N14",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "left bridge return"
+    },
+    {
+      "id": "B6.C3",
+      "type": "capacitor",
+      "value": 0.0000047,
+      "unit": "farad",
+      "nodes": {
+        "n1": "N14",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "left bridge bypass"
+    },
+    {
+      "id": "B6.C4",
+      "type": "capacitor_adjust",
+      "value": 0,
+      "unit": "farad",
+      "nodes": {
+        "n1": "N14",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "PARAMETRIQUE",
+      "source_etape": "Etape 26",
+      "function": "Abgl adjustment capacitor"
+    },
+    {
+      "id": "B6.C5",
+      "type": "capacitor",
+      "value": 0.00015,
+      "unit": "farad",
+      "nodes": {
+        "n1": "N14",
+        "n2": "N15"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "bridge coupling/storage"
+    },
+    {
+      "id": "B6.C6",
+      "type": "capacitor_adjust",
+      "value": 0,
+      "unit": "farad",
+      "nodes": {
+        "n1": "N15",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "PARAMETRIQUE",
+      "source_etape": "Etape 26",
+      "function": "Abgl adjustment capacitor"
+    },
+    {
+      "id": "B6.C7",
+      "type": "capacitor",
+      "value": 0.0000047,
+      "unit": "farad",
+      "nodes": {
+        "n1": "N15",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "right bridge bypass"
+    },
+    {
+      "id": "B6.R11",
+      "type": "resistor",
+      "value": 39000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "N15",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "right bridge return"
+    },
+    {
+      "id": "B6.R12",
+      "type": "resistor",
+      "value": 51000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "V64",
+        "n2": "TS1_BIAS_TOP"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts1 bias from 6.4V rail"
+    },
+    {
+      "id": "B6.R13",
+      "type": "resistor",
+      "value": 5600,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "TS1_BIAS_TOP",
+        "n2": "N08"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts1 bias network"
+    },
+    {
+      "id": "B6.R14",
+      "type": "resistor",
+      "value": 8200,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "N08",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts1 emitter/bias return"
+    },
+    {
+      "id": "B6.R15",
+      "type": "resistor",
+      "value": 30000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "V64",
+        "n2": "N38"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts2 bias feed"
+    },
+    {
+      "id": "B6.R16",
+      "type": "potentiometer",
+      "value": 500,
+      "unit": "ohm",
+      "nodes": {
+        "end1": "N08",
+        "wiper": "R16_WIPER",
+        "end2": "R17_TOP"
+      },
+      "card": "B6",
+      "status": "PARAMETRIQUE",
+      "source_etape": "Etape 26",
+      "function": "front-stage trim"
+    },
+    {
+      "id": "B6.R17",
+      "type": "resistor",
+      "value": 6800,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "R17_TOP",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "front-stage trim return"
+    },
+    {
+      "id": "B6.R18",
+      "type": "resistor",
+      "value": 68000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "N38",
+        "n2": "N08"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts2 bias feedback"
+    },
+    {
+      "id": "B6.R19",
+      "type": "resistor",
+      "value": 30000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "V64",
+        "n2": "V122"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "supply divider/feed"
+    },
+    {
+      "id": "B6.R20",
+      "type": "resistor",
+      "value": 1200,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "N08",
+        "n2": "N074"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts3 emitter/local feedback"
+    },
+    {
+      "id": "B6.R21",
+      "type": "resistor",
+      "value": 10000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "V122",
+        "n2": "V64"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "supply/bias feed"
+    },
+    {
+      "id": "B6.R22",
+      "type": "resistor",
+      "value": 8200,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "N32",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts2 emitter current reference"
+    },
+    {
+      "id": "B6.R23",
+      "type": "resistor",
+      "value": 33000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "V64",
+        "n2": "N24"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts3 bias with C14"
+    },
+    {
+      "id": "B6.R24",
+      "type": "resistor",
+      "value": 9100,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "N32",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "front-stage emitter/reference path"
+    },
+    {
+      "id": "B6.R25",
+      "type": "resistor",
+      "value": 16000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "V122",
+        "n2": "N24"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts3 bias feed"
+    },
+    {
+      "id": "B6.R26",
+      "type": "resistor",
+      "value": 220,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "N074",
+        "n2": "R27_TOP"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts3 emitter resistor chain"
+    },
+    {
+      "id": "B6.R27",
+      "type": "resistor",
+      "value": 620,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "R27_TOP",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts3 emitter resistor chain"
+    },
+    {
+      "id": "B6.R28",
+      "type": "resistor",
+      "value": 10000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "N105",
+        "n2": "N18"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts4/output driver bias"
+    },
+    {
+      "id": "B6.R29",
+      "type": "resistor",
+      "value": 20000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "N18",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts4 emitter/load return"
+    },
+    {
+      "id": "B6.R30",
+      "type": "resistor",
+      "value": 6800,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "V122",
+        "n2": "V22"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "supply feed to 22V rail"
+    },
+    {
+      "id": "B6.R31",
+      "type": "resistor",
+      "value": 5600,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "V22",
+        "n2": "N48"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts4 collector/load feed"
+    },
+    {
+      "id": "B6.R32",
+      "type": "resistor",
+      "value": 1000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "N18",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts4 current reference"
+    },
+    {
+      "id": "B6.R33",
+      "type": "resistor",
+      "value": 20000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "V22",
+        "n2": "N215"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "output upper bias/feed"
+    },
+    {
+      "id": "B6.R34",
+      "type": "resistor",
+      "value": 3600,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "N105",
+        "n2": "U2_PRI_TOP"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "output transformer drive"
+    },
+    {
+      "id": "B6.R35",
+      "type": "resistor",
+      "value": 820,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "OUTPUT_BIAS_LEFT",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "output-stage lower bias"
+    },
+    {
+      "id": "B6.R36",
+      "type": "resistor",
+      "value": 24,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "V22",
+        "n2": "N215"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "output idle-current sense/feed"
+    },
+    {
+      "id": "B6.R37",
+      "type": "resistor",
+      "value": 10,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "TS6_EMITTER",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "output lower emitter resistor"
+    },
+    {
+      "id": "B6.R38",
+      "type": "resistor",
+      "value": 68,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "V22",
+        "n2": "SUPPLY_SI_0A4"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "supply series resistor/fuse feed"
+    },
+    {
+      "id": "B6.C8",
+      "type": "capacitor",
+      "value": 0.00001,
+      "unit": "farad",
+      "nodes": {
+        "n1": "N08",
+        "n2": "TS1_BIAS_TOP"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "front-stage coupling/compensation"
+    },
+    {
+      "id": "B6.C9",
+      "type": "capacitor",
+      "value": 0.00005,
+      "unit": "farad",
+      "nodes": {
+        "n1": "N32",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts2 emitter bypass"
+    },
+    {
+      "id": "B6.C10",
+      "type": "capacitor",
+      "value": 0.000025,
+      "unit": "farad",
+      "nodes": {
+        "n1": "V64",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "6.4V rail decoupling"
+    },
+    {
+      "id": "B6.C11",
+      "type": "capacitor",
+      "value": 1.7e-8,
+      "unit": "farad",
+      "nodes": {
+        "n1": "N38",
+        "n2": "N08"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "front-stage compensation"
+    },
+    {
+      "id": "B6.C12",
+      "type": "capacitor",
+      "value": 2e-9,
+      "unit": "farad",
+      "nodes": {
+        "n1": "N08",
+        "n2": "N074"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts3 compensation"
+    },
+    {
+      "id": "B6.C13",
+      "type": "capacitor",
+      "value": 0.000025,
+      "unit": "farad",
+      "nodes": {
+        "n1": "N32",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "front-stage bypass"
+    },
+    {
+      "id": "B6.C14",
+      "type": "capacitor",
+      "value": 0.00007,
+      "unit": "farad",
+      "nodes": {
+        "n1": "N24",
+        "n2": "V64"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts3 bias bypass with R23"
+    },
+    {
+      "id": "B6.C15",
+      "type": "capacitor",
+      "value": 0.00015,
+      "unit": "farad",
+      "nodes": {
+        "n1": "V122",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "12.2V rail decoupling"
+    },
+    {
+      "id": "B6.C16",
+      "type": "capacitor",
+      "value": 1e-7,
+      "unit": "farad",
+      "nodes": {
+        "n1": "N074",
+        "n2": "N18"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts3/Ts4 coupling"
+    },
+    {
+      "id": "B6.C17",
+      "type": "capacitor",
+      "value": 0.0001,
+      "unit": "farad",
+      "nodes": {
+        "n1": "N18",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts4 bypass"
+    },
+    {
+      "id": "B6.C18",
+      "type": "capacitor",
+      "value": 0.00005,
+      "unit": "farad",
+      "nodes": {
+        "n1": "N18",
+        "n2": "0"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "Ts4/output compensation"
+    },
+    {
+      "id": "B6.C19",
+      "type": "capacitor",
+      "value": 0.00022,
+      "unit": "farad",
+      "nodes": {
+        "n1": "V122",
+        "n2": "V22"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "22V feed decoupling"
+    },
+    {
+      "id": "B6.C20",
+      "type": "capacitor",
+      "value": 0.00015,
+      "unit": "farad",
+      "nodes": {
+        "n1": "N215",
+        "n2": "V22"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "upper output bootstrap/decoupling"
+    },
+    {
+      "id": "B6.C21",
+      "type": "capacitor",
+      "value": 0.0005,
+      "unit": "farad",
+      "nodes": {
+        "n1": "U2_PRI_TOP",
+        "n2": "U2_PRI_BOTTOM"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "output coupling to transformer"
+    },
+    {
+      "id": "B6.Ts1",
+      "type": "bjt",
+      "value": "BCY66",
+      "unit": null,
+      "nodes": {
+        "terminals": "from Siemens schematic symbol",
+        "printedNodes": [
+          "V64",
+          "N08"
+        ]
+      },
+      "card": "B6",
+      "status": "GARDE_NON_STAMPE",
+      "source_etape": "Etape 26",
+      "function": "front signal transistor; not nonlinear-stamped by default"
+    },
+    {
+      "id": "B6.Ts2",
+      "type": "bjt",
+      "value": "BCY66",
+      "unit": null,
+      "nodes": {
+        "collector": "V64",
+        "base": "N38",
+        "emitter": "N32"
+      },
+      "card": "B6",
+      "status": "GARDE_NON_STAMPE",
+      "source_etape": "Etape 26",
+      "function": "front signal transistor; hybrid-pi candidate only"
+    },
+    {
+      "id": "B6.Ts3",
+      "type": "bjt",
+      "value": "SST117/1",
+      "unit": null,
+      "nodes": {
+        "terminals": "from Siemens schematic symbol",
+        "printedNodes": [
+          "N24",
+          "N074"
+        ]
+      },
+      "card": "B6",
+      "status": "GARDE_NON_STAMPE",
+      "source_etape": "Etape 26",
+      "function": "middle gain/driver transistor; not nonlinear-stamped by default"
+    },
+    {
+      "id": "B6.Ts4",
+      "type": "bjt",
+      "value": "SST116/1",
+      "unit": null,
+      "nodes": {
+        "collector": "N48",
+        "base": "N24",
+        "emitter": "N18"
+      },
+      "card": "B6",
+      "status": "GARDE_NON_STAMPE",
+      "source_etape": "Etape 26",
+      "function": "middle gain/driver transistor; hybrid-pi candidate only"
+    },
+    {
+      "id": "B6.Ts5",
+      "type": "bjt",
+      "value": "SST117/1",
+      "unit": null,
+      "nodes": {
+        "terminals": "from Siemens schematic symbol",
+        "printedNodes": [
+          "N215",
+          "N105"
+        ]
+      },
+      "card": "B6",
+      "status": "GARDE_NON_STAMPE",
+      "source_etape": "Etape 26",
+      "function": "upper output transistor; output-stage bound only"
+    },
+    {
+      "id": "B6.Ts6",
+      "type": "bjt",
+      "value": "SST117/1",
+      "unit": null,
+      "nodes": {
+        "terminals": "from Siemens schematic symbol",
+        "printedNodes": [
+          "N105",
+          "0"
+        ]
+      },
+      "card": "B6",
+      "status": "GARDE_NON_STAMPE",
+      "source_etape": "Etape 26",
+      "function": "lower output transistor; output-stage bound only"
+    },
+    {
+      "id": "B6.U2",
+      "type": "transformer",
+      "value": null,
+      "unit": null,
+      "nodes": {
+        "primary": "U2_PRI_TOP/U2_PRI_BOTTOM",
+        "secondary": "B6_OUT_300R"
+      },
+      "card": "B6",
+      "status": "FERME_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "output transformer"
+    },
+    {
+      "id": "B6.S3",
+      "type": "switch",
+      "value": null,
+      "unit": null,
+      "nodes": {
+        "contacts": [
+          "22",
+          "23"
+        ],
+        "output": "B6_OUT_PLUS"
+      },
+      "card": "B6",
+      "status": "COMMUTATEUR_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "output switch upper section"
+    },
+    {
+      "id": "B6.S4",
+      "type": "switch",
+      "value": null,
+      "unit": null,
+      "nodes": {
+        "contacts": [
+          "25",
+          "26"
+        ],
+        "output": "B6_OUT_RETURN"
+      },
+      "card": "B6",
+      "status": "COMMUTATEUR_SCHEMA",
+      "source_etape": "Etape 26",
+      "function": "output switch lower section"
+    },
+    {
+      "id": "B6.GMIN_NL",
+      "type": "resistor",
+      "value": 1000000000000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "NL",
+        "n2": "0"
+      },
+      "card": "B6",
+      "function": "MNA numerical stabilizer",
+      "status": "NUMERICAL_HELPER",
+      "source_etape": "solver/b6_parametric.js"
+    },
+    {
+      "id": "B6.GMIN_NR",
+      "type": "resistor",
+      "value": 1000000000000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "NR",
+        "n2": "0"
+      },
+      "card": "B6",
+      "function": "MNA numerical stabilizer",
+      "status": "NUMERICAL_HELPER",
+      "source_etape": "solver/b6_parametric.js"
+    },
+    {
+      "id": "B11.S6.R4",
+      "type": "resistor",
+      "value": 7500,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "VL",
+        "n2": "VM"
+      },
+      "card": "B11",
+      "function": "S6 Vorentzerrung core branch VL-VM",
+      "status": "PARTIEL",
+      "source_etape": "Etape 20/21"
+    },
+    {
+      "id": "B11.S6.C2",
+      "type": "capacitor",
+      "value": 5e-9,
+      "unit": "farad",
+      "nodes": {
+        "n1": "VL",
+        "n2": "VM"
+      },
+      "card": "B11",
+      "function": "S6 Vorentzerrung core branch VL-VM",
+      "status": "PARTIEL",
+      "source_etape": "Etape 20/21"
+    },
+    {
+      "id": "B11.S6.R3",
+      "type": "resistor",
+      "value": 7500,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "VM",
+        "n2": "VR"
+      },
+      "card": "B11",
+      "function": "S6 Vorentzerrung core branch VM-VR",
+      "status": "PARTIEL",
+      "source_etape": "Etape 20/21"
+    },
+    {
+      "id": "B11.S6.C1",
+      "type": "capacitor",
+      "value": 5e-9,
+      "unit": "farad",
+      "nodes": {
+        "n1": "VM",
+        "n2": "VR"
+      },
+      "card": "B11",
+      "function": "S6 Vorentzerrung core branch VM-VR",
+      "status": "PARTIEL",
+      "source_etape": "Etape 20/21"
+    },
+    {
+      "id": "B11.S6.R5",
+      "type": "resistor",
+      "value": 15000,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "VL",
+        "n2": "VR"
+      },
+      "card": "B11",
+      "function": "S6 Vorentzerrung optional bridge branch",
+      "status": "PARTIEL",
+      "source_etape": "Etape 20/21"
+    },
+    {
+      "id": "B11.S6.C3",
+      "type": "capacitor",
+      "value": 3.3e-9,
+      "unit": "farad",
+      "nodes": {
+        "n1": "VL",
+        "n2": "VR"
+      },
+      "card": "B11",
+      "function": "S6 Vorentzerrung optional bridge branch",
+      "status": "PARTIEL",
+      "source_etape": "Etape 20/21"
+    },
+    {
+      "id": "B11.S6.R6",
+      "type": "resistor",
+      "value": 3900,
+      "unit": "ohm",
+      "nodes": {
+        "n1": "VM",
+        "n2": "S6_R6_C4_MID"
+      },
+      "card": "B11",
+      "function": "S6 VM-to-ground series RC branch",
+      "status": "PARTIEL",
+      "source_etape": "Etape 20/21"
+    },
+    {
+      "id": "B11.S6.C4",
+      "type": "capacitor",
+      "value": 3e-9,
+      "unit": "farad",
+      "nodes": {
+        "n1": "S6_R6_C4_MID",
+        "n2": "0"
+      },
+      "card": "B11",
+      "function": "S6 VM-to-ground series RC branch",
+      "status": "PARTIEL",
+      "source_etape": "Etape 20/21"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "1"
+    },
+    {
+      "id": "10"
+    },
+    {
+      "id": "2"
+    },
+    {
+      "id": "22"
+    },
+    {
+      "id": "23"
+    },
+    {
+      "id": "25"
+    },
+    {
+      "id": "26"
+    },
+    {
+      "id": "6"
+    },
+    {
+      "id": "8"
+    },
+    {
+      "id": "9"
+    },
+    {
+      "id": "B11_DRV"
+    },
+    {
+      "id": "B6_IN_H"
+    },
+    {
+      "id": "B6_IN_H_SW"
+    },
+    {
+      "id": "B6_IN_L"
+    },
+    {
+      "id": "B6_IN_L_SW"
+    },
+    {
+      "id": "B6_OUT_300R"
+    },
+    {
+      "id": "B6_OUT_PLUS"
+    },
+    {
+      "id": "B6_OUT_RETURN"
+    },
+    {
+      "id": "CMD"
+    },
+    {
+      "id": "D2_D1_RIGHT_RAIL"
+    },
+    {
+      "id": "D3_D4_LEFT_RAIL"
+    },
+    {
+      "id": "N074"
+    },
+    {
+      "id": "N08"
+    },
+    {
+      "id": "N105"
+    },
+    {
+      "id": "N14"
+    },
+    {
+      "id": "N15"
+    },
+    {
+      "id": "N18"
+    },
+    {
+      "id": "N215"
+    },
+    {
+      "id": "N24"
+    },
+    {
+      "id": "N32"
+    },
+    {
+      "id": "N38"
+    },
+    {
+      "id": "N48"
+    },
+    {
+      "id": "NA_25MV"
+    },
+    {
+      "id": "NB"
+    },
+    {
+      "id": "NL"
+    },
+    {
+      "id": "NR"
+    },
+    {
+      "id": "NX"
+    },
+    {
+      "id": "OUTPUT_BIAS_LEFT"
+    },
+    {
+      "id": "R10_LEFT"
+    },
+    {
+      "id": "R16_WIPER"
+    },
+    {
+      "id": "R17_TOP"
+    },
+    {
+      "id": "R27_TOP"
+    },
+    {
+      "id": "S5_BOTTOM"
+    },
+    {
+      "id": "S5_BUS"
+    },
+    {
+      "id": "S5_TOP"
+    },
+    {
+      "id": "S6_R6_C4_MID"
+    },
+    {
+      "id": "SUPPLY_SI_0A4"
+    },
+    {
+      "id": "TS1_BIAS_TOP"
+    },
+    {
+      "id": "TS6_EMITTER"
+    },
+    {
+      "id": "U1_PRI_H"
+    },
+    {
+      "id": "U1_PRI_H/U1_PRI_L"
+    },
+    {
+      "id": "U1_PRI_L"
+    },
+    {
+      "id": "U1_SEC_H"
+    },
+    {
+      "id": "U1_SEC_H/U1_SEC_L"
+    },
+    {
+      "id": "U2_PRI_BOTTOM"
+    },
+    {
+      "id": "U2_PRI_TOP"
+    },
+    {
+      "id": "U2_PRI_TOP/U2_PRI_BOTTOM"
+    },
+    {
+      "id": "V122"
+    },
+    {
+      "id": "V22"
+    },
+    {
+      "id": "V64"
+    },
+    {
+      "id": "VL"
+    },
+    {
+      "id": "VM"
+    },
+    {
+      "id": "VR"
+    },
+    {
+      "id": "from Siemens schematic symbol"
+    }
+  ],
+  "schematic_inventories": {
+    "B6": {
+      "title": "Siemens U273 B6 complete schematic inventory",
+      "status": "FERME_SCHEMA_AVEC_MODELES_ACTIFS_GARDES",
+      "source": "Etape 26",
+      "boundary": "All visible B6 service-sheet components are inventoried. Active BJT nonlinear stamps remain guarded; bridge DC/AC execution uses the closed diode/passive subset.",
+      "node_aliases": {
+        "NA_25MV": "printed 25 mV bridge input node",
+        "NB": "bridge command/input node below C2",
+        "N14": "left lower bridge node/contact 14",
+        "N15": "right lower bridge node/contact 15",
+        "CMD": "B11/S7 command injection node via R10",
+        "V64": "printed 6.4 V rail",
+        "V122": "printed 12.2 V rail",
+        "V22": "printed 22 V rail",
+        "N215": "printed 21.5 V output upper node",
+        "N105": "printed 10.5 V output midpoint"
+      },
+      "components": [
+        {
+          "id": "B6.S1",
+          "type": "switch",
+          "value": null,
+          "unit": null,
+          "nodes": {
+            "common": "B6_IN_H",
+            "positions": [
+              "2",
+              "6"
+            ],
+            "out": "B6_IN_H_SW"
+          },
+          "card": "B6",
+          "status": "COMMUTATEUR_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "input range/source switch upper leg"
+        },
+        {
+          "id": "B6.S2",
+          "type": "switch",
+          "value": null,
+          "unit": null,
+          "nodes": {
+            "common": "B6_IN_L",
+            "positions": [
+              "1",
+              "8"
+            ],
+            "out": "B6_IN_L_SW"
+          },
+          "card": "B6",
+          "status": "COMMUTATEUR_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "input range/source switch lower leg"
+        },
+        {
+          "id": "B6.R1",
+          "type": "resistor",
+          "value": 5100,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "B6_IN_H_SW",
+            "n2": "U1_PRI_H"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "input series resistor"
+        },
+        {
+          "id": "B6.R2",
+          "type": "resistor",
+          "value": 5100,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "B6_IN_L_SW",
+            "n2": "U1_PRI_L"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "input series resistor"
+        },
+        {
+          "id": "B6.R3",
+          "type": "potentiometer",
+          "value": 1000,
+          "unit": "ohm",
+          "nodes": {
+            "end1": "U1_PRI_H",
+            "wiper": "S5_TOP",
+            "end2": "S5_BUS"
+          },
+          "card": "B6",
+          "status": "PARAMETRIQUE",
+          "source_etape": "Etape 26",
+          "function": "input trim"
+        },
+        {
+          "id": "B6.R4",
+          "type": "potentiometer",
+          "value": 200,
+          "unit": "ohm",
+          "nodes": {
+            "end1": "U1_PRI_H",
+            "wiper": "S5_BOTTOM",
+            "end2": "S5_BUS"
+          },
+          "card": "B6",
+          "status": "PARAMETRIQUE",
+          "source_etape": "Etape 26",
+          "function": "input trim"
+        },
+        {
+          "id": "B6.S5",
+          "type": "switch",
+          "value": null,
+          "unit": null,
+          "nodes": {
+            "common": "S5_BUS",
+            "contacts": [
+              "8",
+              "9",
+              "10"
+            ]
+          },
+          "card": "B6",
+          "status": "COMMUTATEUR_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "input calibration/range switch"
+        },
+        {
+          "id": "B6.U1",
+          "type": "transformer",
+          "value": null,
+          "unit": null,
+          "nodes": {
+            "primary": "U1_PRI_H/U1_PRI_L",
+            "secondary": "U1_SEC_H/U1_SEC_L"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "input transformer",
+          "winding_labels": "rt/bl/ge/sw as printed"
+        },
+        {
+          "id": "B6.R5",
+          "type": "resistor",
+          "value": 5600,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "U1_SEC_H",
+            "n2": "NX"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "bridge input feed"
+        },
+        {
+          "id": "B6.C1",
+          "type": "capacitor",
+          "value": 6.8e-7,
+          "unit": "farad",
+          "nodes": {
+            "n1": "NX",
+            "n2": "NA_25MV"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "bridge input coupling; corrected from provisional 1000p to schematic 0.68u"
+        },
+        {
+          "id": "B6.C2",
+          "type": "capacitor",
+          "value": 0.000022,
+          "unit": "farad",
+          "nodes": {
+            "n1": "NA_25MV",
+            "n2": "NB"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "bridge feed coupling"
+        },
+        {
+          "id": "B6.R9",
+          "type": "resistor",
+          "value": 390000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "NB",
+            "n2": "D2_D1_RIGHT_RAIL"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "bridge bias/feed"
+        },
+        {
+          "id": "B6.R7",
+          "type": "potentiometer",
+          "value": 100,
+          "unit": "ohm",
+          "nodes": {
+            "end1": "D3_D4_LEFT_RAIL",
+            "wiper": "NB",
+            "end2": "D2_D1_RIGHT_RAIL"
+          },
+          "card": "B6",
+          "status": "PARAMETRIQUE",
+          "source_etape": "Etape 26",
+          "function": "bridge balance, effective value used in MNA"
+        },
+        {
+          "id": "B6.R8",
+          "type": "potentiometer",
+          "value": 250000,
+          "unit": "ohm",
+          "nodes": {
+            "end1": "N14",
+            "wiper": "R10_LEFT",
+            "end2": "N15"
+          },
+          "card": "B6",
+          "status": "PARAMETRIQUE",
+          "source_etape": "Etape 26",
+          "function": "bridge balance/command trim, effective value used in MNA"
+        },
+        {
+          "id": "B6.R10",
+          "type": "resistor",
+          "value": 20000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "CMD",
+            "n2": "R10_LEFT"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "B11/S7 command injection"
+        },
+        {
+          "id": "B6.D3",
+          "type": "diode",
+          "value": "SSD55",
+          "unit": null,
+          "nodes": {
+            "anode": "NB",
+            "cathode": "NL"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "left upper bridge diode"
+        },
+        {
+          "id": "B6.D4",
+          "type": "diode",
+          "value": "OA154Q",
+          "unit": null,
+          "nodes": {
+            "anode": "NL",
+            "cathode": "N14"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "left lower bridge diode"
+        },
+        {
+          "id": "B6.D2",
+          "type": "diode",
+          "value": "SSD55",
+          "unit": null,
+          "nodes": {
+            "anode": "NB",
+            "cathode": "NR"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "right upper bridge diode"
+        },
+        {
+          "id": "B6.D1",
+          "type": "diode",
+          "value": "OA154Q",
+          "unit": null,
+          "nodes": {
+            "anode": "NR",
+            "cathode": "N15"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "right lower bridge diode"
+        },
+        {
+          "id": "B6.R6",
+          "type": "resistor",
+          "value": 39000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "N14",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "left bridge return"
+        },
+        {
+          "id": "B6.C3",
+          "type": "capacitor",
+          "value": 0.0000047,
+          "unit": "farad",
+          "nodes": {
+            "n1": "N14",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "left bridge bypass"
+        },
+        {
+          "id": "B6.C4",
+          "type": "capacitor_adjust",
+          "value": 0,
+          "unit": "farad",
+          "nodes": {
+            "n1": "N14",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "PARAMETRIQUE",
+          "source_etape": "Etape 26",
+          "function": "Abgl adjustment capacitor"
+        },
+        {
+          "id": "B6.C5",
+          "type": "capacitor",
+          "value": 0.00015,
+          "unit": "farad",
+          "nodes": {
+            "n1": "N14",
+            "n2": "N15"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "bridge coupling/storage"
+        },
+        {
+          "id": "B6.C6",
+          "type": "capacitor_adjust",
+          "value": 0,
+          "unit": "farad",
+          "nodes": {
+            "n1": "N15",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "PARAMETRIQUE",
+          "source_etape": "Etape 26",
+          "function": "Abgl adjustment capacitor"
+        },
+        {
+          "id": "B6.C7",
+          "type": "capacitor",
+          "value": 0.0000047,
+          "unit": "farad",
+          "nodes": {
+            "n1": "N15",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "right bridge bypass"
+        },
+        {
+          "id": "B6.R11",
+          "type": "resistor",
+          "value": 39000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "N15",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "right bridge return"
+        },
+        {
+          "id": "B6.R12",
+          "type": "resistor",
+          "value": 51000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "V64",
+            "n2": "TS1_BIAS_TOP"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts1 bias from 6.4V rail"
+        },
+        {
+          "id": "B6.R13",
+          "type": "resistor",
+          "value": 5600,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "TS1_BIAS_TOP",
+            "n2": "N08"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts1 bias network"
+        },
+        {
+          "id": "B6.R14",
+          "type": "resistor",
+          "value": 8200,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "N08",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts1 emitter/bias return"
+        },
+        {
+          "id": "B6.R15",
+          "type": "resistor",
+          "value": 30000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "V64",
+            "n2": "N38"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts2 bias feed"
+        },
+        {
+          "id": "B6.R16",
+          "type": "potentiometer",
+          "value": 500,
+          "unit": "ohm",
+          "nodes": {
+            "end1": "N08",
+            "wiper": "R16_WIPER",
+            "end2": "R17_TOP"
+          },
+          "card": "B6",
+          "status": "PARAMETRIQUE",
+          "source_etape": "Etape 26",
+          "function": "front-stage trim"
+        },
+        {
+          "id": "B6.R17",
+          "type": "resistor",
+          "value": 6800,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "R17_TOP",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "front-stage trim return"
+        },
+        {
+          "id": "B6.R18",
+          "type": "resistor",
+          "value": 68000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "N38",
+            "n2": "N08"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts2 bias feedback"
+        },
+        {
+          "id": "B6.R19",
+          "type": "resistor",
+          "value": 30000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "V64",
+            "n2": "V122"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "supply divider/feed"
+        },
+        {
+          "id": "B6.R20",
+          "type": "resistor",
+          "value": 1200,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "N08",
+            "n2": "N074"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts3 emitter/local feedback"
+        },
+        {
+          "id": "B6.R21",
+          "type": "resistor",
+          "value": 10000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "V122",
+            "n2": "V64"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "supply/bias feed"
+        },
+        {
+          "id": "B6.R22",
+          "type": "resistor",
+          "value": 8200,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "N32",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts2 emitter current reference"
+        },
+        {
+          "id": "B6.R23",
+          "type": "resistor",
+          "value": 33000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "V64",
+            "n2": "N24"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts3 bias with C14"
+        },
+        {
+          "id": "B6.R24",
+          "type": "resistor",
+          "value": 9100,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "N32",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "front-stage emitter/reference path"
+        },
+        {
+          "id": "B6.R25",
+          "type": "resistor",
+          "value": 16000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "V122",
+            "n2": "N24"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts3 bias feed"
+        },
+        {
+          "id": "B6.R26",
+          "type": "resistor",
+          "value": 220,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "N074",
+            "n2": "R27_TOP"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts3 emitter resistor chain"
+        },
+        {
+          "id": "B6.R27",
+          "type": "resistor",
+          "value": 620,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "R27_TOP",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts3 emitter resistor chain"
+        },
+        {
+          "id": "B6.R28",
+          "type": "resistor",
+          "value": 10000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "N105",
+            "n2": "N18"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts4/output driver bias"
+        },
+        {
+          "id": "B6.R29",
+          "type": "resistor",
+          "value": 20000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "N18",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts4 emitter/load return"
+        },
+        {
+          "id": "B6.R30",
+          "type": "resistor",
+          "value": 6800,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "V122",
+            "n2": "V22"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "supply feed to 22V rail"
+        },
+        {
+          "id": "B6.R31",
+          "type": "resistor",
+          "value": 5600,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "V22",
+            "n2": "N48"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts4 collector/load feed"
+        },
+        {
+          "id": "B6.R32",
+          "type": "resistor",
+          "value": 1000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "N18",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts4 current reference"
+        },
+        {
+          "id": "B6.R33",
+          "type": "resistor",
+          "value": 20000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "V22",
+            "n2": "N215"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "output upper bias/feed"
+        },
+        {
+          "id": "B6.R34",
+          "type": "resistor",
+          "value": 3600,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "N105",
+            "n2": "U2_PRI_TOP"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "output transformer drive"
+        },
+        {
+          "id": "B6.R35",
+          "type": "resistor",
+          "value": 820,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "OUTPUT_BIAS_LEFT",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "output-stage lower bias"
+        },
+        {
+          "id": "B6.R36",
+          "type": "resistor",
+          "value": 24,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "V22",
+            "n2": "N215"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "output idle-current sense/feed"
+        },
+        {
+          "id": "B6.R37",
+          "type": "resistor",
+          "value": 10,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "TS6_EMITTER",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "output lower emitter resistor"
+        },
+        {
+          "id": "B6.R38",
+          "type": "resistor",
+          "value": 68,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "V22",
+            "n2": "SUPPLY_SI_0A4"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "supply series resistor/fuse feed"
+        },
+        {
+          "id": "B6.C8",
+          "type": "capacitor",
+          "value": 0.00001,
+          "unit": "farad",
+          "nodes": {
+            "n1": "N08",
+            "n2": "TS1_BIAS_TOP"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "front-stage coupling/compensation"
+        },
+        {
+          "id": "B6.C9",
+          "type": "capacitor",
+          "value": 0.00005,
+          "unit": "farad",
+          "nodes": {
+            "n1": "N32",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts2 emitter bypass"
+        },
+        {
+          "id": "B6.C10",
+          "type": "capacitor",
+          "value": 0.000025,
+          "unit": "farad",
+          "nodes": {
+            "n1": "V64",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "6.4V rail decoupling"
+        },
+        {
+          "id": "B6.C11",
+          "type": "capacitor",
+          "value": 1.7e-8,
+          "unit": "farad",
+          "nodes": {
+            "n1": "N38",
+            "n2": "N08"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "front-stage compensation"
+        },
+        {
+          "id": "B6.C12",
+          "type": "capacitor",
+          "value": 2e-9,
+          "unit": "farad",
+          "nodes": {
+            "n1": "N08",
+            "n2": "N074"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts3 compensation"
+        },
+        {
+          "id": "B6.C13",
+          "type": "capacitor",
+          "value": 0.000025,
+          "unit": "farad",
+          "nodes": {
+            "n1": "N32",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "front-stage bypass"
+        },
+        {
+          "id": "B6.C14",
+          "type": "capacitor",
+          "value": 0.00007,
+          "unit": "farad",
+          "nodes": {
+            "n1": "N24",
+            "n2": "V64"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts3 bias bypass with R23"
+        },
+        {
+          "id": "B6.C15",
+          "type": "capacitor",
+          "value": 0.00015,
+          "unit": "farad",
+          "nodes": {
+            "n1": "V122",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "12.2V rail decoupling"
+        },
+        {
+          "id": "B6.C16",
+          "type": "capacitor",
+          "value": 1e-7,
+          "unit": "farad",
+          "nodes": {
+            "n1": "N074",
+            "n2": "N18"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts3/Ts4 coupling"
+        },
+        {
+          "id": "B6.C17",
+          "type": "capacitor",
+          "value": 0.0001,
+          "unit": "farad",
+          "nodes": {
+            "n1": "N18",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts4 bypass"
+        },
+        {
+          "id": "B6.C18",
+          "type": "capacitor",
+          "value": 0.00005,
+          "unit": "farad",
+          "nodes": {
+            "n1": "N18",
+            "n2": "0"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "Ts4/output compensation"
+        },
+        {
+          "id": "B6.C19",
+          "type": "capacitor",
+          "value": 0.00022,
+          "unit": "farad",
+          "nodes": {
+            "n1": "V122",
+            "n2": "V22"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "22V feed decoupling"
+        },
+        {
+          "id": "B6.C20",
+          "type": "capacitor",
+          "value": 0.00015,
+          "unit": "farad",
+          "nodes": {
+            "n1": "N215",
+            "n2": "V22"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "upper output bootstrap/decoupling"
+        },
+        {
+          "id": "B6.C21",
+          "type": "capacitor",
+          "value": 0.0005,
+          "unit": "farad",
+          "nodes": {
+            "n1": "U2_PRI_TOP",
+            "n2": "U2_PRI_BOTTOM"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "output coupling to transformer"
+        },
+        {
+          "id": "B6.Ts1",
+          "type": "bjt",
+          "value": "BCY66",
+          "unit": null,
+          "nodes": {
+            "terminals": "from Siemens schematic symbol",
+            "printedNodes": [
+              "V64",
+              "N08"
+            ]
+          },
+          "card": "B6",
+          "status": "GARDE_NON_STAMPE",
+          "source_etape": "Etape 26",
+          "function": "front signal transistor; not nonlinear-stamped by default"
+        },
+        {
+          "id": "B6.Ts2",
+          "type": "bjt",
+          "value": "BCY66",
+          "unit": null,
+          "nodes": {
+            "collector": "V64",
+            "base": "N38",
+            "emitter": "N32"
+          },
+          "card": "B6",
+          "status": "GARDE_NON_STAMPE",
+          "source_etape": "Etape 26",
+          "function": "front signal transistor; hybrid-pi candidate only"
+        },
+        {
+          "id": "B6.Ts3",
+          "type": "bjt",
+          "value": "SST117/1",
+          "unit": null,
+          "nodes": {
+            "terminals": "from Siemens schematic symbol",
+            "printedNodes": [
+              "N24",
+              "N074"
+            ]
+          },
+          "card": "B6",
+          "status": "GARDE_NON_STAMPE",
+          "source_etape": "Etape 26",
+          "function": "middle gain/driver transistor; not nonlinear-stamped by default"
+        },
+        {
+          "id": "B6.Ts4",
+          "type": "bjt",
+          "value": "SST116/1",
+          "unit": null,
+          "nodes": {
+            "collector": "N48",
+            "base": "N24",
+            "emitter": "N18"
+          },
+          "card": "B6",
+          "status": "GARDE_NON_STAMPE",
+          "source_etape": "Etape 26",
+          "function": "middle gain/driver transistor; hybrid-pi candidate only"
+        },
+        {
+          "id": "B6.Ts5",
+          "type": "bjt",
+          "value": "SST117/1",
+          "unit": null,
+          "nodes": {
+            "terminals": "from Siemens schematic symbol",
+            "printedNodes": [
+              "N215",
+              "N105"
+            ]
+          },
+          "card": "B6",
+          "status": "GARDE_NON_STAMPE",
+          "source_etape": "Etape 26",
+          "function": "upper output transistor; output-stage bound only"
+        },
+        {
+          "id": "B6.Ts6",
+          "type": "bjt",
+          "value": "SST117/1",
+          "unit": null,
+          "nodes": {
+            "terminals": "from Siemens schematic symbol",
+            "printedNodes": [
+              "N105",
+              "0"
+            ]
+          },
+          "card": "B6",
+          "status": "GARDE_NON_STAMPE",
+          "source_etape": "Etape 26",
+          "function": "lower output transistor; output-stage bound only"
+        },
+        {
+          "id": "B6.U2",
+          "type": "transformer",
+          "value": null,
+          "unit": null,
+          "nodes": {
+            "primary": "U2_PRI_TOP/U2_PRI_BOTTOM",
+            "secondary": "B6_OUT_300R"
+          },
+          "card": "B6",
+          "status": "FERME_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "output transformer"
+        },
+        {
+          "id": "B6.S3",
+          "type": "switch",
+          "value": null,
+          "unit": null,
+          "nodes": {
+            "contacts": [
+              "22",
+              "23"
+            ],
+            "output": "B6_OUT_PLUS"
+          },
+          "card": "B6",
+          "status": "COMMUTATEUR_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "output switch upper section"
+        },
+        {
+          "id": "B6.S4",
+          "type": "switch",
+          "value": null,
+          "unit": null,
+          "nodes": {
+            "contacts": [
+              "25",
+              "26"
+            ],
+            "output": "B6_OUT_RETURN"
+          },
+          "card": "B6",
+          "status": "COMMUTATEUR_SCHEMA",
+          "source_etape": "Etape 26",
+          "function": "output switch lower section"
+        }
+      ]
+    }
+  },
+  "switches": {
+    "S6": {
+      "status": "PARTIEL",
+      "selected_position": "delivery_linear",
+      "delivery_linear_reading": {
+        "status": "FERME",
+        "contacts": [
+          "4-5 closed",
+          "8-9 closed",
+          "5-6 open",
+          "7-8 open",
+          "5-3-1 closed",
+          "2 open"
+        ],
+        "source_etape": "Etape 20/21/24"
+      },
+      "unresolved": [
+        "All non-delivery Vorentzerrung positions still require contact-table proof.",
+        "R1/R2 routing by every S6 position is still bounded, not final."
+      ],
+      "contact_hypotheses": [
+        {
+          "name": "core_all_branches",
+          "note": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+          "branches": {
+            "lm": true,
+            "mr": true,
+            "lr": true,
+            "m0": true
+          }
+        },
+        {
+          "name": "core_without_lr_bridge",
+          "note": "Sensitivity case: LR bridge R5/C3 open.",
+          "branches": {
+            "lm": true,
+            "mr": true,
+            "lr": false,
+            "m0": true
+          }
+        },
+        {
+          "name": "core_without_m0_shunt",
+          "note": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+          "branches": {
+            "lm": true,
+            "mr": true,
+            "lr": true,
+            "m0": false
+          }
+        },
+        {
+          "name": "core_series_lm_mr_only",
+          "note": "Sensitivity case: only LM and MR paths active.",
+          "branches": {
+            "lm": true,
+            "mr": true,
+            "lr": false,
+            "m0": false
+          }
+        }
+      ]
+    },
+    "S7": {
+      "status": "PARTIEL",
+      "selected_mode": "limiter_drawn_17_to_18",
+      "contact_table": [
+        {
+          "position": "drawn_17_to_18",
+          "closed": "17-18",
+          "open": "17-19",
+          "zenerPath": "ZL10 active",
+          "inferredMode": "limiter",
+          "note": "User-confirmed drawing state: S7 common node 17 is switched to 18. D1 ZL10 remains in the limiter detector path."
+        },
+        {
+          "position": "alternate_17_to_19",
+          "closed": "17-19",
+          "open": "17-18",
+          "zenerPath": "ZL10 bypassed",
+          "inferredMode": "compressor",
+          "note": "Opposite switch state inferred for compressor mode: S7 common node 17 is switched to 19, bypassing the ZL10 contribution."
+        }
+      ],
+      "detector_scenarios": [
+        {
+          "name": "limiter_low_drop",
+          "mode": "limiter",
+          "s7_position": "drawn_17_to_18",
+          "s7_closed": "17-18",
+          "zener_path": "ZL10 active",
+          "status": "FERME",
+          "note": "Limiter bound with ZL10 active and low diode/rectifier drops."
+        },
+        {
+          "name": "limiter_nominal",
+          "mode": "limiter",
+          "s7_position": "drawn_17_to_18",
+          "s7_closed": "17-18",
+          "zener_path": "ZL10 active",
+          "status": "FERME",
+          "note": "Nominal limiter hypothesis: ZL10 active, SSD55 plus rectifier drops chosen around the printed 8 V RMS threshold."
+        },
+        {
+          "name": "limiter_high_drop",
+          "mode": "limiter",
+          "s7_position": "drawn_17_to_18",
+          "s7_closed": "17-18",
+          "zener_path": "ZL10 active",
+          "status": "FERME",
+          "note": "Limiter bound with ZL10 active and high diode/rectifier drops."
+        },
+        {
+          "name": "limiter_zener_minus10pct",
+          "mode": "limiter",
+          "s7_position": "drawn_17_to_18",
+          "s7_closed": "17-18",
+          "zener_path": "ZL10 active",
+          "status": "FERME",
+          "note": "Sensitivity bound: ZL10 effective voltage 10 percent lower, nominal diode/rectifier drops."
+        },
+        {
+          "name": "limiter_zener_plus10pct",
+          "mode": "limiter",
+          "s7_position": "drawn_17_to_18",
+          "s7_closed": "17-18",
+          "zener_path": "ZL10 active",
+          "status": "FERME",
+          "note": "Sensitivity bound: ZL10 effective voltage 10 percent higher, nominal diode/rectifier drops."
+        },
+        {
+          "name": "compressor_partial_zener_bound",
+          "mode": "compressor",
+          "s7_position": "alternate_17_to_19_bound",
+          "s7_closed": "17-19",
+          "zener_path": "ZL10 partly bypassed",
+          "status": "HYPOTHESE",
+          "note": "Conservative bound kept for sensitivity: S7 effectively leaves half of the ZL10 threshold in the path."
+        },
+        {
+          "name": "compressor_s7_17_to_19_zener_bypassed",
+          "mode": "compressor",
+          "s7_position": "alternate_17_to_19",
+          "s7_closed": "17-19",
+          "zener_path": "ZL10 bypassed",
+          "status": "HYPOTHESE",
+          "note": "Compressor hypothesis tied to the opposite S7 state: 17-19 bypasses the ZL10 contribution."
+        }
+      ]
+    }
+  },
+  "diode_models": {
+    "B6_bridge": {
+      "status": "PARTIEL",
+      "law": {
+        "temperatureCelsius": 25,
+        "validCurrentMicroAmpMin": 2,
+        "validCurrentMicroAmpMax": 500,
+        "voltageFromCurrentCoefficientMilliVolt": 308,
+        "voltageFromCurrentExponent": 0.16,
+        "currentFromVoltageCoefficientMicroAmpPerMilliVoltPower": 2.85e-16,
+        "currentFromVoltageExponent": 6.25,
+        "dynamicResistanceCoefficientKiloOhm": 48.3,
+        "dynamicResistanceExponent": -0.84
+      },
+      "source_etape": "Etape 17/23",
+      "warning": "Law is closed; final bridge polarity remains photo-dependent."
+    },
+    "B11_detector": {
+      "status": "PARAMETRIQUE",
+      "models": [
+        "ZL10 threshold sweep",
+        "SSD55 fixed drop sweep",
+        "B30 C2200 full-wave threshold approximation"
+      ],
+      "source_etape": "Etape 22/24"
+    }
+  },
+  "transistor_models": {
+    "B6": {
+      "status": "PARTIEL",
+      "rule": "Expose BJT candidates and bounds; do not stamp them unless an explicit conditional hypothesis selects proven terminals.",
+      "bjt_candidates": [
+        {
+          "id": "B6.Ts2_BCY66.beta_50",
+          "board": "B6",
+          "transistor": "Ts2_BCY66",
+          "status": "PARAMETRIQUE",
+          "stampMode": "NOT_STAMPED_BY_DEFAULT",
+          "terminalStatus": "probable_from_VBE_and_local_KCL_not_pin_proof",
+          "type": "npn",
+          "collector": "N64_T2",
+          "base": "N38",
+          "emitter": "N32",
+          "qPointStatus": "conditional_from_printed_voltages_and_local_KCL",
+          "currentAmp": 0.0003825920612147298,
+          "beta": 50,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 0.014800466584709083,
+          "rPiOhm": 3378.271875,
+          "emitterDynamicOhm": 67.5654375,
+          "baseCurrentAmp": 0.000007651841224294596,
+          "sourceEvidence": "N38=3.8 V, N32=3.2 V gives VBE=0.6 V; R22 current is coherent with a small transistor stage.",
+          "notStampedReason": "Pinout/topology is not photo-proven. AC stamp is allowed only under an explicit named hypothesis."
+        },
+        {
+          "id": "B6.Ts2_BCY66.beta_100",
+          "board": "B6",
+          "transistor": "Ts2_BCY66",
+          "status": "PARAMETRIQUE",
+          "stampMode": "NOT_STAMPED_BY_DEFAULT",
+          "terminalStatus": "probable_from_VBE_and_local_KCL_not_pin_proof",
+          "type": "npn",
+          "collector": "N64_T2",
+          "base": "N38",
+          "emitter": "N32",
+          "qPointStatus": "conditional_from_printed_voltages_and_local_KCL",
+          "currentAmp": 0.00038638010142477664,
+          "beta": 100,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 0.014947005857825013,
+          "rPiOhm": 6690.303125,
+          "emitterDynamicOhm": 66.90303125,
+          "baseCurrentAmp": 0.000003863801014247766,
+          "sourceEvidence": "N38=3.8 V, N32=3.2 V gives VBE=0.6 V; R22 current is coherent with a small transistor stage.",
+          "notStampedReason": "Pinout/topology is not photo-proven. AC stamp is allowed only under an explicit named hypothesis."
+        },
+        {
+          "id": "B6.Ts2_BCY66.beta_200",
+          "board": "B6",
+          "transistor": "Ts2_BCY66",
+          "status": "PARAMETRIQUE",
+          "stampMode": "NOT_STAMPED_BY_DEFAULT",
+          "terminalStatus": "probable_from_VBE_and_local_KCL_not_pin_proof",
+          "type": "npn",
+          "collector": "N64_T2",
+          "base": "N38",
+          "emitter": "N32",
+          "qPointStatus": "conditional_from_printed_voltages_and_local_KCL",
+          "currentAmp": 0.00038830239048659145,
+          "beta": 200,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 0.015021369071048025,
+          "rPiOhm": 13314.365625,
+          "emitterDynamicOhm": 66.571828125,
+          "baseCurrentAmp": 0.000001941511952432957,
+          "sourceEvidence": "N38=3.8 V, N32=3.2 V gives VBE=0.6 V; R22 current is coherent with a small transistor stage.",
+          "notStampedReason": "Pinout/topology is not photo-proven. AC stamp is allowed only under an explicit named hypothesis."
+        },
+        {
+          "id": "B6.Ts4_SST116_1.beta_50",
+          "board": "B6",
+          "transistor": "Ts4_SST116_1",
+          "status": "PARAMETRIQUE",
+          "stampMode": "NOT_STAMPED_BY_DEFAULT",
+          "terminalStatus": "probable_from_VBE_VCE_and_R32_current_not_pin_proof",
+          "type": "npn",
+          "collector": "N48",
+          "base": "N24",
+          "emitter": "N18",
+          "qPointStatus": "conditional_from_printed_voltages_and_local_KCL",
+          "currentAmp": 0.001764705882352941,
+          "beta": 50,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 0.06826715212197064,
+          "rPiOhm": 732.4166666666667,
+          "emitterDynamicOhm": 14.648333333333335,
+          "baseCurrentAmp": 0.00003529411764705882,
+          "sourceEvidence": "N24=2.4 V, N18=1.8 V gives VBE=0.6 V and N48=4.8 V gives VCE=3.0 V.",
+          "notStampedReason": "Pinout/topology is not photo-proven. AC stamp is allowed only under an explicit named hypothesis."
+        },
+        {
+          "id": "B6.Ts4_SST116_1.beta_100",
+          "board": "B6",
+          "transistor": "Ts4_SST116_1",
+          "status": "PARAMETRIQUE",
+          "stampMode": "NOT_STAMPED_BY_DEFAULT",
+          "terminalStatus": "probable_from_VBE_VCE_and_R32_current_not_pin_proof",
+          "type": "npn",
+          "collector": "N48",
+          "base": "N24",
+          "emitter": "N18",
+          "qPointStatus": "conditional_from_printed_voltages_and_local_KCL",
+          "currentAmp": 0.001782178217821782,
+          "beta": 100,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 0.06894306451921788,
+          "rPiOhm": 1450.4722222222224,
+          "emitterDynamicOhm": 14.504722222222224,
+          "baseCurrentAmp": 0.00001782178217821782,
+          "sourceEvidence": "N24=2.4 V, N18=1.8 V gives VBE=0.6 V and N48=4.8 V gives VCE=3.0 V.",
+          "notStampedReason": "Pinout/topology is not photo-proven. AC stamp is allowed only under an explicit named hypothesis."
+        },
+        {
+          "id": "B6.Ts4_SST116_1.beta_200",
+          "board": "B6",
+          "transistor": "Ts4_SST116_1",
+          "status": "PARAMETRIQUE",
+          "stampMode": "NOT_STAMPED_BY_DEFAULT",
+          "terminalStatus": "probable_from_VBE_VCE_and_R32_current_not_pin_proof",
+          "type": "npn",
+          "collector": "N48",
+          "base": "N24",
+          "emitter": "N18",
+          "qPointStatus": "conditional_from_printed_voltages_and_local_KCL",
+          "currentAmp": 0.001791044776119403,
+          "beta": 200,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 0.06928606484020901,
+          "rPiOhm": 2886.5833333333335,
+          "emitterDynamicOhm": 14.432916666666667,
+          "baseCurrentAmp": 0.000008955223880597016,
+          "sourceEvidence": "N24=2.4 V, N18=1.8 V gives VBE=0.6 V and N48=4.8 V gives VCE=3.0 V.",
+          "notStampedReason": "Pinout/topology is not photo-proven. AC stamp is allowed only under an explicit named hypothesis."
+        },
+        {
+          "id": "B6.Ts5_Ts6_output.beta_50.i_5_mA",
+          "board": "B6",
+          "transistor": "Ts5_Ts6_output",
+          "status": "BOUNDS_ONLY",
+          "stampMode": "NEVER_STAMP_UNTIL_TOPOLOGY_CONFIRMED",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "type": "unknown_output_pair",
+          "collector": null,
+          "base": null,
+          "emitter": null,
+          "qPointStatus": "current_bound_from_R36",
+          "currentAmp": 0.005,
+          "beta": 50,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 0.19342359767891681,
+          "rPiOhm": 258.5,
+          "emitterDynamicOhm": 5.17,
+          "baseCurrentAmp": 0.00009999999999999999,
+          "sourceEvidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "notStampedReason": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "id": "B6.Ts5_Ts6_output.beta_100.i_5_mA",
+          "board": "B6",
+          "transistor": "Ts5_Ts6_output",
+          "status": "BOUNDS_ONLY",
+          "stampMode": "NEVER_STAMP_UNTIL_TOPOLOGY_CONFIRMED",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "type": "unknown_output_pair",
+          "collector": null,
+          "base": null,
+          "emitter": null,
+          "qPointStatus": "current_bound_from_R36",
+          "currentAmp": 0.005,
+          "beta": 100,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 0.19342359767891681,
+          "rPiOhm": 517,
+          "emitterDynamicOhm": 5.17,
+          "baseCurrentAmp": 0.000049999999999999996,
+          "sourceEvidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "notStampedReason": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "id": "B6.Ts5_Ts6_output.beta_200.i_5_mA",
+          "board": "B6",
+          "transistor": "Ts5_Ts6_output",
+          "status": "BOUNDS_ONLY",
+          "stampMode": "NEVER_STAMP_UNTIL_TOPOLOGY_CONFIRMED",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "type": "unknown_output_pair",
+          "collector": null,
+          "base": null,
+          "emitter": null,
+          "qPointStatus": "current_bound_from_R36",
+          "currentAmp": 0.005,
+          "beta": 200,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 0.19342359767891681,
+          "rPiOhm": 1034,
+          "emitterDynamicOhm": 5.17,
+          "baseCurrentAmp": 0.000024999999999999998,
+          "sourceEvidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "notStampedReason": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "id": "B6.Ts5_Ts6_output.beta_50.i_10_mA",
+          "board": "B6",
+          "transistor": "Ts5_Ts6_output",
+          "status": "BOUNDS_ONLY",
+          "stampMode": "NEVER_STAMP_UNTIL_TOPOLOGY_CONFIRMED",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "type": "unknown_output_pair",
+          "collector": null,
+          "base": null,
+          "emitter": null,
+          "qPointStatus": "current_bound_from_R36",
+          "currentAmp": 0.01,
+          "beta": 50,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 0.38684719535783363,
+          "rPiOhm": 129.25,
+          "emitterDynamicOhm": 2.585,
+          "baseCurrentAmp": 0.00019999999999999998,
+          "sourceEvidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "notStampedReason": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "id": "B6.Ts5_Ts6_output.beta_100.i_10_mA",
+          "board": "B6",
+          "transistor": "Ts5_Ts6_output",
+          "status": "BOUNDS_ONLY",
+          "stampMode": "NEVER_STAMP_UNTIL_TOPOLOGY_CONFIRMED",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "type": "unknown_output_pair",
+          "collector": null,
+          "base": null,
+          "emitter": null,
+          "qPointStatus": "current_bound_from_R36",
+          "currentAmp": 0.01,
+          "beta": 100,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 0.38684719535783363,
+          "rPiOhm": 258.5,
+          "emitterDynamicOhm": 2.585,
+          "baseCurrentAmp": 0.00009999999999999999,
+          "sourceEvidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "notStampedReason": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "id": "B6.Ts5_Ts6_output.beta_200.i_10_mA",
+          "board": "B6",
+          "transistor": "Ts5_Ts6_output",
+          "status": "BOUNDS_ONLY",
+          "stampMode": "NEVER_STAMP_UNTIL_TOPOLOGY_CONFIRMED",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "type": "unknown_output_pair",
+          "collector": null,
+          "base": null,
+          "emitter": null,
+          "qPointStatus": "current_bound_from_R36",
+          "currentAmp": 0.01,
+          "beta": 200,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 0.38684719535783363,
+          "rPiOhm": 517,
+          "emitterDynamicOhm": 2.585,
+          "baseCurrentAmp": 0.000049999999999999996,
+          "sourceEvidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "notStampedReason": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "id": "B6.Ts5_Ts6_output.beta_50.i_20.833333333000002_mA",
+          "board": "B6",
+          "transistor": "Ts5_Ts6_output",
+          "status": "BOUNDS_ONLY",
+          "stampMode": "NEVER_STAMP_UNTIL_TOPOLOGY_CONFIRMED",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "type": "unknown_output_pair",
+          "collector": null,
+          "base": null,
+          "emitter": null,
+          "qPointStatus": "current_bound_from_R36",
+          "currentAmp": 0.020833333333,
+          "beta": 50,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 0.8059316569825918,
+          "rPiOhm": 62.04000000099264,
+          "emitterDynamicOhm": 1.240800000019853,
+          "baseCurrentAmp": 0.00041666666666,
+          "sourceEvidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "notStampedReason": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "id": "B6.Ts5_Ts6_output.beta_100.i_20.833333333000002_mA",
+          "board": "B6",
+          "transistor": "Ts5_Ts6_output",
+          "status": "BOUNDS_ONLY",
+          "stampMode": "NEVER_STAMP_UNTIL_TOPOLOGY_CONFIRMED",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "type": "unknown_output_pair",
+          "collector": null,
+          "base": null,
+          "emitter": null,
+          "qPointStatus": "current_bound_from_R36",
+          "currentAmp": 0.020833333333,
+          "beta": 100,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 0.8059316569825918,
+          "rPiOhm": 124.08000000198528,
+          "emitterDynamicOhm": 1.240800000019853,
+          "baseCurrentAmp": 0.00020833333333,
+          "sourceEvidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "notStampedReason": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "id": "B6.Ts5_Ts6_output.beta_200.i_20.833333333000002_mA",
+          "board": "B6",
+          "transistor": "Ts5_Ts6_output",
+          "status": "BOUNDS_ONLY",
+          "stampMode": "NEVER_STAMP_UNTIL_TOPOLOGY_CONFIRMED",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "type": "unknown_output_pair",
+          "collector": null,
+          "base": null,
+          "emitter": null,
+          "qPointStatus": "current_bound_from_R36",
+          "currentAmp": 0.020833333333,
+          "beta": 200,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 0.8059316569825918,
+          "rPiOhm": 248.16000000397057,
+          "emitterDynamicOhm": 1.240800000019853,
+          "baseCurrentAmp": 0.000104166666665,
+          "sourceEvidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "notStampedReason": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "id": "B6.Ts5_Ts6_output.beta_50.i_30_mA",
+          "board": "B6",
+          "transistor": "Ts5_Ts6_output",
+          "status": "BOUNDS_ONLY",
+          "stampMode": "NEVER_STAMP_UNTIL_TOPOLOGY_CONFIRMED",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "type": "unknown_output_pair",
+          "collector": null,
+          "base": null,
+          "emitter": null,
+          "qPointStatus": "current_bound_from_R36",
+          "currentAmp": 0.03,
+          "beta": 50,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 1.1605415860735009,
+          "rPiOhm": 43.083333333333336,
+          "emitterDynamicOhm": 0.8616666666666667,
+          "baseCurrentAmp": 0.0006,
+          "sourceEvidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "notStampedReason": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "id": "B6.Ts5_Ts6_output.beta_100.i_30_mA",
+          "board": "B6",
+          "transistor": "Ts5_Ts6_output",
+          "status": "BOUNDS_ONLY",
+          "stampMode": "NEVER_STAMP_UNTIL_TOPOLOGY_CONFIRMED",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "type": "unknown_output_pair",
+          "collector": null,
+          "base": null,
+          "emitter": null,
+          "qPointStatus": "current_bound_from_R36",
+          "currentAmp": 0.03,
+          "beta": 100,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 1.1605415860735009,
+          "rPiOhm": 86.16666666666667,
+          "emitterDynamicOhm": 0.8616666666666667,
+          "baseCurrentAmp": 0.0003,
+          "sourceEvidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "notStampedReason": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "id": "B6.Ts5_Ts6_output.beta_200.i_30_mA",
+          "board": "B6",
+          "transistor": "Ts5_Ts6_output",
+          "status": "BOUNDS_ONLY",
+          "stampMode": "NEVER_STAMP_UNTIL_TOPOLOGY_CONFIRMED",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "type": "unknown_output_pair",
+          "collector": null,
+          "base": null,
+          "emitter": null,
+          "qPointStatus": "current_bound_from_R36",
+          "currentAmp": 0.03,
+          "beta": 200,
+          "earlyVoltageVolt": null,
+          "roIncluded": false,
+          "gmSiemens": 1.1605415860735009,
+          "rPiOhm": 172.33333333333334,
+          "emitterDynamicOhm": 0.8616666666666667,
+          "baseCurrentAmp": 0.00015,
+          "sourceEvidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "notStampedReason": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        }
+      ],
+      "passive_checks": {
+        "iR30": 0.0014411764705882354,
+        "iR19": 0.0001933333333333333,
+        "iR21": 0.0005799999999999999,
+        "iR25": 0.0006125,
+        "v12OutgoingKnownAmp": 0.001385833333333333,
+        "v12KclResidualAmp": 0.00005534313725490223,
+        "iR15": 0.00008666666666666668,
+        "iR18": 0.00004411764705882353,
+        "n38ActiveResidualAmp": 0.00004254901960784315,
+        "iR16R17MaxR16": 0.00010958904109589041,
+        "iR16R17MinR16": 0.00011764705882352942,
+        "iR20": 0.00005000000000000004,
+        "n08ActiveInjectionWithoutR20MinAmp": 0.00006547139403706689,
+        "n08ActiveInjectionWithoutR20MaxAmp": 0.00007352941176470588,
+        "n08ActiveInjectionWithR20MinAmp": 0.00011547139403706694,
+        "n08ActiveInjectionWithR20MaxAmp": 0.00012352941176470593,
+        "iR22": 0.0003902439024390244,
+        "iR26R27": 0.0008809523809523809,
+        "iR31": 0.0030714285714285713,
+        "iR32": 0.0018,
+        "iR36": 0.020833333333333332
+      },
+      "hybrid_pi_candidates": [
+        {
+          "transistor": "Ts2_BCY66",
+          "type": "npn",
+          "terminalStatus": "probable_from_VBE_and_local_KCL_not_pin_proof",
+          "collector": "N64_T2",
+          "base": "N38",
+          "emitter": "N32",
+          "beta": 50,
+          "collectorCurrentAmp": 0.0003825920612147298,
+          "collectorCurrentMilliAmp": 0.38259206121472983,
+          "baseCurrentAmp": 0.000007651841224294596,
+          "baseCurrentMicroAmp": 7.651841224294596,
+          "gmSiemens": 0.014800466584709083,
+          "gmMilliSiemens": 14.800466584709083,
+          "emitterDynamicOhm": 67.5654375,
+          "rPiOhm": 3378.271875,
+          "roOhm": null,
+          "vbeVolt": 0.5999999999999996,
+          "vceVolt": 3.2,
+          "currentBasis": "IE ~= I_R22 = N32/R22 = 390 uA, if N32 is Ts2 emitter.",
+          "evidence": "N38=3.8 V, N32=3.2 V gives VBE=0.6 V; R22 current is coherent with a small transistor stage.",
+          "limit": "Collector node N64_T2 and interaction with Ts3 still require route confirmation before full nonlinear MNA.",
+          "hybridPiStamp": {
+            "admittances": [
+              {
+                "name": "Ts2_BCY66_rpi",
+                "n1": "N38",
+                "n2": "N32",
+                "y": {
+                  "re": 0.0002960093316941817,
+                  "im": 0
+                }
+              }
+            ],
+            "vccs": [
+              {
+                "name": "Ts2_BCY66_gm",
+                "nPlus": "N64_T2",
+                "nMinus": "N32",
+                "ctrlPlus": "N38",
+                "ctrlMinus": "N32",
+                "y": {
+                  "re": 0.014800466584709083,
+                  "im": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "transistor": "Ts2_BCY66",
+          "type": "npn",
+          "terminalStatus": "probable_from_VBE_and_local_KCL_not_pin_proof",
+          "collector": "N64_T2",
+          "base": "N38",
+          "emitter": "N32",
+          "beta": 100,
+          "collectorCurrentAmp": 0.00038638010142477664,
+          "collectorCurrentMilliAmp": 0.38638010142477663,
+          "baseCurrentAmp": 0.000003863801014247766,
+          "baseCurrentMicroAmp": 3.863801014247766,
+          "gmSiemens": 0.014947005857825013,
+          "gmMilliSiemens": 14.947005857825014,
+          "emitterDynamicOhm": 66.90303125,
+          "rPiOhm": 6690.303125,
+          "roOhm": null,
+          "vbeVolt": 0.5999999999999996,
+          "vceVolt": 3.2,
+          "currentBasis": "IE ~= I_R22 = N32/R22 = 390 uA, if N32 is Ts2 emitter.",
+          "evidence": "N38=3.8 V, N32=3.2 V gives VBE=0.6 V; R22 current is coherent with a small transistor stage.",
+          "limit": "Collector node N64_T2 and interaction with Ts3 still require route confirmation before full nonlinear MNA.",
+          "hybridPiStamp": {
+            "admittances": [
+              {
+                "name": "Ts2_BCY66_rpi",
+                "n1": "N38",
+                "n2": "N32",
+                "y": {
+                  "re": 0.00014947005857825012,
+                  "im": 0
+                }
+              }
+            ],
+            "vccs": [
+              {
+                "name": "Ts2_BCY66_gm",
+                "nPlus": "N64_T2",
+                "nMinus": "N32",
+                "ctrlPlus": "N38",
+                "ctrlMinus": "N32",
+                "y": {
+                  "re": 0.014947005857825013,
+                  "im": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "transistor": "Ts2_BCY66",
+          "type": "npn",
+          "terminalStatus": "probable_from_VBE_and_local_KCL_not_pin_proof",
+          "collector": "N64_T2",
+          "base": "N38",
+          "emitter": "N32",
+          "beta": 200,
+          "collectorCurrentAmp": 0.00038830239048659145,
+          "collectorCurrentMilliAmp": 0.38830239048659143,
+          "baseCurrentAmp": 0.000001941511952432957,
+          "baseCurrentMicroAmp": 1.9415119524329572,
+          "gmSiemens": 0.015021369071048025,
+          "gmMilliSiemens": 15.021369071048024,
+          "emitterDynamicOhm": 66.571828125,
+          "rPiOhm": 13314.365625,
+          "roOhm": null,
+          "vbeVolt": 0.5999999999999996,
+          "vceVolt": 3.2,
+          "currentBasis": "IE ~= I_R22 = N32/R22 = 390 uA, if N32 is Ts2 emitter.",
+          "evidence": "N38=3.8 V, N32=3.2 V gives VBE=0.6 V; R22 current is coherent with a small transistor stage.",
+          "limit": "Collector node N64_T2 and interaction with Ts3 still require route confirmation before full nonlinear MNA.",
+          "hybridPiStamp": {
+            "admittances": [
+              {
+                "name": "Ts2_BCY66_rpi",
+                "n1": "N38",
+                "n2": "N32",
+                "y": {
+                  "re": 0.00007510684535524012,
+                  "im": 0
+                }
+              }
+            ],
+            "vccs": [
+              {
+                "name": "Ts2_BCY66_gm",
+                "nPlus": "N64_T2",
+                "nMinus": "N32",
+                "ctrlPlus": "N38",
+                "ctrlMinus": "N32",
+                "y": {
+                  "re": 0.015021369071048025,
+                  "im": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "transistor": "Ts4_SST116_1",
+          "type": "npn",
+          "terminalStatus": "probable_from_VBE_VCE_and_R32_current_not_pin_proof",
+          "collector": "N48",
+          "base": "N24",
+          "emitter": "N18",
+          "beta": 50,
+          "collectorCurrentAmp": 0.001764705882352941,
+          "collectorCurrentMilliAmp": 1.7647058823529411,
+          "baseCurrentAmp": 0.00003529411764705882,
+          "baseCurrentMicroAmp": 35.29411764705882,
+          "gmSiemens": 0.06826715212197064,
+          "gmMilliSiemens": 68.26715212197064,
+          "emitterDynamicOhm": 14.648333333333335,
+          "rPiOhm": 732.4166666666667,
+          "roOhm": null,
+          "vbeVolt": 0.5999999999999999,
+          "vceVolt": 3,
+          "currentBasis": "IE ~= I_R32 = N18/R32 = 1.8 mA, if N18 is Ts4 emitter.",
+          "evidence": "N24=2.4 V, N18=1.8 V gives VBE=0.6 V and N48=4.8 V gives VCE=3.0 V.",
+          "limit": "Ts3/Ts4 coupling and R28/R29/C17 route still need confirmation before large-signal transistor closure.",
+          "hybridPiStamp": {
+            "admittances": [
+              {
+                "name": "Ts4_SST116_1_rpi",
+                "n1": "N24",
+                "n2": "N18",
+                "y": {
+                  "re": 0.0013653430424394129,
+                  "im": 0
+                }
+              }
+            ],
+            "vccs": [
+              {
+                "name": "Ts4_SST116_1_gm",
+                "nPlus": "N48",
+                "nMinus": "N18",
+                "ctrlPlus": "N24",
+                "ctrlMinus": "N18",
+                "y": {
+                  "re": 0.06826715212197064,
+                  "im": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "transistor": "Ts4_SST116_1",
+          "type": "npn",
+          "terminalStatus": "probable_from_VBE_VCE_and_R32_current_not_pin_proof",
+          "collector": "N48",
+          "base": "N24",
+          "emitter": "N18",
+          "beta": 100,
+          "collectorCurrentAmp": 0.001782178217821782,
+          "collectorCurrentMilliAmp": 1.782178217821782,
+          "baseCurrentAmp": 0.00001782178217821782,
+          "baseCurrentMicroAmp": 17.82178217821782,
+          "gmSiemens": 0.06894306451921788,
+          "gmMilliSiemens": 68.94306451921787,
+          "emitterDynamicOhm": 14.504722222222224,
+          "rPiOhm": 1450.4722222222224,
+          "roOhm": null,
+          "vbeVolt": 0.5999999999999999,
+          "vceVolt": 3,
+          "currentBasis": "IE ~= I_R32 = N18/R32 = 1.8 mA, if N18 is Ts4 emitter.",
+          "evidence": "N24=2.4 V, N18=1.8 V gives VBE=0.6 V and N48=4.8 V gives VCE=3.0 V.",
+          "limit": "Ts3/Ts4 coupling and R28/R29/C17 route still need confirmation before large-signal transistor closure.",
+          "hybridPiStamp": {
+            "admittances": [
+              {
+                "name": "Ts4_SST116_1_rpi",
+                "n1": "N24",
+                "n2": "N18",
+                "y": {
+                  "re": 0.0006894306451921788,
+                  "im": 0
+                }
+              }
+            ],
+            "vccs": [
+              {
+                "name": "Ts4_SST116_1_gm",
+                "nPlus": "N48",
+                "nMinus": "N18",
+                "ctrlPlus": "N24",
+                "ctrlMinus": "N18",
+                "y": {
+                  "re": 0.06894306451921788,
+                  "im": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "transistor": "Ts4_SST116_1",
+          "type": "npn",
+          "terminalStatus": "probable_from_VBE_VCE_and_R32_current_not_pin_proof",
+          "collector": "N48",
+          "base": "N24",
+          "emitter": "N18",
+          "beta": 200,
+          "collectorCurrentAmp": 0.001791044776119403,
+          "collectorCurrentMilliAmp": 1.791044776119403,
+          "baseCurrentAmp": 0.000008955223880597016,
+          "baseCurrentMicroAmp": 8.955223880597016,
+          "gmSiemens": 0.06928606484020901,
+          "gmMilliSiemens": 69.28606484020901,
+          "emitterDynamicOhm": 14.432916666666667,
+          "rPiOhm": 2886.5833333333335,
+          "roOhm": null,
+          "vbeVolt": 0.5999999999999999,
+          "vceVolt": 3,
+          "currentBasis": "IE ~= I_R32 = N18/R32 = 1.8 mA, if N18 is Ts4 emitter.",
+          "evidence": "N24=2.4 V, N18=1.8 V gives VBE=0.6 V and N48=4.8 V gives VCE=3.0 V.",
+          "limit": "Ts3/Ts4 coupling and R28/R29/C17 route still need confirmation before large-signal transistor closure.",
+          "hybridPiStamp": {
+            "admittances": [
+              {
+                "name": "Ts4_SST116_1_rpi",
+                "n1": "N24",
+                "n2": "N18",
+                "y": {
+                  "re": 0.000346430324201045,
+                  "im": 0
+                }
+              }
+            ],
+            "vccs": [
+              {
+                "name": "Ts4_SST116_1_gm",
+                "nPlus": "N48",
+                "nMinus": "N18",
+                "ctrlPlus": "N24",
+                "ctrlMinus": "N18",
+                "y": {
+                  "re": 0.06928606484020901,
+                  "im": 0
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "output_stage_bounds": [
+        {
+          "transistorGroup": "Ts5_Ts6_output",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "idleCurrentAmp": 0.005,
+          "idleCurrentMilliAmp": 5,
+          "beta": 50,
+          "gmSiemens": 0.19342359767891681,
+          "gmMilliSiemens": 193.42359767891682,
+          "emitterDynamicOhm": 5.17,
+          "rPiOhm": 258.5,
+          "baseCurrentMicroAmp": 100,
+          "r36CurrentAmp": 0.020833333333333332,
+          "r36CurrentMilliAmp": 20.833333333333332,
+          "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "transistorGroup": "Ts5_Ts6_output",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "idleCurrentAmp": 0.005,
+          "idleCurrentMilliAmp": 5,
+          "beta": 100,
+          "gmSiemens": 0.19342359767891681,
+          "gmMilliSiemens": 193.42359767891682,
+          "emitterDynamicOhm": 5.17,
+          "rPiOhm": 517,
+          "baseCurrentMicroAmp": 50,
+          "r36CurrentAmp": 0.020833333333333332,
+          "r36CurrentMilliAmp": 20.833333333333332,
+          "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "transistorGroup": "Ts5_Ts6_output",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "idleCurrentAmp": 0.005,
+          "idleCurrentMilliAmp": 5,
+          "beta": 200,
+          "gmSiemens": 0.19342359767891681,
+          "gmMilliSiemens": 193.42359767891682,
+          "emitterDynamicOhm": 5.17,
+          "rPiOhm": 1034,
+          "baseCurrentMicroAmp": 25,
+          "r36CurrentAmp": 0.020833333333333332,
+          "r36CurrentMilliAmp": 20.833333333333332,
+          "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "transistorGroup": "Ts5_Ts6_output",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "idleCurrentAmp": 0.01,
+          "idleCurrentMilliAmp": 10,
+          "beta": 50,
+          "gmSiemens": 0.38684719535783363,
+          "gmMilliSiemens": 386.84719535783364,
+          "emitterDynamicOhm": 2.585,
+          "rPiOhm": 129.25,
+          "baseCurrentMicroAmp": 200,
+          "r36CurrentAmp": 0.020833333333333332,
+          "r36CurrentMilliAmp": 20.833333333333332,
+          "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "transistorGroup": "Ts5_Ts6_output",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "idleCurrentAmp": 0.01,
+          "idleCurrentMilliAmp": 10,
+          "beta": 100,
+          "gmSiemens": 0.38684719535783363,
+          "gmMilliSiemens": 386.84719535783364,
+          "emitterDynamicOhm": 2.585,
+          "rPiOhm": 258.5,
+          "baseCurrentMicroAmp": 100,
+          "r36CurrentAmp": 0.020833333333333332,
+          "r36CurrentMilliAmp": 20.833333333333332,
+          "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "transistorGroup": "Ts5_Ts6_output",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "idleCurrentAmp": 0.01,
+          "idleCurrentMilliAmp": 10,
+          "beta": 200,
+          "gmSiemens": 0.38684719535783363,
+          "gmMilliSiemens": 386.84719535783364,
+          "emitterDynamicOhm": 2.585,
+          "rPiOhm": 517,
+          "baseCurrentMicroAmp": 50,
+          "r36CurrentAmp": 0.020833333333333332,
+          "r36CurrentMilliAmp": 20.833333333333332,
+          "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "transistorGroup": "Ts5_Ts6_output",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "idleCurrentAmp": 0.020833333333,
+          "idleCurrentMilliAmp": 20.833333333000002,
+          "beta": 50,
+          "gmSiemens": 0.8059316569825918,
+          "gmMilliSiemens": 805.9316569825918,
+          "emitterDynamicOhm": 1.240800000019853,
+          "rPiOhm": 62.04000000099264,
+          "baseCurrentMicroAmp": 416.66666666000003,
+          "r36CurrentAmp": 0.020833333333333332,
+          "r36CurrentMilliAmp": 20.833333333333332,
+          "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "transistorGroup": "Ts5_Ts6_output",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "idleCurrentAmp": 0.020833333333,
+          "idleCurrentMilliAmp": 20.833333333000002,
+          "beta": 100,
+          "gmSiemens": 0.8059316569825918,
+          "gmMilliSiemens": 805.9316569825918,
+          "emitterDynamicOhm": 1.240800000019853,
+          "rPiOhm": 124.08000000198528,
+          "baseCurrentMicroAmp": 208.33333333000002,
+          "r36CurrentAmp": 0.020833333333333332,
+          "r36CurrentMilliAmp": 20.833333333333332,
+          "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "transistorGroup": "Ts5_Ts6_output",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "idleCurrentAmp": 0.020833333333,
+          "idleCurrentMilliAmp": 20.833333333000002,
+          "beta": 200,
+          "gmSiemens": 0.8059316569825918,
+          "gmMilliSiemens": 805.9316569825918,
+          "emitterDynamicOhm": 1.240800000019853,
+          "rPiOhm": 248.16000000397057,
+          "baseCurrentMicroAmp": 104.16666666500001,
+          "r36CurrentAmp": 0.020833333333333332,
+          "r36CurrentMilliAmp": 20.833333333333332,
+          "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "transistorGroup": "Ts5_Ts6_output",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "idleCurrentAmp": 0.03,
+          "idleCurrentMilliAmp": 30,
+          "beta": 50,
+          "gmSiemens": 1.1605415860735009,
+          "gmMilliSiemens": 1160.5415860735009,
+          "emitterDynamicOhm": 0.8616666666666667,
+          "rPiOhm": 43.083333333333336,
+          "baseCurrentMicroAmp": 600,
+          "r36CurrentAmp": 0.020833333333333332,
+          "r36CurrentMilliAmp": 20.833333333333332,
+          "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "transistorGroup": "Ts5_Ts6_output",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "idleCurrentAmp": 0.03,
+          "idleCurrentMilliAmp": 30,
+          "beta": 100,
+          "gmSiemens": 1.1605415860735009,
+          "gmMilliSiemens": 1160.5415860735009,
+          "emitterDynamicOhm": 0.8616666666666667,
+          "rPiOhm": 86.16666666666667,
+          "baseCurrentMicroAmp": 300,
+          "r36CurrentAmp": 0.020833333333333332,
+          "r36CurrentMilliAmp": 20.833333333333332,
+          "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        },
+        {
+          "transistorGroup": "Ts5_Ts6_output",
+          "terminalStatus": "bounded_only_no_hybrid_pi_stamp_until_topology_confirmed",
+          "idleCurrentAmp": 0.03,
+          "idleCurrentMilliAmp": 30,
+          "beta": 200,
+          "gmSiemens": 1.1605415860735009,
+          "gmMilliSiemens": 1160.5415860735009,
+          "emitterDynamicOhm": 0.8616666666666667,
+          "rPiOhm": 172.33333333333334,
+          "baseCurrentMicroAmp": 150,
+          "r36CurrentAmp": 0.020833333333333332,
+          "r36CurrentMilliAmp": 20.833333333333332,
+          "evidence": "R36 gives (22.0-21.5)/24 = 20.8 mA available into the output-stage node; N105=10.5 V is near half of N215=21.5 V.",
+          "limit": "Do not connect Ts5/Ts6 into MNA yet: collector/emitter routing, class-A/B bias, and load around C21/R34/R35/R37 are not fully proven."
+        }
+      ],
+      "symbolic_boundaries": [
+        {
+          "transistorGroup": "Ts1_Ts2_front_pair",
+          "status": "symbolic_KCL_required_for_Ts1",
+          "n38ResidualMicroAmp": 42.54901960784315,
+          "n08InjectionWithR20MinMicroAmp": 115.47139403706694,
+          "n08InjectionWithR20MaxMicroAmp": 123.52941176470593,
+          "reason": "Ts2 has a plausible VBE/current candidate, but Ts1 terminal routing is not closed. N08 needs active injection, not a passive resistor patch."
+        },
+        {
+          "transistorGroup": "Ts3_Ts4_middle_pair",
+          "status": "Ts4_hybrid_pi_candidate_only",
+          "r31CurrentMilliAmp": 3.071428571428571,
+          "r32CurrentMilliAmp": 1.8,
+          "reason": "Ts4 has a coherent VBE/VCE candidate. Ts3 and feedback/compensation routes must stay symbolic until routing is proven."
+        },
+        {
+          "transistorGroup": "Ts5_Ts6_output_pair",
+          "status": "current_bounds_only",
+          "r36CurrentMilliAmp": 20.833333333333332,
+          "n105Volt": 10.5,
+          "n215Volt": 21.5,
+          "reason": "The output point is physically coherent but not enough to choose a unique small-signal topology."
+        }
+      ],
+      "source_etape": "Etape 24"
+    },
+    "B11": {
+      "status": "UNCONFIRMED",
+      "note": "Ts1/Ts2 hypotheses remain delegated to b11_ts1_ts2_pin_hypothesis_solver.js until photo proof.",
+      "source_etape": "Etape 8/24"
+    }
+  },
+  "dc_execution": {
+    "status": "THEVENIN_REFERENCE_EXECUTABLE",
+    "netlist": {
+      "title": "Siemens U273 B6 parametric bridge DC netlist",
+      "notes": [
+        "Local B6 operating point driven by a finite B11/S6/S7 Thevenin command source.",
+        "Capacitors are open for DC.",
+        "C1 is corrected to the complete B6 schematic value 0.68 uF; it does not enter this DC solve.",
+        "C4/C6 are adjustment capacitors and are open for DC.",
+        "Bridge diodes use the Siemens empirical U_D/I_D/r_d law from the U273 notes."
+      ],
+      "commandDcModel": "B11/S6/S7 Thevenin source 1 V through 10000 Ohm",
+      "parameters": {
+        "r1": 5100,
+        "r2": 5100,
+        "r3Total": 1000,
+        "r4Total": 200,
+        "r5": 5600,
+        "r6": 39000,
+        "r7Total": 100,
+        "r8Total": 250000,
+        "r9": 390000,
+        "r10": 20000,
+        "r11": 39000,
+        "c1": 6.8e-7,
+        "c2": 0.000022,
+        "c3": 0.0000047,
+        "c4Abgl": 0,
+        "c5": 0.00015,
+        "c6Abgl": 0,
+        "c7": 0.0000047,
+        "r12": 51000,
+        "r13": 5600,
+        "r14": 8200,
+        "r15": 30000,
+        "r16Total": 500,
+        "r17": 6800,
+        "r18": 68000,
+        "r19": 30000,
+        "r20": 1200,
+        "r21": 10000,
+        "r22": 8200,
+        "r23": 33000,
+        "r24": 9100,
+        "r25": 16000,
+        "r26": 220,
+        "r27": 620,
+        "r28": 10000,
+        "r29": 20000,
+        "r30": 6800,
+        "r31": 5600,
+        "r32": 1000,
+        "r33": 20000,
+        "r34": 3600,
+        "r35": 820,
+        "r36": 24,
+        "r37": 10,
+        "r38": 68,
+        "c8": 0.00001,
+        "c9": 0.00005,
+        "c10": 0.000025,
+        "c11": 1.7e-8,
+        "c12": 2e-9,
+        "c13": 0.000025,
+        "c14": 0.00007,
+        "c15": 0.00015,
+        "c16": 1e-7,
+        "c17": 0.0001,
+        "c18": 0.00005,
+        "c19": 0.00022,
+        "c20": 0.00015,
+        "c21": 0.0005,
+        "gminResistance": 1000000000000,
+        "rAmpInput": null,
+        "zcmd": 0,
+        "commandSourceOhm": 10000,
+        "r7": 100,
+        "r8": 250000,
+        "bridgeDiodeLaw": "u273_empirical",
+        "commandDcMode": "thevenin",
+        "commandAcMode": "ideal",
+        "adjustmentModel": "R7/R8 are effective two-terminal resistances unless alpha7/alpha8 is explicitly supplied as a rheostat simplification."
+      },
+      "voltageSources": [
+        {
+          "name": "VB11_S6_S7",
+          "nPlus": "B11_DRV",
+          "nMinus": "0",
+          "value": 1
+        }
+      ],
+      "resistors": [
+        {
+          "name": "RB11_S6_S7_CMD",
+          "n1": "B11_DRV",
+          "n2": "CMD",
+          "value": 10000
+        },
+        {
+          "name": "R10",
+          "n1": "CMD",
+          "n2": "NB",
+          "value": 20000
+        },
+        {
+          "name": "R9",
+          "n1": "NB",
+          "n2": "0",
+          "value": 390000
+        },
+        {
+          "name": "R7_effective",
+          "n1": "NL",
+          "n2": "NR",
+          "value": 100
+        },
+        {
+          "name": "R8_effective",
+          "n1": "N14",
+          "n2": "N15",
+          "value": 250000
+        },
+        {
+          "name": "R6",
+          "n1": "N14",
+          "n2": "0",
+          "value": 39000
+        },
+        {
+          "name": "R11",
+          "n1": "N15",
+          "n2": "0",
+          "value": 39000
+        },
+        {
+          "name": "GMIN_NL",
+          "n1": "NL",
+          "n2": "0",
+          "value": 1000000000000
+        },
+        {
+          "name": "GMIN_NR",
+          "n1": "NR",
+          "n2": "0",
+          "value": 1000000000000
+        }
+      ],
+      "diodes": [
+        {
+          "name": "D3_SSD55",
+          "anode": "NB",
+          "cathode": "NL",
+          "model": "u273_empirical",
+          "reverseGmin": 1e-12,
+          "maxVd": 1.2,
+          "empiricalLawNote": "Siemens U273 measured bridge diode power law; applied to each D1-D4 schematic diode element.",
+          "nominalType": "SSD55"
+        },
+        {
+          "name": "D4_OA154Q",
+          "anode": "NL",
+          "cathode": "N14",
+          "model": "u273_empirical",
+          "reverseGmin": 1e-12,
+          "maxVd": 1.2,
+          "empiricalLawNote": "Siemens U273 measured bridge diode power law; applied to each D1-D4 schematic diode element.",
+          "nominalType": "OA154Q"
+        },
+        {
+          "name": "D2_SSD55",
+          "anode": "NB",
+          "cathode": "NR",
+          "model": "u273_empirical",
+          "reverseGmin": 1e-12,
+          "maxVd": 1.2,
+          "empiricalLawNote": "Siemens U273 measured bridge diode power law; applied to each D1-D4 schematic diode element.",
+          "nominalType": "SSD55"
+        },
+        {
+          "name": "D1_OA154Q",
+          "anode": "NR",
+          "cathode": "N15",
+          "model": "u273_empirical",
+          "reverseGmin": 1e-12,
+          "maxVd": 1.2,
+          "empiricalLawNote": "Siemens U273 measured bridge diode power law; applied to each D1-D4 schematic diode element.",
+          "nominalType": "OA154Q"
+        }
+      ]
+    }
+  }
+}

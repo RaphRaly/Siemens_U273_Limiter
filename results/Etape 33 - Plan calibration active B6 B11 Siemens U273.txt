@@ -1,0 +1,375 @@
+Etape 33 - Plan calibration active B6/B11 Siemens U273
+======================================================
+
+Date: 2026-05-04
+Objet: fermer scientifiquement la calibration B6/B11 active contre DC, AC,
+       transitoire et audio, sans baisser les garde-fous.
+
+
+0. Statut de depart
+-------------------
+
+Boundary actuel:
+
+    FULL_ACTIVE_MODEL_UNVERIFIED
+
+Cela signifie:
+
+    - le DSP temps reel utilise maintenant un moteur analogique component-informed;
+    - la netlist C++ sait charger le U273 global;
+    - les BJT actifs B6/B11 ne sont pas encore calibres/fermes contre les
+      golden files DC/AC/transitoire/audio;
+    - les transformateurs restent hors sprint, comme demande.
+
+Objectif de cette etape:
+
+    produire une calibration B6/B11 reproductible, bornee, testee, avec un
+    rapport qui dit explicitement ce qui passe et ce qui reste non-identifiable.
+
+
+1. Base scientifique retenue
+----------------------------
+
+La methode suit la tradition SPICE/MNA:
+
+    - analyse DC non lineaire;
+    - linearisation petit-signal AC autour du point de repos;
+    - analyse transitoire non lineaire.
+
+References utiles:
+
+    - Nagel & Pederson, SPICE, UCB/ERL M382, 1973:
+      nonlinear DC, small-signal and transient analysis in a nodal program,
+      with emphasis on BJT/FET models.
+      https://www2.eecs.berkeley.edu/Pubs/TechRpts/1973/22871.html
+
+    - TU Delft, Modified Nodal Analysis:
+      KCL/MNA, unknown branch currents for voltage-defined branches, DC as
+      capacitors open / inductors shorted, and MNA stamps.
+      https://analog-electronics.tudelft.nl/webbook/SED/_build/html/network_theory/NetworkTheory-1_Modified_Nodal_Analysis.html
+
+    - HomSPICE / continuation methods:
+      homotopy/parameter embedding for difficult DC operating points in BJT/MOS
+      circuits.
+      DOI: 10.1109/ISCAS.1998.705253
+
+    - Ilievski et al., adjoint transient sensitivity analysis in circuit
+      simulation:
+      sensitivity and adjoint methods for DAE circuit models.
+      https://doi.org/10.1007/978-3-540-71980-9_18
+
+    - Giannoulis, Massberg, Reiss, JAES 2012:
+      dynamic range compressors are nonlinear systems with memory; audio
+      validation must include time constants, topology and distortion metrics.
+      https://aes2.org/publications/elibrary-page/?id=16354
+
+
+2. Equation de reference
+------------------------
+
+Le modele reference offline doit resoudre une DAE MNA:
+
+    F(x, xdot, p, u, t) = C(x, p) * xdot + g(x, p) - b(u, t, p) = 0
+
+avec:
+
+    x = tensions nodales + courants des sources de tension;
+    p = parametres physiques/calibration;
+    u = excitation audio ou scenario de test;
+    C = contributions capacitives;
+    g = resistances, diodes, BJT, sources controlees;
+    b = sources independantes / ports / conditions de test.
+
+Analyses obligatoires:
+
+    DC:
+        C = 0, capacites ouvertes:
+        g(x, p) - b(u, p) = 0
+
+    AC petit signal:
+        (G + j*w*C) * x_ac = b_ac
+        G = d(g-b)/dx au point DC converge.
+
+    Transitoire:
+        integration implicite, d'abord Backward Euler robuste, puis trapezoidal
+        seulement quand la convergence et l'energie sont controlees.
+
+
+3. Parametres a identifier
+--------------------------
+
+Parametres B6:
+
+    - loi diode empirique U273:
+        U_mV = a * I_uA^b
+        rd_ohm = 1000 * a * b * I_uA^(b - 1)
+
+      priors:
+        a = 308
+        b = 0.16
+        domaine courant = 2..500 uA
+
+    - difference SSD55/OA154 seulement si les donnees l'exigent:
+        sinon garder une loi moyenne Siemens pour eviter un fit gratuit.
+
+    - R7/R8, C4/C6 Abgl., impedance CMD, courant pont.
+
+Parametres B11:
+
+    - topologie active Ts1..Ts6:
+        terminals B/C/E, type NPN/PNP, noeuds caches si necessaires;
+
+    - modele BJT initial:
+        Ebers-Moll grand signal:
+            iF = Is * (exp(VBE/VT) - 1)
+            iR = Is * (exp(VBC/VT) - 1)
+
+        petits signaux derives:
+            gm  = IC / VT
+            rpi = beta / gm
+            ro  = VA / IC si VA identifiable.
+
+    - betaF, betaR, Is, VA, gmin, temperature effective;
+    - positions ajustables R7/R8/R18/R27;
+    - conversion C11/detecteur -> drive CMD;
+    - modes S7:
+        Begrenzer = ZL10 active;
+        Kompressor = ZL10 contournee;
+    - S6 comme reseau RC commute, pas comme constante magique.
+
+
+4. Ordre d'implementation
+-------------------------
+
+Phase A - Contrat de donnees
+
+    A1. Ajouter un CalibrationDataset C++ qui charge:
+        results/u273_dc_global.json
+        results/u273_ac_global.json
+        results/u273_transient_attack_release.json
+        specs techniques U273 deja encodees.
+
+    A2. Distinguer:
+        training_set:
+            donnees utilisees pour identifier p;
+        validation_set:
+            donnees jamais utilisees dans l'optimisation;
+        acceptance_set:
+            tests audio finaux.
+
+    A3. Ecrire les tolerances dans le code, pas dans les commentaires.
+
+
+Phase B - Solveurs reference offline
+
+    B1. Ajouter DCCircuitView:
+        copie de CircuitGraph avec capacites ouvertes et sources AC nulles.
+
+    B2. Ajouter OperatingPointSolver:
+        Newton amorti;
+        voltage/current limiting pour diodes/BJT;
+        gmin stepping;
+        source stepping;
+        option homotopy si Newton echoue.
+
+    B3. Ajouter LinearizedAcSolver:
+        reutilise le point DC converge;
+        stamps G = Jacobien non lineaire;
+        capacites = j*w*C;
+        extraction gain/phase aux noeuds golden.
+
+    B4. Ajouter TransientReferenceSolver:
+        Backward Euler par defaut;
+        pas adaptatif offline si Newton echoue;
+        journal des iterations et residus.
+
+
+Phase C - Fermeture topologique B11/B6
+
+    C1. Ne stamp aucun BJT definitif tant que son hypothese ne passe pas:
+        region active correcte;
+        VBE/VEB plausible;
+        VCE/VEC positif;
+        KCL locale dans les bornes;
+        effet AC coherent.
+
+    C2. Garder un ActiveTopologyCandidate par hypothese:
+        id;
+        device;
+        type;
+        collector/base/emitter;
+        prior score;
+        rejection reason si echec.
+
+    C3. Faire tourner toutes les hypotheses Ts1..Ts6, puis retenir seulement:
+        les hypotheses non contradictoires DC;
+        les hypotheses qui ameliorent AC sans casser transitoire.
+
+
+Phase D - Calibration numerique
+
+    D1. Definir un vecteur p borne:
+
+        log(Is), log(betaF), log(betaR), log(VA),
+        diode_a, diode_b,
+        pot fractions,
+        detectorToCmdScale,
+        S6/S7 mode parameters,
+        numerical gmin.
+
+    D2. Objectif multi-domaine:
+
+        J(p) =
+            ||Wdc  * rdc(p)||^2
+          + ||Wac  * rac(p)||^2
+          + ||Wtr  * rtr(p)||^2
+          + ||Waud * raud(p)||^2
+          + lambda * ||L * (p - p0)||^2
+
+        avec:
+            rdc = tensions/courants golden - modele;
+            rac = erreur magnitude dB + phase;
+            rtr = attaque, release, overshoot, courbe GR;
+            raud = THD, bande, gain reduction, stabilite.
+
+    D3. Optimiseur:
+        etape 1: multi-start coarse grid sur topology/pots/scales;
+        etape 2: Levenberg-Marquardt borne ou trust-region;
+        etape 3: SVD/Tikhonov pour detecter les parametres non identifiables;
+        etape 4: sensibilites directes:
+            dx/dp = -Jx^-1 * Fp
+        etape 5: adjoint seulement si le nombre de parametres devient grand.
+
+    D4. Regle anti-surfit:
+        un parametre colle a sa borne invalide le fit sauf justification
+        physique ecrite dans CalibrationReport.
+
+
+Phase E - Gates scientifiques
+
+    E1. DC gate:
+        toutes les scenarios golden convergent;
+        tensions critiques CMD/NB/NL/NR/B11_DRV dans tolerance;
+        courants diode dans 2..500 uA ou warning explicite.
+
+    E2. AC gate:
+        40 Hz..15 kHz passes;
+        erreur magnitude bornee par scenario;
+        phase et poles sans instabilite numerique;
+        aucune compensation C4/C6 impossible.
+
+    E3. Transient gate:
+        attaque limiteur ~0.5 ms;
+        attaque compresseur ~1.0 ms;
+        release 0.5..1.5 s;
+        pas d'oscillation non justifiee;
+        energie/etat fini sur signaux longs.
+
+    E4. Audio gate:
+        THD <= 1.0 % a 40 Hz en regulation;
+        THD <= 0.5 % de 1 kHz a 15 kHz dans l'enveloppe Siemens;
+        bruit/gain/bande coherent avec specs;
+        comparaison FFT offline reference vs realtime.
+
+    E5. Identifiability gate:
+        matrice de sensibilite avec rang exploitable;
+        parametres fortement correles marques NON_IDENTIFIABLE;
+        pas de promotion boundary si plusieurs fits incompatibles donnent la
+        meme erreur audio.
+
+
+Phase F - Projection temps reel
+
+    F1. Le plugin ne doit pas faire tourner le gros Newton global dans le thread
+        audio.
+
+    F2. Apres validation offline, generer une reduction:
+        table command/envelope -> gain reduction;
+        interpolation monotone;
+        constantes attaque/release issues du modele valide;
+        bornes hard pour eviter NaN/instabilite.
+
+    F3. Le realtime doit etre teste contre:
+        reference offline meme input;
+        sine FFT;
+        step attack/release;
+        blocks JUCE variables;
+        automation de parametres.
+
+
+5. Fichiers C++ a ajouter
+-------------------------
+
+u273_reference:
+
+    include/u273/reference/calibration/CalibrationDataset.h
+    include/u273/reference/calibration/ActiveModelParameters.h
+    include/u273/reference/calibration/OperatingPointSolver.h
+    include/u273/reference/calibration/LinearizedAcSolver.h
+    include/u273/reference/calibration/TransientReferenceSolver.h
+    include/u273/reference/calibration/ActiveTopologyCandidate.h
+    include/u273/reference/calibration/B6B11CalibrationRunner.h
+    include/u273/reference/calibration/CalibrationReport.h
+
+    src/calibration/*.cpp
+
+u273_tests:
+
+    testCalibrationDatasetLoadsGoldenFiles()
+    testDcViewOpensCapacitors()
+    testOperatingPointConvergesOnKnownB6Case()
+    testBjtCandidateRejectsImpossiblePins()
+    testCalibrationDoesNotUseValidationHoldout()
+    testAcLinearizationMatchesFiniteDifference()
+    testTransientReferenceMatchesGoldenEnvelope()
+    testRealtimeReductionMatchesOfflineReference()
+
+u273_dsp:
+
+    seulement apres passage offline:
+        AnalogRealtimeEngine recoit la reduction calibree.
+
+
+6. Critere de fermeture
+-----------------------
+
+On peut appeler la calibration B6/B11 "fermee" uniquement si:
+
+    - un CalibrationReport JSON est genere;
+    - les gates DC/AC/transitoire/audio passent;
+    - les parametres identifies restent dans les bornes physiques;
+    - les hypotheses BJT retenues ont une raison topologique et numerique;
+    - les tests C++ passent en debug-tests-only;
+    - le DSP realtime reproduit la reference offline dans tolerance.
+
+Tant que cela n'est pas vrai:
+
+    boundary reste FULL_ACTIVE_MODEL_UNVERIFIED.
+
+Si tout passe, il faudra ajouter un nouvel etat explicite dans ModelBoundary,
+par exemple:
+
+    fullActiveModelValidated
+
+et ne l'utiliser qu'apres validation automatique.
+
+
+7. Premiere implementation concrete
+-----------------------------------
+
+Ordre exact du prochain sprint:
+
+    1. CalibrationDataset + parsing golden structurel.
+    2. DCCircuitView + OperatingPointSolver DC capacites ouvertes.
+    3. Test DC contre u273_dc_global.json.
+    4. ActiveTopologyCandidate pour B11/B6 BJT.
+    5. LinearizedAcSolver autour du point DC.
+    6. Objectif J(p) + runner de calibration borne.
+    7. TransientReferenceSolver.
+    8. Audio/offline-vs-realtime tests.
+
+Raison:
+
+    DC d'abord, car AC et transitoire doivent dependre du meme point de repos.
+    Si DC est faux, tout fit AC/audio est numeriquement seduisant mais
+    physiquement non defendable.

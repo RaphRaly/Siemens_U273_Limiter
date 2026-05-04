@@ -1,0 +1,283 @@
+Etape 8 - Solveur hypotheses broches Ts1/Ts2 B11
+================================================
+
+Date: 2026-05-02
+Objet: Siemens U273 limiter, extraction B/C/E par contraintes
+
+
+1. But de cette etape
+--------------------
+
+L'etape 7 a montre qu'il serait faux de connecter Ts1/Ts2 comme des
+transistors isoles simples. Cette etape ajoute un solveur d'hypotheses pour
+les broches B/C/E. Le but est de tester toutes les affectations connues contre
+les criteres BJT actifs, au lieu de choisir une orientation par intuition.
+
+
+2. Sources scientifiques utilisees
+----------------------------------
+
+1. MIT OpenCourseWare 6.012, "Lecture 7 - Bipolar Junction Transistors".
+   Source:
+   https://ocw.mit.edu/courses/6-012-microelectronic-devices-and-circuits-fall-2009/resources/mit6_012f09_lec07/
+
+   Utilisation:
+   BJT = composant a trois bornes, regions de fonctionnement, deux jonctions
+   couplees. Une orientation B/C/E doit respecter les regions physiques.
+
+2. UC Berkeley EE105, "Lecture09 - BJT Principle".
+   Source:
+   https://www-inst.cs.berkeley.edu/~ee105/fa15/lectures/Lecture09-BJT%20Principle.pdf
+
+   Utilisation:
+   en mode actif NPN, la jonction base-emetteur est polarisee directement, la
+   jonction base-collecteur est polarisee inversement, et:
+
+       iE = iB + iC
+       iB = iC / beta
+
+3. UC Berkeley EE105, "Lecture12 - Small Signal Model BJT".
+   Source:
+   https://msdnaa.eecs.berkeley.edu/~ee105/fa14/lectures/Lecture12-Small%20Signal%20Model-BJT.pdf
+
+   Utilisation:
+   notion de point de repos, linearisation autour du Q-point, et modele
+   petit-signal.
+
+4. UC Berkeley, Nagel & Pederson, "SPICE", UCB/ERL M382, 1973.
+   Source:
+   https://www2.eecs.berkeley.edu/Pubs/TechRpts/1973/22871.html
+
+   Utilisation:
+   SPICE combine analyse DC non lineaire, petit signal et transitoire dans une
+   formulation nodale. Cela justifie notre sequence: point DC -> region de
+   fonctionnement -> linearisation.
+
+5. TU Delft, Modified Nodal Analysis.
+   Source:
+   https://analog-electronics.tudelft.nl/webbook/SED/_build/html/network_theory/NetworkTheory-1_Modified_Nodal_Analysis.html
+
+   Utilisation:
+   les branches doivent etre connectees aux bons noeuds avant estampillage MNA.
+
+
+3. Criteres appliques par le solveur
+------------------------------------
+
+Pour NPN:
+
+    drive = VBE = VB - VE
+    output = VCE = VC - VE
+    jonction base-collecteur inverse:
+        VC > VB
+
+Pour PNP:
+
+    drive = VEB = VE - VB
+    output = VEC = VE - VC
+    jonction base-collecteur inverse:
+        VB > VC
+
+Fenetre stricte:
+
+    0,55 V <= drive <= 0,75 V
+    output >= 0,40 V
+
+Fenetre souple:
+
+    0,45 V <= drive <= 0,85 V
+    output >= 0,20 V
+
+Ces fenetres ne pretendent pas remplacer un modele BJT complet. Elles servent
+a rejeter les orientations manifestement impossibles.
+
+
+4. Script cree
+--------------
+
+Script:
+
+    solver/b11_ts1_ts2_pin_hypothesis_solver.js
+
+Fichiers generes:
+
+    results/b11_ts1_ts2_pin_hypothesis_solver.json
+    results/b11_ts1_ts2_known_node_hypotheses.csv
+    results/b11_ts1_ts2_required_base_ranges.csv
+    results/b11_ts1_ts2_kcl_hypothesis_checks.csv
+
+
+5. Resultats: hypotheses avec noeuds connus
+-------------------------------------------
+
+Noeuds connus testes:
+
+    Ts1: N215, N10, N9, N05
+    Ts2: N145, N10, N9, N05
+
+Le solveur a enumere les permutations B/C/E possibles, pour NPN et PNP.
+
+Resultat:
+
+    hypotheses strictement actives avec seulement les noeuds connus: 0
+    hypotheses souplement actives avec seulement les noeuds connus: 0
+
+Conclusion:
+
+    Aucun noeud imprime actuellement retenu ne peut etre directement la base
+    correcte de Ts1/Ts2 dans une affectation active simple. Il manque donc un
+    noeud de base intermediaire ou une liaison non encore extraite.
+
+
+6. Resultats: tension de base requise
+-------------------------------------
+
+Le solveur teste ensuite les couples collecteur/emetteur les plus naturels et
+calcule la tension de base necessaire.
+
+Ts1, hypothese NPN:
+
+    C = N10 = 10 V
+    E = N05 = 0,5 V
+
+Base requise:
+
+    fenetre stricte: 1,05 a 1,25 V
+    fenetre souple : 0,95 a 1,35 V
+
+Noeud connu dans cette plage:
+
+    aucun
+
+
+Ts1, hypothese PNP inverse:
+
+    E = N10 = 10 V
+    C = N05 = 0,5 V
+
+Base requise:
+
+    fenetre stricte: 9,25 a 9,45 V
+    fenetre souple : 9,15 a 9,55 V
+
+Noeud connu dans cette plage:
+
+    aucun
+
+
+Ts2, hypothese NPN:
+
+    C = N145 = 14,5 V
+    E = N9 = 9 V
+
+Base requise:
+
+    fenetre stricte: 9,55 a 9,75 V
+    fenetre souple : 9,45 a 9,85 V
+
+Noeud connu dans cette plage:
+
+    aucun
+
+Remarque:
+
+    Le noeud N10 = 10 V est proche mais reste trop haut pour la fenetre souple
+    retenue. Il ne faut pas l'utiliser comme base sans preuve topologique.
+
+
+Ts2, hypothese PNP inverse:
+
+    E = N145 = 14,5 V
+    C = N9 = 9 V
+
+Base requise:
+
+    fenetre stricte: 13,75 a 13,95 V
+    fenetre souple : 13,65 a 14,05 V
+
+Noeud connu dans cette plage:
+
+    aucun
+
+
+7. Resultats KCL
+----------------
+
+Ts1 isole, hypothese NPN C=N10 E=N05:
+
+    IC candidat = I_R11 = 1,150 mA
+    IE demande = I_N05 = 4,599 a 4,911 mA
+
+Donc:
+
+    IB = IE - IC = 3,449 a 3,761 mA
+    beta effectif = IC/IB = 0,333 a 0,306
+
+Conclusion:
+
+    beta autour de 0,3 est physiquement incompatible avec un BJT actif normal.
+    Cette hypothese est rejetee comme modele isole.
+
+
+Ts2 isole, hypothese NPN C=N145 E=N9:
+
+    IC candidat = I_R15 = 7,917 mA
+    IE connu = I_R16 + I_R13 = 7,539 mA
+
+Donc:
+
+    IB = IE - IC = -0,378 mA
+
+Conclusion:
+
+    Le signe est impossible pour un BJT isole simple. Il manque une branche
+    active ou l'interpretation collecteur/emetteur est incomplete.
+
+
+8. Conclusion scientifique
+--------------------------
+
+Ferme:
+
+    - les affectations B/C/E utilisant seulement les noeuds imprimes connus
+      sont rejetees;
+    - Ts1 NPN C=N10 E=N05 exige une base cachee autour de 1,05..1,25 V;
+    - Ts2 NPN C=N145 E=N9 exige une base cachee autour de 9,55..9,75 V;
+    - Ts1 isole R11 -> N05 est rejete par KCL;
+    - Ts2 isole R15 -> N9 est rejete par KCL incomplete.
+
+Non ferme:
+
+    - le noeud de base reel de Ts1;
+    - le noeud de base reel de Ts2;
+    - les chemins R14/R17/C10;
+    - la liaison exacte Ts1/Ts2 vers Ts3/Ts4;
+    - la sous-netlist active complete.
+
+
+9. Decision de modelisation
+---------------------------
+
+On ne branche toujours pas Ts1/Ts2 dans la MNA globale.
+
+La prochaine etape doit se concentrer sur la zone du schema qui contient:
+
+    R14 = 2 kOhm
+    R17 = 6,8 kOhm
+    C10 = 100 pF
+    liaison Ts2 -> Ts1
+    liaison Ts1/Ts2 -> Ts3/Ts4
+
+Objectif:
+
+    trouver les noeuds caches compatibles avec:
+
+        base Ts1 ~ 1,05..1,25 V si hypothese NPN retenue
+        base Ts2 ~ 9,55..9,75 V si hypothese NPN retenue
+
+Conclusion:
+
+    L'etape 8 avance la MNA parce qu'elle transforme une incertitude visuelle
+    en contraintes numeriques. On sait maintenant quoi chercher sur le schema:
+    les bases de Ts1/Ts2 ne sont pas simplement les noeuds imprimes deja
+    utilises.

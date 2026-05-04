@@ -1,0 +1,156 @@
+Etape 16 - Lecture pages theorie limiteur
+=========================================
+
+Date: 2026-05-03
+Objet: Siemens U273 limiter, pages apres schema
+Sources:
+    Screenshot 2026-05-03 103843.png
+    Screenshot 2026-05-03 103940.png
+    Screenshot 2026-05-03 103947.png
+    Screenshot 2026-05-03 104009.png
+    Screenshot 2026-05-03 104032.png
+    Screenshot 2026-05-03 104043.png
+
+
+1. Nature des pages
+-------------------
+
+Les screenshots ne montrent pas une table de cablage S6/S7. Ils montrent une
+explication technique generale des limiteurs et compresseurs, puis des
+circuits de limitation par diodes.
+
+Ces pages sont utiles pour valider le principe de modelisation, pas pour
+fermer les contacts mecaniques.
+
+
+2. Limiteur et compresseur
+--------------------------
+
+Le texte explique:
+
+    - un amplificateur lineaire garde une pente constante entre entree et
+      sortie;
+    - un limiteur bloque la sortie au-dessus d'une certaine tension d'entree;
+    - un compresseur reduit progressivement la pente/gain apres une zone
+      lineaire initiale.
+
+Il est aussi indique que certains appareils peuvent etre commutes entre
+caracteristique de limiteur et de compresseur.
+
+Point utile pour U273:
+
+    le mode "Begrenzer" correspond bien au mode limiteur.
+
+
+3. Regulation directe et retour
+-------------------------------
+
+Le texte distingue deux principes:
+
+    Vorwaertsregelung:
+        la tension de commande est prise a l'entree.
+        Strictement, c'est plutot une commande qu'une vraie regulation.
+
+    Rueckwaertsregelung:
+        la tension de commande est prise a la sortie.
+        C'est une vraie regulation par retour.
+
+Correspondance utile:
+
+    SV = Signalverstaerker
+    RV = Regelverstaerker
+    St = Stelleinrichtung, organe de commande/attenuation
+
+Dans notre lecture U273:
+
+    B6 = Signalverstaerker / organe audio avec pont de commande
+    B11 = Regelverstaerker / sidechain de regulation
+
+
+4. Compensation des hautes frequences
+-------------------------------------
+
+Le texte indique que, si un limiteur est utilise avant un emetteur avec
+preaccentuation, il faut eviter que les hautes frequences declenchent mal le
+limiteur.
+
+Principe donne:
+
+    - le processus de regulation est declenche plus tot aux hautes frequences;
+    - donc, avec la frequence qui monte, la tension de sortie du limiteur baisse;
+    - combine a la preaccentuation de l'emetteur, cela utilise la deviation
+      maximale pour toutes les frequences.
+
+Point utile pour U273:
+
+    cela justifie le reseau S6 comme ponderation frequentielle de sidechain,
+    et confirme qu'il ne faut pas le traiter comme une simple resistance fixe.
+
+
+5. Diodes comme resistances AC commandees
+-----------------------------------------
+
+Le texte "Begrenzerschaltungen mit Dioden" explique que des redresseurs/diodes
+avec caracteristique courant-tension courbe peuvent etre utilises comme
+resistances AC variables.
+
+Lecture de la caracteristique:
+
+    - zone A: resistance AC elevee et presque constante;
+    - zone B: zone courbe exploitee dans les circuits limiteurs;
+    - zone C: vraie conduction, resistance basse, plutot utile pour
+      redressement.
+
+Si un point de repos DC est choisi dans la zone B et deplace par changement du
+courant continu, les petites amplitudes AC voient une resistance AC variable.
+
+Point utile pour U273:
+
+    le pont de diodes du chemin audio doit etre modele comme conductance
+    differentielle controlee par le point de repos, pas comme un simple switch.
+
+
+6. Pont de diodes commande
+--------------------------
+
+Le texte indique que la tension continue de commande doit etre separee de la
+tension alternative du signal. Il donne l'exemple d'une branche/pont de diodes
+avec condensateurs.
+
+Avec une resistance R, ce pont forme un diviseur de tension commande.
+
+Ordre de grandeur donne:
+
+    rapport de division possible jusqu'a environ 1:100.
+
+Point utile pour U273:
+
+    cela valide notre direction de modele:
+
+        pont B6 = attenuateur AC commande
+        B11 = generateur de la commande DC/dynamique
+        MNA = conductances de diodes linearisees autour du point de repos
+
+
+7. Impact sur le travail MNA
+----------------------------
+
+Confirme:
+
+    - garder les diodes du pont comme elements non lineaires;
+    - utiliser leur conductance differentielle petit-signal pour l'AC;
+    - garder B11 comme boucle de regulation/commande, pas comme simple source
+      statique;
+    - garder S6 comme ponderation frequentielle parametrique.
+
+Ne ferme pas:
+
+    - table exacte des contacts S6;
+    - table exacte S7 limiteur/compresseur;
+    - valeurs de courbes reelles des diodes Siemens;
+    - broches B/C/E de Ts1/Ts2.
+
+Conclusion:
+
+    Ces pages ne remplacent pas les crops du schema, mais elles valident
+    scientifiquement l'architecture de modele adoptee pour le U273.

@@ -1,0 +1,769 @@
+{
+  "title": "Siemens U273 DC global reference solve",
+  "status": "PARAMETRIC_THEVENIN_REFERENCE",
+  "scientificBoundary": "This file starts Phase C but does not claim the full active B11+B6 loop. B11/S6/S7 is still represented by the finite Thevenin port from Etape 24.",
+  "validationPolicy": "Printed Siemens B11/B6 active-stage voltages are listed as DEPENDS-ON-P0 until unread BJT routes and full B11 netlist are closed.",
+  "machineNetlistVersion": "u273_orchestrator_v0_1",
+  "scenarios": [
+    {
+      "name": "delivery_linear_r3k_v1",
+      "commandSourceVolt": 1,
+      "commandSourceOhm": 3000,
+      "note": "Low Thevenin output resistance bound tied to visible R1=3k context."
+    },
+    {
+      "name": "delivery_linear_r10k_v1",
+      "commandSourceVolt": 1,
+      "commandSourceOhm": 10000,
+      "note": "Moderate Thevenin output resistance reference."
+    },
+    {
+      "name": "detector_r31_51k_v1",
+      "commandSourceVolt": 1,
+      "commandSourceOhm": 51000,
+      "note": "High impedance detector-side bound using visible R31=51k context."
+    },
+    {
+      "name": "delivery_linear_r10k_v3",
+      "commandSourceVolt": 3,
+      "commandSourceOhm": 10000,
+      "note": "Same reference at stronger command drive."
+    }
+  ],
+  "results": [
+    {
+      "name": "delivery_linear_r3k_v1",
+      "commandSourceVolt": 1,
+      "commandSourceOhm": 3000,
+      "note": "Low Thevenin output resistance bound tied to visible R1=3k context.",
+      "status": "THEVENIN_REFERENCE_NOT_FULL_ACTIVE_LOOP",
+      "converged": true,
+      "iterations": 53,
+      "residual": {
+        "residual": [
+          4.489274620447792e-20,
+          -4.743384504624082e-20,
+          -2.236539675248145e-16,
+          -2.236573556566035e-16,
+          5.262209125476286e-16,
+          -4.006974060281193e-17,
+          -4.006974060281193e-17,
+          -1.21452847778869e-10
+        ],
+        "maxAbs": 1.21452847778869e-10,
+        "rms": 4.2940066129981224e-11
+      },
+      "nodes": {
+        "B11_DRV": 0.9999999998785472,
+        "CMD": 0.9773555249174533,
+        "N14": 0.10586945114247943,
+        "N15": 0.10586945114247939,
+        "NB": 0.8263923585101612,
+        "NL": 0.46613089987698636,
+        "NR": 0.46613089987698636,
+        "I(VB11_S6_S7)": -0.000007548158320364602
+      },
+      "commandSagVolt": 0.022644474961093897,
+      "sourceCurrentAmp": 0.000007548158320364632,
+      "diodes": [
+        {
+          "name": "D3_SSD55",
+          "anode": "NB",
+          "cathode": "NL",
+          "vdVolt": 0.3602614586331749,
+          "rawVdVolt": 0.3602614586331749,
+          "idAmp": 0.000002714601777740081,
+          "idMicroAmp": 2.714601777740081,
+          "gdSiemens": 0.000047903364557987034,
+          "rdOhm": 20875.360410008358,
+          "model": "u273_empirical",
+          "inStatedCurrentRange": true
+        },
+        {
+          "name": "D4_OA154Q",
+          "anode": "NL",
+          "cathode": "N14",
+          "vdVolt": 0.36026144873450694,
+          "rawVdVolt": 0.36026144873450694,
+          "idAmp": 0.000002714601311569279,
+          "idMicroAmp": 2.714601311569279,
+          "gdSiemens": 0.000047903357647888354,
+          "rdOhm": 20875.36342129624,
+          "model": "u273_empirical",
+          "inStatedCurrentRange": true
+        },
+        {
+          "name": "D2_SSD55",
+          "anode": "NB",
+          "cathode": "NR",
+          "vdVolt": 0.3602614586331749,
+          "rawVdVolt": 0.3602614586331749,
+          "idAmp": 0.000002714601777740081,
+          "idMicroAmp": 2.714601777740081,
+          "gdSiemens": 0.000047903364557987034,
+          "rdOhm": 20875.360410008358,
+          "model": "u273_empirical",
+          "inStatedCurrentRange": true
+        },
+        {
+          "name": "D1_OA154Q",
+          "anode": "NR",
+          "cathode": "N15",
+          "vdVolt": 0.36026144873450694,
+          "rawVdVolt": 0.36026144873450694,
+          "idAmp": 0.000002714601311569279,
+          "idMicroAmp": 2.714601311569279,
+          "gdSiemens": 0.000047903357647888354,
+          "rdOhm": 20875.36342129624,
+          "model": "u273_empirical",
+          "inStatedCurrentRange": true
+        }
+      ],
+      "printedVoltageValidation": [
+        {
+          "card": "B11",
+          "node": "N215",
+          "targetVolt": 21.5,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B11",
+          "node": "N145",
+          "targetVolt": 14.5,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B11",
+          "node": "N10",
+          "targetVolt": 10,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B11",
+          "node": "N9",
+          "targetVolt": 9,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B11",
+          "node": "N05",
+          "targetVolt": 0.5,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B6",
+          "node": "V22",
+          "targetVolt": 22,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B6",
+          "node": "V12",
+          "targetVolt": 12.2,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B6",
+          "node": "V64",
+          "targetVolt": 6.4,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        }
+      ]
+    },
+    {
+      "name": "delivery_linear_r10k_v1",
+      "commandSourceVolt": 1,
+      "commandSourceOhm": 10000,
+      "note": "Moderate Thevenin output resistance reference.",
+      "status": "THEVENIN_REFERENCE_NOT_FULL_ACTIVE_LOOP",
+      "converged": true,
+      "iterations": 53,
+      "residual": {
+        "residual": [
+          4.235164736271502e-21,
+          -6.776263578034403e-21,
+          -2.0993711597697834e-16,
+          -2.0993711597697834e-16,
+          4.67399556558501e-16,
+          -2.3598337910504807e-17,
+          -2.3598337910504807e-17,
+          -1.21452847778869e-10
+        ],
+        "maxAbs": 1.21452847778869e-10,
+        "rms": 4.294006612987579e-11
+      },
+      "nodes": {
+        "B11_DRV": 0.9999999998785472,
+        "CMD": 0.9322991616010975,
+        "N14": 0.09217174305187356,
+        "N15": 0.09217174305187356,
+        "NB": 0.7968974850461984,
+        "NL": 0.4445346087465989,
+        "NR": 0.4445346087465989,
+        "I(VB11_S6_S7)": -0.0000067700838277449575
+      },
+      "commandSagVolt": 0.06770083827744966,
+      "sourceCurrentAmp": 0.000006770083827744966,
+      "diodes": [
+        {
+          "name": "D3_SSD55",
+          "anode": "NB",
+          "cathode": "NL",
+          "vdVolt": 0.3523628762995995,
+          "rawVdVolt": 0.3523628762995995,
+          "idAmp": 0.000002363378471739261,
+          "idMicroAmp": 2.363378471739261,
+          "gdSiemens": 0.000042640355851067144,
+          "rdOhm": 23451.961880730258,
+          "model": "u273_empirical",
+          "inStatedCurrentRange": true
+        },
+        {
+          "name": "D4_OA154Q",
+          "anode": "NL",
+          "cathode": "N14",
+          "vdVolt": 0.3523628656947253,
+          "rawVdVolt": 0.3523628656947253,
+          "idAmp": 0.0000023633780271810534,
+          "idMicroAmp": 2.3633780271810534,
+          "gdSiemens": 0.00004264034911361845,
+          "rdOhm": 23451.965586290677,
+          "model": "u273_empirical",
+          "inStatedCurrentRange": true
+        },
+        {
+          "name": "D2_SSD55",
+          "anode": "NB",
+          "cathode": "NR",
+          "vdVolt": 0.3523628762995995,
+          "rawVdVolt": 0.3523628762995995,
+          "idAmp": 0.000002363378471739261,
+          "idMicroAmp": 2.363378471739261,
+          "gdSiemens": 0.000042640355851067144,
+          "rdOhm": 23451.961880730258,
+          "model": "u273_empirical",
+          "inStatedCurrentRange": true
+        },
+        {
+          "name": "D1_OA154Q",
+          "anode": "NR",
+          "cathode": "N15",
+          "vdVolt": 0.3523628656947253,
+          "rawVdVolt": 0.3523628656947253,
+          "idAmp": 0.0000023633780271810534,
+          "idMicroAmp": 2.3633780271810534,
+          "gdSiemens": 0.00004264034911361845,
+          "rdOhm": 23451.965586290677,
+          "model": "u273_empirical",
+          "inStatedCurrentRange": true
+        }
+      ],
+      "printedVoltageValidation": [
+        {
+          "card": "B11",
+          "node": "N215",
+          "targetVolt": 21.5,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B11",
+          "node": "N145",
+          "targetVolt": 14.5,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B11",
+          "node": "N10",
+          "targetVolt": 10,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B11",
+          "node": "N9",
+          "targetVolt": 9,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B11",
+          "node": "N05",
+          "targetVolt": 0.5,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B6",
+          "node": "V22",
+          "targetVolt": 22,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B6",
+          "node": "V12",
+          "targetVolt": 12.2,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B6",
+          "node": "V64",
+          "targetVolt": 6.4,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        }
+      ]
+    },
+    {
+      "name": "detector_r31_51k_v1",
+      "commandSourceVolt": 1,
+      "commandSourceOhm": 51000,
+      "note": "High impedance detector-side bound using visible R31=51k context.",
+      "status": "THEVENIN_REFERENCE_NOT_FULL_ACTIVE_LOOP",
+      "converged": true,
+      "iterations": 53,
+      "residual": {
+        "residual": [
+          0,
+          0,
+          -1.201329888431829e-16,
+          -1.201329888431829e-16,
+          2.5873299000240407e-16,
+          -9.642623071542955e-18,
+          -9.642623071542955e-18,
+          -1.21452847778869e-10
+        ],
+        "maxAbs": 1.21452847778869e-10,
+        "rms": 4.2940066129567615e-11
+      },
+      "nodes": {
+        "B11_DRV": 0.9999999998785472,
+        "CMD": 0.7776761446099046,
+        "N14": 0.050481649555968774,
+        "N15": 0.050481649555968774,
+        "NB": 0.6904903190143585,
+        "NL": 0.37048597695759333,
+        "NR": 0.37048597695759333,
+        "I(VB11_S6_S7)": -0.000004359291279777303
+      },
+      "commandSagVolt": 0.2223238552686425,
+      "sourceCurrentAmp": 0.0000043592912797773045,
+      "diodes": [
+        {
+          "name": "D3_SSD55",
+          "anode": "NB",
+          "cathode": "NL",
+          "vdVolt": 0.3200043420567652,
+          "rawVdVolt": 0.3200043420567652,
+          "idAmp": 0.0000012944016412816702,
+          "idMicroAmp": 1.2944016412816701,
+          "gdSiemens": 0.000025715257376428882,
+          "rdOhm": 38887.41945537049,
+          "model": "u273_empirical",
+          "inStatedCurrentRange": false
+        },
+        {
+          "name": "D4_OA154Q",
+          "anode": "NL",
+          "cathode": "N14",
+          "vdVolt": 0.32000432740162454,
+          "rawVdVolt": 0.32000432740162454,
+          "idAmp": 0.0000012944012707859974,
+          "idMicroAmp": 1.2944012707859975,
+          "gdSiemens": 0.000025715251193642283,
+          "rdOhm": 38887.42880517672,
+          "model": "u273_empirical",
+          "inStatedCurrentRange": false
+        },
+        {
+          "name": "D2_SSD55",
+          "anode": "NB",
+          "cathode": "NR",
+          "vdVolt": 0.3200043420567652,
+          "rawVdVolt": 0.3200043420567652,
+          "idAmp": 0.0000012944016412816702,
+          "idMicroAmp": 1.2944016412816701,
+          "gdSiemens": 0.000025715257376428882,
+          "rdOhm": 38887.41945537049,
+          "model": "u273_empirical",
+          "inStatedCurrentRange": false
+        },
+        {
+          "name": "D1_OA154Q",
+          "anode": "NR",
+          "cathode": "N15",
+          "vdVolt": 0.32000432740162454,
+          "rawVdVolt": 0.32000432740162454,
+          "idAmp": 0.0000012944012707859974,
+          "idMicroAmp": 1.2944012707859975,
+          "gdSiemens": 0.000025715251193642283,
+          "rdOhm": 38887.42880517672,
+          "model": "u273_empirical",
+          "inStatedCurrentRange": false
+        }
+      ],
+      "printedVoltageValidation": [
+        {
+          "card": "B11",
+          "node": "N215",
+          "targetVolt": 21.5,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B11",
+          "node": "N145",
+          "targetVolt": 14.5,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B11",
+          "node": "N10",
+          "targetVolt": 10,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B11",
+          "node": "N9",
+          "targetVolt": 9,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B11",
+          "node": "N05",
+          "targetVolt": 0.5,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B6",
+          "node": "V22",
+          "targetVolt": 22,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B6",
+          "node": "V12",
+          "targetVolt": 12.2,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B6",
+          "node": "V64",
+          "targetVolt": 6.4,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        }
+      ]
+    },
+    {
+      "name": "delivery_linear_r10k_v3",
+      "commandSourceVolt": 3,
+      "commandSourceOhm": 10000,
+      "note": "Same reference at stronger command drive.",
+      "status": "THEVENIN_REFERENCE_NOT_FULL_ACTIVE_LOOP",
+      "converged": true,
+      "iterations": 55,
+      "residual": {
+        "residual": [
+          -5.421010862427522e-20,
+          5.421010862427522e-20,
+          -1.616315046214234e-15,
+          -1.616315046214234e-15,
+          3.5118772039738344e-14,
+          -1.5942013876536765e-14,
+          -1.5942013876536765e-14,
+          -1.539417482376848e-10
+        ],
+        "maxAbs": 1.539417482376848e-10,
+        "rms": 5.442662904925704e-11
+      },
+      "nodes": {
+        "B11_DRV": 2.9999999998460583,
+        "CMD": 2.575270816653712,
+        "N14": 0.7419312365906284,
+        "N15": 0.7419312365906284,
+        "NB": 1.7258124502690186,
+        "NL": 1.2338718408442955,
+        "NR": 1.2338718408442955,
+        "I(VB11_S6_S7)": -0.00004247291831923467
+      },
+      "commandSagVolt": 0.4247291831923463,
+      "sourceCurrentAmp": 0.00004247291831923463,
+      "diodes": [
+        {
+          "name": "D3_SSD55",
+          "anode": "NB",
+          "cathode": "NL",
+          "vdVolt": 0.4919406094247232,
+          "rawVdVolt": 0.4919406094247232,
+          "idAmp": 0.000019023879112729265,
+          "idMicroAmp": 19.023879112729265,
+          "gdSiemens": 0.00024584653655300914,
+          "rdOhm": 4067.5781486324954,
+          "model": "u273_empirical",
+          "inStatedCurrentRange": true
+        },
+        {
+          "name": "D4_OA154Q",
+          "anode": "NL",
+          "cathode": "N14",
+          "vdVolt": 0.49194060425366704,
+          "rawVdVolt": 0.49194060425366704,
+          "idAmp": 0.00001902387786291448,
+          "idMicroAmp": 19.02387786291448,
+          "gdSiemens": 0.00024584652298581744,
+          "rdOhm": 4067.5783731042993,
+          "model": "u273_empirical",
+          "inStatedCurrentRange": true
+        },
+        {
+          "name": "D2_SSD55",
+          "anode": "NB",
+          "cathode": "NR",
+          "vdVolt": 0.4919406094247232,
+          "rawVdVolt": 0.4919406094247232,
+          "idAmp": 0.000019023879112729265,
+          "idMicroAmp": 19.023879112729265,
+          "gdSiemens": 0.00024584653655300914,
+          "rdOhm": 4067.5781486324954,
+          "model": "u273_empirical",
+          "inStatedCurrentRange": true
+        },
+        {
+          "name": "D1_OA154Q",
+          "anode": "NR",
+          "cathode": "N15",
+          "vdVolt": 0.49194060425366704,
+          "rawVdVolt": 0.49194060425366704,
+          "idAmp": 0.00001902387786291448,
+          "idMicroAmp": 19.02387786291448,
+          "gdSiemens": 0.00024584652298581744,
+          "rdOhm": 4067.5783731042993,
+          "model": "u273_empirical",
+          "inStatedCurrentRange": true
+        }
+      ],
+      "printedVoltageValidation": [
+        {
+          "card": "B11",
+          "node": "N215",
+          "targetVolt": 21.5,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B11",
+          "node": "N145",
+          "targetVolt": 14.5,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B11",
+          "node": "N10",
+          "targetVolt": 10,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B11",
+          "node": "N9",
+          "targetVolt": 9,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B11",
+          "node": "N05",
+          "targetVolt": 0.5,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B6",
+          "node": "V22",
+          "targetVolt": 22,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B6",
+          "node": "V12",
+          "targetVolt": 12.2,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        },
+        {
+          "card": "B6",
+          "node": "V64",
+          "targetVolt": 6.4,
+          "status": "DEPENDS-ON-P0",
+          "actualVolt": null,
+          "errorVolt": null,
+          "relativeError": null,
+          "validationStatus": "DEPENDS-ON-P0"
+        }
+      ]
+    }
+  ],
+  "pendingPrintedVoltageTargets": [
+    {
+      "card": "B11",
+      "node": "N215",
+      "targetVolt": 21.5,
+      "status": "DEPENDS-ON-P0"
+    },
+    {
+      "card": "B11",
+      "node": "N145",
+      "targetVolt": 14.5,
+      "status": "DEPENDS-ON-P0"
+    },
+    {
+      "card": "B11",
+      "node": "N10",
+      "targetVolt": 10,
+      "status": "DEPENDS-ON-P0"
+    },
+    {
+      "card": "B11",
+      "node": "N9",
+      "targetVolt": 9,
+      "status": "DEPENDS-ON-P0"
+    },
+    {
+      "card": "B11",
+      "node": "N05",
+      "targetVolt": 0.5,
+      "status": "DEPENDS-ON-P0"
+    },
+    {
+      "card": "B6",
+      "node": "V22",
+      "targetVolt": 22,
+      "status": "DEPENDS-ON-P0"
+    },
+    {
+      "card": "B6",
+      "node": "V12",
+      "targetVolt": 12.2,
+      "status": "DEPENDS-ON-P0"
+    },
+    {
+      "card": "B6",
+      "node": "V64",
+      "targetVolt": 6.4,
+      "status": "DEPENDS-ON-P0"
+    }
+  ]
+}

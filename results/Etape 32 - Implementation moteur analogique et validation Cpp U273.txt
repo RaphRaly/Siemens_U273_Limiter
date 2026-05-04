@@ -1,0 +1,61 @@
+Etape 32 - Implementation moteur analogique et validation C++ U273
+Date: 2026-05-04
+
+Statut scientifique
+-------------------
+
+Le chemin DSP ne passe plus par B6BridgeRealtimeModel dans U273DspEngine.
+Il utilise maintenant AnalogRealtimeEngine, base sur la loi empirique B6:
+
+    V_mV = 308 * I_uA^0.16
+    rd_ohm = 48300 * I_uA^-0.84
+
+Ce moteur temps reel est une reduction analogique component-informed. Il ne
+declare pas une equivalence U273 finale: son boundary reste
+FULL_ACTIVE_MODEL_UNVERIFIED.
+
+Netlist C++
+-----------
+
+U273NetlistLoader charge results/u273_netlist.json vers CircuitGraph.
+Il stamp:
+
+    - resistances
+    - capacites
+    - sources de tension/courant
+    - diodes B6
+    - potentiometres split en deux resistances
+    - metadata U1/U2 transformateurs
+
+Les switches restent dans l'inventaire garde. Les BJT restent non stampes par
+defaut, sauf mode explicite BjtStampPolicy::stampKnownTerminals pour les
+experiences de calibration.
+
+Validation ajoutee
+------------------
+
+Les tests C++ valident maintenant:
+
+    - lecture/pinning des golden files JS DC/AC/transitoire
+    - inventaire netlist C++ depuis u273_netlist.json
+    - premier pas DAE implicite convergent sur la netlist U273 chargee
+    - stamp possible des hypotheses BJT a terminals connus
+    - monotonicite du moteur analogique temps reel
+    - FFT audio: THD bas niveau et bande 40 Hz - 15 kHz
+
+Commandes executees
+-------------------
+
+    cmake --build --preset debug
+    ctest --preset debug --output-on-failure
+    ctest --preset debug-tests-only --output-on-failure
+
+Resultat: build OK, tests OK.
+
+Limite restante
+---------------
+
+Ce sprint ferme l'infrastructure "vrai moteur analogique" et remplace le
+surrogate dans le DSP, mais ne ferme pas encore l'equivalence finale U273:
+B6/B11 actifs doivent encore etre calibres contre golden DC/AC/transitoire
+puis audio FFT en regime de regulation.

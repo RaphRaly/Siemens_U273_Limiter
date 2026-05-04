@@ -1,0 +1,35 @@
+@startuml
+title Siemens U273 Plugin - Lifecycle Statechart
+
+[*] --> Constructed
+
+Constructed --> Prepared : prepareToPlay()
+Prepared --> Active : first processBlock()
+Active --> Active : processBlock()
+Active --> Suspended : host suspend / setActive(false)
+Suspended --> Active : host resume / setActive(true)
+Prepared --> Released : releaseResources()
+Active --> Released : releaseResources()
+Suspended --> Released : releaseResources()
+Released --> Prepared : prepareToPlay()
+
+Prepared --> ErrorBypass : invalid config
+Active --> ErrorBypass : non-finite parameter\nor DSP invariant failure
+ErrorBypass --> Prepared : reset with valid config
+ErrorBypass --> Released : releaseResources()
+
+Released --> [*]
+
+state Active {
+  [*] --> RealtimeProcessing
+  RealtimeProcessing --> RealtimeProcessing : processBlock within CPU budget
+}
+
+note right of ErrorBypass
+ErrorBypass must be bounded:
+no throw through host callback,
+no blocking recovery in audio thread.
+end note
+
+@enduml
+

@@ -1,0 +1,288 @@
+Etape 7 - Contraintes topologiques Ts1/Ts2 B11
+==============================================
+
+Date: 2026-05-01
+Objet: Siemens U273 limiter, lecture active B11 avant MNA globale
+
+
+1. But de cette etape
+--------------------
+
+L'etape 6 a valide mathematiquement les stamps BJT hybrid-pi. La suite
+logique etait de brancher Ts1/Ts2 dans une sous-netlist B11. Mais une MNA
+scientifique exige d'abord de verifier que les broches et les courants sont
+coherents.
+
+Cette etape fait donc une analyse de contraintes:
+
+    - lecture des noeuds visibles autour de Ts1/Ts2;
+    - KCL passive autour des resistances certaines;
+    - test d'un modele BJT isole simple;
+    - generation de bornes petit-signal sans fausse connexion.
+
+
+2. Verification scientifique externe
+------------------------------------
+
+Sources utilisees:
+
+1. MIT OpenCourseWare, 6.720J, lecture36.
+   Source:
+   https://ocw.mit.edu/courses/6-720j-integrated-microelectronic-devices-spring-2007/resources/lecture36/
+
+   Utilisation:
+   modele BJT petit-signal autour d'un point de repos. Relation:
+
+       gm = IC / VT
+
+2. UC Berkeley EE105, Lecture 12, BJT Small Signal Model.
+   Source:
+   https://msdnaa.eecs.berkeley.edu/~ee105/fa14/lectures/Lecture12-Small%20Signal%20Model-BJT.pdf
+
+   Utilisation:
+   relations hybrid-pi:
+
+       gm = IC/VT
+       rpi = beta/gm
+       ro ~= VA/IC si VA connu
+
+3. TU Delft, Modified Nodal Analysis.
+   Source:
+   https://analog-electronics.tudelft.nl/webbook/SED/_build/html/network_theory/NetworkTheory-1_Modified_Nodal_Analysis.html
+
+   Utilisation:
+   MNA fondee sur KCL. Une source controlee ou un transistor linearise doit
+   etre insere avec une topologie correcte; sinon le systeme matriciel sera
+   mathematiquement propre mais physiquement faux.
+
+
+3. Donnees de schema utilisees
+------------------------------
+
+Crop genere pour inspection:
+
+    siemens_u273_check/analysis_crops/b11_ts1_ts2_focus_x6.png
+
+Noeuds imprimes ou deja retenus:
+
+    V24  = 24 V
+    N215 = 21,5 V
+    N145 = 14,5 V
+    N10  = 10 V
+    N9   = 9 V
+    N05  = 0,5 V
+
+Resistances certaines:
+
+    R10 = 2 kOhm
+    R11 = 10 kOhm
+    R12 = 120 Ohm
+    R13 = 220 kOhm
+    R15 = 1,2 kOhm
+    R16 = 1,2 kOhm
+    R7 + R8 = 680 a 1180 Ohm selon reglage
+    R9  = 56 kOhm
+
+
+4. Script de contraintes
+------------------------
+
+Script cree:
+
+    solver/b11_ts1_ts2_topology_constraints.js
+
+Fichiers generes:
+
+    results/b11_ts1_ts2_topology_constraints.json
+    results/b11_ts1_ts2_small_signal_bounds.csv
+
+Le script ne construit pas une fausse netlist active. Il calcule les courants
+certains et teste si un transistor isole simple peut satisfaire les KCL.
+
+
+5. KCL passives calculees
+-------------------------
+
+Autour de N215/N10:
+
+    I_R10 = (24 - 21,5) / 2k
+          = 1,250 mA
+
+    I_R11 = (21,5 - 10) / 10k
+          = 1,150 mA
+
+Residual N215:
+
+    I_R10 - I_R11 = 0,100 mA
+
+Donc environ 100 uA partent vers une autre branche active ou capacitive DC
+non fermee. Ce n'est pas une erreur; c'est une contrainte.
+
+
+Autour de N05:
+
+    I_R12 = 0,5 / 120
+          = 4,167 mA
+
+    I_R9 = 0,5 / 56k
+         = 8,93 uA
+
+    I_R7/R8 = 0,5 / (1180 a 680)
+            = 0,424 a 0,735 mA
+
+Demande totale N05:
+
+    I_N05 = 4,599 a 4,911 mA
+
+
+Autour de Ts2/N145/N9:
+
+    I_R15 = (24 - 14,5) / 1,2k
+          = 7,917 mA
+
+    I_R16 = 9 / 1,2k
+          = 7,500 mA
+
+    I_R13 = (9 - 0,5) / 220k
+          = 38,6 uA
+
+Demande connue N9:
+
+    I_N9 = 7,539 mA
+
+
+6. Test d'un modele BJT isole simple
+------------------------------------
+
+Hypothese Ts1 locale, volontairement testee:
+
+    collector candidate = N10
+    emitter/load candidate = N05
+    courant collecteur candidat = I_R11 = 1,150 mA
+    courant emetteur/load demande = 4,599 a 4,911 mA
+
+Si Ts1 etait un BJT isole, on aurait:
+
+    IE = IC + IB
+
+Donc:
+
+    IB = IE - IC
+       = 3,449 a 3,761 mA
+
+Beta effectif:
+
+    beta = IC / IB
+         = 0,333 a 0,306
+
+Conclusion:
+
+    beta ~= 0,3 est impossible pour un BJT actif normal. Donc Ts1 ne peut pas
+    etre ferme comme un simple transistor isole alimente seulement par R11.
+    Il manque une source active, un autre chemin de courant, ou une lecture de
+    broches plus complete.
+
+
+Hypothese Ts2 locale:
+
+    collector/supply candidate = R15 = 7,917 mA
+    emitter/load connu = R16 + R13 = 7,539 mA
+
+Si c'etait un BJT isole:
+
+    IB = IE - IC = -0,378 mA
+
+Le signe negatif indique que les courants connus ne suffisent pas a representer
+un transistor isole. La difference doit partir par une autre branche, ou R15 ne
+doit pas etre interprete comme courant collecteur pur.
+
+
+7. Bornes petit-signal utiles
+-----------------------------
+
+Meme sans connecter la netlist active, on peut convertir les courants candidats
+en bornes hybrid-pi.
+
+Exemples beta = 100:
+
+    Ts1_R11_local_current, 1,150 mA:
+        gm = 44,49 mS
+        re = 22,48 Ohm
+        rpi = 2248 Ohm
+
+    Ts1_N05_demand_low, 4,599 mA:
+        gm = 177,91 mS
+        re = 5,62 Ohm
+        rpi = 562 Ohm
+
+    Ts1_N05_demand_high, 4,911 mA:
+        gm = 190,00 mS
+        re = 5,26 Ohm
+        rpi = 526 Ohm
+
+    Ts2_R15_supply, 7,917 mA:
+        gm = 306,25 mS
+        re = 3,27 Ohm
+        rpi = 327 Ohm
+
+    Ts2_N9_known_demand, 7,539 mA:
+        gm = 291,65 mS
+        re = 3,43 Ohm
+        rpi = 343 Ohm
+
+Ces nombres sont utiles pour borner l'impedance dynamique, mais ne doivent pas
+etre confondus avec une netlist complete.
+
+
+8. Conclusion de fermeture
+--------------------------
+
+Ferme:
+
+    - les KCL passives autour de R10/R11/R12/R13/R15/R16/R7/R8/R9;
+    - l'existence d'un courant manquant autour de N215;
+    - l'incompatibilite d'un Ts1 isole R11 -> N05;
+    - l'incompatibilite d'un Ts2 isole interprete uniquement via R15/R16/R13;
+    - les bornes gm/re/rpi pour les courants candidats.
+
+Non ferme:
+
+    - broches B/C/E exactes de Ts1 et Ts2;
+    - chemins actifs qui alimentent N05;
+    - role exact de R14/R17/C10 dans la contre-reaction active;
+    - liaison exacte entre Ts1/Ts2 et Ts3/Ts4;
+    - sous-netlist active complete.
+
+
+9. Decision scientifique
+------------------------
+
+On ne doit pas encore brancher Ts1/Ts2 comme une netlist BJT complete.
+
+La prochaine etape doit etre soit:
+
+    A. obtenir un crop plus net de la zone Ts1/Ts2/R14/R17/C10;
+
+ou:
+
+    B. construire une sous-netlist symbolique a ports:
+
+        port Ts1_C?
+        port Ts1_B?
+        port Ts1_E?
+        port Ts2_C?
+        port Ts2_B?
+        port Ts2_E?
+
+       puis tester les orientations possibles par contrainte:
+
+        VBE plausible
+        VCE/VEC positif
+        KCL compatible
+        beta effectif plausible
+
+Conclusion:
+
+    L'etape 7 avance l'analyse parce qu'elle elimine une mauvaise fermeture.
+    La MNA complete reste possible, mais elle doit passer par une extraction
+    topologique supplementaire ou un solveur de hypotheses de broches.

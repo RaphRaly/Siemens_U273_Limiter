@@ -1,0 +1,38 @@
+@startuml
+title Siemens U273 Plugin - Audio Callback Sequence
+
+actor "DAW Host" as Host
+participant "PluginProcessor" as Processor
+participant "ParameterBridge" as Params
+participant "U273DspEngine" as DSP
+participant "MeterBridge" as Meters
+
+Host -> Processor : prepareToPlay(sampleRate, maxBlock)
+Processor -> DSP : prepare(config)
+DSP --> Processor : preallocated / ready
+
+loop each audio callback
+  Host -> Processor : processBlock(buffer, midi)
+  Processor -> Params : readSnapshot()
+  Params --> Processor : ParameterSnapshot
+  alt snapshot valid and DSP prepared
+    Processor -> DSP : process(buffer, snapshot)
+    DSP -> Meters : publish(MeterFrame)
+    DSP --> Processor : audio processed
+  else invalid state
+    Processor -> Processor : bounded bypass / clear unsafe channels
+  end
+  Processor --> Host : return before deadline
+end
+
+note right of DSP
+Forbidden in process:
+- allocation
+- locks
+- logging
+- file/network I/O
+- unbounded Newton/MNA
+end note
+
+@enduml
+

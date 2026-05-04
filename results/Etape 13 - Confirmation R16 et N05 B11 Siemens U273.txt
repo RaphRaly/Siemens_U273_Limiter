@@ -1,0 +1,165 @@
+Etape 13 - Confirmation R16 et reseau N05 B11
+=============================================
+
+Date: 2026-05-03
+Objet: Siemens U273 limiter, B11 Regelverstaerker
+Source: second crop utilisateur Ts1/Ts2, zone R16/R13/R12/R9/R7/R8/C5
+
+
+1. But de cette etape
+---------------------
+
+L'etape 12 gardait encore le bas de R16 ouvert. Le second crop montre la
+partie basse de la zone Ts1/Ts2 et ferme ce point.
+
+Cette etape confirme aussi le reseau de charge du noeud N05.
+
+
+2. Topologie confirmee par le crop
+----------------------------------
+
+R16:
+
+    N9 = 9 V -> R16 1,2 kOhm -> reference
+
+R13:
+
+    N9 = 9 V -> R13 220 kOhm -> N05 = 0,5 V
+
+R12/R9:
+
+    N05 = 0,5 V -> R12 120 ohm -> reference
+    N05 = 0,5 V -> R9 56 kOhm -> reference
+
+R7/R8:
+
+    N05 = 0,5 V -> R7 500 ohm ajustable -> R8 680 ohm -> reference
+
+C5:
+
+    C5 = 100 uF est dans la zone N05. En DC ideal il reste ouvert.
+
+C10/R17:
+
+    La zone C10/R17 est partiellement visible en bas du crop, mais cette
+    etape ne l'utilise pas pour un stamp definitif. Ses endpoints exacts
+    restent a confirmer sur une vue complete.
+
+
+3. Script mis a jour
+--------------------
+
+Script:
+
+    solver/b11_crop_ts1_ts2_corrected_topology.js
+
+Fichiers mis a jour:
+
+    results/b11_crop_ts1_ts2_corrected_topology.json
+    results/b11_crop_ts1_ts2_topology_rows.csv
+    results/b11_crop_ts1_ts2_passive_kcl.csv
+    results/b11_crop_ts2_r16_lower_ref_check.csv
+    results/b11_crop_r14_c6_ac_rows.csv
+
+
+4. KCL N9 avec R16 confirme
+---------------------------
+
+Courant R16:
+
+    I_R16 = 9 / 1,2k
+          = 7,500 mA
+
+Courant R13:
+
+    I_R13 = (9 - 0,5) / 220k
+          = 38,636 uA
+
+Demande passive N9:
+
+    I_N9_passif = I_R16 + I_R13
+                = 7,539 mA
+
+Courant disponible par R15:
+
+    I_R15 = (24 - 14,5) / 1,2k
+          = 7,917 mA
+
+Residu:
+
+    I_R15 - I_N9_passif
+        = 0,378 mA
+
+Ce residu est du bon ordre pour une branche de commande/base, mais il ne
+determine pas encore les broches B/C/E de Ts2.
+
+Si on force une lecture simple du rapport courant principal / residu:
+
+    ratio = 7,539 mA / 0,378 mA
+          = 19,94
+
+Cela rend une hypothese beta autour de 20 plausible en ordre de grandeur,
+mais ce n'est pas une preuve de modele transistor.
+
+
+5. KCL N05 confirmee
+--------------------
+
+Courants passifs a N05:
+
+    I_R12 = 0,5 / 120
+          = 4,167 mA
+
+    I_R9 = 0,5 / 56k
+         = 8,929 uA
+
+    I_R7/R8 = 0,5 / (680..1180)
+             = 0,424..0,735 mA
+
+Donc:
+
+    I_N05 = 4,599..4,911 mA
+
+Contribution de R13 depuis N9:
+
+    I_R13 = 38,636 uA
+
+Deficit restant a fournir par actif:
+
+    I_N05_actif_apres_R13 = 4,561..4,872 mA
+
+Conclusion:
+
+    La fermeture forte de N05 ne vient toujours ni de R13, ni de R14/C6.
+    Elle doit venir de Ts1 et de son couplage avec Ts2.
+
+
+6. Decision de modelisation
+---------------------------
+
+Ferme:
+
+    - R16 = N9 -> reference;
+    - R12/R9/R7/R8 = charges DC de N05 vers reference;
+    - R13 = liaison faible N9 -> N05;
+    - R14/C6 reste ouvert en DC et branche AC entre N145 et N10.
+
+Garde:
+
+    - broches B/C/E de Ts1;
+    - broches B/C/E de Ts2;
+    - endpoints exacts C10/R17;
+    - stamp BJT final.
+
+Prochaine etape:
+
+    relancer un solveur d'hypotheses B/C/E avec la topologie corrigee:
+
+        Ts2 autour de N145, N10 et N9
+        Ts1 autour de N10 et N05
+
+    et contraindre le solveur par:
+
+        I_R15 = 7,917 mA
+        I_R16 + I_R13 = 7,539 mA
+        I_N05_actif_apres_R13 = 4,561..4,872 mA

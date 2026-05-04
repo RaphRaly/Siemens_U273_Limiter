@@ -1,0 +1,225 @@
+{
+  "title": "Siemens U273 B11 Ts1/Ts2 topology and KCL constraints",
+  "status": "constraint analysis, not final active netlist",
+  "nodeVoltages": {
+    "V24": 24,
+    "N215": 21.5,
+    "N145": 14.5,
+    "N10": 10,
+    "N9": 9,
+    "N05": 0.5
+  },
+  "resistorValues": {
+    "R10": 2000,
+    "R11": 10000,
+    "R12": 120,
+    "R13": 220000,
+    "R15": 1200,
+    "R16": 1200,
+    "R7minPlusR8": 680,
+    "R7maxPlusR8": 1180,
+    "R9": 56000
+  },
+  "passiveCurrents": {
+    "iR10": 0.00125,
+    "iR11": 0.00115,
+    "iR15": 0.007916666666666667,
+    "iR16": 0.0075,
+    "iR13": 0.000038636363636363636,
+    "iR12": 0.004166666666666667,
+    "iR9": 0.00000892857142857143,
+    "iR7R8MinDemand": 0.000423728813559322,
+    "iR7R8MaxDemand": 0.0007352941176470588,
+    "n215ResidualToActive": 0.00010000000000000005,
+    "n9KnownDemand": 0.007538636363636364,
+    "n05DemandLow": 0.00459932405165456,
+    "n05DemandHigh": 0.004910889355742297
+  },
+  "isolatedBjtChecks": {
+    "ts1": {
+      "topologyCandidate": "NPN-like local hypothesis: collector=N10, emitter=N05, base not printed/confirmed",
+      "collectorCandidateAmp": 0.00115,
+      "emitterDemandLowAmp": 0.00459932405165456,
+      "emitterDemandHighAmp": 0.004910889355742297,
+      "baseCurrentIfIsolatedLowAmp": 0.00344932405165456,
+      "baseCurrentIfIsolatedHighAmp": 0.0037608893557422966,
+      "betaEffectiveLow": 0.3333986551505278,
+      "betaEffectiveHigh": 0.30577873774566855,
+      "conclusion": "An isolated BJT fed only by R11 cannot supply the N05 resistive demand; additional active paths or a different terminal interpretation are required."
+    },
+    "ts2": {
+      "topologyCandidate": "NPN-like local hypothesis: collector=N145, emitter=N9, base not printed/confirmed",
+      "collectorCandidateAmp": 0.007916666666666667,
+      "emitterKnownDemandAmp": 0.007538636363636364,
+      "baseCurrentIfIsolatedAmp": -0.00037803030303030366,
+      "conclusion": "Known emitter demand is lower than R15 supply; the difference must leave through another branch or R15 is not purely collector current."
+    }
+  },
+  "smallSignalRows": [
+    {
+      "name": "Ts1_R11_local_current",
+      "transistor": "B11/Ts1",
+      "currentAmp": 0.00115,
+      "status": "local collector-current candidate only",
+      "warning": "Not enough to satisfy N05 demand in isolated model.",
+      "beta": 50,
+      "gmSiemens": 0.044487427466150864,
+      "reOhm": 22.478260869565222,
+      "rPiOhm": 1123.913043478261
+    },
+    {
+      "name": "Ts1_R11_local_current",
+      "transistor": "B11/Ts1",
+      "currentAmp": 0.00115,
+      "status": "local collector-current candidate only",
+      "warning": "Not enough to satisfy N05 demand in isolated model.",
+      "beta": 100,
+      "gmSiemens": 0.044487427466150864,
+      "reOhm": 22.478260869565222,
+      "rPiOhm": 2247.826086956522
+    },
+    {
+      "name": "Ts1_R11_local_current",
+      "transistor": "B11/Ts1",
+      "currentAmp": 0.00115,
+      "status": "local collector-current candidate only",
+      "warning": "Not enough to satisfy N05 demand in isolated model.",
+      "beta": 200,
+      "gmSiemens": 0.044487427466150864,
+      "reOhm": 22.478260869565222,
+      "rPiOhm": 4495.652173913044
+    },
+    {
+      "name": "Ts1_N05_demand_low",
+      "transistor": "B11/Ts1",
+      "currentAmp": 0.00459932405165456,
+      "status": "emitter/load demand bound",
+      "warning": "Demand at N05, not confirmed collector current.",
+      "beta": 50,
+      "gmSiemens": 0.17792356099243944,
+      "reOhm": 5.620391107406474,
+      "rPiOhm": 281.0195553703237
+    },
+    {
+      "name": "Ts1_N05_demand_low",
+      "transistor": "B11/Ts1",
+      "currentAmp": 0.00459932405165456,
+      "status": "emitter/load demand bound",
+      "warning": "Demand at N05, not confirmed collector current.",
+      "beta": 100,
+      "gmSiemens": 0.17792356099243944,
+      "reOhm": 5.620391107406474,
+      "rPiOhm": 562.0391107406474
+    },
+    {
+      "name": "Ts1_N05_demand_low",
+      "transistor": "B11/Ts1",
+      "currentAmp": 0.00459932405165456,
+      "status": "emitter/load demand bound",
+      "warning": "Demand at N05, not confirmed collector current.",
+      "beta": 200,
+      "gmSiemens": 0.17792356099243944,
+      "reOhm": 5.620391107406474,
+      "rPiOhm": 1124.0782214812948
+    },
+    {
+      "name": "Ts1_N05_demand_high",
+      "transistor": "B11/Ts1",
+      "currentAmp": 0.004910889355742297,
+      "status": "emitter/load demand bound",
+      "warning": "Demand at N05, not confirmed collector current.",
+      "beta": 50,
+      "gmSiemens": 0.1899763773981546,
+      "reOhm": 5.2638123418059966,
+      "rPiOhm": 263.19061709029984
+    },
+    {
+      "name": "Ts1_N05_demand_high",
+      "transistor": "B11/Ts1",
+      "currentAmp": 0.004910889355742297,
+      "status": "emitter/load demand bound",
+      "warning": "Demand at N05, not confirmed collector current.",
+      "beta": 100,
+      "gmSiemens": 0.1899763773981546,
+      "reOhm": 5.2638123418059966,
+      "rPiOhm": 526.3812341805997
+    },
+    {
+      "name": "Ts1_N05_demand_high",
+      "transistor": "B11/Ts1",
+      "currentAmp": 0.004910889355742297,
+      "status": "emitter/load demand bound",
+      "warning": "Demand at N05, not confirmed collector current.",
+      "beta": 200,
+      "gmSiemens": 0.1899763773981546,
+      "reOhm": 5.2638123418059966,
+      "rPiOhm": 1052.7624683611994
+    },
+    {
+      "name": "Ts2_R15_supply",
+      "transistor": "B11/Ts2",
+      "currentAmp": 0.007916666666666667,
+      "status": "local supply current candidate",
+      "warning": "R15 current may feed transistor plus other branches.",
+      "beta": 50,
+      "gmSiemens": 0.30625402965828497,
+      "reOhm": 3.265263157894737,
+      "rPiOhm": 163.26315789473685
+    },
+    {
+      "name": "Ts2_R15_supply",
+      "transistor": "B11/Ts2",
+      "currentAmp": 0.007916666666666667,
+      "status": "local supply current candidate",
+      "warning": "R15 current may feed transistor plus other branches.",
+      "beta": 100,
+      "gmSiemens": 0.30625402965828497,
+      "reOhm": 3.265263157894737,
+      "rPiOhm": 326.5263157894737
+    },
+    {
+      "name": "Ts2_R15_supply",
+      "transistor": "B11/Ts2",
+      "currentAmp": 0.007916666666666667,
+      "status": "local supply current candidate",
+      "warning": "R15 current may feed transistor plus other branches.",
+      "beta": 200,
+      "gmSiemens": 0.30625402965828497,
+      "reOhm": 3.265263157894737,
+      "rPiOhm": 653.0526315789474
+    },
+    {
+      "name": "Ts2_N9_known_demand",
+      "transistor": "B11/Ts2",
+      "currentAmp": 0.007538636363636364,
+      "status": "known emitter/load demand",
+      "warning": "R16+R13 current only.",
+      "beta": 50,
+      "gmSiemens": 0.2916300334095305,
+      "reOhm": 3.4290021103406696,
+      "rPiOhm": 171.45010551703348
+    },
+    {
+      "name": "Ts2_N9_known_demand",
+      "transistor": "B11/Ts2",
+      "currentAmp": 0.007538636363636364,
+      "status": "known emitter/load demand",
+      "warning": "R16+R13 current only.",
+      "beta": 100,
+      "gmSiemens": 0.2916300334095305,
+      "reOhm": 3.4290021103406696,
+      "rPiOhm": 342.90021103406696
+    },
+    {
+      "name": "Ts2_N9_known_demand",
+      "transistor": "B11/Ts2",
+      "currentAmp": 0.007538636363636364,
+      "status": "known emitter/load demand",
+      "warning": "R16+R13 current only.",
+      "beta": 200,
+      "gmSiemens": 0.2916300334095305,
+      "reOhm": 3.4290021103406696,
+      "rPiOhm": 685.8004220681339
+    }
+  ]
+}

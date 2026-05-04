@@ -1,0 +1,203 @@
+Etape 34 - Analyse processus Cytomic analog modeling U273
+=========================================================
+
+Date: 2026-05-04
+Source analysee:
+
+    C:\Users\user\Downloads\slides ADC Analog Modeling Cytomic.txt
+
+
+1. Processus Cytomic extrait
+----------------------------
+
+Le fichier decrit un processus white-box:
+
+    circuit -> equations -> discretisation -> code -> optimisation -> validation audio.
+
+Les points structurants sont:
+
+    - partir des composants et conserver la structure du circuit;
+    - utiliser nodal/MNA comme formulation de base;
+    - traiter les non-linearites comme equations implicites;
+    - lineariser localement les diodes/BJT, puis iterer par Newton-Raphson;
+    - traiter les condensateurs comme etats/memoire via integration numerique;
+    - choisir des schemas implicites adaptes: trapezoidal, midpoint, TRBDF2;
+    - preferer souvent oversampling plutot que methodes d'ordre tres eleve;
+    - separer reference rigoureuse et optimisation temps reel;
+    - utiliser pre-calcul/tables/reductions quand c'est moins couteux;
+    - surveiller l'aliasing et la douceur des approximations;
+    - automatiser le passage netlist/equations/code pour reduire les erreurs;
+    - garder plusieurs niveaux de detail quand le cout CPU l'exige.
+
+
+2. Conformite actuelle du projet U273
+-------------------------------------
+
+Conforme:
+
+    - white-box component-level:
+        U273NetlistLoader charge resistances, capacites, diodes, BJT gardes,
+        switches et boundaries transformateurs.
+
+    - MNA / nodal:
+        StateSpaceSolver assemble KCL, sources de tension, diodes et BJT.
+
+    - non-linearites implicites:
+        les diodes et BJT sont evaluees dans Newton avec courant + derivee.
+
+    - memoire capacitive:
+        les capacites sont stampes avec Backward Euler ou trapezoidal.
+
+    - reference offline separee du realtime:
+        Etape 33 prevoit OperatingPointSolver, LinearizedAcSolver,
+        TransientReferenceSolver et reduction realtime seulement apres
+        validation.
+
+    - pas de WDF impose:
+        Cytomic presente WDF comme option, mais MNA/state-space est totalement
+        compatible avec son processus. Le choix "pas de WDF" reste coherent.
+
+
+Partiellement conforme:
+
+    - state-space:
+        le solveur actuel est MNA/DAE, pas encore une formulation state-space
+        reduite explicite pour le realtime. Cela reste compatible si la
+        reduction finale est generee depuis la reference MNA.
+
+    - pre-calcul / DK / PDK:
+        pas encore implemente. Pour U273, il ne faut pas faire une grosse table
+        MIMO globale; il faut des reductions locales monotones et des tables
+        command/envelope/gain issues de la reference offline.
+
+    - code generation:
+        on a un loader JSON -> CircuitGraph, mais pas encore un generateur
+        equations -> C++ optimise. Cytomic recommande l'automatisation pour
+        reduire les erreurs sur gros circuits.
+
+    - aliasing:
+        les tests FFT existent, mais pas encore de strategie explicite
+        oversampling / anti-aliasing / comparaison offline haute frequence.
+
+    - niveaux de detail:
+        Cytomic recommande UHD/HD/MD/SD. Le projet n'a pas encore ces niveaux.
+
+
+Non conforme actuellement:
+
+    - le moteur realtime n'est pas encore derive automatiquement de la
+      reference B6/B11 calibree.
+
+    - B6/B11 actifs ne passent pas encore la chaine complete:
+        DC -> AC -> transitoire -> audio -> realtime.
+
+    - TRBDF2 / implicit midpoint ne sont pas encore disponibles.
+
+    - pas encore de test de smoothness des approximations/tables ni de
+      verification des derivees aux bords.
+
+
+3. Decision scientifique
+------------------------
+
+On respecte l'esprit du processus Cytomic pour la reference:
+
+    OUI.
+
+On respecte deja tout le processus jusqu'au plugin realtime final:
+
+    NON.
+
+La bonne decision n'est pas de changer de famille de methode. MNA + state-space
+solver reste parfaitement dans le cadre Cytomic. La correction a faire est
+d'ajouter les pieces manquantes:
+
+    - solveur DC offline robuste;
+    - AC lineaire autour du point DC;
+    - transient offline;
+    - calibration bornee;
+    - reduction realtime generee depuis la reference;
+    - oversampling/aliasing tests;
+    - niveaux de detail.
+
+
+4. Ajustements a injecter dans le plan B6/B11
+---------------------------------------------
+
+Priorite 1:
+
+    Ajouter TRBDF2 comme integration offline optionnelle apres Backward Euler.
+    Backward Euler reste utile pour convergence; TRBDF2 est meilleur comme
+    reference stable et moins dissipative dans plusieurs cas audio.
+
+Priorite 2:
+
+    Ajouter une interface ReductionBuilder:
+
+        reference offline -> tables/reduction monotone -> AnalogRealtimeEngine.
+
+    Interdiction:
+
+        fit realtime independant qui ne repasse pas par la reference offline.
+
+Priorite 3:
+
+    Ajouter tests d'aliasing:
+
+        - sine sweep fort niveau;
+        - multitone;
+        - step dur;
+        - comparaison 1x/2x/4x/8x offline;
+        - energie alias au-dessus des harmoniques attendues.
+
+Priorite 4:
+
+    Ajouter smoothness checks:
+
+        - continuite C0/C1 des tables;
+        - derivees bornees;
+        - pas de kink numerique aux clamps;
+        - interpolation monotone.
+
+Priorite 5:
+
+    Ajouter detail levels:
+
+        UHD:
+            reference offline B6/B11 complete.
+
+        HD:
+            realtime oversampled, reduction fine.
+
+        MD:
+            realtime standard.
+
+        SD:
+            mode faible CPU, mais boundary explicitement degrade.
+
+
+5. Critere de conformite Cytomic
+--------------------------------
+
+Le projet sera conforme au processus Cytomic quand:
+
+    - le circuit source reste la source de verite;
+    - la reference offline resout B6/B11 par MNA/state-space;
+    - la calibration est bornee et reproductible;
+    - la reduction realtime est generee depuis cette reference;
+    - les tests DC/AC/transitoire/audio/aliasing passent;
+    - les approximations restent smooth;
+    - les niveaux de detail sont explicites;
+    - la boundary du modele reflete honnetement le niveau atteint.
+
+Conclusion:
+
+    Le plan Etape 33 est dans la bonne direction, mais il faut le renforcer avec
+    TRBDF2, ReductionBuilder, aliasing/smoothness tests et detail levels pour
+    coller pleinement au processus Cytomic.
+
+Addendum:
+
+    Cette analyse initiale est enrichie et precisee dans:
+
+        results/Etape 35 - Recherche approfondie processus Cytomic U273.txt

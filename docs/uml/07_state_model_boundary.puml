@@ -1,0 +1,41 @@
+@startuml
+title Siemens U273 Plugin - Scientific / Realtime Model Boundary
+
+[*] --> GuardedBoundary
+
+GuardedBoundary --> ScientificReferenceOffline : validation run
+ScientificReferenceOffline --> GuardedBoundary : report generated
+
+GuardedBoundary --> RealtimeApprox : build DSP tables / choose MVP mode
+RealtimeApprox --> RealtimeApprox : process audio
+
+GuardedBoundary --> HypothesisMode : user enables hypothesis
+HypothesisMode --> RealtimeApprox : fallback to safe model
+HypothesisMode --> GuardedBoundary : disable hypothesis
+
+state GuardedBoundary {
+  [*] --> B6Closed
+  B6Closed --> B11TheveninParametric
+  B11TheveninParametric --> BjtNotStamped
+}
+
+note right of ScientificReferenceOffline
+May allocate and solve:
+- DC
+- AC
+- transient
+Never called by processBlock.
+end note
+
+note right of RealtimeApprox
+Must be bounded and tested
+against golden references.
+end note
+
+note bottom of HypothesisMode
+Hypothesis must be labelled.
+No hidden claim of full transistor closure.
+end note
+
+@enduml
+

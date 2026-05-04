@@ -1,0 +1,342 @@
+Etape 9 - R14/N05 et noeuds caches Ts1/Ts2 B11
+================================================
+
+Date: 2026-05-02
+Objet: Siemens U273 limiter, B11 Regelverstaerker
+
+Note de correction du 2026-05-03:
+
+    L'etape 10 remplace l'interpretation DC directe "R14=N10->N05".
+    La relecture du crop et la retranscription locale indiquent que C6=1 nF
+    est en serie/liaison capacitive avec cette zone et qu'il est ouvert en DC.
+    Donc le courant 4,750 mA de l'etape 9 reste un test de contrainte utile,
+    mais il ne doit pas etre estampille comme branche DC entre N10 et N05.
+
+
+1. But de cette etape
+---------------------
+
+Les etapes 7 et 8 ont volontairement garde Ts1/Ts2 hors de la MNA globale,
+car les broches B/C/E n'etaient pas assez certaines. Le point faible restant
+etait le noeud N05 = 0,5 V: sans R14, la demande de courant semblait trop
+forte pour un modele Ts1 isole.
+
+Cette etape ajoute R14 = 2 kOhm dans le bilan, puis compare plusieurs
+endpoints possibles:
+
+    - R14 entre N10 et N05;
+    - R14 entre N9 et N05;
+    - R14 vers les bases cachees calculees a l'etape 8;
+    - R14 vers N145 comme test de rejet.
+
+Le but n'est pas encore de figer les broches B/C/E. Le but est de fermer le
+bilan KCL passif autour de N05 et de savoir quelle hypothese merite d'etre
+integree dans la MNA suivante.
+
+
+2. Verification visuelle
+------------------------
+
+Crops utilises:
+
+    siemens_u273_check/analysis_crops/b11_ts1_ts2_r14_r17_c10_x4.png
+    siemens_u273_check/analysis_crops/b11_ts1_ts2_r14_r17_c10_smooth_x4.png
+    siemens_u273_check/analysis_crops/b11_r14_r17_ts1_ts2_x8.png
+
+Lecture prudente:
+
+    - le cote gauche de R14 est raccorde au noeud imprime 0,5 V, donc N05;
+    - le cote droit de R14 est visuellement coherent avec la zone imprimee
+      10 V, donc N10, mais on le garde comme "candidat fort" tant que le
+      trace complet n'est pas ferme par un deuxieme crop;
+    - R17 = 6,8 kOhm semble pouvoir ajouter une branche N05 -> reference,
+      mais cette connexion reste marquee provisoire;
+    - C10 = 100 pF est une compensation HF: ses endpoints exacts ne sont pas
+      encore assez certains pour un stamp definitif.
+
+
+3. Sources scientifiques utilisees
+----------------------------------
+
+1. TU Delft, "Modified Nodal Analysis".
+   Source:
+   https://analog-electronics.tudelft.nl/webbook/SED/_build/html/network_theory/NetworkTheory-1_Modified_Nodal_Analysis.html
+
+   Utilisation:
+   la topologie doit etre connue avant l'assemblage MNA; une resistance entre
+   deux noeuds ajoute une conductance dans les deux equations KCL.
+
+2. MIT OpenCourseWare 6.012, "Lecture 7 - Bipolar Junction Transistors".
+   Source:
+   https://ocw.mit.edu/courses/6-012-microelectronic-devices-and-circuits-fall-2009/resources/mit6_012f09_lec07/
+
+   Utilisation:
+   un BJT doit etre traite comme trois bornes et deux jonctions couplees; on
+   ne choisit donc pas base/collecteur/emetteur par intuition visuelle seule.
+
+3. UC Berkeley EE105, "Lecture12 - Small Signal Model BJT".
+   Source:
+   https://msdnaa.eecs.berkeley.edu/~ee105/fa14/lectures/Lecture12-Small%20Signal%20Model-BJT.pdf
+
+   Utilisation:
+   la linearisation BJT depend du point de repos; gm, rpi et ro ne peuvent
+   etre estampilles proprement qu'apres fermeture DC/topologique.
+
+
+4. Script cree
+--------------
+
+Script:
+
+    solver/b11_ts1_ts2_hidden_node_balance.js
+
+Fichiers generes:
+
+    results/b11_ts1_ts2_hidden_node_balance.json
+    results/b11_r14_n05_balance_candidates.csv
+    results/b11_n10_r14_kcl_candidate.csv
+    results/b11_c10_compensation_orders.csv
+
+
+5. Donnees de depart
+--------------------
+
+Noeuds imprimes:
+
+    V24  = 24 V
+    N145 = 14,5 V
+    N10  = 10 V
+    N9   = 9 V
+    N05  = 0,5 V
+
+Composants critiques:
+
+    R14 = 2 kOhm
+    R17 = 6,8 kOhm
+    C10 = 100 pF
+
+Demande N05 calculee a l'etape 7:
+
+    sans R17:
+        I_N05 = 4,599 a 4,911 mA
+
+    avec R17 provisoire vers reference:
+        I_R17 = 0,5 / 6,8k = 0,0735 mA
+        I_N05 = 4,673 a 4,984 mA
+
+
+6. Test principal: R14 = N10 -> N05
+-----------------------------------
+
+Courant dans R14:
+
+    I_R14 = (N10 - N05) / R14
+          = (10 - 0,5) / 2000
+          = 4,750 mA
+
+Bilan N05 sans R17:
+
+    residu = I_N05 - I_R14
+           = -0,151 a +0,161 mA
+
+Bilan N05 avec R17 provisoire:
+
+    residu = I_N05 - I_R14
+           = -0,077 a +0,234 mA
+
+Conclusion:
+
+    R14=N10->N05 ferme presque exactement le bilan passif N05. C'est le
+    candidat le plus coherent numeriquement et visuellement.
+
+Cela corrige la lecture de l'etape 7:
+
+    L'etape 7 avait raison de rejeter "Ts1 isole alimente N05".
+    Mais la cause precise est maintenant meilleure: N05 n'a probablement pas
+    besoin d'etre fourni principalement par Ts1; il est presque ferme par
+    R14 depuis N10.
+
+
+7. Test: R14 = N9 -> N05
+------------------------
+
+Courant:
+
+    I_R14 = (9 - 0,5) / 2000
+          = 4,250 mA
+
+Residu avec R17 provisoire:
+
+    residu = 0,423 a 0,734 mA
+
+Conclusion:
+
+    Cette hypothese reste possible electriquement si une branche active ajoute
+    environ 0,4 a 0,7 mA. Elle est moins bonne que N10 parce qu'elle ne ferme
+    pas directement N05.
+
+
+8. Test: R14 vers base cachee Ts1
+---------------------------------
+
+Etape 8 imposait pour Ts1 NPN:
+
+    base Ts1 = 1,05 a 1,25 V
+
+Si R14 allait de cette base vers N05:
+
+    I_R14 = (1,05..1,25 - 0,5) / 2000
+          = 0,275 a 0,375 mA
+
+Residu avec R17 provisoire:
+
+    residu = 4,298 a 4,709 mA
+
+Conclusion:
+
+    R14 ne peut pas etre simplement la liaison base Ts1 -> N05 si cette base
+    vaut 1,05..1,25 V. Le courant est trop petit pour fermer N05.
+
+
+9. Test: R14 vers base cachee Ts2
+---------------------------------
+
+Etape 8 imposait pour Ts2 NPN:
+
+    base Ts2 = 9,55 a 9,75 V
+
+Si R14 allait de cette base vers N05:
+
+    I_R14 = (9,55..9,75 - 0,5) / 2000
+          = 4,525 a 4,625 mA
+
+Residu avec R17 provisoire:
+
+    residu = 0,048 a 0,459 mA
+
+Conclusion:
+
+    Cette hypothese est numeriquement plausible, mais moins directe que N10.
+    Elle ne doit etre retenue que si le trace visuel prouve que R14 aboutit
+    sur un noeud cache proche de la base Ts2.
+
+
+10. KCL au noeud N10 si R14=N10->N05
+------------------------------------
+
+Courant entrant par R11:
+
+    I_R11 = (21,5 - 10) / 10k
+          = 1,150 mA
+
+Courant sortant par R14:
+
+    I_R14 = 4,750 mA
+
+Residu:
+
+    I_actif_vers_N10 = I_R14 - I_R11
+                     = 3,600 mA
+
+Conclusion:
+
+    Si R14 relie N10 a N05, R11 ne suffit pas a alimenter N10. Il faut une
+    branche active qui injecte environ 3,6 mA vers N10. Ce resultat n'est pas
+    un probleme: il indique simplement que Ts1/Ts2 et le reseau actif doivent
+    etre analyses comme un etage couple, pas comme deux transistors isoles.
+
+
+11. Consequence MNA immediate
+-----------------------------
+
+Si le endpoint N10 est confirme, R14 peut deja etre estampille comme branche
+passive:
+
+    g14 = 1 / R14 = 0,0005 S
+
+Equation au noeud N10:
+
+    + g14*(VN10 - VN05)
+
+Equation au noeud N05:
+
+    + g14*(VN05 - VN10)
+
+Si R17 est confirme N05 -> reference:
+
+    g17 = 1 / R17 = 0,0001470588 S
+
+Equation au noeud N05:
+
+    + g17*VN05
+
+C10 ne doit pas encore etre estampille definitivement. En AC, une fois ses
+endpoints i/j confirmes:
+
+    Y_C10 = s*C10
+    contribution KCL au noeud i = +s*C10*(Vi - Vj)
+    contribution KCL au noeud j = +s*C10*(Vj - Vi)
+
+
+12. Ordres de grandeur C10
+--------------------------
+
+Ces valeurs ne sont pas des poles definitifs; elles donnent seulement les
+ordres de grandeur si C10 voit ces resistances:
+
+    R14 avec C10:
+        tau = 200 ns
+        fc  = 795,8 kHz
+
+    R17 avec C10:
+        tau = 680 ns
+        fc  = 234,1 kHz
+
+    R13 avec C10:
+        tau = 22 us
+        fc  = 7,23 kHz
+
+Conclusion:
+
+    Selon les endpoints reels de C10, la compensation peut etre seulement HF
+    tres haute, ou descendre dans une zone beaucoup plus audible si R13=220k
+    participe a la constante de temps. Il faut donc tracer C10 avant de
+    conclure sur la linearisation AC complete.
+
+
+13. Ce qui est ferme
+--------------------
+
+Ferme maintenant:
+
+    - N05 n'est plus un bilan impossible si R14 relie N10 a N05;
+    - R14=N10->N05 explique numeriquement le courant de N05;
+    - R14 vers base Ts1 basse 1,05..1,25 V est rejete comme fermeture de N05;
+    - le modele "Ts1 isole fournit N05" reste rejete;
+    - la MNA passive peut recevoir R14 une fois le endpoint N10 confirme.
+
+
+14. Ce qui reste provisoire
+---------------------------
+
+Encore ouvert:
+
+    - endpoint exact droit de R14: candidat fort N10, mais a tracer encore;
+    - connexion exacte de R17;
+    - endpoints de C10;
+    - broches B/C/E finales de Ts1 et Ts2;
+    - sens exact des courants actifs qui ferment les 3,6 mA de N10.
+
+
+15. Decision de modelisation
+----------------------------
+
+Pour la prochaine etape, on peut avancer avec une netlist passive candidate:
+
+    R14 entre N10 et N05
+    R17 vers reference seulement dans une variante
+    C10 laisse en port non estampille tant que ses endpoints ne sont pas
+    confirms
+
+Les transistors Ts1/Ts2 restent linearises seulement sous forme de contraintes
+et de ports caches, pas encore comme stamps definitifs dans la MNA globale.

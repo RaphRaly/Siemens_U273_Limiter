@@ -1,0 +1,728 @@
+Retranscription Siemens U273 Limiteur
+
+Voici la **retranscription complète propre** du Siemens U273, en séparant clairement :
+
+* **B6 = carte Signalverstärker**, chemin audio principal.
+* **B11 = carte Regelverstärker**, sidechain / régulation.
+* Les valeurs **validées par toi** sont intégrées : `OA154Q`, `B30 C2200`, `B11/R2 = 5,1 kΩ`.
+* Les seuls éléments non figés restent `B6/C4` et `B6/C6`, notés `Abgl.` sur le schéma, donc valeurs non lisibles.
+  Source : schéma Siemens U273 page 1 du PDF fourni. 
+
+---
+
+# 1. Vue générale du Siemens U273
+
+Le Siemens U273 est un **limiteur-compresseur à transistors avec atténuateur à pont de diodes commandé**.
+
+Le signal audio principal suit ce chemin :
+
+```text
+Entrée ligne symétrique
+→ transformateur d’entrée U1
+→ réseau R5 / C1
+→ pont de diodes commandé D1-D4
+→ amplificateur audio B6 à six transistors
+→ condensateur de sortie C21
+→ transformateur de sortie U2
+→ sortie ligne symétrique 300 Ω
+```
+
+La régulation suit ce chemin :
+
+```text
+Prélèvement du signal de sortie
+→ carte de régulation B11
+→ transformateur Ü
+→ redressement / seuil / amplification de commande
+→ réseau de constantes de temps
+→ courant de commande
+→ pont de diodes D1-D4
+→ atténuation du signal à l’entrée de l’ampli audio
+```
+
+C’est donc une architecture **feedback compressor/limiter** : la sortie est mesurée, puis le niveau d’entrée est réduit en conséquence.
+
+---
+
+# 2. Données générales imprimées sur le schéma
+
+| Paramètre                |                                Valeur |
+| ------------------------ | ------------------------------------: |
+| Entrée                   |                         max. `+22 dB` |
+| Niveau entrée max        |                                `10 V` |
+| Impédance d’entrée       |                               `10 kΩ` |
+| Sortie                   |                               `+6 dB` |
+| Niveau sortie nominal    |                              `1,55 V` |
+| Charge / sortie nominale |                               `300 Ω` |
+| Alimentation             |                               `+24 V` |
+| Courant indiqué          |                environ `50 mA` global |
+| Carte audio B6           | environ `25 mA` indiqué sur le schéma |
+
+---
+
+# 3. Carte B6 — Signalverstärker / chemin audio principal
+
+## 3.1 Entrée symétrique
+
+| Référence |           Valeur / type | Fonction                                  |
+| --------- | ----------------------: | ----------------------------------------- |
+| B6/S1     |             commutateur | Commutation de la branche haute d’entrée  |
+| B6/S2     |             commutateur | Commutation de la branche basse d’entrée  |
+| B6/R1     |                `5,1 kΩ` | Résistance série entrée haute             |
+| B6/R2     |                `5,1 kΩ` | Résistance série entrée basse             |
+| B6/R3     |        `1 kΩ` ajustable | Ajustage / équilibrage autour de l’entrée |
+| B6/R4     |       `200 Ω` ajustable | Ajustage / équilibrage autour de l’entrée |
+| B6/S5     |             commutateur | Insère ou configure le réseau R3/R4       |
+| B6/U1     | transformateur d’entrée | Isolation, adaptation, symétrisation      |
+
+Signal flow :
+
+```text
+Entrée symétrique
+→ S1 / S2
+→ R1 5,1 kΩ et R2 5,1 kΩ
+→ réseau ajustable R3 1 kΩ / R4 200 Ω via S5
+→ transformateur d’entrée U1
+```
+
+---
+
+## 3.2 Transformateur d’entrée B6/U1
+
+| Élément          | Fonction                                                       |
+| ---------------- | -------------------------------------------------------------- |
+| B6/U1            | Transformateur d’entrée ligne                                  |
+| Repères visibles | `rl/rt`, `gn`, `bl`, `ge`, `sw`, `ws`                          |
+| Rôle             | Isolation galvanique, adaptation d’impédance, entrée flottante |
+
+Après le secondaire de U1 :
+
+```text
+U1
+→ R5
+→ C1
+→ nœud audio interne marqué 25 mV~
+```
+
+---
+
+## 3.3 Réseau d’attaque du pont de diodes
+
+| Référence     |    Valeur | Fonction                                          |
+| ------------- | --------: | ------------------------------------------------- |
+| B6/R5         |  `5,6 kΩ` | Résistance série avant le pont de diodes          |
+| B6/C1         | `0,68 µF` | Condensateur de liaison audio                     |
+| B6/C2         |   `22 µF` | Couplage / filtrage associé au réseau de commande |
+| Point indiqué |  `25 mV~` | Niveau audio interne au point d’attaque           |
+
+Signal flow :
+
+```text
+Secondaire U1
+→ R5 5,6 kΩ
+→ C1 0,68 µF
+→ point audio 25 mV~
+→ pont de diodes commandé
+```
+
+Le choix d’un niveau interne aussi faible est important : les diodes travaillent avec une faible excursion audio, ce qui limite leur distorsion propre.
+
+---
+
+# 4. Pont de diodes B6 — élément de gain variable
+
+C’est le cœur du limiteur-compresseur.
+
+| Référence |      Valeur / type | Fonction                                         |
+| --------- | -----------------: | ------------------------------------------------ |
+| B6/D1     |           `OA154Q` | Diode du pont                                    |
+| B6/D2     |            `SSD55` | Diode du pont                                    |
+| B6/D3     |            `SSD55` | Diode du pont                                    |
+| B6/D4     |           `OA154Q` | Diode du pont                                    |
+| B6/R6     |            `39 kΩ` | Polarisation / fuite côté gauche                 |
+| B6/R7     |  `100 Ω` ajustable | Équilibrage du pont                              |
+| B6/R8     | `250 kΩ` ajustable | Réglage / équilibrage de commande                |
+| B6/R9     |           `390 kΩ` | Retour / polarisation vers le réseau de commande |
+| B6/R10    |            `20 kΩ` | Liaison de commande                              |
+| B6/R11    |            `39 kΩ` | Polarisation / fuite côté droit                  |
+| B6/C3     |           `4,7 µF` | Filtrage côté gauche                             |
+| B6/C4     |            `Abgl.` | Condensateur d’ajustage, valeur non lisible      |
+| B6/C5     |           `150 µF` | Filtrage central entre les nœuds 14 et 15        |
+| B6/C6     |            `Abgl.` | Condensateur d’ajustage, valeur non lisible      |
+| B6/C7     |           `4,7 µF` | Filtrage côté droit                              |
+
+Fonction :
+
+```text
+Commande faible
+→ diodes peu conductrices
+→ résistance dynamique élevée
+→ peu d’atténuation
+
+Commande forte
+→ diodes davantage conductrices
+→ résistance dynamique plus faible
+→ signal d’entrée davantage shunté
+→ réduction de gain
+```
+
+Le pont de diodes ne compresse pas par amplification variable classique : il agit comme un **atténuateur résistif commandé** placé avant l’amplificateur audio.
+
+---
+
+# 5. Amplificateur audio B6 — transistors Ts1 à Ts6
+
+## 5.1 Premier étage : B6/Ts1
+
+| Référence |     Valeur / type | Fonction                      |
+| --------- | ----------------: | ----------------------------- |
+| B6/Ts1    |           `BCY66` | Premier transistor audio      |
+| B6/R12    |           `51 kΩ` | Polarisation haute            |
+| B6/R13    |          `5,6 kΩ` | Polarisation intermédiaire    |
+| B6/R14    |          `8,2 kΩ` | Polarisation basse            |
+| B6/R15    |           `30 kΩ` | Alimentation / polarisation   |
+| B6/R16    | `500 Ω` ajustable | Réglage de point / gain local |
+| B6/R17    |           `68 kΩ` | Retour / polarisation         |
+| B6/C8     |           `10 µF` | Couplage / découplage         |
+| B6/C9     |           `50 µF` | Découplage                    |
+| B6/C10    |           `25 µF` | Découplage du rail 6,4 V      |
+
+Tensions visibles :
+
+| Point      | Tension indiquée |
+| ---------- | ---------------: |
+| Rail local |          `6,4 V` |
+| Zone Ts1   |          `3,8 V` |
+| Point bas  |          `0,8 V` |
+
+---
+
+## 5.2 Deuxième étage : B6/Ts2
+
+| Référence | Valeur / type | Fonction                            |
+| --------- | ------------: | ----------------------------------- |
+| B6/Ts2    |       `BCY66` | Deuxième transistor audio           |
+| B6/R18    |       `68 kΩ` | Polarisation / retour               |
+| B6/R19    |       `30 kΩ` | Résistance de chute vers rail 6,4 V |
+| B6/R21    |       `10 kΩ` | Charge / polarisation               |
+| B6/R22    |      `8,2 kΩ` | Polarisation basse                  |
+| B6/C11    |        `1 nF` | Compensation haute fréquence        |
+| B6/C13    |       `25 µF` | Découplage                          |
+
+Tension visible :
+
+| Point          | Tension indiquée |
+| -------------- | ---------------: |
+| Zone basse Ts2 |          `3,2 V` |
+
+---
+
+## 5.3 Troisième étage : B6/Ts3
+
+| Référence | Valeur / type | Fonction                                 |
+| --------- | ------------: | ---------------------------------------- |
+| B6/Ts3    |    `SST117/1` | Étage intermédiaire                      |
+| B6/R20    |       `12 kΩ` | Liaison / contre-réaction locale         |
+| B6/R23    |       `33 kΩ` | Polarisation                             |
+| B6/R24    |      `9,1 kΩ` | Polarisation basse                       |
+| B6/R25    |       `16 kΩ` | Charge / polarisation depuis rail 12,2 V |
+| B6/R26    |       `220 Ω` | Résistance d’émetteur                    |
+| B6/R27    |       `620 Ω` | Stabilisation / polarisation basse       |
+| B6/C12    |        `2 nF` | Compensation HF                          |
+| B6/C14    |       `10 µF` | Découplage local                         |
+| B6/C15    |       `50 µF` | Découplage rail 12,2 V                   |
+| B6/C16    |      `100 µF` | Liaison vers étage suivant               |
+
+Tensions visibles :
+
+| Point                | Tension / signal indiqué |
+| -------------------- | -----------------------: |
+| Zone haute Ts3       |                  `2,4 V` |
+| Émetteur / point bas |                 `0,74 V` |
+| Signal indiqué       |                `100 mV~` |
+
+---
+
+## 5.4 Quatrième étage : B6/Ts4
+
+| Référence |     Valeur / type | Fonction                                    |
+| --------- | ----------------: | ------------------------------------------- |
+| B6/Ts4    |        `SST116/1` | Driver / adaptation                         |
+| B6/R28    |           `10 kΩ` | Charge / polarisation                       |
+| B6/R29    | `20 kΩ` ajustable | Réglage de niveau / point de fonctionnement |
+| B6/R31    |          `5,6 kΩ` | Polarisation / alimentation                 |
+| B6/R32    |            `1 kΩ` | Polarisation basse                          |
+| B6/C17    |          `100 µF` | Découplage associé à R29                    |
+| B6/C18    |           `50 µF` | Découplage local                            |
+
+Tensions visibles :
+
+| Point     | Tension indiquée |
+| --------- | ---------------: |
+| Zone Ts4  |          `4,8 V` |
+| Point bas |          `1,8 V` |
+
+---
+
+## 5.5 Étage de sortie audio : B6/Ts5 et B6/Ts6
+
+| Référence |            Valeur / type | Fonction                              |
+| --------- | -----------------------: | ------------------------------------- |
+| B6/Ts5    |               `SST117/1` | Transistor supérieur de sortie        |
+| B6/Ts6    |               `SST117/1` | Transistor inférieur de sortie        |
+| B6/R33    |                  `20 kΩ` | Contre-réaction / polarisation        |
+| B6/R34    |                 `3,6 kΩ` | Liaison vers le point de sortie       |
+| B6/R35    |                  `820 Ω` | Polarisation basse                    |
+| B6/R36    |                   `24 Ω` | Résistance série côté rail 22 V       |
+| B6/R37    |                   `10 Ω` | Résistance d’émetteur / stabilisation |
+| B6/C19    |                 `250 µF` | Découplage du rail 22 V               |
+| B6/C20    |                  `50 µF` | Découplage autour de R33              |
+| B6/C21    |                 `500 µF` | Condensateur de liaison vers U2       |
+| B6/U2     | transformateur de sortie | Adaptation / sortie symétrique        |
+| B6/S3     | commutateur sortie haute | Routage sortie                        |
+| B6/S4     | commutateur sortie basse | Routage sortie                        |
+
+Tensions visibles :
+
+| Point               | Tension / signal indiqué |
+| ------------------- | -----------------------: |
+| Rail local          |                   `22 V` |
+| Zone Ts5            |                 `21,5 V` |
+| Point sortie driver |        `10,5 V / 2,8 V~` |
+| Zone basse Ts6      |                `220 mV~` |
+
+Signal flow de sortie :
+
+```text
+Ts4
+→ Ts5 / Ts6
+→ point de sortie driver 10,5 V / 2,8 V~
+→ C21 500 µF
+→ transformateur U2
+→ S3 / S4
+→ sortie +6 dB, 1,55 V, 300 Ω
+```
+
+---
+
+# 6. Transformateur de sortie B6/U2
+
+| Élément         | Fonction                 |
+| --------------- | ------------------------ |
+| B6/U2           | Transformateur de sortie |
+| Entrée U2       | Via C21 500 µF           |
+| Sortie U2       | Symétrique, via S3/S4    |
+| Niveau nominal  | `+6 dB`, soit `1,55 V`   |
+| Charge nominale | `300 Ω`                  |
+
+Rôle :
+
+```text
+adaptation d’impédance
+isolation galvanique
+sortie symétrique flottante
+blocage des problèmes de masse
+```
+
+Le condensateur **C21 500 µF** évite d’envoyer du continu dans le primaire du transformateur U2.
+
+---
+
+# 7. Alimentation de la carte audio B6
+
+| Référence    |   Valeur | Fonction                        |
+| ------------ | -------: | ------------------------------- |
+| Alimentation |  `+24 V` | Rail principal                  |
+| B6/R38       |   `68 Ω` | Résistance série d’alimentation |
+| B6/Si        |  `0,4 A` | Fusible carte audio             |
+| B6/R30       | `6,8 kΩ` | Chute vers rail 12,2 V          |
+| B6/R19       |  `30 kΩ` | Chute vers rail 6,4 V           |
+| B6/C19       | `250 µF` | Filtrage rail 22 V              |
+| B6/C15       |  `50 µF` | Filtrage rail 12,2 V            |
+| B6/C10       |  `25 µF` | Filtrage rail 6,4 V             |
+
+Rails internes :
+
+```text
++24 V
+→ R38 68 Ω / fusible 0,4 A
+→ rail 22 V
+→ R30 6,8 kΩ
+→ rail 12,2 V
+→ R19 30 kΩ
+→ rail 6,4 V
+```
+
+Ce filtrage RC en cascade isole les premiers étages audio des variations de courant de l’étage de sortie.
+
+---
+
+# 8. Liste complète B6 — résistances
+
+| Référence |             Valeur |
+| --------- | -----------------: |
+| B6/R1     |           `5,1 kΩ` |
+| B6/R2     |           `5,1 kΩ` |
+| B6/R3     |   `1 kΩ` ajustable |
+| B6/R4     |  `200 Ω` ajustable |
+| B6/R5     |           `5,6 kΩ` |
+| B6/R6     |            `39 kΩ` |
+| B6/R7     |  `100 Ω` ajustable |
+| B6/R8     | `250 kΩ` ajustable |
+| B6/R9     |           `390 kΩ` |
+| B6/R10    |            `20 kΩ` |
+| B6/R11    |            `39 kΩ` |
+| B6/R12    |            `51 kΩ` |
+| B6/R13    |           `5,6 kΩ` |
+| B6/R14    |           `8,2 kΩ` |
+| B6/R15    |            `30 kΩ` |
+| B6/R16    |  `500 Ω` ajustable |
+| B6/R17    |            `68 kΩ` |
+| B6/R18    |            `68 kΩ` |
+| B6/R19    |            `30 kΩ` |
+| B6/R20    |            `12 kΩ` |
+| B6/R21    |            `10 kΩ` |
+| B6/R22    |           `8,2 kΩ` |
+| B6/R23    |            `33 kΩ` |
+| B6/R24    |           `9,1 kΩ` |
+| B6/R25    |            `16 kΩ` |
+| B6/R26    |            `220 Ω` |
+| B6/R27    |            `620 Ω` |
+| B6/R28    |            `10 kΩ` |
+| B6/R29    |  `20 kΩ` ajustable |
+| B6/R30    |           `6,8 kΩ` |
+| B6/R31    |           `5,6 kΩ` |
+| B6/R32    |             `1 kΩ` |
+| B6/R33    |            `20 kΩ` |
+| B6/R34    |           `3,6 kΩ` |
+| B6/R35    |            `820 Ω` |
+| B6/R36    |             `24 Ω` |
+| B6/R37    |             `10 Ω` |
+| B6/R38    |             `68 Ω` |
+
+---
+
+# 9. Liste complète B6 — condensateurs
+
+| Référence |                     Valeur |
+| --------- | -------------------------: |
+| B6/C1     |                  `0,68 µF` |
+| B6/C2     |                    `22 µF` |
+| B6/C3     |                   `4,7 µF` |
+| B6/C4     | `Abgl.` valeur non lisible |
+| B6/C5     |                   `150 µF` |
+| B6/C6     | `Abgl.` valeur non lisible |
+| B6/C7     |                   `4,7 µF` |
+| B6/C8     |                    `10 µF` |
+| B6/C9     |                    `50 µF` |
+| B6/C10    |                    `25 µF` |
+| B6/C11    |                     `1 nF` |
+| B6/C12    |                     `2 nF` |
+| B6/C13    |                    `25 µF` |
+| B6/C14    |                    `10 µF` |
+| B6/C15    |                    `50 µF` |
+| B6/C16    |                   `100 µF` |
+| B6/C17    |                   `100 µF` |
+| B6/C18    |                    `50 µF` |
+| B6/C19    |                   `250 µF` |
+| B6/C20    |                    `50 µF` |
+| B6/C21    |                   `500 µF` |
+
+---
+
+# 10. Liste complète B6 — semi-conducteurs et blocs
+
+| Référence |                     Type |
+| --------- | -----------------------: |
+| B6/D1     |                 `OA154Q` |
+| B6/D2     |                  `SSD55` |
+| B6/D3     |                  `SSD55` |
+| B6/D4     |                 `OA154Q` |
+| B6/Ts1    |                  `BCY66` |
+| B6/Ts2    |                  `BCY66` |
+| B6/Ts3    |               `SST117/1` |
+| B6/Ts4    |               `SST116/1` |
+| B6/Ts5    |               `SST117/1` |
+| B6/Ts6    |               `SST117/1` |
+| B6/U1     |  transformateur d’entrée |
+| B6/U2     | transformateur de sortie |
+
+---
+
+# 11. Carte B11 — Regelverstärker / sidechain
+
+La carte B11 est le **régulateur**. Elle transforme le niveau de sortie audio en courant/tension de commande pour le pont de diodes B6/D1-D4.
+
+---
+
+## 11.1 Entrée de régulation, seuil et transformateur Ü
+
+| Référence |  Valeur / type | Fonction                                     |
+| --------- | -------------: | -------------------------------------------- |
+| B11/Ü     | transformateur | Couplage / isolation du signal de régulation |
+| B11/D1    |         `ZL10` | Zener de seuil                               |
+| B11/D2    |        `SSD55` | Diode de seuil / redressement                |
+| B11/R31   |        `51 kΩ` | Résistance associée au seuil                 |
+| B11/S7    |    commutateur | Sélection limiteur / compresseur             |
+| B11/Gr    |    `B30 C2200` | Bloc redresseur                              |
+| B11/R30   |          `1 Ω` | Résistance série alimentation / protection   |
+| B11/C11   |       `500 µF` | Filtrage                                     |
+| B11/Si    |        `0,8 A` | Fusible côté régulation                      |
+
+Signal flow :
+
+```text
+Prélèvement audio
+→ transformateur Ü
+→ D2 SSD55 / D1 ZL10 / S7
+→ bloc redresseur Gr B30 C2200
+→ étages actifs de régulation
+```
+
+La zener **ZL10** participe au seuil de limitation : en mode limiteur, elle retarde l’action de la régulation jusqu’au niveau voulu.
+
+---
+
+## 11.2 Étages de puissance de régulation : B11/Ts5 et B11/Ts6
+
+| Référence | Valeur / type | Fonction                              |
+| --------- | ------------: | ------------------------------------- |
+| B11/Ts5   |      `2N3054` | Transistor de puissance de régulation |
+| B11/Ts6   |      `2N3054` | Transistor de puissance de régulation |
+| B11/R28   |         `1 Ω` | Résistance d’émetteur / équilibrage   |
+| B11/R29   |         `1 Ω` | Résistance d’émetteur / équilibrage   |
+
+Ces transistors ne sont pas dans le chemin audio direct. Ils appartiennent à la boucle de commande.
+
+---
+
+## 11.3 Étages B11/Ts3 et B11/Ts4
+
+| Référence |     Valeur / type | Fonction                  |
+| --------- | ----------------: | ------------------------- |
+| B11/Ts3   |          `SST116` | Étage actif de régulation |
+| B11/Ts4   |          `SST116` | Étage actif de régulation |
+| B11/R18   | `10 MΩ` ajustable | Réglage de régulation     |
+| B11/R19   |           `33 kΩ` | Liaison / polarisation    |
+| B11/R20   |           `33 kΩ` | Liaison / polarisation    |
+| B11/R21   |           `10 kΩ` | Polarisation              |
+| B11/R22   |          `1,8 kΩ` | Polarisation              |
+| B11/R23   |           `100 Ω` | Charge / stabilisation    |
+| B11/R24   |           `100 Ω` | Charge / stabilisation    |
+| B11/R25   |           `100 Ω` | Résistance locale         |
+| B11/R26   |           `100 Ω` | Résistance locale         |
+| B11/R27   | `500 Ω` ajustable | Équilibrage               |
+
+Tensions visibles :
+
+| Point        | Tension indiquée |
+| ------------ | ---------------: |
+| Rail         |           `24 V` |
+| Zone Ts3     |           `23 V` |
+| Point commun |         `0,45 V` |
+
+---
+
+## 11.4 Étage B11/Ts2
+
+| Référence | Valeur / type | Fonction                          |
+| --------- | ------------: | --------------------------------- |
+| B11/Ts2   |      `SST117` | Étage intermédiaire de régulation |
+| B11/R13   |      `220 kΩ` | Retour / liaison                  |
+| B11/R14   |        `2 kΩ` | Liaison vers Ts1                  |
+| B11/R15   |      `1,2 kΩ` | Charge / polarisation             |
+| B11/R16   |      `1,2 kΩ` | Polarisation basse                |
+| B11/C7    |       `25 µF` | Couplage / filtrage               |
+| B11/C8    |       `25 µF` | Couplage                          |
+| B11/C9    |       `25 µF` | Couplage / constante de temps     |
+
+Tensions visibles :
+
+| Point      | Tension / signal indiqué |
+| ---------- | -----------------------: |
+| Point haut |                 `14,5 V` |
+| Point bas  |          `9 V / 100 mV~` |
+
+---
+
+## 11.5 Étage B11/Ts1 et réseau de commande
+
+| Référence |     Valeur / type | Fonction                        |
+| --------- | ----------------: | ------------------------------- |
+| B11/Ts1   |          `SST117` | Étage de sortie de commande     |
+| B11/R9    |           `56 kΩ` | Retour / fuite                  |
+| B11/R10   |            `2 kΩ` | Résistance haute                |
+| B11/R11   |           `10 kΩ` | Polarisation                    |
+| B11/R12   |           `120 Ω` | Émetteur / stabilisation        |
+| B11/R13   |          `220 kΩ` | Liaison depuis Ts2              |
+| B11/R17   |          `6,8 kΩ` | Contre-réaction / stabilisation |
+| B11/R7    | `500 Ω` ajustable | Réglage de commande             |
+| B11/R8    |           `680 Ω` | Résistance basse de commande    |
+| B11/C5    |          `100 µF` | Filtrage / constante de temps   |
+| B11/C6    |            `1 nF` | Compensation / filtrage         |
+| B11/C10   |          `100 pF` | Compensation HF                 |
+
+Tensions visibles :
+
+| Point             | Tension / signal indiqué |
+| ----------------- | -----------------------: |
+| Point haut Ts1    |                   `10 V` |
+| Point bas         |                  `0,5 V` |
+| Ligne de commande |                `150 mV~` |
+
+---
+
+# 12. Réseau de fréquence / préaccentuation B11
+
+Ce réseau règle la manière dont le sidechain réagit aux fréquences. Il ne traite pas directement le chemin audio principal ; il façonne le signal de commande.
+
+| Référence |      Valeur | Fonction                                           |
+| --------- | ----------: | -------------------------------------------------- |
+| B11/S6    | commutateur | Sélection / insertion du réseau de préaccentuation |
+| B11/R1    |      `3 kΩ` | Résistance du réseau sidechain                     |
+| B11/R2    |    `5,1 kΩ` | Résistance du réseau sidechain                     |
+| B11/R3    |    `7,5 kΩ` | Réseau de fréquence                                |
+| B11/R4    |    `7,5 kΩ` | Réseau de fréquence                                |
+| B11/R5    |     `15 kΩ` | Réseau de fréquence                                |
+| B11/R6    |    `3,9 kΩ` | Réseau de fréquence                                |
+| B11/C1    |      `5 nF` | Filtrage / préaccentuation                         |
+| B11/C2    |      `5 nF` | Filtrage / préaccentuation                         |
+| B11/C3    |    `3,3 nF` | Filtrage / préaccentuation                         |
+| B11/C4    |      `3 nF` | Filtrage / préaccentuation                         |
+
+La note allemande indique que des ponts de câblage permettent de modifier la préaccentuation ; l’état standard correspond à une régulation à réponse fréquentielle linéaire.
+
+---
+
+# 13. Liste complète B11 — résistances
+
+| Référence |            Valeur |
+| --------- | ----------------: |
+| B11/R1    |            `3 kΩ` |
+| B11/R2    |          `5,1 kΩ` |
+| B11/R3    |          `7,5 kΩ` |
+| B11/R4    |          `7,5 kΩ` |
+| B11/R5    |           `15 kΩ` |
+| B11/R6    |          `3,9 kΩ` |
+| B11/R7    | `500 Ω` ajustable |
+| B11/R8    |           `680 Ω` |
+| B11/R9    |           `56 kΩ` |
+| B11/R10   |            `2 kΩ` |
+| B11/R11   |           `10 kΩ` |
+| B11/R12   |           `120 Ω` |
+| B11/R13   |          `220 kΩ` |
+| B11/R14   |            `2 kΩ` |
+| B11/R15   |          `1,2 kΩ` |
+| B11/R16   |          `1,2 kΩ` |
+| B11/R17   |          `6,8 kΩ` |
+| B11/R18   | `10 MΩ` ajustable |
+| B11/R19   |           `33 kΩ` |
+| B11/R20   |           `33 kΩ` |
+| B11/R21   |           `10 kΩ` |
+| B11/R22   |          `1,8 kΩ` |
+| B11/R23   |           `100 Ω` |
+| B11/R24   |           `100 Ω` |
+| B11/R25   |           `100 Ω` |
+| B11/R26   |           `100 Ω` |
+| B11/R27   | `500 Ω` ajustable |
+| B11/R28   |             `1 Ω` |
+| B11/R29   |             `1 Ω` |
+| B11/R30   |             `1 Ω` |
+| B11/R31   |           `51 kΩ` |
+
+---
+
+# 14. Liste complète B11 — condensateurs
+
+| Référence |   Valeur |
+| --------- | -------: |
+| B11/C1    |   `5 nF` |
+| B11/C2    |   `5 nF` |
+| B11/C3    | `3,3 nF` |
+| B11/C4    |   `3 nF` |
+| B11/C5    | `100 µF` |
+| B11/C6    |   `1 nF` |
+| B11/C7    |  `25 µF` |
+| B11/C8    |  `25 µF` |
+| B11/C9    |  `25 µF` |
+| B11/C10   | `100 pF` |
+| B11/C11   | `500 µF` |
+
+---
+
+# 15. Liste complète B11 — semi-conducteurs et blocs
+
+| Référence |                                             Type |
+| --------- | -----------------------------------------------: |
+| B11/D1    |                                           `ZL10` |
+| B11/D2    |                                          `SSD55` |
+| B11/Gr    |                                      `B30 C2200` |
+| B11/Ts1   |                                         `SST117` |
+| B11/Ts2   |                                         `SST117` |
+| B11/Ts3   |                                         `SST116` |
+| B11/Ts4   |                                         `SST116` |
+| B11/Ts5   |                                         `2N3054` |
+| B11/Ts6   |                                         `2N3054` |
+| B11/Ü     |                     Transformateur de régulation |
+| B11/S6    | Commutateur préaccentuation / réseau fréquentiel |
+| B11/S7    |               Commutateur limiteur / compresseur |
+| B11/Si    |                                  Fusible `0,8 A` |
+
+---
+
+# 16. Signal flow final complet
+
+## 16.1 Signal audio
+
+```text
+Entrée ligne symétrique
+→ S1/S2
+→ R1/R2 5,1 kΩ
+→ réseau R3 1 kΩ + R4 200 Ω via S5
+→ transformateur d’entrée U1
+→ R5 5,6 kΩ
+→ C1 0,68 µF
+→ nœud audio 25 mV~
+→ pont de diodes D1-D4
+→ Ts1 BCY66
+→ Ts2 BCY66
+→ Ts3 SST117/1
+→ Ts4 SST116/1
+→ Ts5/Ts6 SST117/1
+→ C21 500 µF
+→ transformateur de sortie U2
+→ S3/S4
+→ sortie +6 dB, 1,55 V, 300 Ω
+```
+
+## 16.2 Signal de régulation
+
+```text
+Prélèvement du niveau de sortie
+→ transformateur Ü
+→ réseau D2 SSD55 / D1 ZL10 / S7
+→ bloc redresseur Gr B30 C2200
+→ étages de régulation Ts5/Ts6 2N3054
+→ Ts3/Ts4 SST116
+→ Ts2 SST117
+→ Ts1 SST117
+→ réseau de constantes de temps C5/C7/C8/C9
+→ réseau de préaccentuation S6 + R1-R6 + C1-C4
+→ courant/tension de commande
+→ pont de diodes B6/D1-D4
+→ réduction du niveau audio avant l’amplificateur principal
+```
+
+---
+
+# 17. Points non déterminés par le schéma visible
+
+| Élément | Statut                                |
+| ------- | ------------------------------------- |
+| B6/C4   | Marqué `Abgl.`, valeur non lisible    |
+| B6/C6   | Marqué `Abgl.`, valeur non lisible    |
+| B6/U1   | Rapport de transformation non indiqué |
+| B6/U2   | Rapport de transformation non indiqué |
+| B11/Ü   | Rapport de transformation non indiqué |
+
+Le reste est maintenant consolidé avec tes confirmations et les crops haute lisibilité.

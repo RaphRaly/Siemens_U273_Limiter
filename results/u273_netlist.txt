@@ -1,0 +1,114 @@
+Siemens U273 - netlist parametrique export texte
+====================================================
+
+version: u273_orchestrator_v0_1
+status: PARTIEL
+coupling_mode: thevenin_b11_s6_s7_reference
+boundary: The current executable DC netlist keeps the B11/S6/S7 command path as a finite Thevenin reference. Full active B11+B6 closure waits for unread transistor routes and complete B11 netlist proof.
+
+Components
+id | type | value | unit | nodes | card | function | status | source_etape
+B11_S6_S7.VB11_S6_S7 | voltage_source | 1 | volt | n_plus=B11_DRV;n_minus=0 | B11/B6 | finite command source replacing old ideal VCMD | PARAMETRIQUE | Etape 24
+B11_S6_S7.RB11_S6_S7_CMD | resistor | 10000 | ohm | n1=B11_DRV;n2=CMD | B11/B6 | Thevenin output resistance of not-yet-closed active B11/S6/S7 path | PARAMETRIQUE | Etape 24
+B6.S1 | switch |  |  | common=B6_IN_H;positions=2,6;out=B6_IN_H_SW | B6 | input range/source switch upper leg | COMMUTATEUR_SCHEMA | Etape 26
+B6.S2 | switch |  |  | common=B6_IN_L;positions=1,8;out=B6_IN_L_SW | B6 | input range/source switch lower leg | COMMUTATEUR_SCHEMA | Etape 26
+B6.R1 | resistor | 5100 | ohm | n1=B6_IN_H_SW;n2=U1_PRI_H | B6 | input series resistor | FERME_SCHEMA | Etape 26
+B6.R2 | resistor | 5100 | ohm | n1=B6_IN_L_SW;n2=U1_PRI_L | B6 | input series resistor | FERME_SCHEMA | Etape 26
+B6.R3 | potentiometer | 1000 | ohm | end1=U1_PRI_H;wiper=S5_TOP;end2=S5_BUS | B6 | input trim | PARAMETRIQUE | Etape 26
+B6.R4 | potentiometer | 200 | ohm | end1=U1_PRI_H;wiper=S5_BOTTOM;end2=S5_BUS | B6 | input trim | PARAMETRIQUE | Etape 26
+B6.S5 | switch |  |  | common=S5_BUS;contacts=8,9,10 | B6 | input calibration/range switch | COMMUTATEUR_SCHEMA | Etape 26
+B6.U1 | transformer |  |  | primary=U1_PRI_H/U1_PRI_L;secondary=U1_SEC_H/U1_SEC_L | B6 | input transformer | FERME_SCHEMA | Etape 26
+B6.R5 | resistor | 5600 | ohm | n1=U1_SEC_H;n2=NX | B6 | bridge input feed | FERME_SCHEMA | Etape 26
+B6.C1 | capacitor | 6.8e-7 | farad | n1=NX;n2=NA_25MV | B6 | bridge input coupling; corrected from provisional 1000p to schematic 0.68u | FERME_SCHEMA | Etape 26
+B6.C2 | capacitor | 0.000022 | farad | n1=NA_25MV;n2=NB | B6 | bridge feed coupling | FERME_SCHEMA | Etape 26
+B6.R9 | resistor | 390000 | ohm | n1=NB;n2=D2_D1_RIGHT_RAIL | B6 | bridge bias/feed | FERME_SCHEMA | Etape 26
+B6.R7 | potentiometer | 100 | ohm | end1=D3_D4_LEFT_RAIL;wiper=NB;end2=D2_D1_RIGHT_RAIL | B6 | bridge balance, effective value used in MNA | PARAMETRIQUE | Etape 26
+B6.R8 | potentiometer | 250000 | ohm | end1=N14;wiper=R10_LEFT;end2=N15 | B6 | bridge balance/command trim, effective value used in MNA | PARAMETRIQUE | Etape 26
+B6.R10 | resistor | 20000 | ohm | n1=CMD;n2=R10_LEFT | B6 | B11/S7 command injection | FERME_SCHEMA | Etape 26
+B6.D3 | diode | SSD55 |  | anode=NB;cathode=NL | B6 | left upper bridge diode | FERME_SCHEMA | Etape 26
+B6.D4 | diode | OA154Q |  | anode=NL;cathode=N14 | B6 | left lower bridge diode | FERME_SCHEMA | Etape 26
+B6.D2 | diode | SSD55 |  | anode=NB;cathode=NR | B6 | right upper bridge diode | FERME_SCHEMA | Etape 26
+B6.D1 | diode | OA154Q |  | anode=NR;cathode=N15 | B6 | right lower bridge diode | FERME_SCHEMA | Etape 26
+B6.R6 | resistor | 39000 | ohm | n1=N14;n2=0 | B6 | left bridge return | FERME_SCHEMA | Etape 26
+B6.C3 | capacitor | 0.0000047 | farad | n1=N14;n2=0 | B6 | left bridge bypass | FERME_SCHEMA | Etape 26
+B6.C4 | capacitor_adjust | 0 | farad | n1=N14;n2=0 | B6 | Abgl adjustment capacitor | PARAMETRIQUE | Etape 26
+B6.C5 | capacitor | 0.00015 | farad | n1=N14;n2=N15 | B6 | bridge coupling/storage | FERME_SCHEMA | Etape 26
+B6.C6 | capacitor_adjust | 0 | farad | n1=N15;n2=0 | B6 | Abgl adjustment capacitor | PARAMETRIQUE | Etape 26
+B6.C7 | capacitor | 0.0000047 | farad | n1=N15;n2=0 | B6 | right bridge bypass | FERME_SCHEMA | Etape 26
+B6.R11 | resistor | 39000 | ohm | n1=N15;n2=0 | B6 | right bridge return | FERME_SCHEMA | Etape 26
+B6.R12 | resistor | 51000 | ohm | n1=V64;n2=TS1_BIAS_TOP | B6 | Ts1 bias from 6.4V rail | FERME_SCHEMA | Etape 26
+B6.R13 | resistor | 5600 | ohm | n1=TS1_BIAS_TOP;n2=N08 | B6 | Ts1 bias network | FERME_SCHEMA | Etape 26
+B6.R14 | resistor | 8200 | ohm | n1=N08;n2=0 | B6 | Ts1 emitter/bias return | FERME_SCHEMA | Etape 26
+B6.R15 | resistor | 30000 | ohm | n1=V64;n2=N38 | B6 | Ts2 bias feed | FERME_SCHEMA | Etape 26
+B6.R16 | potentiometer | 500 | ohm | end1=N08;wiper=R16_WIPER;end2=R17_TOP | B6 | front-stage trim | PARAMETRIQUE | Etape 26
+B6.R17 | resistor | 6800 | ohm | n1=R17_TOP;n2=0 | B6 | front-stage trim return | FERME_SCHEMA | Etape 26
+B6.R18 | resistor | 68000 | ohm | n1=N38;n2=N08 | B6 | Ts2 bias feedback | FERME_SCHEMA | Etape 26
+B6.R19 | resistor | 30000 | ohm | n1=V64;n2=V122 | B6 | supply divider/feed | FERME_SCHEMA | Etape 26
+B6.R20 | resistor | 1200 | ohm | n1=N08;n2=N074 | B6 | Ts3 emitter/local feedback | FERME_SCHEMA | Etape 26
+B6.R21 | resistor | 10000 | ohm | n1=V122;n2=V64 | B6 | supply/bias feed | FERME_SCHEMA | Etape 26
+B6.R22 | resistor | 8200 | ohm | n1=N32;n2=0 | B6 | Ts2 emitter current reference | FERME_SCHEMA | Etape 26
+B6.R23 | resistor | 33000 | ohm | n1=V64;n2=N24 | B6 | Ts3 bias with C14 | FERME_SCHEMA | Etape 26
+B6.R24 | resistor | 9100 | ohm | n1=N32;n2=0 | B6 | front-stage emitter/reference path | FERME_SCHEMA | Etape 26
+B6.R25 | resistor | 16000 | ohm | n1=V122;n2=N24 | B6 | Ts3 bias feed | FERME_SCHEMA | Etape 26
+B6.R26 | resistor | 220 | ohm | n1=N074;n2=R27_TOP | B6 | Ts3 emitter resistor chain | FERME_SCHEMA | Etape 26
+B6.R27 | resistor | 620 | ohm | n1=R27_TOP;n2=0 | B6 | Ts3 emitter resistor chain | FERME_SCHEMA | Etape 26
+B6.R28 | resistor | 10000 | ohm | n1=N105;n2=N18 | B6 | Ts4/output driver bias | FERME_SCHEMA | Etape 26
+B6.R29 | resistor | 20000 | ohm | n1=N18;n2=0 | B6 | Ts4 emitter/load return | FERME_SCHEMA | Etape 26
+B6.R30 | resistor | 6800 | ohm | n1=V122;n2=V22 | B6 | supply feed to 22V rail | FERME_SCHEMA | Etape 26
+B6.R31 | resistor | 5600 | ohm | n1=V22;n2=N48 | B6 | Ts4 collector/load feed | FERME_SCHEMA | Etape 26
+B6.R32 | resistor | 1000 | ohm | n1=N18;n2=0 | B6 | Ts4 current reference | FERME_SCHEMA | Etape 26
+B6.R33 | resistor | 20000 | ohm | n1=V22;n2=N215 | B6 | output upper bias/feed | FERME_SCHEMA | Etape 26
+B6.R34 | resistor | 3600 | ohm | n1=N105;n2=U2_PRI_TOP | B6 | output transformer drive | FERME_SCHEMA | Etape 26
+B6.R35 | resistor | 820 | ohm | n1=OUTPUT_BIAS_LEFT;n2=0 | B6 | output-stage lower bias | FERME_SCHEMA | Etape 26
+B6.R36 | resistor | 24 | ohm | n1=V22;n2=N215 | B6 | output idle-current sense/feed | FERME_SCHEMA | Etape 26
+B6.R37 | resistor | 10 | ohm | n1=TS6_EMITTER;n2=0 | B6 | output lower emitter resistor | FERME_SCHEMA | Etape 26
+B6.R38 | resistor | 68 | ohm | n1=V22;n2=SUPPLY_SI_0A4 | B6 | supply series resistor/fuse feed | FERME_SCHEMA | Etape 26
+B6.C8 | capacitor | 0.00001 | farad | n1=N08;n2=TS1_BIAS_TOP | B6 | front-stage coupling/compensation | FERME_SCHEMA | Etape 26
+B6.C9 | capacitor | 0.00005 | farad | n1=N32;n2=0 | B6 | Ts2 emitter bypass | FERME_SCHEMA | Etape 26
+B6.C10 | capacitor | 0.000025 | farad | n1=V64;n2=0 | B6 | 6.4V rail decoupling | FERME_SCHEMA | Etape 26
+B6.C11 | capacitor | 1.7e-8 | farad | n1=N38;n2=N08 | B6 | front-stage compensation | FERME_SCHEMA | Etape 26
+B6.C12 | capacitor | 2e-9 | farad | n1=N08;n2=N074 | B6 | Ts3 compensation | FERME_SCHEMA | Etape 26
+B6.C13 | capacitor | 0.000025 | farad | n1=N32;n2=0 | B6 | front-stage bypass | FERME_SCHEMA | Etape 26
+B6.C14 | capacitor | 0.00007 | farad | n1=N24;n2=V64 | B6 | Ts3 bias bypass with R23 | FERME_SCHEMA | Etape 26
+B6.C15 | capacitor | 0.00015 | farad | n1=V122;n2=0 | B6 | 12.2V rail decoupling | FERME_SCHEMA | Etape 26
+B6.C16 | capacitor | 1e-7 | farad | n1=N074;n2=N18 | B6 | Ts3/Ts4 coupling | FERME_SCHEMA | Etape 26
+B6.C17 | capacitor | 0.0001 | farad | n1=N18;n2=0 | B6 | Ts4 bypass | FERME_SCHEMA | Etape 26
+B6.C18 | capacitor | 0.00005 | farad | n1=N18;n2=0 | B6 | Ts4/output compensation | FERME_SCHEMA | Etape 26
+B6.C19 | capacitor | 0.00022 | farad | n1=V122;n2=V22 | B6 | 22V feed decoupling | FERME_SCHEMA | Etape 26
+B6.C20 | capacitor | 0.00015 | farad | n1=N215;n2=V22 | B6 | upper output bootstrap/decoupling | FERME_SCHEMA | Etape 26
+B6.C21 | capacitor | 0.0005 | farad | n1=U2_PRI_TOP;n2=U2_PRI_BOTTOM | B6 | output coupling to transformer | FERME_SCHEMA | Etape 26
+B6.Ts1 | bjt | BCY66 |  | terminals=from Siemens schematic symbol;printedNodes=V64,N08 | B6 | front signal transistor; not nonlinear-stamped by default | GARDE_NON_STAMPE | Etape 26
+B6.Ts2 | bjt | BCY66 |  | collector=V64;base=N38;emitter=N32 | B6 | front signal transistor; hybrid-pi candidate only | GARDE_NON_STAMPE | Etape 26
+B6.Ts3 | bjt | SST117/1 |  | terminals=from Siemens schematic symbol;printedNodes=N24,N074 | B6 | middle gain/driver transistor; not nonlinear-stamped by default | GARDE_NON_STAMPE | Etape 26
+B6.Ts4 | bjt | SST116/1 |  | collector=N48;base=N24;emitter=N18 | B6 | middle gain/driver transistor; hybrid-pi candidate only | GARDE_NON_STAMPE | Etape 26
+B6.Ts5 | bjt | SST117/1 |  | terminals=from Siemens schematic symbol;printedNodes=N215,N105 | B6 | upper output transistor; output-stage bound only | GARDE_NON_STAMPE | Etape 26
+B6.Ts6 | bjt | SST117/1 |  | terminals=from Siemens schematic symbol;printedNodes=N105,0 | B6 | lower output transistor; output-stage bound only | GARDE_NON_STAMPE | Etape 26
+B6.U2 | transformer |  |  | primary=U2_PRI_TOP/U2_PRI_BOTTOM;secondary=B6_OUT_300R | B6 | output transformer | FERME_SCHEMA | Etape 26
+B6.S3 | switch |  |  | contacts=22,23;output=B6_OUT_PLUS | B6 | output switch upper section | COMMUTATEUR_SCHEMA | Etape 26
+B6.S4 | switch |  |  | contacts=25,26;output=B6_OUT_RETURN | B6 | output switch lower section | COMMUTATEUR_SCHEMA | Etape 26
+B6.GMIN_NL | resistor | 1000000000000 | ohm | n1=NL;n2=0 | B6 | MNA numerical stabilizer | NUMERICAL_HELPER | solver/b6_parametric.js
+B6.GMIN_NR | resistor | 1000000000000 | ohm | n1=NR;n2=0 | B6 | MNA numerical stabilizer | NUMERICAL_HELPER | solver/b6_parametric.js
+B11.S6.R4 | resistor | 7500 | ohm | n1=VL;n2=VM | B11 | S6 Vorentzerrung core branch VL-VM | PARTIEL | Etape 20/21
+B11.S6.C2 | capacitor | 5e-9 | farad | n1=VL;n2=VM | B11 | S6 Vorentzerrung core branch VL-VM | PARTIEL | Etape 20/21
+B11.S6.R3 | resistor | 7500 | ohm | n1=VM;n2=VR | B11 | S6 Vorentzerrung core branch VM-VR | PARTIEL | Etape 20/21
+B11.S6.C1 | capacitor | 5e-9 | farad | n1=VM;n2=VR | B11 | S6 Vorentzerrung core branch VM-VR | PARTIEL | Etape 20/21
+B11.S6.R5 | resistor | 15000 | ohm | n1=VL;n2=VR | B11 | S6 Vorentzerrung optional bridge branch | PARTIEL | Etape 20/21
+B11.S6.C3 | capacitor | 3.3e-9 | farad | n1=VL;n2=VR | B11 | S6 Vorentzerrung optional bridge branch | PARTIEL | Etape 20/21
+B11.S6.R6 | resistor | 3900 | ohm | n1=VM;n2=S6_R6_C4_MID | B11 | S6 VM-to-ground series RC branch | PARTIEL | Etape 20/21
+B11.S6.C4 | capacitor | 3e-9 | farad | n1=S6_R6_C4_MID;n2=0 | B11 | S6 VM-to-ground series RC branch | PARTIEL | Etape 20/21
+
+Switches
+S6 status: PARTIEL
+S6 selected_position: delivery_linear
+S6 delivery_linear: 4-5 closed; 8-9 closed; 5-6 open; 7-8 open; 5-3-1 closed; 2 open
+S7 status: PARTIEL
+S7 selected_mode: limiter_drawn_17_to_18
+S7 drawn_17_to_18: closed=17-18, open=17-19, zener=ZL10 active, mode=limiter
+S7 alternate_17_to_19: closed=17-19, open=17-18, zener=ZL10 bypassed, mode=compressor
+
+Open scientific boundaries
+- B11 active regulator is not yet a direct MNA block.
+- B6 bridge diode law is closed, but final polarities remain photo-dependent.
+- B6 Ts1/Ts3/Ts5/Ts6 and B11 Ts1/Ts2 stay symbolic or unconfirmed until route proof.
+- S6 non-delivery positions and S1..S5 are not final contact tables.
+

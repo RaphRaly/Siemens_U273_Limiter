@@ -1,0 +1,79 @@
+{
+  "title": "Siemens U273 B6 Ts1/Ts2 corrected KCL after PDF read",
+  "status": "corrected resistor values; active terminal assignment still guarded",
+  "corrections": {
+    "R17": "6.8 kOhm, not 68 kOhm",
+    "R20": "1.2 kOhm, not 12 kOhm"
+  },
+  "nodeVoltages": {
+    "V12": 12.2,
+    "V64": 6.4,
+    "N38": 3.8,
+    "N32": 3.2,
+    "N08": 0.8,
+    "N074": 0.74,
+    "GND": 0
+  },
+  "resistorValues": {
+    "R15": 30000,
+    "R18": 68000,
+    "R16_MIN": 0,
+    "R16_MAX": 500,
+    "R17": 6800,
+    "R20": 1200,
+    "R21": 10000,
+    "R22": 8200
+  },
+  "passiveCurrents": {
+    "iR15": 0.00008666666666666668,
+    "iR18": 0.00004411764705882353,
+    "iR16R17MaxR16": 0.00010958904109589041,
+    "iR16R17MinR16": 0.00011764705882352942,
+    "iR20": 0.00005000000000000004,
+    "iR21": 0.0005799999999999999,
+    "iR22": 0.0003902439024390244,
+    "n38ActiveResidualAmp": 0.00004254901960784315,
+    "n08ActiveInjectionWithoutR20MinAmp": 0.00006547139403706689,
+    "n08ActiveInjectionWithoutR20MaxAmp": 0.00007352941176470588,
+    "n08ActiveInjectionWithR20MinAmp": 0.00011547139403706694,
+    "n08ActiveInjectionWithR20MaxAmp": 0.00012352941176470593
+  },
+  "ts2EmitterConsistencyRows": [
+    {
+      "beta": 50,
+      "assumedEmitterCurrentAmp": 0.0003902439024390244,
+      "collectorCurrentAmp": 0.0003825920612147298,
+      "baseCurrentAmp": 0.000007651841224294596,
+      "r21SupplyAmp": 0.0005799999999999999,
+      "residualR21ToTs3OrOtherAmp": 0.0001974079387852701,
+      "gmSiemens": 0.014800466584709083,
+      "reOhm": 67.5654375,
+      "rPiOhm": 3378.271875,
+      "note": "Only valid if N38 is Ts2 base and N32 is Ts2 emitter; this is a consistency check, not a pin proof."
+    },
+    {
+      "beta": 100,
+      "assumedEmitterCurrentAmp": 0.0003902439024390244,
+      "collectorCurrentAmp": 0.00038638010142477664,
+      "baseCurrentAmp": 0.000003863801014247766,
+      "r21SupplyAmp": 0.0005799999999999999,
+      "residualR21ToTs3OrOtherAmp": 0.00019361989857522325,
+      "gmSiemens": 0.014947005857825013,
+      "reOhm": 66.90303125,
+      "rPiOhm": 6690.303125,
+      "note": "Only valid if N38 is Ts2 base and N32 is Ts2 emitter; this is a consistency check, not a pin proof."
+    },
+    {
+      "beta": 200,
+      "assumedEmitterCurrentAmp": 0.0003902439024390244,
+      "collectorCurrentAmp": 0.00038830239048659145,
+      "baseCurrentAmp": 0.000001941511952432957,
+      "r21SupplyAmp": 0.0005799999999999999,
+      "residualR21ToTs3OrOtherAmp": 0.00019169760951340845,
+      "gmSiemens": 0.015021369071048025,
+      "reOhm": 66.571828125,
+      "rPiOhm": 13314.365625,
+      "note": "Only valid if N38 is Ts2 base and N32 is Ts2 emitter; this is a consistency check, not a pin proof."
+    }
+  ]
+}

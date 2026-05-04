@@ -1,0 +1,126 @@
+@startuml
+title Siemens U273 Plugin - Core Class Diagram Draft
+
+skinparam classAttributeIconSize 0
+
+class PluginProcessor {
+  +prepareToPlay(sampleRate, maxBlock)
+  +processBlock(buffer, midi)
+  +releaseResources()
+  +getStateInformation()
+  +setStateInformation()
+}
+
+class PluginEditor {
+  +paint()
+  +resized()
+}
+
+class ParameterBridge {
+  +buildParameterLayout()
+  +publishSnapshot()
+  +readSnapshot() const
+}
+
+class ParameterSnapshot {
+  +inputGainDb
+  +outputGainDb
+  +mode
+  +drive
+  +detectorScale
+  +mix
+  +version
+  +isValid() const
+}
+
+class PresetManager {
+  +saveState()
+  +restoreState()
+  +migrate(version)
+}
+
+class MeterBridge {
+  +publish(frame)
+  +readLatest() const
+}
+
+class MeterFrame {
+  +inputPeak
+  +outputPeak
+  +gainReductionDb
+  +clipFlag
+}
+
+class U273DspEngine {
+  +prepare(config)
+  +reset()
+  +process(context, snapshot)
+}
+
+class ProcessContext {
+  +channels
+  +numSamples
+  +sampleRate
+}
+
+class DetectorEnvelope {
+  +prepare(sampleRate)
+  +reset()
+  +processSample(x)
+}
+
+class B6BridgeRealtimeModel {
+  +prepare(table)
+  +evaluate(command, level)
+}
+
+class GainReductionComputer {
+  +compute(envelope, command)
+}
+
+class ScientificReferenceModel {
+  +solveDc(scenario)
+  +solveAc(scenario)
+  +solveTransient(scenario)
+}
+
+class ReferenceValidator {
+  +compareAgainstGolden()
+  +writeReport()
+}
+
+PluginProcessor *-- ParameterBridge
+PluginProcessor *-- PresetManager
+PluginProcessor *-- MeterBridge
+PluginProcessor *-- U273DspEngine
+PluginEditor --> PluginProcessor
+PluginEditor --> ParameterBridge
+PluginEditor --> MeterBridge
+
+ParameterBridge --> ParameterSnapshot
+PresetManager --> ParameterBridge
+MeterBridge --> MeterFrame
+
+U273DspEngine *-- DetectorEnvelope
+U273DspEngine *-- B6BridgeRealtimeModel
+U273DspEngine *-- GainReductionComputer
+U273DspEngine --> ParameterSnapshot
+U273DspEngine --> ProcessContext
+U273DspEngine --> MeterBridge
+
+ReferenceValidator --> ScientificReferenceModel
+ReferenceValidator ..> U273DspEngine : offline regression
+
+note right of U273DspEngine
+Realtime contract:
+process() must not allocate,
+lock, log, or perform I/O.
+end note
+
+note right of ScientificReferenceModel
+Offline only.
+Can use MNA/Newton and dynamic matrices.
+end note
+
+@enduml
+

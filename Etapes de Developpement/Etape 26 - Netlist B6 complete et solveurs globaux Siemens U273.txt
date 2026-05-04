@@ -1,0 +1,311 @@
+Etape 26 - Netlist B6 complete et solveurs globaux Siemens U273
+================================================================
+
+Date: 2026-05-03
+Objet: fermer la netlist B6 cote schema constructeur, corriger le modele B6
+       parametrique, puis enchainer DC / AC / transitoire global au niveau
+       scientifiquement justifiable.
+
+
+1. Frontiere de fermeture
+-------------------------
+
+On ferme maintenant:
+
+    - entree B6:
+        S1/S2, R1/R2, R3/R4, S5, transformateur U1;
+
+    - pont/commande B6:
+        R5..R11, D1..D4, C1..C7, C4/C6 Abgl.;
+
+    - amplificateur B6:
+        Ts1..Ts4, R12..R32, C8..C19, tensions imprimees;
+
+    - sortie B6:
+        Ts5/Ts6, R33..R38, C20/C21, transformateur U2, S3/S4.
+
+La fermeture est une fermeture de schema constructeur.
+
+Les transistors actifs ne sont pas convertis automatiquement en modele
+non-lineaire BJT complet. Ils restent:
+
+    GARDE_NON_STAMPE
+
+tant que l'on ne choisit pas explicitement une hypothese de stamp AC/DC. C'est
+volontaire: cela evite de transformer une lecture de schema en fit numerique.
+
+
+2. Correction importante C1
+---------------------------
+
+La capture B6 complete montre:
+
+    C1 = 0,68 uF
+
+L'ancienne valeur provisoire dans le modele etait:
+
+    C1 = 1000 pF
+
+Correction appliquee dans:
+
+    solver/b6_parametric.js
+
+    defaultB6Values.c1 = 0.68e-6
+
+Impact:
+
+    les sweeps AC a 1 kHz changent fortement. L'ancien 1000 pF etouffait trop
+    l'entree du pont. Les nouveaux niveaux AC sont donc plus eleves et plus
+    coherents avec la lecture complete du schema.
+
+
+3. Mise a jour b6_parametric.js
+-------------------------------
+
+Ajouts:
+
+    buildB6CompleteSchematicInventory(options)
+
+Cette fonction retourne:
+
+    title;
+    status = FERME_SCHEMA_AVEC_MODELES_ACTIFS_GARDES;
+    node_aliases;
+    components.
+
+Nombre de composants B6 inventories:
+
+    76
+
+Statuts utilises:
+
+    FERME_SCHEMA
+        composant lu sur le schema constructeur;
+
+    PARAMETRIQUE
+        ajustable ou valeur effective choisie pour MNA;
+
+    GARDE_NON_STAMPE
+        transistor present dans la netlist schema, mais pas stamp automatique;
+
+    COMMUTATEUR_SCHEMA
+        S1..S5 lus comme elements de commutation.
+
+L'ancien solveur executable du pont est conserve:
+
+    buildB6ParametricDcNetlist()
+    buildB6ParametricAcNetlist()
+
+Il reste la brique executable rigoureuse pour le pont B6 avec diodes empiriques.
+
+
+4. Export netlist global
+------------------------
+
+L'orchestrateur integre maintenant l'inventaire B6 complet.
+
+Sorties:
+
+    results/u273_orchestrator_snapshot.json
+    results/u273_netlist.json
+    results/u273_netlist.txt
+
+Etat apres integration:
+
+    88 composants dans l'export global
+    64 noeuds non-masse
+
+La netlist exportee contient B6 complet + port B11/S6/S7 + S6/S7/detecteur au
+niveau ferme/parametrique disponible.
+
+
+5. DC global
+------------
+
+Fichier:
+
+    solver/u273_dc_global.js
+
+Sorties:
+
+    results/u273_dc_global.json
+    results/u273_dc_global_node_voltages.csv
+
+Statut:
+
+    PARAMETRIC_THEVENIN_REFERENCE
+
+Pourquoi:
+
+    La liaison B11/S6/S7 -> B6 reste une source de Thevenin finie. C'est le
+    modele global le plus honnete tant que B11 actif et la calibration C11 ->
+    drive B6 ne sont pas fermes.
+
+Resultats de reference:
+
+    Rsource = 3k, VDRV = 1 V:
+        CMD = 0.977356 V
+        Icmd = 7.548 uA
+
+    Rsource = 10k, VDRV = 1 V:
+        CMD = 0.932299 V
+        Icmd = 6.770 uA
+
+    Rsource = 51k, VDRV = 1 V:
+        CMD = 0.777676 V
+        Icmd = 4.359 uA
+
+    Rsource = 10k, VDRV = 3 V:
+        CMD = 2.575271 V
+        Icmd = 42.473 uA
+
+
+6. AC global
+------------
+
+Fichier ajoute:
+
+    solver/u273_ac_global.js
+
+Sorties:
+
+    results/u273_ac_global.json
+    results/u273_ac_gain_phase.csv
+
+Statut:
+
+    PARAMETRIC_THEVENIN_B6_BRIDGE_REFERENCE
+
+Modele:
+
+    1. resoudre le point DC du pont B6 avec diodes empiriques;
+    2. extraire gd de D1..D4;
+    3. construire la MNA AC B6 avec le port B11/S6/S7 fini;
+    4. ne pas stamp BJT automatiquement.
+
+Resultats a 1 kHz, VDRV = 3 V:
+
+    Rsource = 3k:
+        |VNA| = 3.542827e-1  (-9.01 dB)
+
+    Rsource = 10k:
+        |VNA| = 3.877906e-1  (-8.23 dB)
+
+    Rsource = 51k:
+        |VNA| = 5.211891e-1  (-5.66 dB)
+
+    Rsource = 100k:
+        |VNA| = 6.151831e-1  (-4.22 dB)
+
+Attention:
+
+    Ces valeurs remplacent les anciennes valeurs calculees avec C1 = 1000 pF.
+    La correction C1 = 0.68 uF change logiquement la bande audio.
+
+
+7. Transitoire global borne
+---------------------------
+
+Fichier ajoute:
+
+    solver/u273_transient.js
+
+Sorties:
+
+    results/u273_transient_attack_release.json
+    results/u273_transient_attack_release.csv
+
+Statut:
+
+    BOUNDED_QUASI_STATIC_TRANSIENT
+
+Modele:
+
+    - detecteur B11/S7:
+        modele seuil existant avec C11 = 500 uF;
+
+    - conversion detecteur -> drive B6:
+        facteur detectorToDriveScale balaye, car la calibration exacte C11 ->
+        drive B6 n'est pas encore fermee;
+
+    - pont B6:
+        resolution DC quasi-statique a chaque echantillon temporel.
+
+Cas calcules:
+
+    limiter_nominal_12vrms_scale1_r10k:
+        max CMD = 0.069456 V
+        attack90 = 0.99 s
+        release10 = non atteint dans 2 s
+
+    limiter_nominal_12vrms_scale025_r10k:
+        max CMD = 0.017364 V
+        attack90 = 0.99 s
+        release10 = non atteint dans 2 s
+
+    compressor_hypothesis_8vrms_scale1_r10k:
+        max CMD = 0.206394 V
+        attack90 = 0.99 s
+        release10 = non atteint dans 2 s
+
+Interpretation:
+
+    release10 non atteint est coherent avec Rrelease = 10 k et C11 = 500 uF:
+
+        tau = 5 s
+
+    On ne force donc pas un temps de relachement arbitraire.
+
+
+8. Validations executees
+------------------------
+
+Commandes executees sans erreur:
+
+    node solver/validate_mna_core.js
+    node solver/validate_complex_ac.js
+    node solver/validate_bjt_small_signal.js
+    node solver/validate_u273_empirical_mna.js
+    node solver/u273_orchestrator.js
+    node solver/export_netlist_json.js
+    node solver/export_netlist_txt.js
+    node solver/u273_dc_global.js
+    node solver/validate_u273_dc_global.js
+    node solver/u273_ac_global.js
+    node solver/u273_transient.js
+    node solver/b6_empirical_b11_port_sweep.js
+    node solver/validate_u273_full.js
+
+Rapport global:
+
+    results/u273_validation_report.json
+
+Statut attendu:
+
+    PASS_WITH_GUARDED_BOUNDARIES
+
+
+9. Ce qui reste volontairement garde
+------------------------------------
+
+Reste garde/parametrique, pas bloquant pour la netlist B6 schema:
+
+    - S7 Kompressor:
+        17 -> 19 est l'autre position mecanique probable, mais reste HYPOTHESE;
+
+    - calibration C11 -> drive B6:
+        facteur detectorToDriveScale a mesurer/lire;
+
+    - BJT non-lineaires complets:
+        Ts1..Ts6 sont inventories, mais pas utilises comme modele transistor
+        grand signal automatique;
+
+    - photos PCB physiques:
+        non necessaires pour le schema constructeur, necessaires seulement pour
+        prouver qu'un appareil reel n'a pas ete modifie.
+
+Conclusion:
+
+    La netlist B6 constructeur est fermee. Les solveurs DC/AC/transitoire
+    globaux existent et tournent au niveau rigoureux actuel: pont B6 empirique,
+    port B11/S6/S7 fini, BJT actifs gardes, detecteur transitoire borne.

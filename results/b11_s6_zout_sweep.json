@@ -1,0 +1,1255 @@
+{
+  "title": "Siemens U273 B11 S6 provisional output impedance sweep",
+  "status": "S6-core impedance extraction; not full B11 Zcmd(s)",
+  "warning": "This is the passive S6 core only. Full Zcmd(s) also depends on active B11 stages, S6/S7 contacts, detector state, and downstream coupling.",
+  "values": {
+    "r3": 7500,
+    "r4": 7500,
+    "r5": 15000,
+    "r6": 3900,
+    "c1": 5e-9,
+    "c2": 5e-9,
+    "c3": 3.3e-9,
+    "c4": 3e-9
+  },
+  "contactHypotheses": [
+    {
+      "name": "core_all_branches",
+      "note": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "branches": {
+        "lm": true,
+        "mr": true,
+        "lr": true,
+        "m0": true
+      }
+    },
+    {
+      "name": "core_without_lr_bridge",
+      "note": "Sensitivity case: LR bridge R5/C3 open.",
+      "branches": {
+        "lm": true,
+        "mr": true,
+        "lr": false,
+        "m0": true
+      }
+    },
+    {
+      "name": "core_without_m0_shunt",
+      "note": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "branches": {
+        "lm": true,
+        "mr": true,
+        "lr": true,
+        "m0": false
+      }
+    },
+    {
+      "name": "core_series_lm_mr_only",
+      "note": "Sensitivity case: only LM and MR paths active.",
+      "branches": {
+        "lm": true,
+        "mr": true,
+        "lr": false,
+        "m0": false
+      }
+    }
+  ],
+  "rows": [
+    {
+      "frequency": 20,
+      "hypothesis": "core_all_branches",
+      "note": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "sourceCurrent": {
+        "re": -0.00013333360513339784,
+        "im": -8.230958635287942e-7,
+        "mag": 0.00013333614567951713,
+        "phaseDeg": -179.64630582052322
+      },
+      "networkCurrent": {
+        "re": 0.00013333360513339784,
+        "im": 8.230958635287942e-7,
+        "mag": 0.00013333614567951713,
+        "phaseDeg": 0.35369417947679144
+      },
+      "zout": {
+        "re": 7499.698909172927,
+        "im": -46.29718924704468,
+        "mag": 7499.841808863824,
+        "phaseDeg": -0.35369417947679144
+      }
+    },
+    {
+      "frequency": 50,
+      "hypothesis": "core_all_branches",
+      "note": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "sourceCurrent": {
+        "re": -0.00013333503179372666,
+        "im": -0.0000020577211348109176,
+        "mag": 0.0001333509089571674,
+        "phaseDeg": -179.11584092893403
+      },
+      "networkCurrent": {
+        "re": 0.00013333503179372666,
+        "im": 0.0000020577211348109176,
+        "mag": 0.0001333509089571674,
+        "phaseDeg": 0.8841590710659719
+      },
+      "zout": {
+        "re": 7498.118646419661,
+        "im": -115.71630502872458,
+        "mag": 7499.0115014604235,
+        "phaseDeg": -0.8841590710659718
+      }
+    },
+    {
+      "frequency": 100,
+      "hypothesis": "core_all_branches",
+      "note": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "sourceCurrent": {
+        "re": -0.00013334012303612048,
+        "im": -0.000004115310084182185,
+        "mag": 0.00013340361385051278,
+        "phaseDeg": -178.23222695366536
+      },
+      "networkCurrent": {
+        "re": 0.00013334012303612048,
+        "im": 0.000004115310084182185,
+        "mag": 0.00013340361385051278,
+        "phaseDeg": 1.767773046334657
+      },
+      "zout": {
+        "re": 7492.481207268984,
+        "im": -231.2423505074086,
+        "mag": 7496.048803599607,
+        "phaseDeg": -1.767773046334657
+      }
+    },
+    {
+      "frequency": 200,
+      "hypothesis": "core_all_branches",
+      "note": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "sourceCurrent": {
+        "re": -0.00013336042618583473,
+        "im": -0.000008229566696811483,
+        "mag": 0.00013361410494586545,
+        "phaseDeg": -176.4688004029993
+      },
+      "networkCurrent": {
+        "re": 0.00013336042618583473,
+        "im": 0.000008229566696811483,
+        "mag": 0.00013361410494586545,
+        "phaseDeg": 3.531199597000708
+      },
+      "zout": {
+        "re": 7470.030261671057,
+        "im": -460.9696746166507,
+        "mag": 7484.239784453565,
+        "phaseDeg": -3.531199597000708
+      }
+    },
+    {
+      "frequency": 500,
+      "hypothesis": "core_all_branches",
+      "note": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "sourceCurrent": {
+        "re": -0.00013349984942364267,
+        "im": -0.000020555918775834102,
+        "mag": 0.00013507314904470823,
+        "phaseDeg": -171.24650906435852
+      },
+      "networkCurrent": {
+        "re": 0.00013349984942364267,
+        "im": 0.000020555918775834102,
+        "mag": 0.00013507314904470823,
+        "phaseDeg": 8.753490935641489
+      },
+      "zout": {
+        "re": 7317.162937273408,
+        "im": -1126.675480590454,
+        "mag": 7403.3959160085005,
+        "phaseDeg": -8.753490935641489
+      }
+    },
+    {
+      "frequency": 1000,
+      "hypothesis": "core_all_branches",
+      "note": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "sourceCurrent": {
+        "re": -0.00013396288732738797,
+        "im": -0.000040994595466977316,
+        "mag": 0.00014009501075552822,
+        "phaseDeg": -162.9851259289436
+      },
+      "networkCurrent": {
+        "re": 0.00013396288732738797,
+        "im": 0.000040994595466977316,
+        "mag": 0.00014009501075552822,
+        "phaseDeg": 17.014874071056404
+      },
+      "zout": {
+        "re": 6825.573719192004,
+        "im": -2088.7250120586355,
+        "mag": 7138.012942838078,
+        "phaseDeg": -17.014874071056408
+      }
+    },
+    {
+      "frequency": 2000,
+      "hypothesis": "core_all_branches",
+      "note": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "sourceCurrent": {
+        "re": -0.00013542981157756368,
+        "im": -0.00008130021323266595,
+        "mag": 0.00015795872415163195,
+        "phaseDeg": -149.02307850233746
+      },
+      "networkCurrent": {
+        "re": 0.00013542981157756368,
+        "im": 0.00008130021323266595,
+        "mag": 0.00015795872415163195,
+        "phaseDeg": 30.97692149766257
+      },
+      "zout": {
+        "re": 5427.840032048105,
+        "im": -3258.4003983907032,
+        "mag": 6330.767770952957,
+        "phaseDeg": -30.976921497662573
+      }
+    },
+    {
+      "frequency": 3200,
+      "hypothesis": "core_all_branches",
+      "note": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "sourceCurrent": {
+        "re": -0.00013750004190387645,
+        "im": -0.0001287906878187992,
+        "mag": 0.00018839666343225715,
+        "phaseDeg": -136.873258662935
+      },
+      "networkCurrent": {
+        "re": 0.00013750004190387645,
+        "im": 0.0001287906878187992,
+        "mag": 0.00018839666343225715,
+        "phaseDeg": 43.126741337064985
+      },
+      "zout": {
+        "re": 3873.9714561951346,
+        "im": -3628.5912464125618,
+        "mag": 5307.949630220366,
+        "phaseDeg": -43.126741337064985
+      }
+    },
+    {
+      "frequency": 4200,
+      "hypothesis": "core_all_branches",
+      "note": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "sourceCurrent": {
+        "re": -0.00013927021646847903,
+        "im": -0.00016792083355940838,
+        "mag": 0.00021815957356591882,
+        "phaseDeg": -129.67164047969936
+      },
+      "networkCurrent": {
+        "re": 0.00013927021646847903,
+        "im": 0.00016792083355940838,
+        "mag": 0.00021815957356591882,
+        "phaseDeg": 50.328359520300644
+      },
+      "zout": {
+        "re": 2926.2383559773734,
+        "im": -3528.2230213266475,
+        "mag": 4583.800672391035,
+        "phaseDeg": -50.328359520300644
+      }
+    },
+    {
+      "frequency": 5000,
+      "hypothesis": "core_all_branches",
+      "note": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "sourceCurrent": {
+        "re": -0.00014071829151239996,
+        "im": -0.00019903373249550448,
+        "mag": 0.00024375410609312988,
+        "phaseDeg": -125.2605876246735
+      },
+      "networkCurrent": {
+        "re": 0.00014071829151239996,
+        "im": 0.00019903373249550448,
+        "mag": 0.00024375410609312988,
+        "phaseDeg": 54.739412375326495
+      },
+      "zout": {
+        "re": 2368.3543048304628,
+        "im": -3349.8303034802343,
+        "mag": 4102.494993942523,
+        "phaseDeg": -54.739412375326495
+      }
+    },
+    {
+      "frequency": 10000,
+      "hypothesis": "core_all_branches",
+      "note": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "sourceCurrent": {
+        "re": -0.00015072878242180674,
+        "im": -0.0003903048871290128,
+        "mag": 0.00041839822032024913,
+        "phaseDeg": -111.11567106512285
+      },
+      "networkCurrent": {
+        "re": 0.00015072878242180674,
+        "im": 0.0003903048871290128,
+        "mag": 0.00041839822032024913,
+        "phaseDeg": 68.88432893487715
+      },
+      "zout": {
+        "re": 861.0265312978718,
+        "im": -2229.586530944346,
+        "mag": 2390.0675276165916,
+        "phaseDeg": -68.88432893487715
+      }
+    },
+    {
+      "frequency": 13600,
+      "hypothesis": "core_all_branches",
+      "note": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "sourceCurrent": {
+        "re": -0.00015817937777481354,
+        "im": -0.0005247749578691901,
+        "mag": 0.0005480962250917601,
+        "phaseDeg": -106.77402838735401
+      },
+      "networkCurrent": {
+        "re": 0.00015817937777481354,
+        "im": 0.0005247749578691901,
+        "mag": 0.0005480962250917601,
+        "phaseDeg": 73.22597161264599
+      },
+      "zout": {
+        "re": 526.5459066349312,
+        "im": -1746.865551361006,
+        "mag": 1824.4971488949477,
+        "phaseDeg": -73.22597161264599
+      }
+    },
+    {
+      "frequency": 20000,
+      "hypothesis": "core_all_branches",
+      "note": "Current provisional S6 core: LM, MR, LR and VM-to-ground RC branch active.",
+      "sourceCurrent": {
+        "re": -0.00016940126374117106,
+        "im": -0.0007591672396793706,
+        "mag": 0.000777837827544727,
+        "phaseDeg": -102.57895748329197
+      },
+      "networkCurrent": {
+        "re": 0.00016940126374117106,
+        "im": 0.0007591672396793706,
+        "mag": 0.000777837827544727,
+        "phaseDeg": 77.42104251670804
+      },
+      "zout": {
+        "re": 279.9874249106854,
+        "im": -1254.75616781199,
+        "mag": 1285.6150274364202,
+        "phaseDeg": -77.42104251670803
+      }
+    },
+    {
+      "frequency": 20,
+      "hypothesis": "core_without_lr_bridge",
+      "note": "Sensitivity case: LR bridge R5/C3 open.",
+      "sourceCurrent": {
+        "re": -0.00006666693846673115,
+        "im": -4.0840563325494165e-7,
+        "mag": 0.0000666681894136041,
+        "phaseDeg": -179.6490070350083
+      },
+      "networkCurrent": {
+        "re": 0.00006666693846673115,
+        "im": 4.0840563325494165e-7,
+        "mag": 0.0000666681894136041,
+        "phaseDeg": 0.3509929649917072
+      },
+      "zout": {
+        "re": 14999.375939575772,
+        "im": -91.88706981179817,
+        "mag": 14999.657389764714,
+        "phaseDeg": -0.3509929649917072
+      }
+    },
+    {
+      "frequency": 50,
+      "hypothesis": "core_without_lr_bridge",
+      "note": "Sensitivity case: LR bridge R5/C3 open.",
+      "sourceCurrent": {
+        "re": -0.00006666836512706001,
+        "im": -0.000001020995559126286,
+        "mag": 0.00006667618270902096,
+        "phaseDeg": -179.1226098970144
+      },
+      "networkCurrent": {
+        "re": 0.00006666836512706001,
+        "im": 0.000001020995559126286,
+        "mag": 0.00006667618270902096,
+        "phaseDeg": 0.8773901029856045
+      },
+      "zout": {
+        "re": 14996.100742150265,
+        "im": -229.65843294290207,
+        "mag": 14997.85919605,
+        "phaseDeg": -0.8773901029856045
+      }
+    },
+    {
+      "frequency": 100,
+      "hypothesis": "core_without_lr_bridge",
+      "note": "Sensitivity case: LR bridge R5/C3 open.",
+      "sourceCurrent": {
+        "re": -0.00006667345636945381,
+        "im": -0.0000020418589328129216,
+        "mag": 0.00006670471476703105,
+        "phaseDeg": -178.24587846300764
+      },
+      "networkCurrent": {
+        "re": 0.00006667345636945381,
+        "im": 0.0000020418589328129216,
+        "mag": 0.00006670471476703105,
+        "phaseDeg": 1.7541215369923675
+      },
+      "zout": {
+        "re": 14984.418942082359,
+        "im": -458.8943087090275,
+        "mag": 14991.444060476702,
+        "phaseDeg": -1.7541215369923675
+      }
+    },
+    {
+      "frequency": 200,
+      "hypothesis": "core_without_lr_bridge",
+      "note": "Sensitivity case: LR bridge R5/C3 open.",
+      "sourceCurrent": {
+        "re": -0.00006669375951916808,
+        "im": -0.000004082664394072957,
+        "mag": 0.00006681860300361908,
+        "phaseDeg": -176.4970049962093
+      },
+      "networkCurrent": {
+        "re": 0.00006669375951916808,
+        "im": 0.000004082664394072957,
+        "mag": 0.00006681860300361908,
+        "phaseDeg": 3.5029950037906703
+      },
+      "zout": {
+        "re": 14937.929873115345,
+        "im": -914.4266997963875,
+        "mag": 14965.892057722864,
+        "phaseDeg": -3.5029950037906703
+      }
+    },
+    {
+      "frequency": 500,
+      "hypothesis": "core_without_lr_bridge",
+      "note": "Sensitivity case: LR bridge R5/C3 open.",
+      "sourceCurrent": {
+        "re": -0.000066833182756976,
+        "im": -0.000010188663018987785,
+        "mag": 0.00006760534869033546,
+        "phaseDeg": -171.3320449065479
+      },
+      "networkCurrent": {
+        "re": 0.000066833182756976,
+        "im": 0.000010188663018987785,
+        "mag": 0.00006760534869033546,
+        "phaseDeg": 8.667955093452075
+      },
+      "zout": {
+        "re": 14622.7828106038,
+        "im": -2229.231054263057,
+        "mag": 14791.729047659734,
+        "phaseDeg": -8.667955093452072
+      }
+    },
+    {
+      "frequency": 1000,
+      "hypothesis": "core_without_lr_bridge",
+      "note": "Sensitivity case: LR bridge R5/C3 open.",
+      "sourceCurrent": {
+        "re": -0.0000672962206607213,
+        "im": -0.00002026008395328469,
+        "mag": 0.00007027981443494736,
+        "phaseDeg": -163.24514394385625
+      },
+      "networkCurrent": {
+        "re": 0.0000672962206607213,
+        "im": 0.00002026008395328469,
+        "mag": 0.00007027981443494736,
+        "phaseDeg": 16.754856056143762
+      },
+      "zout": {
+        "re": 13624.778881806695,
+        "im": -4101.852396466884,
+        "mag": 14228.836658719742,
+        "phaseDeg": -16.754856056143762
+      }
+    },
+    {
+      "frequency": 2000,
+      "hypothesis": "core_without_lr_bridge",
+      "note": "Sensitivity case: LR bridge R5/C3 open.",
+      "sourceCurrent": {
+        "re": -0.000068763144910897,
+        "im": -0.000039831190205280696,
+        "mag": 0.00007946630613792407,
+        "phaseDeg": -149.91834581572354
+      },
+      "networkCurrent": {
+        "re": 0.000068763144910897,
+        "im": 0.000039831190205280696,
+        "mag": 0.00007946630613792407,
+        "phaseDeg": 30.081654184276452
+      },
+      "zout": {
+        "re": 10889.042154417779,
+        "im": -6307.499602700708,
+        "mag": 12583.949709004599,
+        "phaseDeg": -30.08165418427645
+      }
+    },
+    {
+      "frequency": 3200,
+      "hypothesis": "core_without_lr_bridge",
+      "note": "Sensitivity case: LR bridge R5/C3 open.",
+      "sourceCurrent": {
+        "re": -0.00007083337523720977,
+        "im": -0.00006244025097498277,
+        "mag": 0.00009442537788811967,
+        "phaseDeg": -138.6035363708323
+      },
+      "networkCurrent": {
+        "re": 0.00007083337523720977,
+        "im": 0.00006244025097498277,
+        "mag": 0.00009442537788811967,
+        "phaseDeg": 41.3964636291677
+      },
+      "zout": {
+        "re": 7944.388489799402,
+        "im": -7003.049190930791,
+        "mag": 10590.373291223195,
+        "phaseDeg": -41.3964636291677
+      }
+    },
+    {
+      "frequency": 4200,
+      "hypothesis": "core_without_lr_bridge",
+      "note": "Sensitivity case: LR bridge R5/C3 open.",
+      "sourceCurrent": {
+        "re": -0.00007260354980181238,
+        "im": -0.0000808358852018993,
+        "mag": 0.00010865411073769318,
+        "phaseDeg": -131.928910271648
+      },
+      "networkCurrent": {
+        "re": 0.00007260354980181238,
+        "im": 0.0000808358852018993,
+        "mag": 0.00010865411073769318,
+        "phaseDeg": 48.071089728352
+      },
+      "zout": {
+        "re": 6149.864282145983,
+        "im": -6847.182052059993,
+        "mag": 9203.517411450224,
+        "phaseDeg": -48.071089728352
+      }
+    },
+    {
+      "frequency": 5000,
+      "hypothesis": "core_without_lr_bridge",
+      "note": "Sensitivity case: LR bridge R5/C3 open.",
+      "sourceCurrent": {
+        "re": -0.00007405162484573329,
+        "im": -0.00009536117492704127,
+        "mag": 0.00012073689090646235,
+        "phaseDeg": -127.83071567178203
+      },
+      "networkCurrent": {
+        "re": 0.00007405162484573329,
+        "im": 0.00009536117492704127,
+        "mag": 0.00012073689090646235,
+        "phaseDeg": 52.169284328217955
+      },
+      "zout": {
+        "re": 5079.893600404728,
+        "im": -6541.714962340417,
+        "mag": 8282.472676679434,
+        "phaseDeg": -52.169284328217955
+      }
+    },
+    {
+      "frequency": 10000,
+      "hypothesis": "core_without_lr_bridge",
+      "note": "Sensitivity case: LR bridge R5/C3 open.",
+      "sourceCurrent": {
+        "re": -0.00008406211575514007,
+        "im": -0.00018295977199208634,
+        "mag": 0.00020134725593517978,
+        "phaseDeg": -114.67673848883418
+      },
+      "networkCurrent": {
+        "re": 0.00008406211575514007,
+        "im": 0.00018295977199208634,
+        "mag": 0.00020134725593517978,
+        "phaseDeg": 65.32326151116584
+      },
+      "zout": {
+        "re": 2073.5231390983413,
+        "im": -4512.98801299265,
+        "mag": 4966.543970790109,
+        "phaseDeg": -65.32326151116585
+      }
+    },
+    {
+      "frequency": 13600,
+      "hypothesis": "core_without_lr_bridge",
+      "note": "Sensitivity case: LR bridge R5/C3 open.",
+      "sourceCurrent": {
+        "re": -0.00009151271110814687,
+        "im": -0.00024278560128297033,
+        "mag": 0.00025945987066345455,
+        "phaseDeg": -110.65283504337572
+      },
+      "networkCurrent": {
+        "re": 0.00009151271110814687,
+        "im": 0.00024278560128297033,
+        "mag": 0.00025945987066345455,
+        "phaseDeg": 69.3471649566243
+      },
+      "zout": {
+        "re": 1359.3804731493215,
+        "im": -3606.471729985773,
+        "mag": 3854.160558405195,
+        "phaseDeg": -69.3471649566243
+      }
+    },
+    {
+      "frequency": 20000,
+      "hypothesis": "core_without_lr_bridge",
+      "note": "Sensitivity case: LR bridge R5/C3 open.",
+      "sourceCurrent": {
+        "re": -0.00010273459707450439,
+        "im": -0.0003444770094055177,
+        "mag": 0.0003594701760160777,
+        "phaseDeg": -106.60634515812828
+      },
+      "networkCurrent": {
+        "re": 0.00010273459707450439,
+        "im": 0.0003444770094055177,
+        "mag": 0.0003594701760160777,
+        "phaseDeg": 73.39365484187174
+      },
+      "zout": {
+        "re": 795.0436867961967,
+        "im": -2665.8426603422986,
+        "mag": 2781.871951333381,
+        "phaseDeg": -73.39365484187174
+      }
+    },
+    {
+      "frequency": 20,
+      "hypothesis": "core_without_m0_shunt",
+      "note": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "sourceCurrent": {
+        "re": -0.00013333333333333334,
+        "im": -7.288494956328319e-7,
+        "mag": 0.00013333532539940444,
+        "phaseDeg": -179.68680311954284
+      },
+      "networkCurrent": {
+        "re": 0.00013333333333333334,
+        "im": 7.288494956328319e-7,
+        "mag": 0.00013333532539940444,
+        "phaseDeg": 0.3131968804571578
+      },
+      "zout": {
+        "re": 7499.775897589316,
+        "im": -40.996559102379315,
+        "mag": 7499.8879479576135,
+        "phaseDeg": -0.3131968804571579
+      }
+    },
+    {
+      "frequency": 50,
+      "hypothesis": "core_without_m0_shunt",
+      "note": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "sourceCurrent": {
+        "re": -0.00013333333333333334,
+        "im": -0.00000182212373908208,
+        "mag": 0.00013334578325803297,
+        "phaseDeg": -179.21704873826957
+      },
+      "networkCurrent": {
+        "re": 0.00013333333333333334,
+        "im": 0.00000182212373908208,
+        "mag": 0.00013334578325803297,
+        "phaseDeg": 0.7829512617304265
+      },
+      "zout": {
+        "re": 7498.599579619537,
+        "im": -102.47532227921747,
+        "mag": 7499.299757120428,
+        "phaseDeg": -0.7829512617304265
+      }
+    },
+    {
+      "frequency": 100,
+      "hypothesis": "core_without_m0_shunt",
+      "note": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "sourceCurrent": {
+        "re": -0.00013333333333333334,
+        "im": -0.00000364424747816416,
+        "mag": 0.00013338312605970772,
+        "phaseDeg": -178.43438977515697
+      },
+      "networkCurrent": {
+        "re": 0.00013333333333333334,
+        "im": 0.00000364424747816416,
+        "mag": 0.00013338312605970772,
+        "phaseDeg": 1.565610224842999
+      },
+      "zout": {
+        "re": 7494.401454604976,
+        "im": -204.83590200970497,
+        "mag": 7497.200204712243,
+        "phaseDeg": -1.5656102248429993
+      }
+    },
+    {
+      "frequency": 200,
+      "hypothesis": "core_without_m0_shunt",
+      "note": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "sourceCurrent": {
+        "re": -0.00013333333333333334,
+        "im": -0.00000728849495632832,
+        "mag": 0.00013353239283599394,
+        "phaseDeg": -176.87111401763732
+      },
+      "networkCurrent": {
+        "re": 0.00013333333333333334,
+        "im": 0.00000728849495632832,
+        "mag": 0.00013353239283599394,
+        "phaseDeg": 3.1288859823626725
+      },
+      "zout": {
+        "re": 7477.655856301034,
+        "im": -408.75642745356754,
+        "mag": 7488.819594719702,
+        "phaseDeg": -3.1288859823626725
+      }
+    },
+    {
+      "frequency": 500,
+      "hypothesis": "core_without_m0_shunt",
+      "note": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "sourceCurrent": {
+        "re": -0.00013333333333333334,
+        "im": -0.000018221237390820797,
+        "mag": 0.0001345726245186235,
+        "phaseDeg": -172.21820471701545
+      },
+      "networkCurrent": {
+        "re": 0.00013333333333333334,
+        "im": 0.000018221237390820797,
+        "mag": 0.0001345726245186235,
+        "phaseDeg": 7.781795282984551
+      },
+      "zout": {
+        "re": 7362.499729936524,
+        "im": -1006.1539152677057,
+        "mag": 7430.93183756411,
+        "phaseDeg": -7.781795282984554
+      }
+    },
+    {
+      "frequency": 1000,
+      "hypothesis": "core_without_m0_shunt",
+      "note": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "sourceCurrent": {
+        "re": -0.00013333333333333334,
+        "im": -0.000036442474781641595,
+        "mag": 0.00013822384651712005,
+        "phaseDeg": -164.71335313954918
+      },
+      "networkCurrent": {
+        "re": 0.00013333333333333334,
+        "im": 0.000036442474781641595,
+        "mag": 0.00013822384651712005,
+        "phaseDeg": 15.28664686045082
+      },
+      "zout": {
+        "re": 6978.672015225364,
+        "im": -1907.4005919314868,
+        "mag": 7234.641671443737,
+        "phaseDeg": -15.28664686045082
+      }
+    },
+    {
+      "frequency": 2000,
+      "hypothesis": "core_without_m0_shunt",
+      "note": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "sourceCurrent": {
+        "re": -0.00013333333333333334,
+        "im": -0.00007288494956328319,
+        "mag": 0.00015195391949739275,
+        "phaseDeg": -151.33734621864468
+      },
+      "networkCurrent": {
+        "re": 0.00013333333333333334,
+        "im": 0.00007288494956328319,
+        "mag": 0.00015195391949739275,
+        "phaseDeg": 28.662653781355328
+      },
+      "zout": {
+        "re": 5774.507145858504,
+        "im": -3156.5599655903657,
+        "mag": 6580.942454841767,
+        "phaseDeg": -28.662653781355328
+      }
+    },
+    {
+      "frequency": 3200,
+      "hypothesis": "core_without_m0_shunt",
+      "note": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "sourceCurrent": {
+        "re": -0.00013333333333333334,
+        "im": -0.00011661591930125312,
+        "mag": 0.00017713568362205895,
+        "phaseDeg": -138.82642807328685
+      },
+      "networkCurrent": {
+        "re": 0.00013333333333333334,
+        "im": 0.00011661591930125312,
+        "mag": 0.00017713568362205895,
+        "phaseDeg": 41.173571926713144
+      },
+      "zout": {
+        "re": 4249.390289447368,
+        "im": -3716.599163052921,
+        "mag": 5645.389904236487,
+        "phaseDeg": -41.173571926713144
+      }
+    },
+    {
+      "frequency": 4200,
+      "hypothesis": "core_without_m0_shunt",
+      "note": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "sourceCurrent": {
+        "re": -0.00013333333333333334,
+        "im": -0.00015305839408289473,
+        "mag": 0.0002029892848822629,
+        "phaseDeg": -131.06000925408262
+      },
+      "networkCurrent": {
+        "re": 0.00013333333333333334,
+        "im": 0.00015305839408289473,
+        "mag": 0.0002029892848822629,
+        "phaseDeg": 48.93999074591737
+      },
+      "zout": {
+        "re": 3235.8807575090273,
+        "im": -3714.5903414105446,
+        "mag": 4926.368406982744,
+        "phaseDeg": -48.93999074591737
+      }
+    },
+    {
+      "frequency": 5000,
+      "hypothesis": "core_without_m0_shunt",
+      "note": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "sourceCurrent": {
+        "re": -0.00013333333333333334,
+        "im": -0.00018221237390820803,
+        "mag": 0.00022578557744692726,
+        "phaseDeg": -126.19468306502388
+      },
+      "networkCurrent": {
+        "re": 0.00013333333333333334,
+        "im": 0.00018221237390820803,
+        "mag": 0.00022578557744692726,
+        "phaseDeg": 53.80531693497611
+      },
+      "zout": {
+        "re": 2615.449522658266,
+        "im": -3574.2544977048906,
+        "mag": 4428.98085567515,
+        "phaseDeg": -53.80531693497611
+      }
+    },
+    {
+      "frequency": 10000,
+      "hypothesis": "core_without_m0_shunt",
+      "note": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "sourceCurrent": {
+        "re": -0.00013333333333333334,
+        "im": -0.00036442474781641607,
+        "mag": 0.000388050479446729,
+        "phaseDeg": -110.09623040036452
+      },
+      "networkCurrent": {
+        "re": 0.00013333333333333334,
+        "im": 0.00036442474781641607,
+        "mag": 0.000388050479446729,
+        "phaseDeg": 69.90376959963548
+      },
+      "zout": {
+        "re": 885.4464231381916,
+        "im": -2420.089420928123,
+        "mag": 2576.9843176737486,
+        "phaseDeg": -69.90376959963548
+      }
+    },
+    {
+      "frequency": 13600,
+      "hypothesis": "core_without_m0_shunt",
+      "note": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "sourceCurrent": {
+        "re": -0.00013333333333333334,
+        "im": -0.0004956176570303257,
+        "mag": 0.000513239359108406,
+        "phaseDeg": -105.05747240606001
+      },
+      "networkCurrent": {
+        "re": 0.00013333333333333334,
+        "im": 0.0004956176570303257,
+        "mag": 0.000513239359108406,
+        "phaseDeg": 74.94252759394
+      },
+      "zout": {
+        "re": 506.1728287613282,
+        "im": -1881.5114358232631,
+        "mag": 1948.4086367366476,
+        "phaseDeg": -74.94252759394
+      }
+    },
+    {
+      "frequency": 20000,
+      "hypothesis": "core_without_m0_shunt",
+      "note": "Sensitivity case: VM-to-ground R6/C4 branch open.",
+      "sourceCurrent": {
+        "re": -0.00013333333333333334,
+        "im": -0.0007288494956328321,
+        "mag": 0.0007409449136487892,
+        "phaseDeg": -100.36687073991408
+      },
+      "networkCurrent": {
+        "re": 0.00013333333333333334,
+        "im": 0.0007288494956328321,
+        "mag": 0.0007409449136487892,
+        "phaseDeg": 79.63312926008594
+      },
+      "zout": {
+        "re": 242.8660975195715,
+        "im": -1327.5962451259043,
+        "mag": 1349.6279974114298,
+        "phaseDeg": -79.63312926008594
+      }
+    },
+    {
+      "frequency": 20,
+      "hypothesis": "core_series_lm_mr_only",
+      "note": "Sensitivity case: only LM and MR paths active.",
+      "sourceCurrent": {
+        "re": -0.00006666666666666667,
+        "im": -3.141592653589793e-7,
+        "mag": 0.00006666740688288736,
+        "phaseDeg": -179.73000199856827
+      },
+      "networkCurrent": {
+        "re": 0.00006666666666666667,
+        "im": 3.141592653589793e-7,
+        "mag": 0.00006666740688288736,
+        "phaseDeg": 0.2699980014317376
+      },
+      "zout": {
+        "re": 14999.666908248299,
+        "im": -70.68426504787017,
+        "mag": 14999.833453199555,
+        "phaseDeg": -0.2699980014317376
+      }
+    },
+    {
+      "frequency": 50,
+      "hypothesis": "core_series_lm_mr_only",
+      "note": "Sensitivity case: only LM and MR paths active.",
+      "sourceCurrent": {
+        "re": -0.00006666666666666667,
+        "im": -7.853981633974483e-7,
+        "mag": 0.00006667129288321559,
+        "phaseDeg": -179.32503122544492
+      },
+      "networkCurrent": {
+        "re": 0.00006666666666666667,
+        "im": 7.853981633974483e-7,
+        "mag": 0.00006667129288321559,
+        "phaseDeg": 0.6749687745550758
+      },
+      "zout": {
+        "re": 14997.918419226971,
+        "im": -176.69006371868434,
+        "mag": 14998.959173502828,
+        "phaseDeg": -0.6749687745550758
+      }
+    },
+    {
+      "frequency": 100,
+      "hypothesis": "core_series_lm_mr_only",
+      "note": "Sensitivity case: only LM and MR paths active.",
+      "sourceCurrent": {
+        "re": -0.00006666666666666667,
+        "im": -0.0000015707963267948967,
+        "mag": 0.00006668516960722764,
+        "phaseDeg": -178.6502497411781
+      },
+      "networkCurrent": {
+        "re": 0.00006666666666666667,
+        "im": 0.0000015707963267948967,
+        "mag": 0.00006668516960722764,
+        "phaseDeg": 1.3497502588218948
+      },
+      "zout": {
+        "re": 14991.677141848186,
+        "im": -353.23307080365214,
+        "mag": 14995.83799351416,
+        "phaseDeg": -1.3497502588218946
+      }
+    },
+    {
+      "frequency": 200,
+      "hypothesis": "core_series_lm_mr_only",
+      "note": "Sensitivity case: only LM and MR paths active.",
+      "sourceCurrent": {
+        "re": -0.00006666666666666667,
+        "im": -0.0000031415926535897933,
+        "mag": 0.00006674064765077975,
+        "phaseDeg": -177.30199593618678
+      },
+      "networkCurrent": {
+        "re": 0.00006666666666666667,
+        "im": 0.0000031415926535897933,
+        "mag": 0.00006674064765077975,
+        "phaseDeg": 2.698004063813199
+      },
+      "zout": {
+        "re": 14966.763891276432,
+        "im": -705.2921323327054,
+        "mag": 14983.372730101404,
+        "phaseDeg": -2.6980040638131983
+      }
+    },
+    {
+      "frequency": 500,
+      "hypothesis": "core_series_lm_mr_only",
+      "note": "Sensitivity case: only LM and MR paths active.",
+      "sourceCurrent": {
+        "re": -0.00006666666666666667,
+        "im": -0.000007853981633974482,
+        "mag": 0.00006712771016466488,
+        "phaseDeg": -173.28097054483376
+      },
+      "networkCurrent": {
+        "re": 0.00006666666666666667,
+        "im": 0.000007853981633974482,
+        "mag": 0.00006712771016466488,
+        "phaseDeg": 6.7190294551662415
+      },
+      "zout": {
+        "re": 14794.662932265579,
+        "im": -1742.9551642628535,
+        "mag": 14896.977679515521,
+        "phaseDeg": -6.71902945516624
+      }
+    },
+    {
+      "frequency": 1000,
+      "hypothesis": "core_series_lm_mr_only",
+      "note": "Sensitivity case: only LM and MR paths active.",
+      "sourceCurrent": {
+        "re": -0.00006666666666666667,
+        "im": -0.000015707963267948964,
+        "mag": 0.00006849222258382098,
+        "phaseDeg": -166.7418190938819
+      },
+      "networkCurrent": {
+        "re": 0.00006666666666666667,
+        "im": 0.000015707963267948964,
+        "mag": 0.00006849222258382098,
+        "phaseDeg": 13.25818090611812
+      },
+      "zout": {
+        "re": 14211.05179141149,
+        "im": -3348.4001930761797,
+        "mag": 14600.197836713456,
+        "phaseDeg": -13.25818090611812
+      }
+    },
+    {
+      "frequency": 2000,
+      "hypothesis": "core_series_lm_mr_only",
+      "note": "Sensitivity case: only LM and MR paths active.",
+      "sourceCurrent": {
+        "re": -0.00006666666666666667,
+        "im": -0.00003141592653589793,
+        "mag": 0.00007369806567714909,
+        "phaseDeg": -154.76836279913218
+      },
+      "networkCurrent": {
+        "re": 0.00006666666666666667,
+        "im": 0.00003141592653589793,
+        "mag": 0.00007369806567714909,
+        "phaseDeg": 25.23163720086782
+      },
+      "zout": {
+        "re": 12274.2951563532,
+        "im": -5784.125323678798,
+        "mag": 13568.877158604466,
+        "phaseDeg": -25.23163720086782
+      }
+    },
+    {
+      "frequency": 3200,
+      "hypothesis": "core_series_lm_mr_only",
+      "note": "Sensitivity case: only LM and MR paths active.",
+      "sourceCurrent": {
+        "re": -0.00006666666666666667,
+        "im": -0.00005026548245743669,
+        "mag": 0.00008349289293780233,
+        "phaseDeg": -142.98435542681793
+      },
+      "networkCurrent": {
+        "re": 0.00006666666666666667,
+        "im": 0.00005026548245743669,
+        "mag": 0.00008349289293780233,
+        "phaseDeg": 37.01564457318208
+      },
+      "zout": {
+        "re": 9563.342782894902,
+        "im": -7210.590583320863,
+        "mag": 11977.06732649623,
+        "phaseDeg": -37.01564457318208
+      }
+    },
+    {
+      "frequency": 4200,
+      "hypothesis": "core_series_lm_mr_only",
+      "note": "Sensitivity case: only LM and MR paths active.",
+      "sourceCurrent": {
+        "re": -0.00006666666666666667,
+        "im": -0.00006597344572538565,
+        "mag": 0.00009379200384534308,
+        "phaseDeg": -135.29944390021473
+      },
+      "networkCurrent": {
+        "re": 0.00006666666666666667,
+        "im": 0.00006597344572538565,
+        "mag": 0.00009379200384534308,
+        "phaseDeg": 44.700556099785274
+      },
+      "zout": {
+        "re": 7578.39280225632,
+        "im": -7499.590293379659,
+        "mag": 10661.889702761175,
+        "phaseDeg": -44.700556099785274
+      }
+    },
+    {
+      "frequency": 5000,
+      "hypothesis": "core_series_lm_mr_only",
+      "note": "Sensitivity case: only LM and MR paths active.",
+      "sourceCurrent": {
+        "re": -0.00006666666666666667,
+        "im": -0.00007853981633974483,
+        "mag": 0.00010301915935943806,
+        "phaseDeg": -130.325475095727
+      },
+      "networkCurrent": {
+        "re": 0.00006666666666666667,
+        "im": 0.00007853981633974483,
+        "mag": 0.00010301915935943806,
+        "phaseDeg": 49.67452490427299
+      },
+      "zout": {
+        "re": 6281.635575958373,
+        "im": -7400.377566734667,
+        "mag": 9706.932246563567,
+        "phaseDeg": -49.67452490427299
+      }
+    },
+    {
+      "frequency": 10000,
+      "hypothesis": "core_series_lm_mr_only",
+      "note": "Sensitivity case: only LM and MR paths active.",
+      "sourceCurrent": {
+        "re": -0.00006666666666666667,
+        "im": -0.00015707963267948965,
+        "mag": 0.0001706413063919983,
+        "phaseDeg": -112.99700767179054
+      },
+      "networkCurrent": {
+        "re": 0.00006666666666666667,
+        "im": 0.00015707963267948965,
+        "mag": 0.0001706413063919983,
+        "phaseDeg": 67.00299232820947
+      },
+      "zout": {
+        "re": 2289.498726593718,
+        "im": -5394.504284902508,
+        "mag": 5860.245805331529,
+        "phaseDeg": -67.00299232820947
+      }
+    },
+    {
+      "frequency": 13600,
+      "hypothesis": "core_series_lm_mr_only",
+      "note": "Sensitivity case: only LM and MR paths active.",
+      "sourceCurrent": {
+        "re": -0.00006666666666666667,
+        "im": -0.00021362830044410592,
+        "mag": 0.0002237889523526164,
+        "phaseDeg": -107.33149913630075
+      },
+      "networkCurrent": {
+        "re": 0.00006666666666666667,
+        "im": 0.00021362830044410592,
+        "mag": 0.0002237889523526164,
+        "phaseDeg": 72.66850086369926
+      },
+      "zout": {
+        "re": 1331.1636644828811,
+        "im": -4265.613468846389,
+        "mag": 4468.495828267406,
+        "phaseDeg": -72.66850086369926
+      }
+    },
+    {
+      "frequency": 20000,
+      "hypothesis": "core_series_lm_mr_only",
+      "note": "Sensitivity case: only LM and MR paths active.",
+      "sourceCurrent": {
+        "re": -0.00006666666666666667,
+        "im": -0.0003141592653589793,
+        "mag": 0.00032115492905346793,
+        "phaseDeg": -101.98081356768623
+      },
+      "networkCurrent": {
+        "re": 0.00006666666666666667,
+        "im": 0.0003141592653589793,
+        "mag": 0.00032115492905346793,
+        "phaseDeg": 78.01918643231379
+      },
+      "zout": {
+        "re": 646.3675678202235,
+        "im": -3045.9354038740744,
+        "mag": 3113.7619557864973,
+        "phaseDeg": -78.01918643231379
+      }
+    }
+  ]
+}

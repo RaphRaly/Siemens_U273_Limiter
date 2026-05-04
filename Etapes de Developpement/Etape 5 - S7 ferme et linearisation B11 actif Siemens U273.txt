@@ -1,0 +1,339 @@
+Etape 5 - S7 ferme et linearisation B11 actif
+=============================================
+
+Date: 2026-05-01
+Objet: Siemens U273 limiter, progression MNA + linearisation globale
+
+
+1. But de cette etape
+--------------------
+
+Apres l'etape 4, le detecteur B11/S7 etait encore parametrique pour la
+position exacte de S7. Les nouvelles captures fournies permettent maintenant
+de fermer la table S7 utile au seuil.
+
+Cette etape fait deux choses:
+
+    1. encoder S7 dans le modele numerique;
+    2. commencer la linearisation des etages actifs B11 par les parametres
+       petit-signal BJT derives des courants DC deja verifies.
+
+Ce n'est pas encore la MNA complete B11 + B6. C'est l'etape intermediaire
+necessaire pour que la MNA complete ne repose pas sur une source VCMD ideale.
+
+
+2. Verification scientifique externe
+------------------------------------
+
+Sources academiques / universitaires utilisees pour cette etape:
+
+1. MIT OpenCourseWare, 6.101, "hybrid_pi.pdf".
+   Source:
+   https://ocw.mit.edu/courses/6-101-introductory-analog-electronics-laboratory-spring-2007/resources/hybrid_pi/
+   Utilisation: modele BJT petit-signal basse frequence de type hybrid-pi.
+
+2. MIT OpenCourseWare, 6.720J, "lecture36.pdf".
+   Source:
+   https://ocw.mit.edu/courses/6-720j-integrated-microelectronic-devices-spring-2007/resources/lecture36/
+   Utilisation: caracteristiques courant-tension du BJT ideal et comportement
+   petit-signal.
+
+3. MIT OpenCourseWare, 6.012, "Lecture 7 - Bipolar Junction Transistors".
+   Source:
+   https://ocw.mit.edu/courses/6-012-microelectronic-devices-and-circuits-fall-2009/resources/mit6_012f09_lec07/
+   Utilisation: BJT comme composant trois bornes, regimes de fonctionnement,
+   et necessite de verifier la region de fonctionnement avant linearisation.
+
+4. UC Berkeley EE105, "Lecture12 - Small Signal Model BJT".
+   Source:
+   https://msdnaa.eecs.berkeley.edu/~ee105/fa14/lectures/Lecture12-Small%20Signal%20Model-BJT.pdf
+   Utilisation: relations petit-signal usuelles:
+
+        gm = IC / VT
+        rpi = beta / gm
+        ro ~= VA / IC si Early voltage disponible
+
+5. TU Delft, Modified Nodal Analysis.
+   Source:
+   https://analog-electronics.tudelft.nl/webbook/SED/_build/html/network_theory/NetworkTheory-1_Modified_Nodal_Analysis.html
+   Utilisation: structure KCL/MNA pour assembler les branches lineaires et
+   les sources commandees.
+
+Ces sources valident la methode. Elles ne fixent pas les parametres Siemens
+SST116/SST117/2N3054 exacts. Ces parametres restent a mesurer ou a borner.
+
+
+3. Fermeture de S7
+------------------
+
+Lecture depuis les captures:
+
+    S7 est un inverseur.
+
+    commun = 17
+    position dessinee = 17 -> 19
+    position inverse  = 17 -> 18
+
+Le noeud 17 est le noeud central du detecteur:
+
+    R31 51 kOhm
+    D1 ZL10
+    Gr B30 C2200
+    commun S7
+
+Le noeud 18 est relie a l'autre cote de D1 ZL10.
+
+Table S7:
+
+    Position      Connexion fermee      Connexion ouverte      Effet
+    --------      ----------------      -----------------      -----
+    dessinee      17 -> 19              17 -> 18               ZL10 active
+    inverse       17 -> 18              17 -> 19               ZL10 contournee
+
+Interpretation:
+
+    17 -> 19:
+        la zener D1 ZL10 reste dans la chaine de seuil;
+        seuil haut;
+        mode limiteur probable.
+
+    17 -> 18:
+        S7 met les deux cotes de D1 ZL10 au meme potentiel pour le seuil;
+        la contribution 10 V de ZL10 est contournee;
+        seuil bas;
+        mode compresseur probable.
+
+
+4. Mise a jour numerique S7
+---------------------------
+
+Script modifie:
+
+    solver/b11_s7_detector_parametric.js
+
+Ajout:
+
+    s7ContactTable = [
+        drawn_17_to_19    -> ZL10 active
+        inverse_17_to_18  -> ZL10 bypassed
+    ]
+
+Les sorties CSV contiennent maintenant:
+
+    s7Position
+    s7Closed
+    zenerPath
+
+Resultat seuil:
+
+Scenario                                  S7        ZL10              Vth RMS
+--------                                  --        ----              -------
+limiter_nominal                           17->19    active            7,99 V
+compressor_s7_17_to_18_zener_bypassed     17->18    contournee        0,92 V
+compressor_partial_zener_bound            borne     partielle         4,45 V
+
+Conclusion:
+
+    Le mode limiteur reste valide autour de 8 V~.
+    Le mode compresseur ne doit plus etre vu comme une simple hypothese vague:
+    la capture S7 justifie le contournement de ZL10 par 17->18. La valeur exacte
+    du seuil compresseur depend encore de D2, Gr, charges actives et contacts
+    reels, mais le mecanisme est maintenant ferme.
+
+
+5. Linearisation BJT: methode
+-----------------------------
+
+Un transistor BJT ne se linearise pas par une resistance fixe. On commence par
+un point de repos DC, puis on remplace le transistor par un modele local.
+
+Modele basse frequence retenu:
+
+    gm = IC / VT
+    re = 1 / gm = VT / IC
+    rpi = beta / gm
+
+avec:
+
+    VT ~= 25,85 mV a 300 K
+    beta balaye = 50, 100, 200
+
+ro n'est pas encore utilise car l'Early voltage VA des SST116/SST117/2N3054
+du montage n'est pas ferme. Si VA est disponible:
+
+    ro ~= VA / IC
+
+Stamp MNA petit-signal NPN standard:
+
+    rpi entre base et emetteur
+    source de courant controlee gm*vbe du collecteur vers emetteur
+    ro entre collecteur et emetteur si VA est connu
+
+Pour un PNP, la meme structure est utilisable si l'orientation des tensions et
+courants est definie correctement dans la netlist.
+
+
+6. Script de linearisation B11 actif
+------------------------------------
+
+Script cree:
+
+    solver/b11_active_bjt_linearization_estimates.js
+
+Fichiers generes:
+
+    results/b11_active_bjt_linearization_estimates.json
+    results/b11_active_bjt_linearization_estimates.csv
+
+Ce script ne pretend pas connaitre tous les IC exacts. Il transforme les
+courants DC deja verifies ou bornes en parametres petit-signal.
+
+
+7. Resultats principaux, beta = 100
+-----------------------------------
+
+Ts1 depuis R11:
+
+    courant local = 1,15 mA
+    gm = 44,5 mS
+    re = 22,48 ohm
+    rpi = 2248 ohm
+
+Important:
+
+    Ce courant vient de R11 entre 21,5 V et 10 V. Ce n'est pas encore une
+    preuve que IC(Ts1) = 1,15 mA, car le noeud 0,5 V demande davantage.
+
+Ts1 cote N05:
+
+    demande resistive N05 = 4,60 a 4,92 mA
+    gm = 177,9 a 190,3 mS
+    re = 5,62 a 5,25 ohm
+    rpi = 562 a 525 ohm
+
+Interpretation:
+
+    Ts1 ne peut pas etre ferme comme un simple etage isole avec seulement R11.
+    La MNA complete doit inclure les chemins R7/R8/R12/R9/C5 et la regulation.
+
+Ts2:
+
+    courant N9 principal = 7,54 mA
+    gm = 291,7 mS
+    re = 3,43 ohm
+    rpi = 343 ohm
+
+    courant fourni par R15 = 7,92 mA
+    gm = 306,4 mS
+    re = 3,26 ohm
+    rpi = 326 ohm
+
+Interpretation:
+
+    Ts2 est un etage a courant de plusieurs mA. Son impedance dynamique
+    emetteur est de quelques ohms, donc il peut agir fortement dans la boucle.
+
+Ts3:
+
+    courant fourni par R23 = 10 mA
+    gm = 386,8 mS
+    re = 2,58 ohm
+    rpi = 259 ohm
+
+Interpretation:
+
+    L'etage autour de Ts3/Ts4 est potentiellement a faible impedance
+    dynamique. La topologie exacte R25/R26/R27 reste a fermer avant stamp MNA
+    complet.
+
+Ts5/Ts6 2N3054:
+
+    Si chute R28/R29 = 10 mV:
+        I = 10 mA, gm = 386,8 mS, re = 2,58 ohm, rpi = 259 ohm
+
+    Si chute R28/R29 = 50 mV:
+        I = 50 mA, gm = 1,934 S, re = 0,517 ohm, rpi = 51,7 ohm
+
+    Si chute R28/R29 = 100 mV:
+        I = 100 mA, gm = 3,869 S, re = 0,259 ohm, rpi = 25,85 ohm
+
+Interpretation:
+
+    Les 2N3054 peuvent fortement abaisser l'impedance de commande si leur
+    courant de repos est eleve. Mais il ne faut pas supposer 50 ou 100 mA sans
+    tension mesuree aux bornes de R28/R29.
+
+
+8. Ce qui est maintenant ferme
+------------------------------
+
+Ferme:
+
+    - S7:
+        17->19 = ZL10 active
+        17->18 = ZL10 contournee
+
+    - seuil limiteur:
+        17->19 donne une coherence forte avec 8 V~ RMS.
+
+    - modele petit-signal BJT:
+        gm, re, rpi calculables depuis le point DC.
+
+    - courants B11 resistifs principaux:
+        R11: 1,15 mA
+        R15/R16: environ 7,5 a 7,9 mA
+        R23: 10 mA
+        N05: demande resistive 4,6 a 4,9 mA
+
+    - fichiers de resultats:
+        b11_s7_detector_parametric.*
+        b11_active_bjt_linearization_estimates.*
+
+
+9. Ce qui reste ouvert avant MNA complete
+-----------------------------------------
+
+Ouvert:
+
+    - orientation exacte NPN/PNP et broches B/C/E pour SST116/SST117 dans le
+      schema B11;
+    - topologie precise Ts3/Ts4/R25/R26/R27;
+    - position exacte des ajustables R7, R18, R27;
+    - courant reel dans R28/R29;
+    - Early voltage ou ro equivalent des transistors;
+    - capacites transistor si on veut une AC haute frequence complete;
+    - charge exacte de C11 par l'etage actif B11;
+    - table S6 encore bornee, pas totalement fermee.
+
+
+10. Prochaine etape de calcul
+-----------------------------
+
+La prochaine etape rigoureuse est de transformer cette linearisation en stamps
+MNA actifs:
+
+    1. creer un module bjt_small_signal.js:
+        - terminals B/C/E;
+        - gm, rpi, ro optionnel;
+        - stamp MNA pour NPN/PNP orientes.
+
+    2. construire une netlist B11 active reduite:
+        - Ts1/Ts2 d'abord;
+        - puis Ts3/Ts4;
+        - puis Ts5/Ts6.
+
+    3. coupler la sortie B11 a B6:
+
+        I_B11_out(VCMD, etats_B11) + I_B6_in(VCMD, etats_B6) = 0
+
+    4. comparer:
+        - VCMD ideal ancien;
+        - B11/S6 impedance passif;
+        - B11 actif linearise.
+
+Conclusion:
+
+    Nous avons ferme S7 et commence la linearisation scientifique des etages
+    actifs B11. Il manque encore la netlist active exacte des transistors pour
+    declarer la MNA globale terminee, mais les grandeurs petit-signal sont
+    maintenant numeriquement disponibles et verifiables.

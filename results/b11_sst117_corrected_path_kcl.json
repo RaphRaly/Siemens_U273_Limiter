@@ -1,0 +1,128 @@
+{
+  "title": "Siemens U273 B11 SST117 Ts1/Ts2 corrected KCL from PDF crop",
+  "status": "node-level DC path proof; transistor terminal stamps still guarded",
+  "imageEvidence": {
+    "transistors": "Ts1=SST117, Ts2=SST117",
+    "visibleNodes": "N215=21.5 V, N145=14.5 V, N10=10 V, N9=9 V, N05=0.5 V",
+    "visibleBranches": "R15=1.2k, R11=10k, R16=1.2k, R13=220k, R14=2k in series with C6=1n"
+  },
+  "nodeVoltages": {
+    "N215": 21.5,
+    "N145": 14.5,
+    "N10": 10,
+    "N9": 9,
+    "N05": 0.5,
+    "REF": 0
+  },
+  "resistorValues": {
+    "R11": 10000,
+    "R12": 120,
+    "R13": 220000,
+    "R15": 1200,
+    "R16": 1200,
+    "R17": 6800,
+    "R9": 56000,
+    "R7R8_MIN": 680,
+    "R7R8_MAX": 1180
+  },
+  "passiveCurrents": {
+    "iR15": 0.005833333333333334,
+    "iR11": 0.00115,
+    "iR16IfBottomRef": 0.0075,
+    "iR13": 0.000038636363636363636,
+    "iR12": 0.004166666666666667,
+    "iR9": 0.00000892857142857143,
+    "iR17": 0.00007352941176470588,
+    "iR7R8Low": 0.000423728813559322,
+    "iR7R8High": 0.0007352941176470588,
+    "n9PassiveDemandIfR16BottomRefAmp": 0.007538636363636364,
+    "n9ShortfallIfR16BottomRefAndTs2CollectorOnlyAmp": 0.00170530303030303,
+    "n05DemandLowAmp": 0.00459932405165456,
+    "n05DemandHighAmp": 0.004910889355742297,
+    "n05DemandLowWithR17Amp": 0.004672853463419266,
+    "n05DemandHighWithR17Amp": 0.004984418767507002,
+    "n05ActiveDeficitAfterR13LowAmp": 0.004560687688018196,
+    "n05ActiveDeficitAfterR13HighAmp": 0.004872252992105933,
+    "n05ActiveDeficitAfterR13LowWithR17Amp": 0.004634217099782902,
+    "n05ActiveDeficitAfterR13HighWithR17Amp": 0.0049457824038706385
+  },
+  "ts2ConsistencyRows": [
+    {
+      "beta": 50,
+      "assumedCollectorCurrentAmp": 0.005833333333333334,
+      "expectedBaseCurrentAmp": 0.00011666666666666667,
+      "expectedEmitterCurrentAmp": 0.00595,
+      "r13CurrentAmp": 0.000038636363636363636,
+      "requiredR16CurrentForThisBetaAmp": 0.0059113636363636365,
+      "requiredR16BottomVoltForThisBeta": 1.9063636363636363,
+      "r16CurrentIfBottomRefAmp": 0.0075,
+      "requiredEmitterCurrentAtN9IfR16BottomRefAmp": 0.007538636363636364,
+      "requiredBaseOrExtraInjectionIfR16BottomRefAmp": 0.00170530303030303,
+      "effectiveBetaNeededIfR16BottomRef": 3.4207019102621063,
+      "gmSiemens": 0.2256608639587363,
+      "reOhm": 4.4314285714285715,
+      "rPiOhm": 221.57142857142856,
+      "verdict": "coherent_if_R16_bottom_is_about_2V",
+      "note": "R15=N215->N145 is visually confirmed. R16 lower node is not assumed; the row computes the lower-node voltage required by BJT KCL."
+    },
+    {
+      "beta": 100,
+      "assumedCollectorCurrentAmp": 0.005833333333333334,
+      "expectedBaseCurrentAmp": 0.00005833333333333333,
+      "expectedEmitterCurrentAmp": 0.005891666666666667,
+      "r13CurrentAmp": 0.000038636363636363636,
+      "requiredR16CurrentForThisBetaAmp": 0.005853030303030303,
+      "requiredR16BottomVoltForThisBeta": 1.9763636363636365,
+      "r16CurrentIfBottomRefAmp": 0.0075,
+      "requiredEmitterCurrentAtN9IfR16BottomRefAmp": 0.007538636363636364,
+      "requiredBaseOrExtraInjectionIfR16BottomRefAmp": 0.00170530303030303,
+      "effectiveBetaNeededIfR16BottomRef": 3.4207019102621063,
+      "gmSiemens": 0.2256608639587363,
+      "reOhm": 4.4314285714285715,
+      "rPiOhm": 443.1428571428571,
+      "verdict": "coherent_if_R16_bottom_is_about_2V",
+      "note": "R15=N215->N145 is visually confirmed. R16 lower node is not assumed; the row computes the lower-node voltage required by BJT KCL."
+    },
+    {
+      "beta": 200,
+      "assumedCollectorCurrentAmp": 0.005833333333333334,
+      "expectedBaseCurrentAmp": 0.000029166666666666666,
+      "expectedEmitterCurrentAmp": 0.0058625000000000005,
+      "r13CurrentAmp": 0.000038636363636363636,
+      "requiredR16CurrentForThisBetaAmp": 0.005823863636363637,
+      "requiredR16BottomVoltForThisBeta": 2.011363636363636,
+      "r16CurrentIfBottomRefAmp": 0.0075,
+      "requiredEmitterCurrentAtN9IfR16BottomRefAmp": 0.007538636363636364,
+      "requiredBaseOrExtraInjectionIfR16BottomRefAmp": 0.00170530303030303,
+      "effectiveBetaNeededIfR16BottomRef": 3.4207019102621063,
+      "gmSiemens": 0.2256608639587363,
+      "reOhm": 4.4314285714285715,
+      "rPiOhm": 886.2857142857142,
+      "verdict": "coherent_if_R16_bottom_is_about_2V",
+      "note": "R15=N215->N145 is visually confirmed. R16 lower node is not assumed; the row computes the lower-node voltage required by BJT KCL."
+    }
+  ],
+  "pathRows": [
+    {
+      "path": "N215_R15_N145_Ts2_N9_R13_N05",
+      "confirmedPassivePart": "R15 feeds N145; R13 weakly links N9 to N05; C6/R14 is DC-open.",
+      "r15CurrentAmp": 0.005833333333333334,
+      "r13CurrentAmp": 0.000038636363636363636,
+      "n05DemandLowAmp": 0.00459932405165456,
+      "n05DemandHighAmp": 0.004910889355742297,
+      "n05CoveredByR13LowFraction": 0.008400443891850715,
+      "n05CoveredByR13HighFraction": 0.007867488114181637,
+      "conclusion": "R13 covers less than 1 percent of N05 DC demand; the strong N05 closure must be through Ts1 or another active branch, not through a passive Ts2/R13 path."
+    },
+    {
+      "path": "N215_R11_N10_Ts1_N05",
+      "confirmedPassivePart": "R11 feeds N10; Ts1 terminal assignment still must be stamped before final BJT MNA.",
+      "r11CurrentAmp": 0.00115,
+      "n05DemandLowAmp": 0.00459932405165456,
+      "n05DemandHighAmp": 0.004910889355742297,
+      "n05DeficitIfR11AloneLowAmp": 0.00344932405165456,
+      "n05DeficitIfR11AloneHighAmp": 0.0037608893557422966,
+      "conclusion": "R11 alone is not enough to supply the N05 load; Ts1 cannot be reduced to a simple R11-fed isolated emitter/collector current without additional active coupling."
+    }
+  ]
+}

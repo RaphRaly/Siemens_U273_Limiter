@@ -1,0 +1,163 @@
+Rapport AC petit signal - pont B6 Siemens U273
+================================================
+
+Statut
+------
+Ce rapport documente l'etape AC petit signal du pont B6, sur la topologie
+provisoire dite "variant A". Il ne s'agit pas encore d'une conclusion finale
+sur le limiteur Siemens U273 complet.
+
+Les fichiers numeriques associes sont:
+- solver/complex_ac.js
+- solver/validate_complex_ac.js
+- solver/b6_bridge_ac_sweep.js
+- results/b6_bridge_variantA_ac_sweep.csv
+- results/b6_bridge_variantA_ac_sweep.json
+
+1. Validation du solveur AC
+---------------------------
+Le solveur AC complexe a ete valide sur deux circuits RC de reference:
+- RC passe-bas, R = 1000 Ohm, C = 1 uF
+- RC passe-haut, R = 1000 Ohm, C = 1 uF
+
+A la frequence de coupure:
+fc = 1 / (2*pi*R*C) = 159.154943092 Hz
+
+Le gain analytique attendu vaut:
+|H(fc)| = 1/sqrt(2) = 0.707106781186548
+20*log10(|H(fc)|) = -3.010299956640 dB
+
+Resultat numerique obtenu:
+- passe-bas:  |Vout| = 0.707106781186548, -3.010299956640 dB
+- passe-haut: |Vout| = 0.707106781186548, -3.010299956640 dB
+
+La partie numerique AC est donc coherente pour un cas lineaire connu.
+
+2. Principe MNA AC utilise
+--------------------------
+Le systeme AC petit signal est assemble sous la forme:
+
+  [Y  B] [v] = [0 ]
+  [Bt 0] [i]   [Vs]
+
+avec:
+- Y: matrice d'admittance complexe
+- B: incidence des sources de tension ideales
+- v: tensions complexes des noeuds
+- i: courants complexes dans les sources de tension
+
+Les composants lineaires sont convertis en admittances:
+- resistance: Y_R = 1/R
+- condensateur: Y_C = j*w*C
+- diode autour du point DC: Y_D = gd = dI/dV au point de polarisation
+
+La source de commande B11 est consideree comme une source DC ideale pour cette
+etape. En petit signal AC, le noeud CMD est donc a la masse AC. Par consequent,
+R10 devient une admittance entre NB et la masse AC.
+
+3. Topologie AC provisoire
+--------------------------
+Noeuds utilises:
+- VS: source AC de test, 1 V
+- NX: noeud apres R5
+- NA: noeud audio apres C1 et avant C2 dans cette extraction provisoire
+- NB: noeud pont cote commande/audio
+- NL, NR: branches internes du pont
+- N14, N15: sorties internes vers les condensateurs C3/C5/C7
+
+Elements pris en compte:
+- R5 = 5.6 kOhm entre VS et NX
+- C1 = 1000 pF entre NX et NA
+- C2 = 22 uF entre NA et NB
+- R10 = 20 kOhm entre NB et masse AC
+- R9 = 390 kOhm entre NB et masse
+- R7 = 100 Ohm entre NL et NR
+- R8 = 250 kOhm entre N14 et N15
+- R6 = 39 kOhm entre N14 et masse
+- R11 = 39 kOhm entre N15 et masse
+- D3, D2 remplacees par leurs conductances dynamiques gd
+- D4, D1 remplacees par leurs conductances dynamiques gd
+- C3 = 4.7 uF entre N14 et masse
+- C5 = 150 uF entre N14 et N15
+- C7 = 4.7 uF entre N15 et masse
+
+Les condensateurs C4 et C6 restent exclus, car leur valeur/topologie exacte
+n'est pas encore exploitable avec certitude.
+
+4. Points de polarisation DC
+----------------------------
+Les conductances dynamiques des diodes sont calculees au point DC avant le
+sweep AC.
+
+VCMD (V) | gd D3/D2 (S) | gd D4/D1 (S)
+---------|--------------|--------------
+0.0      | 2.2754e-11   | 2.4176e-7
+0.5      | 4.1544e-7    | 6.8314e-7
+1.0      | 3.4665e-5    | 3.7073e-5
+1.5      | 1.4001e-4    | 1.4900e-4
+2.0      | 2.6445e-4    | 2.8122e-4
+2.5      | 3.9482e-4    | 4.1974e-4
+3.0      | 5.2795e-4    | 5.6119e-4
+
+La symetrie D3/D2 et D4/D1 vient de la topologie provisoire parfaitement
+symetrique. Elle ne doit pas etre interpretee comme une preuve que le montage
+reel est parfaitement symetrique.
+
+5. Resultats principaux du sweep AC
+-----------------------------------
+Le tableau ci-dessous donne le module de VNA pour une source AC de 1 V. VNA
+est le noeud audio choisi dans cette extraction provisoire.
+
+VCMD (V) | |VNA| a 1 kHz | VNA dB a 1 kHz | |VNA| a 20 kHz | VNA dB a 20 kHz
+---------|--------------|----------------|----------------|-----------------
+0.0      | 0.118123     | -18.55 dB      | 0.735145       | -2.67 dB
+0.5      | 0.116994     | -18.64 dB      | 0.732979       | -2.70 dB
+1.0      | 0.0706805    | -23.01 dB      | 0.605243       | -4.36 dB
+1.5      | 0.0318310    | -29.94 dB      | 0.381296       | -8.37 dB
+2.0      | 0.0192938    | -34.29 dB      | 0.261235       | -11.66 dB
+2.5      | 0.0136579    | -37.29 dB      | 0.195599       | -14.17 dB
+3.0      | 0.0105197    | -39.56 dB      | 0.155430       | -16.17 dB
+
+Impedance d'entree equivalente vue par la source AC:
+- a 1 kHz: environ 159 kOhm a 161 kOhm selon VCMD
+- a 20 kHz: environ 25.9 kOhm a VCMD = 0 V, puis environ 10.8 kOhm a VCMD = 3 V
+
+6. Interpretation scientifique
+------------------------------
+Le resultat principal est qualitatif mais utile:
+
+1. Quand VCMD augmente, les conductances dynamiques des diodes augmentent.
+   Le pont charge davantage le noeud audio, donc |VNA| baisse.
+
+2. Le modele produit une reponse fortement montante avec la frequence. Ce n'est
+   pas une propriete definitive du U273; c'est principalement la consequence de
+   l'hypothese que C1 = 1000 pF est en serie dans la branche audio modelisee.
+
+3. A VCMD = 0 V, le modele donne deja -18.55 dB a 1 kHz. Cette valeur est trop
+   structurante pour etre acceptee sans verification topologique. Elle indique
+   que le role exact de C1 doit etre recontrole sur le schema original.
+
+4. L'attenuation relative entre VCMD = 0 V et VCMD = 3 V vaut environ:
+   - 21.01 dB supplementaires a 1 kHz
+   - 13.50 dB supplementaires a 20 kHz
+
+Cette tendance est plausible pour un limiteur a pont de diodes, mais l'amplitude
+absolue reste provisoire.
+
+7. Limites a ne pas oublier
+---------------------------
+- Les parametres SSD55 et OA154Q sont des placeholders numeriques, pas des
+  valeurs mesurees ni extraites d'une fiche technique fiable.
+- La topologie autour de C1/C2 doit etre revalidee sur le schema original.
+- C4 et C6 restent inconnus.
+- B11 est modelise comme une commande DC ideale avec masse AC. Une impedance de
+  sortie non nulle de B11 modifierait le resultat.
+- Le modele ne contient pas encore la charge exacte de l'etage suivant.
+
+Conclusion
+----------
+L'etape AC petit signal est maintenant executable et verifiee numeriquement.
+Le calcul confirme que le pont B6, dans cette topologie provisoire, peut produire
+une attenuation commandee par VCMD. En revanche, la reponse absolue en frequence
+ne doit pas etre consideree finale tant que C1/C2, C4/C6, les parametres de
+diodes et l'impedance de commande B11 ne sont pas confirmes.

@@ -1,0 +1,160 @@
+Etape 14 - Crop global B11: C5, R17/C10 et S6
+==============================================
+
+Date: 2026-05-03
+Objet: Siemens U273 limiter, B11 Regelverstaerker
+Sources:
+    C:\Users\user\Pictures\Screenshots\Screenshot 2026-05-03 092102.png
+    C:\Users\user\Pictures\Screenshots\Screenshot 2026-05-03 092120.png
+
+
+1. But de cette etape
+---------------------
+
+Les nouveaux crops couvrent la zone Ts3/Ts4/Ts5/Ts6, la zone Ts1/Ts2 et le
+reseau S6. Ils corrigent deux erreurs de lecture importantes dans les etapes
+precedentes:
+
+    - R7/R8 ne sont pas directement dans la KCL DC de N05;
+    - R17/C10 ne sont pas raccordes a N05.
+
+
+2. Correction C5/R7/R8
+----------------------
+
+Le crop global montre:
+
+    N05 = 0,5 V -> C5 100 uF -> N150 -> R7 500 ohm ajustable -> R8 680 ohm
+    -> reference
+
+Donc, en DC ideal:
+
+    I_C5_R7R8_DC = 0
+
+Les calculs precedents qui ajoutaient:
+
+    0,5 / (680..1180) = 0,424..0,735 mA
+
+dans la KCL DC de N05 sont maintenant supersedes.
+
+KCL DC corrigee de N05:
+
+    I_R12 = 0,5 / 120
+          = 4,167 mA
+
+    I_R9 = 0,5 / 56k
+         = 8,929 uA
+
+    I_N05 = I_R12 + I_R9
+          = 4,176 mA
+
+Contribution de R13 depuis N9:
+
+    I_R13 = (9 - 0,5) / 220k
+          = 38,636 uA
+
+Deficit actif de N05 apres R13:
+
+    I_actif_N05 = 4,176 mA - 0,0386 mA
+                = 4,137 mA
+
+
+3. Correction R17/C10
+---------------------
+
+Le crop 092120 montre:
+
+    N4 -> R17 6,8 kOhm // C10 100 pF -> reference
+
+R17/C10 sont donc une branche shunt du noeud 4, pas une branche N05->reference.
+
+Consequences:
+
+    - ne pas ajouter g17 dans la KCL de N05;
+    - ne pas ajouter C10 dans la dynamique de N05;
+    - creer un noeud N4 pour la branche R17/C10 quand ce sous-reseau sera
+      integre.
+
+Stamp DC futur:
+
+    N4: +g17*VN4
+    avec g17 = 1/6,8k
+
+Stamp AC/transitoire futur:
+
+    N4: +(g17 + s*C10)*VN4
+
+
+4. Correction S6/R2 visible
+---------------------------
+
+Le crop global montre a droite de S6:
+
+    R1 = 3 kOhm
+    R2 = 1 MOhm ajustable
+
+La lecture precedente R2=5,1 kOhm dans le bornage S6 est supersedee pour cette
+branche visible.
+
+Le script:
+
+    solver/b11_s6_contact_bound_sweep.js
+
+a ete corrige pour utiliser:
+
+    r2_1M
+    r1_r2_series_1003k
+    r1_r2_parallel_2k991
+
+La table exacte des contacts S6 reste gardee; seul le bornage R1/R2 est corrige.
+
+
+5. Scripts et sorties
+---------------------
+
+Scripts mis a jour:
+
+    solver/b11_crop_ts1_ts2_corrected_topology.js
+    solver/b11_s6_contact_bound_sweep.js
+
+Sorties mises a jour:
+
+    results/b11_crop_ts1_ts2_corrected_topology.json
+    results/b11_crop_ts1_ts2_topology_rows.csv
+    results/b11_crop_ts1_ts2_passive_kcl.csv
+    results/b11_crop_ts2_r16_lower_ref_check.csv
+    results/b11_crop_r14_c6_ac_rows.csv
+    results/b11_s6_contact_bound_sweep.json
+    results/b11_s6_contact_bound_sweep.csv
+
+
+6. Valeurs de reprise
+---------------------
+
+Ferme:
+
+    I_R15 = 7,917 mA
+    I_R16 = 7,500 mA
+    I_R13 = 38,636 uA
+    I_N9_passif = 7,539 mA
+    residu R15 - N9_passif = 0,378 mA
+
+    I_C5_R7R8_DC = 0
+    I_N05 = 4,176 mA
+    I_actif_N05_apres_R13 = 4,137 mA
+
+    R17/C10 = N4 -> reference
+    R2 visible cote S6 = 1 MOhm ajustable
+
+Garde:
+
+    - broches B/C/E de Ts1 et Ts2;
+    - noeud exact N4 dans le sous-reseau actif;
+    - table exacte des contacts S6;
+    - table exacte S7 limiteur/compresseur;
+    - stamps BJT complets.
+
+Prochaine etape:
+
+    relancer le solveur d'hypotheses de broches Ts1/Ts2 avec la nouvelle
+    contrainte N05 = 4,176 mA et R17/C10 retire de N05.

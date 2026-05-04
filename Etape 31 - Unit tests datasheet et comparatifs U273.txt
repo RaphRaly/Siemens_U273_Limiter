@@ -1,0 +1,127 @@
+Etape 31 - Unit tests datasheet et comparatifs U273
+===================================================
+
+Date: 2026-05-04
+Objet: renforcer les tests unitaires avec les seules donnees constructeur
+       disponibles et des comparatifs prudents de compresseurs/limiteurs a pont
+       de diodes de meme famille fonctionnelle.
+
+
+1. Donnees Siemens retenues
+---------------------------
+
+Depuis la page technique U273:
+
+    Eingangswiderstand        10 kOhm
+    Ausgangswiderstand        30 Ohm
+    Abschlusswiderstand       300 Ohm
+    Frequenzbereich           40 Hz bis 15 kHz
+    Nennausgangsspannung      1,55 V
+    Stoerabstand              70 dB
+    Klirr vor Regeleinsatz    0,5 %
+    Klirr geregelt 40 Hz      1,0 %
+    Klirr geregelt 1..15 kHz  0,5 %
+    Begrenzer-Ansprechzeit    etwa 0,5 ms
+    Kompressor-Ansprechzeit   etwa 1,0 ms
+    Abklingzeit               0,5 bis 1,5 s
+    Stromaufnahme             24 V DC, 50 mA
+
+Conversions ajoutees aux tests:
+
+    1,55 Vrms = environ +6,02 dBu
+    70 dB sous +6,02 dBu = environ -63,98 dBu equivalent bruit
+    24 V * 50 mA = 1,2 W
+
+
+2. Comparatifs retenus
+----------------------
+
+Les comparatifs ne calibrent pas le U273. Ils servent seulement a eviter des
+regressions absurdes.
+
+AMS Neve 2254/R:
+
+    famille 2254 originale sortie en 1969;
+    controle de gain type diode-bridge;
+    entree 10 kOhm;
+    source 80 Ohm;
+    bande 20 Hz a 20 kHz;
+    attaque limiteur lente 5 ms, rapide 100 us a 2 ms;
+    attaque compresseur 5 ms;
+    release jusqu'a 1,5 s.
+
+AMS Neve 33609/N:
+
+    diode-bridge compressor/limiter;
+    entree 10 kOhm;
+    bande 20 Hz a 20 kHz;
+    attaque limiteur rapide environ 2 ms;
+    attaque compresseur rapide environ 3 ms;
+    release compresseur 100 ms a 1,5 s.
+
+Conclusion:
+
+    le U273 est plausible dans cette famille par impedance et architecture;
+    il est plus rapide que les Neve cites sur les temps Siemens 0,5 ms / 1 ms;
+    sa bande 40 Hz - 15 kHz est plus broadcast/ancienne et ne doit pas etre
+    forcee vers 20 Hz - 20 kHz sans mesure.
+
+
+3. Implementation
+-----------------
+
+Ajout:
+
+    u273_reference/include/u273/reference/U273TechnicalSpecs.h
+
+Contenu:
+
+    specs Siemens;
+    specs comparatives 2254/R et 33609/N;
+    conversions Vrms <-> dBu;
+    conversion distance bruit -> tension;
+    formule Siemens quatre points pour le Klirr.
+
+Tests ajoutes dans:
+
+    u273-plugin/tests/main.cpp
+
+Nouveaux tests:
+
+    testU273DatasheetElectricalSpecs
+    testU273DatasheetDistortionFormula
+    testPeerCompressorPlausibilityEnvelope
+    testDetectorEnvelopeMatchesU273AttackReleaseSpecs
+
+
+4. Validation
+-------------
+
+Commandes executees:
+
+    cmake --build --preset debug-tests-only
+    ctest --preset debug-tests-only
+
+Resultat:
+
+    1/1 tests passed
+
+
+5. Limite scientifique
+----------------------
+
+Ces tests ne prouvent pas encore que le plugin sonne comme un U273.
+Ils fixent seulement:
+
+    les donnees constructeur;
+    les conversions physiques;
+    les ordres de grandeur dynamiques;
+    les garde-fous comparatifs diode-bridge.
+
+La prochaine vraie montee de rigueur sera de generer des golden tests audio:
+
+    sine sweep 40 Hz - 15 kHz;
+    step attack limiteur 0,5 ms;
+    step attack compresseur 1 ms;
+    release 0,5 / 1,5 s;
+    THD estimee par FFT pour les regimes lineaire et regule.

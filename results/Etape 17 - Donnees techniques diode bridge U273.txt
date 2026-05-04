@@ -1,0 +1,280 @@
+Etape 17 - Donnees techniques diode bridge et regulation
+=========================================================
+
+Date: 2026-05-03
+Objet: Siemens U273 limiter, pages techniques apres schema
+Sources:
+    Screenshot 2026-05-03 104316.png
+    Screenshot 2026-05-03 104353.png
+    Screenshot 2026-05-03 104402.png
+    Screenshot 2026-05-03 104419.png
+    Screenshot 2026-05-03 104435.png
+    Screenshot 2026-05-03 104508.png
+    Screenshot 2026-05-03 104537.png
+    Screenshot 2026-05-03 104550.png
+    Screenshot 2026-05-03 104605.png
+
+
+1. Nature des pages
+-------------------
+
+Ces pages ne donnent pas encore la table mecanique exacte de S6/S7, mais elles
+donnent des informations directement exploitables pour la MNA:
+
+    - architecture generale du U273;
+    - mode de regulation choisi;
+    - fonctionnement du pont de diodes;
+    - loi empirique des diodes;
+    - dimensions de signal et specifications.
+
+
+2. Architecture confirmee
+-------------------------
+
+Le texte et le bloc fonctionnel indiquent:
+
+    SV = Signalverstaerker
+    RV = Regelverstaerker
+    DB = Diodenbruecke
+
+Le U273 utilise une regulation par retour:
+
+    Rueckwaertsregelung
+
+La tension de commande est derivee de la sortie du Signalverstaerker et traitee
+par le Regelverstaerker.
+
+Impact MNA:
+
+    la boucle complete doit etre:
+
+        signal audio -> Signalverstaerker/B6 -> detection vers B11/RV
+        -> commande du pont de diodes -> attenuation audio
+
+et non une simple commande feed-forward.
+
+
+3. Preaccentuation / ponderation frequentielle
+----------------------------------------------
+
+Le texte indique qu'un diviseur de tension, dont une resistance peut etre
+pontee par un condensateur, permet d'activer une preaccentuation pour les
+emetteurs modules en frequence.
+
+Impact MNA:
+
+    le reseau S6 doit rester une ponderation frequentielle commutable.
+    Cela confirme notre decision de ne pas reduire S6 a une resistance fixe.
+
+
+4. Limiteur vs compresseur: role de la zener
+--------------------------------------------
+
+Le texte indique que la sortie du Regelverstaerker attaque un redresseur
+silicium en pont.
+
+En mode compresseur:
+
+    la tension continue est appliquee immediatement a la Diodenbruecke.
+
+En mode limiteur:
+
+    la regulation ne doit commencer que juste avant l'atteinte de la tension
+    nominale de sortie. Pour cela, la tension continue issue du Regelverstaerker
+    n'est appliquee a la Diodenbruecke qu'a partir d'une certaine valeur.
+
+Ce seuil est realise par une zener placee entre le redresseur et la
+Diodenbruecke.
+
+En mode compresseur:
+
+    cette zener est pontee par un commutateur.
+
+Impact MNA/S7:
+
+    - mode Begrenzer:
+        zener active dans le chemin de commande;
+
+    - mode Kompressor:
+        zener bypassed.
+
+La note precedente du schema indiquait que la position dessinee S1..S7 est
+"Begrenzer". Donc, pour la position dessinee, il faut garder la zener active.
+
+
+5. Pont de diodes
+-----------------
+
+La Diodenbruecke utilise une combinaison particuliere:
+
+    dans chaque branche, une diode germanium et une diode silicium sont en
+    serie.
+
+Cette association donne un comportement favorable pour:
+
+    - bruit;
+    - distorsion;
+    - comportement thermique.
+
+Impact MNA:
+
+    le pont B6 doit etre modelise comme branche diode composite, pas comme une
+    diode silicium unique.
+
+
+6. Loi empirique des branches de diodes
+---------------------------------------
+
+Le texte donne une loi moyenne mesuree a 25 deg C pour les paires de diodes:
+
+    U_D = 308 * I_D^0,16
+
+avec:
+
+    U_D en mV
+    I_D en uA
+
+Equivalent:
+
+    I_D = 2,85e-16 * U_D^6,25
+
+Resistance differentielle:
+
+    R = dU_D/dI_D = 48,3 * I_D^-0,84
+
+avec:
+
+    R en kOhm
+    I_D en uA
+
+Domaine indique:
+
+    environ 2 a 500 uA avec moins de 5 % d'erreur.
+
+Impact MNA:
+
+    cette loi est meilleure qu'un Shockley generique pour une premiere
+    calibration du pont B6, car elle vient des diodes/paires reelles mesurees
+    dans l'article.
+
+
+7. Niveau de signal dans le pont de diodes
+------------------------------------------
+
+Le texte indique:
+
+    niveau studio usuel:
+        +6 dB = 1,55 V
+
+    tension de signal choisie a la Diodenbruecke dans l'exemple:
+        25 mV
+
+Cela implique que le signal est attenue avant le pont, puis reamplifie pour
+retrouver 1,55 V en sortie.
+
+Impact MNA:
+
+    le pont de diodes ne doit pas voir directement 1,55 V audio; son niveau
+    interne utile est de l'ordre de dizaines de mV.
+
+
+8. Exemple de distorsion
+------------------------
+
+Exemple donne:
+
+    tension de signal a la Diodenbruecke:
+        25 mV
+
+    tension continue:
+        1 V
+
+    surmodulation:
+        facteur 6
+
+Resultat calcule:
+
+    I1 = 18,33 uA
+    I3 = 0,033 uA
+    K = 0,18 %
+
+Le texte ajoute que les ondulations de regulation a basse frequence augmentent
+le facteur de distorsion, surtout quand le temps de retablissement est plus
+court. Pour l'appareil, meme avec une Abklingzeit de 0,5 s, le Klirrfaktor a
+40 Hz ne depasse pas 1,5 %.
+
+
+9. Donnees techniques lues
+--------------------------
+
+Donnees visibles:
+
+    Eingangswiderstand:
+        10 kOhm
+
+    Ausgangswiderstand:
+        30 Ohm
+
+    Abschlusswiderstand:
+        300 Ohm
+
+    Frequenzbereich:
+        40 Hz bis 15 kHz
+
+    Stoerabstand, rapporte a 1,55 V et mesure avec filtre bruit:
+        70 dB
+
+    Klirrfaktor avant regulation:
+        40 Hz bis 15 kHz: 0,5 %
+
+    Klirrfaktor en regulation:
+        40 Hz: 1,0 %
+        1 kHz bis 15 kHz: 0,5 %
+
+    Begrenzer-Ansprechzeit:
+        environ 0,5 ms
+
+    Kompressor-Ansprechzeit:
+        environ 1,0 ms
+
+    Abklingzeit:
+        0,5 s bis 1,5 s
+
+    Stromaufnahme:
+        50 mA sous 24 V DC
+
+    Dimensions:
+        160 mm x 100 mm x 80 mm
+
+    Temperature ambiante maximale:
+        60 deg C
+
+
+10. Consequences pour la suite
+------------------------------
+
+Ferme:
+
+    - B11/RV est une regulation par retour;
+    - zener active en mode limiteur, bypass en mode compresseur;
+    - pont de diodes = branches composites Ge + Si;
+    - loi empirique diode disponible;
+    - niveau interne pont autour de 25 mV dans l'exemple;
+    - temps d'attaque/relachement et specs globales disponibles.
+
+Garde:
+
+    - table mecanique exacte S6;
+    - table mecanique exacte S7;
+    - routage exact entre zener, redresseur et Diodenbruecke dans le schema;
+    - broches B/C/E Ts1/Ts2.
+
+Prochaine etape MNA:
+
+    1. ajouter un modele diode composite empirique pour le pont B6;
+    2. calibrer les niveaux internes pour que 1,55 V sortie corresponde a une
+       tension de pont de l'ordre de 25 mV;
+    3. encoder S7 comme:
+           Begrenzer: zener active
+           Kompressor: zener bypassed
+       tout en gardant les contacts exacts a confirmer par schema.

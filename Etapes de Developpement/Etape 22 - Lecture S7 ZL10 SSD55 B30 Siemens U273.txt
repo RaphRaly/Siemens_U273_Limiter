@@ -1,0 +1,212 @@
+Etape 22 - Lecture S7 ZL10 SSD55 B30
+====================================
+
+Date: 2026-05-03
+Objet: lecture du crop S7 autour de D2 SSD55, D1 ZL10, R31 et B30 C2200
+
+
+1. Elements visibles
+--------------------
+
+Le crop montre:
+
+    S7 avec contacts:
+        17
+        18
+        19
+
+    D2:
+        SSD55
+
+    R31:
+        51 kOhm
+
+    D1:
+        ZL10
+
+    Gr:
+        B30 C2200
+        pont/redresseur, bornes 15 et 16 visibles.
+
+    Transformateur / enroulement U:
+        tension indiquee environ 8 V~.
+
+
+2. Lecture des contacts S7
+--------------------------
+
+La position dessinee de S7 montre une lame oblique partant du contact 17 vers
+le contact 18.
+
+Lecture:
+
+    position dessinee:
+        17 -> 18 ferme
+        19 ouvert
+
+Rappel note schema:
+
+    S1...S7 gezeichnete Stellung: Begrenzer
+
+Donc:
+
+    Begrenzer:
+        S7 = 17 -> 18 ferme
+        19 ouvert
+
+Par difference fonctionnelle:
+
+    Kompressor:
+        S7 devrait utiliser l'autre position, probablement 17 -> 19 ferme et
+        18 ouvert, mais cette position n'est pas dessinee ici. A garder comme
+        hypothese tant que la table mecanique complete S7 n'est pas lue.
+
+Crop large ajoute:
+
+    Le crop montrant les rails 17/18/19/20 confirme que S7 est dessine dans le
+    bloc de commutation associe a ces lignes. La lame visible reste sur
+    17 -> 18 dans la position dessinee, avec 19 comme autre contact probable
+    de l'inverseur.
+
+    Lecture utile:
+        18 est sur le rail +;
+        19 est sur le rail -;
+        20 descend vers D2 SSD55.
+
+    A ne pas encore forcer:
+        la position non dessinee de S7 n'est pas explicitement visible comme
+        17 -> 19 sur ce crop; cela reste l'hypothese mecanique normale d'un
+        inverseur 17 commun vers 18/19.
+
+
+3. Chemin limiteur visible
+--------------------------
+
+Dans la position dessinee Begrenzer:
+
+    - D2 SSD55 descend depuis le contact 20 vers le noeud de R31;
+    - R31 = 51k relie ce noeud au noeud central;
+    - D1 ZL10 est connectee depuis ce noeud central vers la branche droite;
+    - la branche droite remonte vers la zone de S7/contact 18;
+    - le redresseur B30 C2200 est connecte plus bas avec bornes 15 et 16.
+
+Interpretation fonctionnelle compatible avec les pages Siemens:
+
+    Begrenzer:
+        la zener D1 ZL10 est dans le chemin de seuil/commande;
+
+    Kompressor:
+        la zener est contournee/bypassee.
+
+
+4. Ce qui est ferme
+-------------------
+
+    - S7 position dessinee = Begrenzer;
+    - S7 Begrenzer dessine ferme 17 -> 18;
+    - contact 19 ouvert dans la position dessinee;
+    - D1 = ZL10;
+    - D2 = SSD55;
+    - R31 = 51k;
+    - redresseur = B30 C2200;
+    - la zone appartient au chemin redressement/seuil de B11.
+
+
+5. Ce qui reste a confirmer
+---------------------------
+
+    - polarites internes du B30 C2200, ou convention de ses bornes;
+    - en mode Kompressor, confirmer physiquement si S7 ferme 17 -> 19, meme si
+      c'est l'hypothese normale;
+    - chemin exact du contact 19 dans le mode non dessine.
+
+
+6. Lecture polarites D1 / D2 depuis zoom serre
+----------------------------------------------
+
+Crop utilisateur:
+
+    D2 SSD55 + R31 51k + D1 ZL10
+
+Convention:
+
+    cote barre = cathode K
+    autre cote = anode A
+
+D2 SSD55:
+
+    lecture du symbole vertical:
+        triangle vers le bas, cathode cote bas/noeud R31.
+
+    Donc:
+        anode D2 = cote contact 20
+        cathode D2 = cote noeud gauche R31
+
+D1 ZL10:
+
+    lecture du symbole zener horizontal:
+        barre zener cote gauche, connectee au noeud apres R31.
+
+    Donc:
+        cathode D1 = cote noeud apres R31
+        anode D1 = cote branche droite / S7 contact 18
+
+
+7. Lecture B30 C2200 depuis zoom serre
+---------------------------------------
+
+Crop utilisateur:
+
+    pont Gr B30 C2200 avec bornes 15 et 16.
+
+Convention pont redresseur:
+
+    - le noeud ou se rejoignent deux cathodes est le + DC;
+    - le noeud ou se rejoignent deux anodes est le - DC;
+    - les deux autres noeuds sont les entrees AC ~.
+
+Lecture du symbole:
+
+    borne 15:
+        jonction des deux cathodes des diodes du haut.
+        Donc 15 = + DC.
+
+    borne 16:
+        jonction des deux anodes des diodes du bas.
+        Donc 16 = - DC.
+
+    bornes gauche et droite du pont:
+        entrees AC ~ venant de l'enroulement / circuit 8 V~.
+
+Conclusion:
+
+    B30 C2200:
+        15 = +
+        16 = -
+        gauche/droite = ~ / ~
+
+
+8. Ce qui reste a confirmer
+---------------------------
+
+    - en mode Kompressor, confirmer physiquement si S7 ferme 17 -> 19;
+    - chemin exact du contact 19 dans le mode non dessine.
+
+
+9. Decision MNA
+---------------
+
+On peut maintenant encoder S7 comme deux etats:
+
+    Begrenzer_drawn:
+        S7_17_18 = closed
+        S7_17_19 = open
+        ZL10 active dans le chemin de seuil
+
+    Kompressor_hypothesis:
+        S7_17_18 = open
+        S7_17_19 = closed
+        ZL10 bypassed
+
+Le mode Kompressor reste une hypothese fonctionnelle jusqu'a lecture directe de
+la position alternative ou table de commutation.

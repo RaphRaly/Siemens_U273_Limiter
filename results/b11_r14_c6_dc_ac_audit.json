@@ -1,0 +1,159 @@
+{
+  "title": "Siemens U273 B11 R14-C6 DC/AC audit",
+  "status": "correction audit for step 9 direct-R14 assumption",
+  "nodeVoltages": {
+    "N10": 10,
+    "N05": 0.5
+  },
+  "values": {
+    "R14": 2000,
+    "C6": 1e-9,
+    "R17": 6800
+  },
+  "cornerHz": 79577.47154594767,
+  "dcAuditRows": [
+    {
+      "caseName": "incorrect_direct_R14_N10_to_N05_DC_stress_test",
+      "c6Treatment": "ignored",
+      "r14DcCurrentAmp": 0.00475,
+      "n05DemandLowAmp": 0.00459932405165456,
+      "n05DemandHighAmp": 0.004910889355742297,
+      "n05ResidualLowAmp": -0.0001506759483454398,
+      "n05ResidualHighAmp": 0.00016088935574229673,
+      "verdict": "not_a_valid_dc_stamp_if_C6_is_series",
+      "note": "This is the step-9 stress test only; it must not be used as DC MNA if R14 reaches N10 through C6."
+    },
+    {
+      "caseName": "correct_series_R14_C6_DC",
+      "c6Treatment": "open_circuit_at_dc",
+      "r14DcCurrentAmp": 0,
+      "n05DemandLowAmp": 0.00459932405165456,
+      "n05DemandHighAmp": 0.004910889355742297,
+      "n05ResidualLowAmp": 0.00459932405165456,
+      "n05ResidualHighAmp": 0.004910889355742297,
+      "verdict": "dc_current_must_be_supplied_by_active_network_not_R14_C6",
+      "note": "At DC an ideal capacitor is open; R14-C6 contributes no N10-to-N05 DC current."
+    },
+    {
+      "caseName": "correct_series_R14_C6_DC_with_R17_candidate",
+      "c6Treatment": "open_circuit_at_dc",
+      "r14DcCurrentAmp": 0,
+      "n05DemandLowAmp": 0.004672853463419266,
+      "n05DemandHighAmp": 0.004984418767507002,
+      "n05ResidualLowAmp": 0.004672853463419266,
+      "n05ResidualHighAmp": 0.004984418767507002,
+      "verdict": "dc_current_must_be_supplied_by_active_network_not_R14_C6",
+      "note": "Same as above, with provisional R17=6.8k from N05 to reference."
+    }
+  ],
+  "acRows": [
+    {
+      "freqHz": 10,
+      "resistanceOhm": 2000,
+      "capacitiveReactanceOhm": 15915494.309189534,
+      "conductanceSiemens": 7.895683396187852e-12,
+      "susceptanceSiemens": 6.283185207959502e-8,
+      "magnitudeSiemens": 6.283185257569544e-8,
+      "phaseDegrees": 89.9928000000379,
+      "currentPerVoltRmsAmp": 6.283185257569544e-8,
+      "percentOfBareR14Conductance": 0.012566370515139088,
+      "currentPerVoltRmsMicroAmp": 0.06283185257569544
+    },
+    {
+      "freqHz": 20,
+      "resistanceOhm": 2000,
+      "capacitiveReactanceOhm": 7957747.154594767,
+      "conductanceSiemens": 3.158273208854789e-11,
+      "susceptanceSiemens": 1.2566369820598539e-7,
+      "magnitudeSiemens": 1.256637021747885e-7,
+      "phaseDegrees": 89.98560000030321,
+      "currentPerVoltRmsAmp": 1.256637021747885e-7,
+      "percentOfBareR14Conductance": 0.025132740434957695,
+      "currentPerVoltRmsMicroAmp": 0.12566370217478848
+    },
+    {
+      "freqHz": 100,
+      "resistanceOhm": 2000,
+      "capacitiveReactanceOhm": 1591549.4309189534,
+      "conductanceSiemens": 7.895671052527524e-10,
+      "susceptanceSiemens": 6.283175385186717e-7,
+      "magnitudeSiemens": 6.283180346181193e-7,
+      "phaseDegrees": 89.92800003789925,
+      "currentPerVoltRmsAmp": 6.283180346181193e-7,
+      "percentOfBareR14Conductance": 0.12566360692362386,
+      "currentPerVoltRmsMicroAmp": 0.6283180346181193
+    },
+    {
+      "freqHz": 1000,
+      "resistanceOhm": 2000,
+      "capacitiveReactanceOhm": 159154.94309189534,
+      "conductanceSiemens": 7.89443688136767e-8,
+      "susceptanceSiemens": 0.000006282193262983156,
+      "magnitudeSiemens": 0.000006282689265500749,
+      "phaseDegrees": 89.28003789569043,
+      "currentPerVoltRmsAmp": 0.000006282689265500749,
+      "percentOfBareR14Conductance": 1.2565378531001499,
+      "currentPerVoltRmsMicroAmp": 6.282689265500749
+    },
+    {
+      "freqHz": 10000,
+      "resistanceOhm": 2000,
+      "capacitiveReactanceOhm": 15915.494309189533,
+      "conductanceSiemens": 0.00000777293820075065,
+      "susceptanceSiemens": 0.00006185507684986444,
+      "magnitudeSiemens": 0.0000623415519567433,
+      "phaseDegrees": 82.8375441932742,
+      "currentPerVoltRmsAmp": 0.0000623415519567433,
+      "percentOfBareR14Conductance": 12.468310391348659,
+      "currentPerVoltRmsMicroAmp": 62.341551956743295
+    },
+    {
+      "freqHz": 20000,
+      "resistanceOhm": 2000,
+      "capacitiveReactanceOhm": 7957.7471545947665,
+      "conductanceSiemens": 0.000029706320445055907,
+      "susceptanceSiemens": 0.000118197693497562,
+      "magnitudeSiemens": 0.00012187354192985431,
+      "phaseDegrees": 75.89219762840987,
+      "currentPerVoltRmsAmp": 0.00012187354192985431,
+      "percentOfBareR14Conductance": 24.374708385970862,
+      "currentPerVoltRmsMicroAmp": 121.87354192985431
+    },
+    {
+      "freqHz": 79577.47154594767,
+      "resistanceOhm": 2000,
+      "capacitiveReactanceOhm": 2000,
+      "conductanceSiemens": 0.00025,
+      "susceptanceSiemens": 0.00025,
+      "magnitudeSiemens": 0.00035355339059327376,
+      "phaseDegrees": 45,
+      "currentPerVoltRmsAmp": 0.00035355339059327376,
+      "percentOfBareR14Conductance": 70.71067811865476,
+      "currentPerVoltRmsMicroAmp": 353.5533905932738
+    },
+    {
+      "freqHz": 100000,
+      "resistanceOhm": 2000,
+      "capacitiveReactanceOhm": 1591.5494309189535,
+      "conductanceSiemens": 0.0003061366816304243,
+      "susceptanceSiemens": 0.0002436158307161593,
+      "magnitudeSiemens": 0.0003912394929134994,
+      "phaseDegrees": 38.511887253966584,
+      "currentPerVoltRmsAmp": 0.0003912394929134994,
+      "percentOfBareR14Conductance": 78.24789858269989,
+      "currentPerVoltRmsMicroAmp": 391.2394929134994
+    },
+    {
+      "freqHz": 1000000,
+      "resistanceOhm": 2000,
+      "capacitiveReactanceOhm": 159.15494309189532,
+      "conductanceSiemens": 0.0004968536375839372,
+      "susceptanceSiemens": 0.00003953835620733635,
+      "magnitudeSiemens": 0.0004984243360751646,
+      "phaseDegrees": 4.549865309121086,
+      "currentPerVoltRmsAmp": 0.0004984243360751646,
+      "percentOfBareR14Conductance": 99.68486721503291,
+      "currentPerVoltRmsMicroAmp": 498.42433607516455
+    }
+  ]
+}
