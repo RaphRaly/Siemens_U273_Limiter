@@ -1,0 +1,146 @@
+#include "u273/dsp/U273DspEngine.h"
+
+#include <algorithm>
+#include <cmath>
+
+#include "u273/core/Math.h"
+
+namespace u273::dsp {
+
+bool DspPrepareConfig::isValid() const noexcept
+{
+    return u273::core::isFinite(sampleRate)
+        && sampleRate > 0.0
+        && maxBlockSize >= 0
+        && numChannels > 0
+        && numChannels <= u273::core::kMaxRealtimeChannels;
+}
+
+U273DspEngine::U273DspEngine() noexcept
+    : gainReductionModel_(&defaultGainReductionModel_)
+{
+}
+
+U273DspEngine::U273DspEngine(RealtimeGainReductionModel& gainReductionModel) noexcept
+    : gainReductionModel_(&gainReductionModel)
+{
+}
+
+void U273DspEngine::prepare(const DspPrepareConfig& config) noexcept
+{
+    prepared_ = false;
+
+    if (!config.isValid()) {
+        return;
+    }
+
+    config_ = config;
+    detector_.prepare(config.sampleRate);
+    gainReductionModel_->prepare(config.sampleRate);
+    prepared_ = true;
+}
+
+void U273DspEngine::reset() noexcept
+{
+    detector_.reset();
+    gainReductionModel_->reset();
+}
+
+ProcessStatus U273DspEngine::process(const u273::core::ProcessContext& context,
+                                     const u273::core::ParameterSnapshot& snapshot,
+                                     u273::core::MeterFrame* meterFrame) noexcept
+{
+    if (!prepared_) {
+        return ProcessStatus::notPrepared;
+    }
+
+    if (!context.isValid()) {
+        return ProcessStatus::invalidContext;
+    }
+
+    if (!snapshot.isValid()) {
+        return ProcessStatus::invalidSnapshot;
+    }
+
+    if (snapshot.isBypassed()) {
+        // Bypass is still metered, but it must not apply gain, detector, or
+        // analog-model state changes to the audio stream.
+        auto peak = 0.0f;
+        auto clipped = false;
+
+        for (int sample = 0; sample < context.audio.numSamples; ++sample) {
+            for (int channel = 0; channel < context.audio.numChannels; ++channel) {
+                const auto value = context.audio.getSample(channel, sample);
+                const auto absValue = std::fabs(value);
+                peak = std::max(peak, absValue);
+                clipped = clipped || absValue >= 1.0f;
+            }
+        }
+
+        if (meterFrame != nullptr) {
+            meterFrame->inputPeakDb = u273::core::linearToDb(peak);
+            meterFrame->outputPeakDb = u273::core::linearToDb(peak);
+            meterFrame->gainReductionDb = 0.0f;
+            meterFrame->clipFlag = clipped;
+            meterFrame->sequence = context.blockSequence;
+        }
+
+        return ProcessStatus::ok;
+    }
+
+    detector_.setTimeConstants(snapshot.attackMs, snapshot.releaseMs);
+
+    const auto inputGain = u273::core::dbToLinear(snapshot.inputGainDb);
+    const auto outputGain = u273::core::dbToLinear(snapshot.outputGainDb);
+    const auto wetMix = u273::core::clampFloat(snapshot.mix, 0.0f, 1.0f);
+    const auto dryMix = 1.0f - wetMix;
+
+    auto inputPeak = 0.0f;
+    auto outputPeak = 0.0f;
+    auto maxReductionDb = 0.0f;
+    auto clipped = false;
+
+    for (int sample = 0; sample < context.audio.numSamples; ++sample) {
+        // Use the loudest processed channel as the sidechain command for this
+        // block-local mono detector path.
+        auto sidechainPeak = 0.0f;
+
+        for (int channel = 0; channel < context.audio.numChannels; ++channel) {
+            const auto dry = context.audio.getSample(channel, sample);
+            const auto driven = dry * inputGain;
+            sidechainPeak = std::max(sidechainPeak, std::fabs(driven));
+            inputPeak = std::max(inputPeak, std::fabs(driven));
+        }
+
+        const auto detectorInput = sidechainPeak * snapshot.detectorScale;
+        const auto envelope = detector_.processSample(detectorInput);
+        const auto reductionDb = gainReductionModel_->evaluateGainReductionDb(envelope, snapshot);
+        const auto reductionGain = u273::core::dbToLinear(-reductionDb);
+        const auto wetGain = reductionGain * outputGain;
+
+        maxReductionDb = std::max(maxReductionDb, reductionDb);
+
+        for (int channel = 0; channel < context.audio.numChannels; ++channel) {
+            const auto dry = context.audio.getSample(channel, sample);
+            const auto wet = dry * inputGain * wetGain;
+            const auto output = dry * dryMix + wet * wetMix;
+            context.audio.setSample(channel, sample, output);
+
+            const auto absOutput = std::fabs(output);
+            outputPeak = std::max(outputPeak, absOutput);
+            clipped = clipped || absOutput >= 1.0f;
+        }
+    }
+
+    if (meterFrame != nullptr) {
+        meterFrame->inputPeakDb = u273::core::linearToDb(inputPeak);
+        meterFrame->outputPeakDb = u273::core::linearToDb(outputPeak);
+        meterFrame->gainReductionDb = maxReductionDb;
+        meterFrame->clipFlag = clipped;
+        meterFrame->sequence = context.blockSequence;
+    }
+
+    return ProcessStatus::ok;
+}
+
+} // namespace u273::dsp

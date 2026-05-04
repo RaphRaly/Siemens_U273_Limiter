@@ -1,0 +1,15 @@
+{
+  "project": "Siemens U273",
+  "status": "PASS_WITH_GUARDED_BOUNDARIES",
+  "source_step": "Etape 26 - Netlist B6 complete et solveurs globaux Siemens U273",
+  "realtime_model": "GUARDED_REALTIME_SURROGATE",
+  "offline_state_space_reference": "FULL_ACTIVE_MODEL_UNVERIFIED",
+  "state_space_source_step": "Etape 30 - Solveur state-space component-level U273",
+  "notes": [
+    "B6 schematic is closed, but Ts1..Ts6 remain guarded and not stamped as a full active transistor model.",
+    "B11 active behaviour remains Thevenin/parametric for the current plugin scaffold.",
+    "The offline state-space/DAE engine exists as an unverified component-level reference path.",
+    "U1/U2 transformer magnetic modelling is intentionally deferred to a later sprint.",
+    "Realtime DSP must not claim full transistor-level equivalence before reference closure and calibration."
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "vs2019-x64",
+      "displayName": "Visual Studio 2019 x64",
+      "generator": "Visual Studio 16 2019",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/build/vs2019-x64",
+      "cacheVariables": {
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/install",
+        "U273_JUCE_SOURCE_DIR": "C:/Users/user/JuceProgram/JUCE",
+        "U273_BUILD_PLUGIN": "ON",
+        "U273_BUILD_TESTS": "ON"
+      }
+    },
+    {
+      "name": "vs2019-x64-tests-only",
+      "displayName": "Visual Studio 2019 x64 tests only",
+      "inherits": "vs2019-x64",
+      "binaryDir": "${sourceDir}/build/vs2019-x64-tests-only",
+      "cacheVariables": {
+        "U273_BUILD_PLUGIN": "OFF",
+        "U273_BUILD_TESTS": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "vs2019-x64",
+      "configuration": "Debug"
+    },
+    {
+      "name": "debug-tests-only",
+      "configurePreset": "vs2019-x64-tests-only",
+      "configuration": "Debug"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "vs2019-x64",
+      "configuration": "Debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "debug-tests-only",
+      "configurePreset": "vs2019-x64-tests-only",
+      "configuration": "Debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}
