@@ -1,4 +1,12 @@
 add_library(u273_reference STATIC
+    src/calibration/ActiveTopologyEvaluator.cpp
+    src/calibration/ActiveTopologyCandidate.cpp
+    src/calibration/B6B11CalibrationRunner.cpp
+    src/calibration/CalibrationDataset.cpp
+    src/calibration/CalibrationResiduals.cpp
+    src/calibration/LinearizedAcSolver.cpp
+    src/calibration/OperatingPointSolver.cpp
+    src/calibration/TransientReferenceSolver.cpp
     src/GoldenValidationSuite.cpp
     src/ReferenceValidator.cpp
     src/ScientificReferenceModel.cpp

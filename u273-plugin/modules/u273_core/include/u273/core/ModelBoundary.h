@@ -10,7 +10,8 @@ enum class ModelBoundary : std::uint8_t {
     unknown = 0,
     passWithGuardedBoundaries,
     guardedRealtimeSurrogate,
-    fullActiveModelUnverified
+    fullActiveModelUnverified,
+    fullActiveModelValidated
 };
 
 inline constexpr const char* toString(ModelBoundary boundary) noexcept
@@ -22,6 +23,8 @@ inline constexpr const char* toString(ModelBoundary boundary) noexcept
             return "GUARDED_REALTIME_SURROGATE";
         case ModelBoundary::fullActiveModelUnverified:
             return "FULL_ACTIVE_MODEL_UNVERIFIED";
+        case ModelBoundary::fullActiveModelValidated:
+            return "FULL_ACTIVE_MODEL_VALIDATED";
         case ModelBoundary::unknown:
         default:
             return "UNKNOWN";
