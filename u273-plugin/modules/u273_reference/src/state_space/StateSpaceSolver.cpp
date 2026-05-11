@@ -156,7 +156,10 @@ StateSpaceSolver::CapacitorCompanion StateSpaceSolver::capacitorCompanion(
     const SolverOptions& options) const noexcept
 {
     // Implicit integration stamps capacitors as a conductance plus a history
-    // current; both backward Euler and trapezoidal use that companion form.
+    // current. Implicit midpoint shares the trapezoidal companion for linear
+    // capacitors; TR-BDF2 enters here through its robust BE-compatible startup
+    // stage until the offline transient wrapper performs the full two-stage
+    // solve.
     const auto& capacitor = circuit_.capacitors()[capacitorIndex];
     const auto h = options.timeStepSeconds();
 
@@ -164,7 +167,8 @@ StateSpaceSolver::CapacitorCompanion StateSpaceSolver::capacitorCompanion(
         capacitor.capacitanceFarad / h,
         -capacitor.capacitanceFarad / h * previousState.capacitorVoltages[capacitorIndex]};
 
-    if (options.method == IntegrationMethod::trapezoidal) {
+    if (options.method == IntegrationMethod::trapezoidal
+        || options.method == IntegrationMethod::implicitMidpoint) {
         companion.conductance = 2.0 * capacitor.capacitanceFarad / h;
         companion.history = -companion.conductance * previousState.capacitorVoltages[capacitorIndex]
             - previousState.capacitorCurrents[capacitorIndex];

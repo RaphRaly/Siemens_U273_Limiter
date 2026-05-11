@@ -108,6 +108,61 @@ namespace {
     return haystack.find(needle) != std::string_view::npos;
 }
 
+[[nodiscard]] std::optional<std::string_view> extractObject(std::string_view text, std::string_view key)
+{
+    const auto keyPos = findJsonKey(text, key);
+    if (keyPos == std::string_view::npos) {
+        return std::nullopt;
+    }
+
+    auto colon = text.find(':', keyPos);
+    if (colon == std::string_view::npos) {
+        return std::nullopt;
+    }
+    ++colon;
+    while (colon < text.size() && std::isspace(static_cast<unsigned char>(text[colon]))) {
+        ++colon;
+    }
+    if (colon >= text.size() || text[colon] != '{') {
+        return std::nullopt;
+    }
+
+    auto inString = false;
+    auto escaped = false;
+    auto depth = 0;
+    const auto objectBegin = colon;
+    for (auto index = objectBegin; index < text.size(); ++index) {
+        const auto ch = text[index];
+        if (inString) {
+            if (escaped) {
+                escaped = false;
+            } else if (ch == '\\') {
+                escaped = true;
+            } else if (ch == '"') {
+                inString = false;
+            }
+            continue;
+        }
+
+        if (ch == '"') {
+            inString = true;
+            continue;
+        }
+        if (ch == '{') {
+            ++depth;
+            continue;
+        }
+        if (ch == '}') {
+            --depth;
+            if (depth == 0) {
+                return text.substr(objectBegin, index - objectBegin + 1);
+            }
+        }
+    }
+
+    return std::nullopt;
+}
+
 [[nodiscard]] std::vector<std::string_view> extractObjectArray(std::string_view text, std::string_view arrayKey)
 {
     std::vector<std::string_view> objects {};
@@ -185,6 +240,29 @@ public:
         return extractNumber(text_, key);
     }
 
+    [[nodiscard]] std::string stringOr(std::string_view key, std::string fallback) const
+    {
+        return string(key).value_or(std::move(fallback));
+    }
+
+    [[nodiscard]] std::optional<JsonObjectView> object(std::string_view key) const
+    {
+        const auto value = extractObject(text_, key);
+        if (!value) {
+            return std::nullopt;
+        }
+        return JsonObjectView {*value};
+    }
+
+    [[nodiscard]] std::vector<JsonObjectView> objectArray(std::string_view key) const
+    {
+        std::vector<JsonObjectView> objects {};
+        for (const auto objectText : extractObjectArray(text_, key)) {
+            objects.emplace_back(objectText);
+        }
+        return objects;
+    }
+
 private:
     std::string_view text_ {};
 };
@@ -210,6 +288,15 @@ public:
             objects.emplace_back(object);
         }
         return objects;
+    }
+
+    [[nodiscard]] std::optional<JsonObjectView> dcExecution() const
+    {
+        const auto value = extractObject(text_, "dc_execution");
+        if (!value) {
+            return std::nullopt;
+        }
+        return JsonObjectView {*value};
     }
 
 private:
@@ -240,6 +327,9 @@ private:
 
 [[nodiscard]] DiodeModel diodeModelFor(std::string_view modelName) noexcept
 {
+    if (contains(modelName, "u273_empirical")) {
+        return makeU273EmpiricalCompositeDiode();
+    }
     if (contains(modelName, "OA154")) {
         return makeOa154Approximation();
     }
@@ -299,7 +389,10 @@ private:
 
 [[nodiscard]] std::string componentId(const JsonObjectView& component)
 {
-    return component.string("id").value_or("UNKNOWN_COMPONENT");
+    if (const auto id = component.string("id")) {
+        return *id;
+    }
+    return component.string("name").value_or("UNKNOWN_COMPONENT");
 }
 
 void stampResistor(const JsonObjectView& component, NetlistStampingContext& context)
@@ -343,8 +436,14 @@ void stampVoltageSource(const JsonObjectView& component, NetlistStampingContext&
 {
     const auto id = componentId(component);
     const auto value = component.number("value");
-    const auto positive = component.string("n_plus");
-    const auto negative = component.string("n_minus");
+    auto positive = component.string("n_plus");
+    auto negative = component.string("n_minus");
+    if (!positive) {
+        positive = component.string("nPlus");
+    }
+    if (!negative) {
+        negative = component.string("nMinus");
+    }
 
     if (value && positive && negative) {
         context.circuit().addVoltageSource(id, context.nodeFor(*positive), context.nodeFor(*negative), *value);
@@ -376,10 +475,19 @@ void stampDiode(const JsonObjectView& component, NetlistStampingContext& context
     const auto id = componentId(component);
     const auto anode = component.string("anode");
     const auto cathode = component.string("cathode");
-    const auto model = component.string("value").value_or("");
+    auto model = component.string("model");
+    if (model && !contains(*model, "u273_empirical")) {
+        model = std::nullopt;
+    }
+    if (!model) {
+        model = component.string("value");
+    }
+    if (!model) {
+        model = component.string("nominalType");
+    }
 
     if (anode && cathode) {
-        context.circuit().addDiode(id, context.nodeFor(*anode), context.nodeFor(*cathode), diodeModelFor(model));
+        context.circuit().addDiode(id, context.nodeFor(*anode), context.nodeFor(*cathode), diodeModelFor(model.value_or("")));
         ++context.report().stampedDiodes;
         return;
     }
@@ -499,6 +607,30 @@ void stampComponent(const JsonObjectView& component, NetlistStampingContext& con
     context.markUnresolved(componentId(component));
 }
 
+void stampDcExecutionReference(const JsonObjectView& netlist, U273LoadedNetlist& loaded, const U273NetlistLoaderOptions& options)
+{
+    NetlistStampingContext context {loaded, options};
+
+    auto objectCount = 0;
+    for (const auto& source : netlist.objectArray("voltageSources")) {
+        ++objectCount;
+        stampVoltageSource(source, context);
+    }
+    for (const auto& resistor : netlist.objectArray("resistors")) {
+        ++objectCount;
+        stampResistor(resistor, context);
+    }
+    for (const auto& diode : netlist.objectArray("diodes")) {
+        ++objectCount;
+        stampDiode(diode, context);
+    }
+
+    loaded.report.componentObjects = objectCount;
+    if (objectCount == 0) {
+        context.markUnresolved("dc_execution.netlist");
+    }
+}
+
 void addNumericalNodeGmin(U273LoadedNetlist& loaded, U273NetlistLoadReport& report, double resistanceOhm)
 {
     const auto originalNodeCount = loaded.circuit.nodeCount();
@@ -555,12 +687,30 @@ U273LoadedNetlist U273NetlistLoader::loadFromFile(const std::filesystem::path& p
     report.status = document.stringOr("status", "UNKNOWN");
     report.scientificBoundary = document.stringOr("scientific_boundary", "");
 
-    const auto componentObjects = document.componentObjects();
-    report.componentObjects = static_cast<int>(componentObjects.size());
+    if (options.source == U273NetlistSource::dcExecutionReference) {
+        const auto dcExecution = document.dcExecution();
+        if (!dcExecution) {
+            report.status = "DC_EXECUTION_NOT_FOUND";
+            markUnresolved(report, "dc_execution");
+            return loaded;
+        }
 
-    NetlistStampingContext context {loaded, options};
-    for (const auto& component : componentObjects) {
-        stampComponent(component, context);
+        report.status = dcExecution->stringOr("status", "DC_EXECUTION_STATUS_UNKNOWN");
+        const auto netlist = dcExecution->object("netlist");
+        if (!netlist) {
+            report.status = "DC_EXECUTION_NETLIST_NOT_FOUND";
+            markUnresolved(report, "dc_execution.netlist");
+            return loaded;
+        }
+        stampDcExecutionReference(*netlist, loaded, options);
+    } else {
+        const auto componentObjects = document.componentObjects();
+        report.componentObjects = static_cast<int>(componentObjects.size());
+
+        NetlistStampingContext context {loaded, options};
+        for (const auto& component : componentObjects) {
+            stampComponent(component, context);
+        }
     }
 
     if (options.addNumericalNodeGmin && options.nodeGminResistanceOhm > 0.0) {

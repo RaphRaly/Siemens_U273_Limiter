@@ -8,7 +8,9 @@ namespace u273::reference::state_space {
 
 enum class IntegrationMethod {
     backwardEuler = 0,
-    trapezoidal
+    trapezoidal,
+    implicitMidpoint,
+    trBdf2
 };
 
 // Solver settings for offline implicit integration. Defaults favor stable

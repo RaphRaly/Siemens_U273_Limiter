@@ -10,13 +10,22 @@ inline constexpr double kRoomTemperatureThermalVoltage = 0.025852;
 // fail gracefully instead of overflowing to infinities.
 [[nodiscard]] double limitedExp(double argument, double maxArgument = 40.0) noexcept;
 
+enum class DiodeLaw {
+    shockley = 0,
+    u273EmpiricalComposite
+};
+
 // Shockley-style diode approximation used by offline state-space experiments.
 struct DiodeModel {
+    DiodeLaw law {DiodeLaw::shockley};
     double saturationCurrentAmp {1.0e-12};
     double ideality {};
     double thermalVoltage {kRoomTemperatureThermalVoltage};
     double gminSiemens {1.0e-12};
     double maxExpArgument {40.0};
+    double empiricalCurrentCoefficientMicroAmpPerMilliVolt {2.85e-16};
+    double empiricalVoltageExponent {6.25};
+    double empiricalMaxVoltage {1.2};
 
     [[nodiscard]] double currentAmp(double voltageAnodeCathode) const noexcept;
     [[nodiscard]] double conductanceSiemens(double voltageAnodeCathode) const noexcept;
@@ -49,6 +58,7 @@ struct BjtEvaluation {
 
 [[nodiscard]] DiodeModel makeSsd55Approximation() noexcept;
 [[nodiscard]] DiodeModel makeOa154Approximation() noexcept;
+[[nodiscard]] DiodeModel makeU273EmpiricalCompositeDiode() noexcept;
 [[nodiscard]] NpnBjtModel makeSmallSignalNpnApproximation(double betaForward) noexcept;
 
 } // namespace u273::reference::state_space

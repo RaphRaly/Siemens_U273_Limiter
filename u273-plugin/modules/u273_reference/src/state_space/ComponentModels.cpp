@@ -13,6 +13,13 @@ double limitedExp(double argument, double maxArgument) noexcept
 
 bool DiodeModel::isValid() const noexcept
 {
+    if (law == DiodeLaw::u273EmpiricalComposite) {
+        return empiricalCurrentCoefficientMicroAmpPerMilliVolt > 0.0
+            && empiricalVoltageExponent > 1.0
+            && empiricalMaxVoltage > 0.0
+            && gminSiemens >= 0.0;
+    }
+
     return saturationCurrentAmp > 0.0
         && ideality > 0.0
         && thermalVoltage > 0.0
@@ -26,6 +33,18 @@ double DiodeModel::currentAmp(double voltageAnodeCathode) const noexcept
         return 0.0;
     }
 
+    if (law == DiodeLaw::u273EmpiricalComposite) {
+        if (voltageAnodeCathode <= 0.0) {
+            return gminSiemens * voltageAnodeCathode;
+        }
+
+        const auto voltageVolt = std::min(voltageAnodeCathode, empiricalMaxVoltage);
+        const auto voltageMilliVolt = voltageVolt * 1000.0;
+        const auto currentMicroAmp = empiricalCurrentCoefficientMicroAmpPerMilliVolt
+            * std::pow(voltageMilliVolt, empiricalVoltageExponent);
+        return currentMicroAmp * 1.0e-6 + gminSiemens * voltageAnodeCathode;
+    }
+
     const auto exponent = voltageAnodeCathode / (ideality * thermalVoltage);
     return saturationCurrentAmp * (limitedExp(exponent, maxExpArgument) - 1.0)
         + gminSiemens * voltageAnodeCathode;
@@ -35,6 +54,19 @@ double DiodeModel::conductanceSiemens(double voltageAnodeCathode) const noexcept
 {
     if (!isValid()) {
         return gminSiemens;
+    }
+
+    if (law == DiodeLaw::u273EmpiricalComposite) {
+        if (voltageAnodeCathode <= 0.0 || voltageAnodeCathode > empiricalMaxVoltage) {
+            return gminSiemens;
+        }
+
+        const auto voltageMilliVolt = voltageAnodeCathode * 1000.0;
+        return empiricalCurrentCoefficientMicroAmpPerMilliVolt
+            * empiricalVoltageExponent
+            * std::pow(voltageMilliVolt, empiricalVoltageExponent - 1.0)
+            * 1.0e-3
+            + gminSiemens;
     }
 
     const auto exponent = voltageAnodeCathode / (ideality * thermalVoltage);
@@ -115,6 +147,17 @@ DiodeModel makeOa154Approximation() noexcept
     model.saturationCurrentAmp = 8.0e-9;
     model.ideality = 1.35;
     model.gminSiemens = 1.0e-12;
+    return model;
+}
+
+DiodeModel makeU273EmpiricalCompositeDiode() noexcept
+{
+    DiodeModel model {};
+    model.law = DiodeLaw::u273EmpiricalComposite;
+    model.gminSiemens = 1.0e-12;
+    model.empiricalCurrentCoefficientMicroAmpPerMilliVolt = 2.85e-16;
+    model.empiricalVoltageExponent = 6.25;
+    model.empiricalMaxVoltage = 1.2;
     return model;
 }
 

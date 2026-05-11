@@ -14,9 +14,15 @@ enum class BjtStampPolicy {
     stampKnownTerminals
 };
 
+enum class U273NetlistSource {
+    componentInventory = 0,
+    dcExecutionReference
+};
+
 // Loader knobs for experiments. The default path keeps active devices guarded
 // unless a test explicitly requests known-terminal BJT stamping.
 struct U273NetlistLoaderOptions {
+    U273NetlistSource source {U273NetlistSource::componentInventory};
     double potentiometerWiperFraction {0.5};
     bool addNumericalNodeGmin {true};
     double nodeGminResistanceOhm {1.0e12};
