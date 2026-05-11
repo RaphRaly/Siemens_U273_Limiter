@@ -15,6 +15,14 @@
 #include "u273/reference/ReferenceValidator.h"
 #include "u273/reference/ScientificReferenceModel.h"
 #include "u273/reference/U273TechnicalSpecs.h"
+#include "u273/reference/calibration/ActiveTopologyCandidate.h"
+#include "u273/reference/calibration/ActiveTopologyEvaluator.h"
+#include "u273/reference/calibration/B6B11CalibrationRunner.h"
+#include "u273/reference/calibration/CalibrationDataset.h"
+#include "u273/reference/calibration/CalibrationResiduals.h"
+#include "u273/reference/calibration/LinearizedAcSolver.h"
+#include "u273/reference/calibration/OperatingPointSolver.h"
+#include "u273/reference/calibration/TransientReferenceSolver.h"
 #include "u273/reference/state_space/ComponentModels.h"
 #include "u273/reference/state_space/NewtonSolver.h"
 #include "u273/reference/state_space/StateSpaceSolver.h"
@@ -71,6 +79,31 @@ public:
 std::filesystem::path resultsDirectory()
 {
     return std::filesystem::path {U273_RESULTS_DIR};
+}
+
+bool sameNode(u273::reference::state_space::NodeId lhs, u273::reference::state_space::NodeId rhs)
+{
+    return lhs.value == rhs.value;
+}
+
+bool hasResistor(const u273::reference::state_space::CircuitGraph& circuit,
+                 const char* id,
+                 const char* n1,
+                 const char* n2,
+                 double resistanceOhm)
+{
+    const auto node1 = circuit.findNode(n1);
+    const auto node2 = circuit.findNode(n2);
+    for (const auto& resistor : circuit.resistors()) {
+        const auto forward = sameNode(resistor.positive, node1) && sameNode(resistor.negative, node2);
+        const auto reverse = sameNode(resistor.positive, node2) && sameNode(resistor.negative, node1);
+        if (resistor.id == id
+            && (forward || reverse)
+            && std::fabs(resistor.resistanceOhm - resistanceOhm) <= resistanceOhm * 1.0e-12) {
+            return true;
+        }
+    }
+    return false;
 }
 
 double dftBinMagnitude(const std::vector<float>& samples, int bin)
@@ -310,6 +343,467 @@ void testGoldenFilesAreReadableAndPinned()
             "golden first DC command voltage must stay pinned");
     require(std::fabs(summary.firstDcBridgeNodeVolt - 0.8263923585101612) < 1.0e-9,
             "golden first DC bridge node voltage must stay pinned");
+}
+
+void testCalibrationDatasetLoadsGoldenFiles()
+{
+    const auto dataset = u273::reference::calibration::CalibrationDataset::loadFromResultsDirectory(resultsDirectory());
+
+    require(dataset.isValid(), "calibration dataset must load DC/AC/transient golden files");
+    require(dataset.dcStatus == "PARAMETRIC_THEVENIN_REFERENCE", "calibration dataset must pin DC status");
+    require(dataset.acStatus == "PARAMETRIC_THEVENIN_B6_BRIDGE_REFERENCE",
+            "calibration dataset must pin AC status");
+    require(dataset.transientStatus == "BOUNDED_QUASI_STATIC_TRANSIENT",
+            "calibration dataset must pin transient status");
+    require(dataset.dcScenarios.size() == 4, "calibration dataset must expose four DC scenarios");
+    require(dataset.acRows == 80, "calibration dataset must expose pinned AC row count");
+    require(dataset.acFrequencyCount == 5, "calibration dataset must expose five AC frequencies");
+    require(dataset.acFrequenciesHz.size() == 5, "calibration dataset must expose AC frequency values");
+    require(dataset.acPoints.size() == 80, "calibration dataset must expose golden AC residual rows");
+    require(dataset.transientRows == 933, "calibration dataset must expose pinned transient row count");
+    require(dataset.transientRowsData.size() == 933, "calibration dataset must expose transient row data");
+    require(dataset.transientCases.size() == 3, "calibration dataset must expose three transient cases");
+    require(dataset.transientSummaries.size() == 3, "calibration dataset must expose three transient summaries");
+
+    const auto* firstDc = dataset.findDcScenario("delivery_linear_r3k_v1");
+    require(firstDc != nullptr, "calibration dataset must find the first DC scenario by name");
+    require(firstDc->converged, "first DC golden scenario must be converged");
+    require(std::fabs(firstDc->cmdVolt - 0.9773555249174533) < 1.0e-9,
+            "calibration dataset first DC CMD voltage mismatch");
+    require(std::fabs(firstDc->nbVolt - 0.8263923585101612) < 1.0e-9,
+            "calibration dataset first DC NB voltage mismatch");
+    require(firstDc->hasNlVolt && firstDc->hasNrVolt && firstDc->hasB11DriveVolt,
+            "calibration dataset must expose optional DC residual nodes when present");
+
+    require(std::fabs(dataset.acPoints.front().frequencyHz - 40.0) < 1.0e-12,
+            "calibration dataset first AC frequency mismatch");
+    require(dataset.acPoints.front().hasCmd, "calibration dataset AC row must expose VCMD residual target");
+
+    require(dataset.split.trainingDcScenarios.size() == 2,
+            "calibration dataset must create a deterministic DC training split");
+    require(dataset.split.validationDcScenarios.size() == 2,
+            "calibration dataset must create a deterministic DC validation split");
+    require(dataset.split.acceptanceTransientCases.size() == 3,
+            "calibration dataset must reserve transient cases for acceptance");
+    require(dataset.transientRowsForCase("limiter_nominal_12vrms_scale1_r10k").size() > 100,
+            "calibration dataset must expose transient rows by case");
+}
+
+void testDcCircuitViewOpensCapacitors()
+{
+    const auto loaded = u273::reference::state_space::U273NetlistLoader::loadFromFile(
+        resultsDirectory() / "u273_netlist.json");
+    const auto view = u273::reference::calibration::DCCircuitView::fromCircuit(loaded.circuit);
+
+    require(view.isValid(), "DC circuit view must be valid");
+    require(view.circuit.nodeCount() == loaded.circuit.nodeCount(), "DC view must preserve node identity");
+    require(view.circuit.capacitors().empty(), "DC view must open all capacitors");
+    require(view.omittedCapacitors == static_cast<int>(loaded.circuit.capacitors().size()),
+            "DC view must report omitted capacitor count");
+    require(view.preservedResistors == static_cast<int>(loaded.circuit.resistors().size()),
+            "DC view must preserve all resistors");
+    require(view.preservedDiodes == static_cast<int>(loaded.circuit.diodes().size()),
+            "DC view must preserve diode bridge stamps");
+    require(view.circuit.findNode("CMD").value == loaded.circuit.findNode("CMD").value,
+            "DC view must keep stable node ids for golden nodes");
+}
+
+void testOperatingPointConvergesOnKnownB6Case()
+{
+    using namespace u273::reference::state_space;
+
+    const auto circuit = U273ReferenceCircuitBuilder::buildB6BridgeSkeleton(0.1, 1.0);
+    const auto view = u273::reference::calibration::DCCircuitView::fromCircuit(circuit);
+
+    u273::reference::calibration::OperatingPointOptions options {};
+    options.solver.sampleRate = 192000.0;
+    options.solver.newton.maxIterations = 96;
+    options.solver.newton.residualTolerance = 1.0e-9;
+    options.maxAttempts = 3;
+
+    const u273::reference::calibration::OperatingPointSolver solver {options};
+    const auto result = solver.solve(view);
+
+    require(result.validInput, "B6 operating point input must be valid");
+    require(result.converged, "B6 DC operating point must converge");
+    require(result.step.boundary == u273::core::ModelBoundary::fullActiveModelUnverified,
+            "B6 operating point must remain on the unverified active-model boundary");
+    require(!result.attemptLog.empty(), "B6 operating point must expose attempt diagnostics");
+}
+
+void testOperatingPointFailureKeepsAttemptJournal()
+{
+    using namespace u273::reference::state_space;
+
+    DiodeModel diode {};
+    diode.saturationCurrentAmp = 1.0e-12;
+    diode.ideality = 1.8;
+    diode.gminSiemens = 0.0;
+
+    const auto circuit = U273ReferenceCircuitBuilder::buildDiodeCurrentFixture(1.0e-3, diode);
+    const auto view = u273::reference::calibration::DCCircuitView::fromCircuit(circuit);
+
+    u273::reference::calibration::OperatingPointOptions options {};
+    options.solver.newton.maxIterations = 1;
+    options.maxAttempts = 1;
+
+    const u273::reference::calibration::OperatingPointSolver solver {options};
+    const auto result = solver.solve(view);
+
+    require(result.validInput, "limited-attempt OP input must be valid");
+    require(!result.converged, "limited-attempt OP must fail cleanly");
+    require(result.attempts == 1, "limited-attempt OP must respect maxAttempts");
+    require(result.attemptLog.size() == 1, "failed OP must keep one attempt journal entry");
+    require(!result.failures.empty(), "failed OP must explain the non-convergence");
+}
+
+void testAcLinearizationMatchesRcClosedForm()
+{
+    using namespace u273::reference::state_space;
+
+    constexpr auto resistanceOhm = 1000.0;
+    constexpr auto capacitanceFarad = 1.0e-6;
+    constexpr auto frequencyHz = 1000.0;
+    constexpr auto pi = 3.1415926535897932384626433832795;
+
+    const auto circuit = U273ReferenceCircuitBuilder::buildRcLowpassFixture(1.0, resistanceOhm, capacitanceFarad);
+    const auto view = u273::reference::calibration::DCCircuitView::fromCircuit(circuit);
+
+    u273::reference::calibration::OperatingPointOptions opOptions {};
+    opOptions.solver.newton.maxIterations = 32;
+    const u273::reference::calibration::OperatingPointSolver opSolver {opOptions};
+    const auto op = opSolver.solve(view);
+    require(op.converged, "RC DC operating point must converge before AC linearization");
+
+    const auto output = circuit.findNode("OUT");
+    u273::reference::calibration::AcSourcePort source {};
+    source.voltageSourceId = "VIN";
+    source.outputNode = output;
+    source.amplitudeVolt = 1.0;
+
+    const u273::reference::calibration::LinearizedAcSolver acSolver {};
+    const auto ac = acSolver.solveSmallSignal(circuit, op, source, std::vector<double> {frequencyHz});
+
+    require(ac.validInput, "RC AC linearization input must be valid");
+    require(ac.solved, "RC AC linearization must solve");
+    require(ac.points.size() == 1, "RC AC linearization must return one frequency point");
+
+    const auto omegaRc = 2.0 * pi * frequencyHz * resistanceOhm * capacitanceFarad;
+    const auto expectedMagnitude = 1.0 / std::sqrt(1.0 + omegaRc * omegaRc);
+    const auto expectedPhase = -std::atan(omegaRc);
+    require(std::fabs(ac.points[0].magnitudeLinear - expectedMagnitude) < 1.0e-9,
+            "RC AC magnitude must match closed form");
+    require(std::fabs(ac.points[0].phaseRadians - expectedPhase) < 1.0e-9,
+            "RC AC phase must match closed form");
+}
+
+void testAcResidualGateMatchesRcClosedForm()
+{
+    using namespace u273::reference::state_space;
+
+    constexpr auto resistanceOhm = 1000.0;
+    constexpr auto capacitanceFarad = 1.0e-6;
+    constexpr auto frequencyHz = 1000.0;
+    constexpr auto pi = 3.1415926535897932384626433832795;
+
+    const auto circuit = U273ReferenceCircuitBuilder::buildRcLowpassFixture(1.0, resistanceOhm, capacitanceFarad);
+    const auto view = u273::reference::calibration::DCCircuitView::fromCircuit(circuit);
+
+    const u273::reference::calibration::OperatingPointSolver opSolver {};
+    const auto op = opSolver.solve(view);
+    require(op.converged, "RC OP must converge before residual AC fixture");
+
+    u273::reference::calibration::AcSourcePort source {};
+    source.voltageSourceId = "VIN";
+    source.outputNode = circuit.findNode("OUT");
+    source.amplitudeVolt = 1.0;
+
+    const u273::reference::calibration::LinearizedAcSolver acSolver {};
+    const auto ac = acSolver.solveSmallSignal(circuit, op, source, std::vector<double> {frequencyHz});
+    require(ac.solved, "RC AC residual fixture must solve");
+
+    const auto omegaRc = 2.0 * pi * frequencyHz * resistanceOhm * capacitanceFarad;
+    const auto expectedMagnitude = 1.0 / std::sqrt(1.0 + omegaRc * omegaRc);
+    const auto expectedPhase = -std::atan(omegaRc);
+
+    u273::reference::calibration::AcGoldenPoint golden {};
+    golden.scenario = "rc_fixture";
+    golden.frequencyHz = frequencyHz;
+    golden.hasCmd = true;
+    golden.cmdMagnitudeDb = 20.0 * std::log10(expectedMagnitude);
+    golden.cmdPhaseRadians = expectedPhase;
+
+    const auto gate = u273::reference::calibration::evaluateAcResiduals(
+        std::vector<u273::reference::calibration::AcGoldenPoint> {golden},
+        ac);
+
+    require(gate.validInput, "AC residual gate fixture input must be valid");
+    require(gate.passed, "AC residual gate must pass an analytic RC fixture");
+    require(gate.worstWeightedError < 1.0e-6, "AC residual fixture weighted error must be near zero");
+}
+
+void testDcResidualGateReportsLoadedGoldenScenarioGaps()
+{
+    const auto dataset = u273::reference::calibration::CalibrationDataset::loadFromResultsDirectory(resultsDirectory());
+    const auto loaded = u273::reference::state_space::U273NetlistLoader::loadFromFile(
+        resultsDirectory() / "u273_netlist.json");
+    const auto view = u273::reference::calibration::DCCircuitView::fromCircuit(loaded.circuit);
+
+    u273::reference::calibration::OperatingPointOptions options {};
+    options.solver.newton.maxIterations = 96;
+    options.solver.newton.residualTolerance = 1.0e-8;
+    options.maxAttempts = 4;
+    const u273::reference::calibration::OperatingPointSolver opSolver {options};
+    const auto op = opSolver.solve(view);
+
+    require(op.validInput, "loaded netlist OP residual input must be valid");
+    require(op.converged, "loaded netlist OP must converge before DC residual gate");
+
+    const auto gate = u273::reference::calibration::evaluateDcResiduals(dataset, view.circuit, op);
+    require(gate.validInput, "DC residual gate input must be valid");
+    require(gate.evaluated, "DC residual gate must evaluate a matching golden scenario");
+    require(!gate.passed, "DC residual gate must fail honestly while loaded netlist remains guarded");
+    require(!gate.sets.empty() && gate.sets[0].points.size() >= 2,
+            "DC residual gate must expose per-node residual points");
+
+    auto foundFailedNb = false;
+    for (const auto& point : gate.sets[0].points) {
+        if (point.name == "NB" && point.failed()) {
+            foundFailedNb = true;
+        }
+    }
+    require(foundFailedNb, "DC residual gate must expose the current NB model gap");
+}
+
+void testDcExecutionReferenceLoaderMatchesGoldenTopology()
+{
+    u273::reference::state_space::U273NetlistLoaderOptions loaderOptions {};
+    loaderOptions.source = u273::reference::state_space::U273NetlistSource::dcExecutionReference;
+    const auto loaded = u273::reference::state_space::U273NetlistLoader::loadFromFile(
+        resultsDirectory() / "u273_netlist.json",
+        loaderOptions);
+
+    require(loaded.report.hasUsableCircuit(), "DC execution reference loader must create a usable circuit");
+    require(loaded.report.status == "THEVENIN_REFERENCE_EXECUTABLE",
+            "DC execution reference loader must report the executable reference status");
+    require(loaded.report.componentObjects == 14,
+            "DC execution reference loader must stamp only voltage sources, resistors and diodes");
+    require(loaded.report.potentiometersSplit == 0,
+            "DC execution reference loader must not split raw inventory potentiometers");
+    require(loaded.report.stampedCapacitors == 0,
+            "DC execution reference loader must not load raw inventory capacitors");
+    require(loaded.report.stampedDiodes == 4, "DC execution reference loader must stamp four bridge diodes");
+
+    for (const auto* node : {"B11_DRV", "CMD", "NB", "NL", "NR", "N14", "N15"}) {
+        require(loaded.circuit.findNode(node).value > 0, "DC execution reference loader must expose golden nodes");
+    }
+
+    require(hasResistor(loaded.circuit, "R10", "CMD", "NB", 20000.0),
+            "DC execution reference must connect R10 from CMD to NB");
+    require(hasResistor(loaded.circuit, "R9", "NB", "0", 390000.0),
+            "DC execution reference must connect R9 from NB to ground");
+    require(hasResistor(loaded.circuit, "R7_effective", "NL", "NR", 100.0),
+            "DC execution reference must use effective R7 between NL and NR");
+    require(hasResistor(loaded.circuit, "R8_effective", "N14", "N15", 250000.0),
+            "DC execution reference must use effective R8 between N14 and N15");
+}
+
+void testDcResidualGatePassesDcExecutionReference()
+{
+    const auto dataset = u273::reference::calibration::CalibrationDataset::loadFromResultsDirectory(resultsDirectory());
+    u273::reference::state_space::U273NetlistLoaderOptions loaderOptions {};
+    loaderOptions.source = u273::reference::state_space::U273NetlistSource::dcExecutionReference;
+    const auto loaded = u273::reference::state_space::U273NetlistLoader::loadFromFile(
+        resultsDirectory() / "u273_netlist.json",
+        loaderOptions);
+    const auto view = u273::reference::calibration::DCCircuitView::fromCircuit(loaded.circuit);
+
+    u273::reference::calibration::OperatingPointOptions options {};
+    options.solver.newton.maxIterations = 96;
+    options.solver.newton.residualTolerance = 1.0e-8;
+    options.maxAttempts = 4;
+    const u273::reference::calibration::OperatingPointSolver opSolver {options};
+    const auto op = opSolver.solve(view);
+
+    require(op.validInput, "DC execution reference OP input must be valid");
+    require(op.converged, "DC execution reference OP must converge before DC residual gate");
+
+    const auto gate = u273::reference::calibration::evaluateDcResiduals(dataset, view.circuit, op);
+    require(gate.validInput, "DC execution reference residual input must be valid");
+    require(gate.evaluated, "DC execution reference residual gate must evaluate golden scenario");
+    require(gate.passed, "DC execution reference residual gate must match golden DC");
+}
+
+void testTransientResidualGateAcceptsGoldenSummaries()
+{
+    u273::reference::calibration::TransientGoldenSummary golden {};
+    golden.caseName = "fixture";
+    golden.maxDriveVolt = 0.125;
+    golden.maxCmdVolt = 0.1;
+    golden.attack90TimeSeconds = 0.25;
+    golden.hasRelease10Time = false;
+
+    u273::reference::calibration::TransientModelSummary model {};
+    model.caseName = "fixture";
+    model.hasMaxDriveVolt = true;
+    model.maxDriveVolt = golden.maxDriveVolt;
+    model.hasMaxCmdVolt = true;
+    model.maxCmdVolt = golden.maxCmdVolt;
+    model.hasAttack90TimeSeconds = true;
+    model.attack90TimeSeconds = golden.attack90TimeSeconds;
+
+    const auto gate = u273::reference::calibration::evaluateTransientResiduals(
+        std::vector<u273::reference::calibration::TransientGoldenSummary> {golden},
+        std::vector<u273::reference::calibration::TransientModelSummary> {model});
+
+    require(gate.validInput, "transient residual gate fixture input must be valid");
+    require(gate.passed, "transient residual gate must pass matching available summaries");
+    require(!gate.sets.empty() && gate.sets[0].points.size() == 4,
+            "transient residual gate must explicitly track unavailable release summary");
+}
+
+void testBjtCandidateRejectsImpossiblePins()
+{
+    using namespace u273::reference::state_space;
+
+    u273::reference::calibration::ActiveTopologyCandidate impossible {};
+    impossible.id = "Ts1_bad";
+    impossible.device = "Ts1";
+    impossible.kind = u273::reference::calibration::ActiveDeviceKind::npn;
+    impossible.collector = NodeId {1};
+    impossible.base = NodeId {1};
+    impossible.emitter = NodeId {2};
+    require(!impossible.hasUsablePins(), "BJT candidate must reject duplicated pins");
+    impossible.reject("collector and base share the same node");
+    require(impossible.isRejected(), "BJT candidate rejection reason must be explicit");
+
+    u273::reference::calibration::ActiveTopologyCandidate plausible {};
+    plausible.id = "Ts1_candidate";
+    plausible.device = "Ts1";
+    plausible.kind = u273::reference::calibration::ActiveDeviceKind::npn;
+    plausible.collector = NodeId {1};
+    plausible.base = NodeId {2};
+    plausible.emitter = NodeId {3};
+    require(plausible.hasUsablePins(), "BJT candidate with three non-ground unique pins must be usable");
+}
+
+void testActiveTopologyEvaluatorKeepsCandidateGuardedWithoutAcImprovement()
+{
+    using namespace u273::reference::state_space;
+
+    CircuitGraph circuit {};
+    const auto collector = circuit.addNode("C");
+    const auto base = circuit.addNode("B");
+    const auto emitter = circuit.addNode("E");
+    circuit.addVoltageSource("VC", collector, kGroundNode, 5.0);
+    circuit.addVoltageSource("VB", base, kGroundNode, 0.7);
+    circuit.addResistor("RE", emitter, kGroundNode, 1000.0);
+
+    u273::reference::calibration::DCCircuitView view {};
+    view.circuit = circuit;
+    view.preservedResistors = 1;
+    const u273::reference::calibration::OperatingPointSolver opSolver {};
+    const auto op = opSolver.solve(view);
+    require(op.converged, "topology evaluator fixture OP must converge");
+
+    u273::reference::calibration::ActiveTopologyCandidate candidate {};
+    candidate.id = "fixture.Ts";
+    candidate.device = "Ts";
+    candidate.kind = u273::reference::calibration::ActiveDeviceKind::npn;
+    candidate.collector = collector;
+    candidate.base = base;
+    candidate.emitter = emitter;
+
+    const u273::reference::calibration::ActiveTopologyEvaluator evaluator {};
+    const auto guarded = evaluator.evaluate(circuit, op, candidate);
+    require(guarded.evaluated, "topology evaluator must evaluate a complete candidate");
+    require(guarded.dcPlausible, "topology evaluator must detect plausible VBE/VCE");
+    require(!guarded.accepted, "topology evaluator must keep candidates guarded without measured AC improvement");
+
+    u273::reference::calibration::ActiveTopologyEvaluationOptions options {};
+    options.requireAcImprovement = false;
+    options.localKclToleranceAmp = 1.0;
+    const auto accepted = evaluator.evaluate(circuit, op, candidate, options);
+    require(accepted.accepted, "topology evaluator must accept only when DC, KCL and AC-improvement policy pass");
+}
+
+void testCalibrationReportDoesNotPromoteBoundaryEarly()
+{
+    const auto dataset = u273::reference::calibration::CalibrationDataset::loadFromResultsDirectory(resultsDirectory());
+    const auto circuit = u273::reference::state_space::U273ReferenceCircuitBuilder::buildB6BridgeSkeleton(0.1, 1.0);
+    const auto view = u273::reference::calibration::DCCircuitView::fromCircuit(circuit);
+
+    u273::reference::calibration::OperatingPointOptions options {};
+    options.solver.newton.maxIterations = 96;
+    options.maxAttempts = 3;
+    const u273::reference::calibration::OperatingPointSolver opSolver {options};
+    const auto op = opSolver.solve(view);
+
+    const u273::reference::calibration::B6B11CalibrationRunner runner {};
+    const auto report = runner.createInitialReport(dataset, op);
+
+    require(report.gates.dc, "initial calibration report may pass only the DC gate");
+    require(report.gates.referenceDc, "initial calibration report must mirror the reference DC gate");
+    require(!report.gates.ac && !report.gates.transient && !report.gates.audio,
+            "initial calibration report must keep non-DC gates open");
+    require(!report.canPromoteBoundary(), "calibration report must not promote boundary before all gates pass");
+
+    u273::reference::calibration::CalibrationReport topologyBlocked {};
+    topologyBlocked.gates.dc = true;
+    topologyBlocked.gates.ac = true;
+    topologyBlocked.gates.transient = true;
+    topologyBlocked.gates.audio = true;
+    topologyBlocked.gates.identifiability = true;
+    topologyBlocked.rejectedTopologyReasons.push_back("guarded topology mismatch");
+    require(!topologyBlocked.canPromoteBoundary(), "calibration report must not promote with topology rejections");
+}
+
+void testOfflineCalibrationRunnerStaysNonPromotable()
+{
+    const u273::reference::calibration::B6B11CalibrationRunner runner {};
+    const auto report = runner.runOffline(resultsDirectory());
+
+    require(report.gates.dc, "offline runner DC gate must pass against the executable DC reference");
+    require(report.gates.referenceDc, "offline runner must expose reference DC gate status");
+    require(!report.gates.ac, "offline runner AC gate must remain open until the model matches golden AC");
+    require(!report.gates.referenceAc, "offline runner reference AC gate must report the current mismatch");
+    require(report.gates.transient, "offline runner transient gate must pass quasi-static reference summaries");
+    require(report.gates.referenceTransient, "offline runner must expose reference transient gate status");
+    require(!report.gates.guardedTopologyDiagnostic,
+            "offline runner guarded topology diagnostic must remain failed while components mismatch golden DC");
+    require(!report.gates.audio && !report.gates.identifiability,
+            "offline runner audio and identifiability gates must remain open");
+    require(!report.rejectedTopologyReasons.empty(),
+            "offline runner must retain guarded-netlist topology mismatches as promotion blockers");
+    require(!report.canPromoteBoundary(), "offline runner must not promote the active-model boundary");
+    require(!report.notes.empty(), "offline runner must explain the non-promotable boundary");
+}
+
+void testTransientWrapperAcceptsPlannedIntegrationMethods()
+{
+    using namespace u273::reference::state_space;
+
+    const auto circuit = U273ReferenceCircuitBuilder::buildRcLowpassFixture(1.0, 1000.0, 1.0e-6);
+    StateSpaceSolver stateFactory {circuit};
+
+    for (const auto method : {
+             IntegrationMethod::backwardEuler,
+             IntegrationMethod::trapezoidal,
+             IntegrationMethod::implicitMidpoint,
+             IntegrationMethod::trBdf2}) {
+        SolverOptions options {};
+        options.sampleRate = 10000.0;
+        options.method = method;
+        options.newton.maxIterations = 64;
+
+        const u273::reference::calibration::TransientReferenceSolver transient {};
+        const auto result = transient.run(circuit, stateFactory.createInitialState(), options, 4);
+        require(result.validInput, "transient wrapper input must be valid for planned integration methods");
+        require(result.converged, "transient wrapper must converge for planned integration methods on RC fixture");
+        require(result.steps == 4, "transient wrapper must report completed step count");
+        require(result.totalSolverSteps >= 4, "transient wrapper must report aggregate solver steps");
+        require(result.firstFailedStep < 0, "transient wrapper must keep first failed step clear on success");
+    }
 }
 
 void testU273NetlistLoaderInventory()
@@ -601,6 +1095,19 @@ void testStateSpaceDiodeCurrentFixture()
     require(std::fabs(actual - expected) < 0.02, "diode voltage must match Shockley approximation");
 }
 
+void testU273EmpiricalDiodeLawMatchesGoldenFixture()
+{
+    const auto diode = u273::reference::state_space::makeU273EmpiricalCompositeDiode();
+    const auto currentMicroAmp = diode.currentAmp(0.3523628762995995) * 1.0e6;
+    const auto conductanceMicroSiemens = diode.conductanceSiemens(0.44519544938974565) * 1.0e6;
+
+    require(diode.isValid(), "U273 empirical diode law must be valid");
+    require(std::fabs(currentMicroAmp - 2.36337847173926) < 1.0e-6,
+            "U273 empirical diode law must match golden current from voltage");
+    require(std::fabs(conductanceMicroSiemens - 143.092258681156) < 2.0e-6,
+            "U273 empirical diode law conductance must match the current-law derivative");
+}
+
 void testStateSpaceBjtModelAndBiasFixture()
 {
     using namespace u273::reference::state_space;
@@ -672,6 +1179,21 @@ int main()
     testBypassPreservesSignal();
     testReferenceBoundaryIsExplicit();
     testGoldenFilesAreReadableAndPinned();
+    testCalibrationDatasetLoadsGoldenFiles();
+    testDcCircuitViewOpensCapacitors();
+    testOperatingPointConvergesOnKnownB6Case();
+    testOperatingPointFailureKeepsAttemptJournal();
+    testAcLinearizationMatchesRcClosedForm();
+    testAcResidualGateMatchesRcClosedForm();
+    testDcResidualGateReportsLoadedGoldenScenarioGaps();
+    testDcExecutionReferenceLoaderMatchesGoldenTopology();
+    testDcResidualGatePassesDcExecutionReference();
+    testTransientResidualGateAcceptsGoldenSummaries();
+    testBjtCandidateRejectsImpossiblePins();
+    testActiveTopologyEvaluatorKeepsCandidateGuardedWithoutAcImprovement();
+    testCalibrationReportDoesNotPromoteBoundaryEarly();
+    testOfflineCalibrationRunnerStaysNonPromotable();
+    testTransientWrapperAcceptsPlannedIntegrationMethods();
     testU273NetlistLoaderInventory();
     testU273NetlistLoaderCanStampKnownBjtHypotheses();
     testLoadedU273NetlistFirstDaeStepConverges();
@@ -684,6 +1206,7 @@ int main()
     testStateSpaceNewtonSolver();
     testStateSpaceRcBackwardEuler();
     testStateSpaceDiodeCurrentFixture();
+    testU273EmpiricalDiodeLawMatchesGoldenFixture();
     testStateSpaceBjtModelAndBiasFixture();
     testU273B6StateSpaceSkeleton();
 
