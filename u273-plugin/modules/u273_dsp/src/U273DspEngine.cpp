@@ -13,7 +13,8 @@ bool DspPrepareConfig::isValid() const noexcept
         && sampleRate > 0.0
         && maxBlockSize >= 0
         && numChannels > 0
-        && numChannels <= u273::core::kMaxRealtimeChannels;
+        && numChannels <= u273::core::kMaxRealtimeChannels
+        && isRealtimeQualityModeValid(qualityMode);
 }
 
 U273DspEngine::U273DspEngine() noexcept
@@ -29,12 +30,19 @@ U273DspEngine::U273DspEngine(RealtimeGainReductionModel& gainReductionModel) noe
 void U273DspEngine::prepare(const DspPrepareConfig& config) noexcept
 {
     prepared_ = false;
+    rateGraph_ = RateGraph {};
 
     if (!config.isValid()) {
         return;
     }
 
     config_ = config;
+    rateGraph_ = buildRateGraph(
+        RateGraphConfig {config.sampleRate, config.maxBlockSize, config.qualityMode});
+    if (!rateGraph_.isValid()) {
+        return;
+    }
+
     detector_.prepare(config.sampleRate);
     gainReductionModel_->prepare(config.sampleRate);
     prepared_ = true;

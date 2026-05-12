@@ -5,6 +5,7 @@
 #include "u273/core/ProcessContext.h"
 #include "u273/dsp/AnalogRealtimeEngine.h"
 #include "u273/dsp/DetectorEnvelope.h"
+#include "u273/dsp/RateGraph.h"
 #include "u273/dsp/RealtimeGainReductionModel.h"
 
 namespace u273::dsp {
@@ -13,6 +14,7 @@ struct DspPrepareConfig {
     double sampleRate {48000.0};
     int maxBlockSize {};
     int numChannels {2};
+    RealtimeQualityMode qualityMode {RealtimeQualityMode::precise};
 
     [[nodiscard]] bool isValid() const noexcept;
 };
@@ -42,10 +44,18 @@ public:
 
     [[nodiscard]] bool isPrepared() const noexcept { return prepared_; }
     [[nodiscard]] u273::core::ModelBoundary boundary() const noexcept { return gainReductionModel_->boundary(); }
+    [[nodiscard]] const RateGraph& rateGraph() const noexcept { return rateGraph_; }
+    [[nodiscard]] int latencySamples() const noexcept { return totalLatencySamples(rateGraph_); }
+    [[nodiscard]] RealtimeQualityMode qualityMode() const noexcept { return config_.qualityMode; }
+    [[nodiscard]] bool oversamplingExecutionEnabled() const noexcept
+    {
+        return rateGraph_.oversamplingExecutionEnabled;
+    }
 
 private:
     bool prepared_ {false};
     DspPrepareConfig config_ {};
+    RateGraph rateGraph_ {};
     DetectorEnvelope detector_ {};
     // Default model keeps normal construction allocation-free; tests and future
     // variants can inject another implementation through the alternate ctor.
