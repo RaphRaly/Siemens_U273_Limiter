@@ -8,9 +8,10 @@
 
 #include "u273/core/U273Core.h"
 #include "u273/dsp/AnalogRealtimeEngine.h"
-#include "u273/dsp/U273DspEngine.h"
 #include "u273/dsp/DetectorEnvelope.h"
+#include "u273/dsp/RateGraph.h"
 #include "u273/dsp/RealtimeGainReductionModel.h"
+#include "u273/dsp/U273DspEngine.h"
 #include "u273/reference/GoldenValidationSuite.h"
 #include "u273/reference/ReferenceValidator.h"
 #include "u273/reference/ScientificReferenceModel.h"
@@ -106,6 +107,13 @@ bool hasResistor(const u273::reference::state_space::CircuitGraph& circuit,
     return false;
 }
 
+const u273::dsp::RateStage& requireRateStage(const u273::dsp::RateGraph& graph, const char* name)
+{
+    const auto* stage = u273::dsp::findRateStage(graph, name);
+    require(stage != nullptr, "rate graph must expose the requested stage");
+    return *stage;
+}
+
 double dftBinMagnitude(const std::vector<float>& samples, int bin)
 {
     constexpr auto pi = 3.1415926535897932384626433832795;
@@ -198,6 +206,140 @@ void testDspSilenceIsStable()
     require(status == u273::dsp::ProcessStatus::ok, "silence block must process");
     require(meter.isValid(), "meter frame must stay valid on silence");
     require(meter.outputPeakDb <= u273::core::kMinMeterDb + 0.001f, "silence output peak must stay at floor");
+}
+
+void testRateGraphQualityModesDeclareExpectedRates()
+{
+    const auto eco = u273::dsp::buildRateGraph(
+        u273::dsp::RateGraphConfig {48000.0, 64, u273::dsp::RealtimeQualityMode::eco});
+    require(eco.isValid(), "Eco rate graph must be valid");
+    require(eco.stageCount == 4, "Eco rate graph must expose all realtime stages");
+    require(requireRateStage(eco, "audioInput").oversamplingFactor == 1,
+            "Eco audio input must stay at host rate");
+    require(requireRateStage(eco, "sidechain").oversamplingFactor == 1,
+            "Eco sidechain must stay at host rate");
+    require(requireRateStage(eco, "gainCell").oversamplingFactor == 1,
+            "Eco gain-cell must stay at host rate");
+    require(requireRateStage(eco, "audioOutput").oversamplingFactor == 1,
+            "Eco audio output must stay at host rate");
+    require(totalLatencySamples(eco) == 0, "Eco skeleton latency must be zero until resamplers execute");
+    require(!eco.oversamplingExecutionEnabled, "Eco skeleton must not execute oversampling yet");
+
+    const auto precise = u273::dsp::buildRateGraph(
+        u273::dsp::RateGraphConfig {48000.0, 64, u273::dsp::RealtimeQualityMode::precise});
+    require(precise.isValid(), "Precise rate graph must be valid");
+    require(requireRateStage(precise, "audioInput").oversamplingFactor == 1,
+            "Precise audio input must stay at host rate");
+    require(requireRateStage(precise, "sidechain").oversamplingFactor == 2,
+            "Precise sidechain must declare 2x oversampling");
+    require(requireRateStage(precise, "gainCell").oversamplingFactor == 2,
+            "Precise gain-cell must declare 2x oversampling");
+    require(requireRateStage(precise, "audioOutput").oversamplingFactor == 1,
+            "Precise audio output must stay at host rate");
+    require(totalLatencySamples(precise) == 0,
+            "Precise skeleton latency must stay zero until resamplers execute");
+    require(!precise.oversamplingExecutionEnabled, "Precise skeleton must not execute oversampling yet");
+
+    const auto render = u273::dsp::buildRateGraph(
+        u273::dsp::RateGraphConfig {48000.0, 64, u273::dsp::RealtimeQualityMode::render});
+    require(render.isValid(), "Render rate graph must be valid");
+    require(requireRateStage(render, "audioInput").oversamplingFactor == 1,
+            "Render audio input must stay at host rate");
+    require(requireRateStage(render, "sidechain").oversamplingFactor == 4,
+            "Render sidechain must declare 4x oversampling");
+    require(requireRateStage(render, "gainCell").oversamplingFactor == 4,
+            "Render gain-cell must declare 4x oversampling");
+    require(requireRateStage(render, "audioOutput").oversamplingFactor == 1,
+            "Render audio output must stay at host rate");
+    require(totalLatencySamples(render) == 0, "Render skeleton latency must stay zero until resamplers execute");
+    require(!render.oversamplingExecutionEnabled, "Render skeleton must not execute oversampling yet");
+}
+
+void testRateGraphRejectsInvalidConfig()
+{
+    require(!u273::dsp::buildRateGraph(
+                u273::dsp::RateGraphConfig {0.0, 64, u273::dsp::RealtimeQualityMode::precise})
+                 .isValid(),
+            "rate graph must reject non-positive sample rates");
+    require(!u273::dsp::buildRateGraph(
+                u273::dsp::RateGraphConfig {48000.0, -1, u273::dsp::RealtimeQualityMode::precise})
+                 .isValid(),
+            "rate graph must reject negative block sizes");
+    require(!u273::dsp::buildRateGraph(
+                u273::dsp::RateGraphConfig {
+                    48000.0,
+                    64,
+                    static_cast<u273::dsp::RealtimeQualityMode>(99)})
+                 .isValid(),
+            "rate graph must reject unknown quality modes");
+
+    const auto invalidConfig = u273::dsp::DspPrepareConfig {
+        48000.0,
+        64,
+        2,
+        static_cast<u273::dsp::RealtimeQualityMode>(99)};
+    require(!invalidConfig.isValid(), "DSP prepare config must reject unknown quality modes");
+}
+
+void testDspPrepareStoresRateGraphAndLatency()
+{
+    const std::array modes {
+        u273::dsp::RealtimeQualityMode::eco,
+        u273::dsp::RealtimeQualityMode::precise,
+        u273::dsp::RealtimeQualityMode::render};
+
+    for (const auto mode : modes) {
+        u273::dsp::U273DspEngine engine {};
+        engine.prepare(u273::dsp::DspPrepareConfig {96000.0, 128, 2, mode});
+
+        require(engine.isPrepared(), "DSP engine must prepare for every quality mode");
+        require(engine.qualityMode() == mode, "DSP engine must retain the requested quality mode");
+        require(engine.rateGraph().isValid(), "DSP engine must expose a valid prepared rate graph");
+        require(engine.latencySamples() == u273::dsp::totalLatencySamples(engine.rateGraph()),
+                "DSP engine latency must match the prepared rate graph");
+        require(engine.latencySamples() == 0, "DSP skeleton latency must remain zero before resampler execution");
+        require(!engine.oversamplingExecutionEnabled(),
+                "DSP skeleton must expose oversampling as declared but not executed");
+        require(engine.boundary() == u273::core::ModelBoundary::fullActiveModelUnverified,
+                "quality modes must not promote the analog realtime model boundary");
+    }
+}
+
+void testRenderRateGraphDoesNotOversampleExecutionYet()
+{
+    FixedGainReductionModel model {};
+    u273::dsp::U273DspEngine engine {model};
+    engine.prepare(u273::dsp::DspPrepareConfig {
+        48000.0,
+        8,
+        1,
+        u273::dsp::RealtimeQualityMode::render});
+
+    require(engine.isPrepared(), "DSP engine must prepare render quality mode");
+    require(requireRateStage(engine.rateGraph(), "sidechain").oversamplingFactor == 4,
+            "Render mode must declare sidechain 4x oversampling");
+    require(requireRateStage(engine.rateGraph(), "gainCell").oversamplingFactor == 4,
+            "Render mode must declare gain-cell 4x oversampling");
+    require(!engine.oversamplingExecutionEnabled(),
+            "Render mode must not execute oversampling in the skeleton milestone");
+
+    std::array<float, 8> mono {};
+    mono.fill(0.5f);
+    std::array<float*, 1> channels {mono.data()};
+
+    u273::core::ProcessContext context {
+        u273::core::AudioBlockView {channels.data(), 1, static_cast<int>(mono.size())},
+        48000.0,
+        23,
+        true};
+
+    u273::core::ParameterSnapshot snapshot {};
+    u273::core::MeterFrame meter {};
+    const auto status = engine.process(context, snapshot, &meter);
+
+    require(status == u273::dsp::ProcessStatus::ok, "render skeleton block must process");
+    require(model.evaluateCalls == static_cast<int>(mono.size()),
+            "render skeleton must evaluate the gain model once per host sample");
 }
 
 void testDspHotSignalReducesGain()
@@ -1173,6 +1315,10 @@ int main()
 {
     testParameterSnapshotContract();
     testDspSilenceIsStable();
+    testRateGraphQualityModesDeclareExpectedRates();
+    testRateGraphRejectsInvalidConfig();
+    testDspPrepareStoresRateGraphAndLatency();
+    testRenderRateGraphDoesNotOversampleExecutionYet();
     testDspHotSignalReducesGain();
     testDspEngineUsesInjectedGainReductionModel();
     testAnalogRealtimeBridgeLawIsMonotonic();
