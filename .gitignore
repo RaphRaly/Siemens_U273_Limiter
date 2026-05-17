@@ -29,6 +29,7 @@ Testing/Temporary/
 *.tmp
 *.temp
 *.bak
+desktop.ini
 ~$*
 
 # Node dependencies if solver tooling grows later

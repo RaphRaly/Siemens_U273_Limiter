@@ -1,0 +1,21 @@
+# Build trees
+build/
+install/
+out/
+
+# Visual Studio / IDE
+.vs/
+*.vcxproj.user
+*.suo
+*.user
+.vscode/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake-build-*/
+
+# Demo drop zone - local artefact stamping only; bundles are not versioned.
+Demo/*
+!Demo/.gitkeep
+!Demo/README.md

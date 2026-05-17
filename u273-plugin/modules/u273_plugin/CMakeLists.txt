@@ -2,6 +2,7 @@ set(U273_PLUGIN_FORMATS VST3)
 if(APPLE)
     list(APPEND U273_PLUGIN_FORMATS AU)
 endif()
+list(APPEND U273_PLUGIN_FORMATS Standalone)
 
 juce_add_plugin(u273_plugin
     COMPANY_NAME "U273 Research"
@@ -37,6 +38,8 @@ target_link_libraries(u273_plugin PRIVATE
     u273::dsp
     u273::assets
     juce::juce_audio_processors
+    juce::juce_audio_utils
+    juce::juce_audio_devices
     juce::juce_gui_extra
     juce::juce_recommended_config_flags
     juce::juce_recommended_lto_flags
