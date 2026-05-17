@@ -31,6 +31,7 @@ struct StateSpaceSolver::AssemblyContext {
     const Vector& unknowns;
     const CircuitState& previousState;
     const SolverOptions& options;
+    const Vector* trBdf2StageVoltages {};
     Vector& residual;
     DenseMatrix& jacobian;
 };
@@ -66,6 +67,8 @@ bool StepResult::isValid() const noexcept
 {
     return boundary != u273::core::ModelBoundary::unknown
         && iterations >= 0
+        && stageCount > 0
+        && failedStage >= 0
         && residualNorm >= 0.0
         && deltaNorm >= 0.0
         && timeStepSeconds >= 0.0;
@@ -87,6 +90,16 @@ CircuitState StateSpaceSolver::createInitialState() const
 
 StepResult StateSpaceSolver::step(CircuitState& state, const SolverOptions& options) const
 {
+    if (options.method == IntegrationMethod::trBdf2) {
+        return stepTrBdf2(state, options);
+    }
+    return stepSingleStage(state, options, nullptr);
+}
+
+StepResult StateSpaceSolver::stepSingleStage(CircuitState& state,
+                                             const SolverOptions& options,
+                                             const Vector* trBdf2StageVoltages) const
+{
     StepResult result {};
     result.timeStepSeconds = options.isValid() ? options.timeStepSeconds() : 0.0;
     result.validInput = options.isValid() && state.isValidFor(circuit_);
@@ -99,11 +112,15 @@ StepResult StateSpaceSolver::step(CircuitState& state, const SolverOptions& opti
     const NewtonSolver solver {options.newton};
     const auto newtonResult = solver.solve(
         nextUnknowns,
-        [this, &state, &options](const Vector& unknowns, Vector& residual, DenseMatrix& jacobian) {
-            assembleResidualJacobian(unknowns, state, options, residual, jacobian);
+        [this, &state, &options, trBdf2StageVoltages](
+            const Vector& unknowns,
+            Vector& residual,
+            DenseMatrix& jacobian) {
+            assembleResidualJacobian(unknowns, state, options, trBdf2StageVoltages, residual, jacobian);
         });
 
     result.converged = newtonResult.converged;
+    result.stage1Converged = newtonResult.converged;
     result.iterations = newtonResult.iterations;
     result.residualNorm = newtonResult.residualNorm;
     result.deltaNorm = newtonResult.deltaNorm;
@@ -115,8 +132,61 @@ StepResult StateSpaceSolver::step(CircuitState& state, const SolverOptions& opti
     auto previousCapacitorVoltages = state.capacitorVoltages;
     auto previousCapacitorCurrents = state.capacitorCurrents;
     state.unknowns = std::move(nextUnknowns);
-    updateCapacitorMemory(state, previousCapacitorVoltages, previousCapacitorCurrents, options);
+    updateCapacitorMemory(state,
+                          previousCapacitorVoltages,
+                          previousCapacitorCurrents,
+                          options,
+                          trBdf2StageVoltages);
 
+    return result;
+}
+
+StepResult StateSpaceSolver::stepTrBdf2(CircuitState& state, const SolverOptions& options) const
+{
+    constexpr auto gamma = 2.0 - 1.4142135623730950488016887242097;
+
+    StepResult result {};
+    result.timeStepSeconds = options.isValid() ? options.timeStepSeconds() : 0.0;
+    result.validInput = options.isValid() && state.isValidFor(circuit_);
+    result.stageCount = 2;
+    if (!result.validInput) {
+        return result;
+    }
+
+    const auto originalState = state;
+
+    auto stageOptions = options;
+    stageOptions.method = IntegrationMethod::trapezoidal;
+    stageOptions.sampleRate = options.sampleRate / gamma;
+
+    auto stageState = originalState;
+    const auto stage1 = stepSingleStage(stageState, stageOptions, nullptr);
+    result.stage1Converged = stage1.validInput && stage1.converged;
+    result.iterations = stage1.iterations;
+    result.residualNorm = stage1.residualNorm;
+    result.deltaNorm = stage1.deltaNorm;
+    if (!result.stage1Converged) {
+        result.failedStage = 1;
+        return result;
+    }
+
+    auto finalOptions = options;
+    finalOptions.method = IntegrationMethod::trBdf2;
+
+    auto finalState = originalState;
+    finalState.unknowns = stageState.unknowns;
+    const auto stage2 = stepSingleStage(finalState, finalOptions, &stageState.capacitorVoltages);
+    result.stage2Converged = stage2.validInput && stage2.converged;
+    result.iterations += stage2.iterations;
+    result.residualNorm = std::max(result.residualNorm, stage2.residualNorm);
+    result.deltaNorm = std::max(result.deltaNorm, stage2.deltaNorm);
+    if (!result.stage2Converged) {
+        result.failedStage = 2;
+        return result;
+    }
+
+    result.converged = true;
+    state = std::move(finalState);
     return result;
 }
 
@@ -153,19 +223,29 @@ double StateSpaceSolver::voltageFromUnknowns(const Vector& unknowns, NodeId node
 StateSpaceSolver::CapacitorCompanion StateSpaceSolver::capacitorCompanion(
     const CircuitState& previousState,
     std::size_t capacitorIndex,
-    const SolverOptions& options) const noexcept
+    const SolverOptions& options,
+    const Vector* trBdf2StageVoltages) const noexcept
 {
     // Implicit integration stamps capacitors as a conductance plus a history
-    // current. Implicit midpoint shares the trapezoidal companion for linear
-    // capacitors; TR-BDF2 enters here through its robust BE-compatible startup
-    // stage until the offline transient wrapper performs the full two-stage
-    // solve.
+    // current. TR-BDF2 uses the trapezoidal companion in stage 1 and a
+    // non-uniform BDF2 companion in stage 2.
     const auto& capacitor = circuit_.capacitors()[capacitorIndex];
     const auto h = options.timeStepSeconds();
 
     auto companion = CapacitorCompanion {
         capacitor.capacitanceFarad / h,
         -capacitor.capacitanceFarad / h * previousState.capacitorVoltages[capacitorIndex]};
+
+    if (options.method == IntegrationMethod::trBdf2 && trBdf2StageVoltages != nullptr) {
+        constexpr auto gamma = 2.0 - 1.4142135623730950488016887242097;
+        const auto startVoltage = previousState.capacitorVoltages[capacitorIndex];
+        const auto stageVoltage = (*trBdf2StageVoltages)[capacitorIndex];
+        companion.conductance = capacitor.capacitanceFarad / h * ((2.0 - gamma) / (1.0 - gamma));
+        companion.history = capacitor.capacitanceFarad / h
+            * (((1.0 - gamma) / gamma) * startVoltage
+               - (1.0 / (gamma * (1.0 - gamma))) * stageVoltage);
+        return companion;
+    }
 
     if (options.method == IntegrationMethod::trapezoidal
         || options.method == IntegrationMethod::implicitMidpoint) {
@@ -216,7 +296,8 @@ void StateSpaceSolver::stampConductance(Vector& residual,
 void StateSpaceSolver::updateCapacitorMemory(CircuitState& state,
                                              const Vector& previousCapacitorVoltages,
                                              const Vector& previousCapacitorCurrents,
-                                             const SolverOptions& options) const
+                                             const SolverOptions& options,
+                                             const Vector* trBdf2StageVoltages) const
 {
     // After Newton convergence, persist capacitor voltage/current for the next
     // implicit step using the same companion equation used during stamping.
@@ -229,7 +310,7 @@ void StateSpaceSolver::updateCapacitorMemory(CircuitState& state,
         const auto& capacitor = circuit_.capacitors()[index];
         const auto voltage = voltageFromUnknowns(state.unknowns, capacitor.positive)
             - voltageFromUnknowns(state.unknowns, capacitor.negative);
-        const auto companion = capacitorCompanion(previousState, index, options);
+        const auto companion = capacitorCompanion(previousState, index, options, trBdf2StageVoltages);
 
         state.capacitorVoltages[index] = voltage;
         state.capacitorCurrents[index] = companion.conductance * voltage + companion.history;
@@ -265,7 +346,10 @@ void StateSpaceSolver::stampCapacitors(AssemblyContext& assembly) const
 
         const auto voltage = voltageFromUnknowns(assembly.unknowns, capacitor.positive)
             - voltageFromUnknowns(assembly.unknowns, capacitor.negative);
-        const auto companion = capacitorCompanion(assembly.previousState, index, assembly.options);
+        const auto companion = capacitorCompanion(assembly.previousState,
+                                                 index,
+                                                 assembly.options,
+                                                 assembly.trBdf2StageVoltages);
         stampConductance(assembly.residual,
                          assembly.jacobian,
                          capacitor.positive,
@@ -361,6 +445,7 @@ void StateSpaceSolver::stampNpnBjts(AssemblyContext& assembly) const
 void StateSpaceSolver::assembleResidualJacobian(const Vector& unknowns,
                                                 const CircuitState& previousState,
                                                 const SolverOptions& options,
+                                                const Vector* trBdf2StageVoltages,
                                                 Vector& residual,
                                                 DenseMatrix& jacobian) const
 {
@@ -370,7 +455,7 @@ void StateSpaceSolver::assembleResidualJacobian(const Vector& unknowns,
 
     // Keep assembly order explicit; individual component equations live in
     // small stamping passes instead of one large type-dispatch method.
-    AssemblyContext assembly {unknowns, previousState, options, residual, jacobian};
+    AssemblyContext assembly {unknowns, previousState, options, trBdf2StageVoltages, residual, jacobian};
     stampResistors(assembly);
     stampCapacitors(assembly);
     stampCurrentSources(assembly);

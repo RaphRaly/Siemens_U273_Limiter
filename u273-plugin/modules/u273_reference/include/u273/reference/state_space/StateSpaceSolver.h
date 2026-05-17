@@ -39,7 +39,11 @@ struct StepResult {
     u273::core::ModelBoundary boundary {u273::core::ModelBoundary::fullActiveModelUnverified};
     bool converged {};
     bool validInput {};
+    bool stage1Converged {};
+    bool stage2Converged {};
     int iterations {};
+    int stageCount {1};
+    int failedStage {};
     double residualNorm {};
     double deltaNorm {};
     double timeStepSeconds {};
@@ -70,7 +74,12 @@ private:
     [[nodiscard]] double voltageFromUnknowns(const Vector& unknowns, NodeId node) const noexcept;
     [[nodiscard]] CapacitorCompanion capacitorCompanion(const CircuitState& previousState,
                                                         std::size_t capacitorIndex,
-                                                        const SolverOptions& options) const noexcept;
+                                                        const SolverOptions& options,
+                                                        const Vector* trBdf2StageVoltages) const noexcept;
+    [[nodiscard]] StepResult stepSingleStage(CircuitState& state,
+                                             const SolverOptions& options,
+                                             const Vector* trBdf2StageVoltages) const;
+    [[nodiscard]] StepResult stepTrBdf2(CircuitState& state, const SolverOptions& options) const;
 
     void addNodeResidual(Vector& residual, NodeId node, double value) const;
     void addNodeJacobian(DenseMatrix& jacobian, NodeId rowNode, NodeId columnNode, double value) const;
@@ -84,7 +93,8 @@ private:
     void updateCapacitorMemory(CircuitState& state,
                                const Vector& previousCapacitorVoltages,
                                const Vector& previousCapacitorCurrents,
-                               const SolverOptions& options) const;
+                               const SolverOptions& options,
+                               const Vector* trBdf2StageVoltages) const;
     void stampResistors(AssemblyContext& assembly) const;
     void stampCapacitors(AssemblyContext& assembly) const;
     void stampCurrentSources(AssemblyContext& assembly) const;
@@ -94,6 +104,7 @@ private:
     void assembleResidualJacobian(const Vector& unknowns,
                                   const CircuitState& previousState,
                                   const SolverOptions& options,
+                                  const Vector* trBdf2StageVoltages,
                                   Vector& residual,
                                   DenseMatrix& jacobian) const;
 

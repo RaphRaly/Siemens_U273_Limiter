@@ -35,11 +35,33 @@ struct LinearSolveResult {
     double residualNorm {};
 };
 
+// One-sided Jacobi SVD result for small dense matrices. Singular values are
+// returned in descending order. U is M x N, V is N x N, both with orthonormal
+// columns when converged.
+struct SvdResult {
+    Vector singularValues {};
+    DenseMatrix u {};
+    DenseMatrix v {};
+    int sweeps {};
+    bool converged {};
+};
+
 [[nodiscard]] double infinityNorm(const Vector& values) noexcept;
+[[nodiscard]] double twoNorm(const Vector& values) noexcept;
+
+[[nodiscard]] DenseMatrix transposed(const DenseMatrix& matrix);
+[[nodiscard]] Vector multiply(const DenseMatrix& matrix, const Vector& rhs);
 
 [[nodiscard]] LinearSolveResult solveLinearSystem(DenseMatrix matrix,
                                                   Vector rhs,
                                                   Vector& solution,
                                                   double pivotFloor = 1.0e-18);
+
+// One-sided Jacobi SVD for small matrices (column count <= 16 in practice).
+// Returns converged=false if the off-diagonal threshold is not reached within
+// maxSweeps; never throws.
+[[nodiscard]] SvdResult jacobiSingularValues(const DenseMatrix& matrix,
+                                             double tolerance = 1.0e-12,
+                                             int maxSweeps = 50);
 
 } // namespace u273::reference::state_space

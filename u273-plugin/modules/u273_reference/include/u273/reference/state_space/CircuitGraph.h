@@ -113,6 +113,12 @@ public:
         return idealTransformerPorts_;
     }
 
+    // Mutable views reserved for offline parameter injection during calibration.
+    // Realtime DSP paths use the const accessors above; component identities
+    // (id, node mapping) remain immutable so only model coefficients change.
+    [[nodiscard]] std::vector<Diode>& mutableDiodes() noexcept { return diodes_; }
+    [[nodiscard]] std::vector<NpnBjt>& mutableNpnBjts() noexcept { return npnBjts_; }
+
 private:
     std::vector<std::string> nodeNames_ {};
     std::vector<Resistor> resistors_ {};

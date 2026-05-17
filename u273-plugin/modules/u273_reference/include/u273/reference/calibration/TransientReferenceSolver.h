@@ -15,6 +15,8 @@ struct TransientReferenceResult {
     int retryCount {};
     int firstFailedStep {-1};
     double maxResidualNorm {};
+    double maxDeltaNorm {};
+    double convergenceRatio {};
     std::vector<u273::reference::state_space::StepResult> diagnostics {};
     std::vector<std::string> failures {};
 };

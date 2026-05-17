@@ -1,0 +1,5 @@
+target_id,measurement_node,mode,frequency_hz,output_level_dbu,gain_reduction_db,h2_dbc_min,h2_dbc_target,h2_dbc_max,h3_dbc_min,h3_dbc_target,h3_dbc_max,h4_h5_dbc_max,source_type,confidence,notes
+inferred_symmetric_nominal,device_output,limiter_or_compressor,1000,6,0,-55,-47,-40,-50,-43,-36,-50,inferred_modeling_assumption,medium,H3 normally dominates when bridge balance is good
+inferred_mismatch_strong_gr,device_output,limiter_or_compressor,1000,6,10,-50,-42,-38,-48,-40,-36,-48,inferred_modeling_assumption,medium,H2 rises with diode mismatch DC imbalance or transformer asymmetry
+inferred_low_frequency_transformer,device_output,limiter_or_compressor,40,6,6,-50,-42,-38,-48,-40,-36,-50,inferred_modeling_assumption,medium,Low frequency regulation can expose ripple and magnetic asymmetry
+siemens_not_found_harmonics,device_output,any,1000,6,0,,,,,,,,not_found,high,No public U273 H2 to H5 measurement was found

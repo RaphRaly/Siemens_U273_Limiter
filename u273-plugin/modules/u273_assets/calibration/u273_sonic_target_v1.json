@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "device": "Siemens U273",
+  "targetVersion": "sonic_target_v1",
+  "status": "TARGET_CONTRACT_DRAFT",
+  "warning": "This file separates direct Siemens targets from inferred musical texture targets. It is not a final hardware equivalence claim.",
+  "provenanceLevels": [
+    "siemens_primary",
+    "schematic_derived",
+    "component_datasheet",
+    "comparable_device",
+    "inferred_modeling_assumption",
+    "not_found"
+  ],
+  "referenceLevel": {
+    "nominalOutputVrms": 1.55,
+    "nominalOutputDbu": 6.02,
+    "loadOhm": 300.0,
+    "sourceType": "siemens_primary",
+    "confidence": "high"
+  },
+  "hardTargets": [
+    {
+      "id": "input_resistance",
+      "quantity": "input_resistance",
+      "value": 10000.0,
+      "unit": "Ohm",
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    {
+      "id": "output_resistance",
+      "quantity": "output_resistance",
+      "value": 30.0,
+      "unit": "Ohm",
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    {
+      "id": "load_resistance",
+      "quantity": "load_resistance",
+      "value": 300.0,
+      "unit": "Ohm",
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    {
+      "id": "frequency_range_low",
+      "quantity": "frequency_range_low",
+      "value": 40.0,
+      "unit": "Hz",
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    {
+      "id": "frequency_range_high",
+      "quantity": "frequency_range_high",
+      "value": 15000.0,
+      "unit": "Hz",
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    {
+      "id": "weighted_noise_distance",
+      "quantity": "weighted_noise_distance",
+      "value": 70.0,
+      "unit": "dB_relative_to_nominal_output",
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    {
+      "id": "thd_before_regulation",
+      "quantity": "thd_before_regulation",
+      "value": 0.5,
+      "unit": "percent",
+      "frequencyMinHz": 40.0,
+      "frequencyMaxHz": 15000.0,
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    {
+      "id": "thd_regulated_40hz",
+      "quantity": "thd_in_regulation",
+      "value": 1.0,
+      "unit": "percent",
+      "frequencyHz": 40.0,
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    {
+      "id": "thd_regulated_1khz_to_15khz",
+      "quantity": "thd_in_regulation",
+      "value": 0.5,
+      "unit": "percent",
+      "frequencyMinHz": 1000.0,
+      "frequencyMaxHz": 15000.0,
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    {
+      "id": "limiter_attack",
+      "quantity": "limiter_attack",
+      "value": 0.5,
+      "unit": "ms",
+      "approximate": true,
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    {
+      "id": "compressor_attack",
+      "quantity": "compressor_attack",
+      "value": 1.0,
+      "unit": "ms",
+      "approximate": true,
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    {
+      "id": "release_range",
+      "quantity": "release",
+      "min": 0.5,
+      "max": 1.5,
+      "unit": "s",
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    {
+      "id": "supply_voltage",
+      "quantity": "supply_voltage",
+      "value": 24.0,
+      "unit": "V_dc",
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    {
+      "id": "supply_current",
+      "quantity": "supply_current",
+      "value": 50.0,
+      "unit": "mA",
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    }
+  ],
+  "diodeBridgeLaw": {
+    "temperatureDegC": 25.0,
+    "forwardLaw": {
+      "formula": "U_D_mV = 308 * I_D_uA^0.16",
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    "inverseLaw": {
+      "formula": "I_D_uA = 2.85e-16 * U_D_mV^6.25",
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    "differentialResistance": {
+      "formula": "r_d_kOhm = 48.3 * I_D_uA^-0.84",
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    "validCurrentRangeUA": {
+      "min": 2.0,
+      "max": 500.0
+    },
+    "statedErrorPercentMax": 5.0,
+    "internalExample": {
+      "signalMv": 25.0,
+      "controlV": 1.0,
+      "distortionPercent": 0.18,
+      "distortionDb": -54.89,
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    }
+  },
+  "thdConversions": [
+    {
+      "percent": 0.18,
+      "db": -54.89
+    },
+    {
+      "percent": 0.5,
+      "db": -46.02
+    },
+    {
+      "percent": 1.0,
+      "db": -40.0
+    },
+    {
+      "percent": 1.5,
+      "db": -36.48
+    }
+  ],
+  "notFoundDirectData": [
+    "exact_threshold_scale_dbu",
+    "ratio_curves",
+    "knee_shape",
+    "maximum_gain_reduction",
+    "harmonic_breakdown_h2_to_h5",
+    "imd",
+    "thd_versus_gain_reduction_matrix",
+    "transformer_ratios",
+    "transformer_saturation",
+    "ssd55_primary_datasheet"
+  ],
+  "sourceUrls": [
+    "https://gyraf.dk/schematics/Siemens_U273_Limiter.pdf",
+    "https://www.radiomuseum.org/r/siemens_begrenzer_kompressor_verstaerker_u273.html",
+    "https://www.radiomuseum.org/tubes/tube_oa154.html",
+    "https://www.radiomuseum.org/tubes/tube_oa154q.html",
+    "https://www.radiomuseum.org/tubes/tube_ssd55.html",
+    "https://www.corianderpines.org/download/dafx25_diode_vca.pdf",
+    "https://www.ams-neve.com/wp-content/uploads/2023/01/2254R_User_Manual_Iss2_4-1.pdf",
+    "https://www.ams-neve.com/wp-content/uploads/2022/01/33609N1.0usermanual.pdf"
+  ]
+}

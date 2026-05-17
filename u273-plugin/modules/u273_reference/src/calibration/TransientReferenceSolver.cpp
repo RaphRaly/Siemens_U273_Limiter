@@ -29,6 +29,7 @@ TransientReferenceResult TransientReferenceSolver::run(
         const auto step = solver.step(state, options);
         result.diagnostics.push_back(step);
         result.maxResidualNorm = std::max(result.maxResidualNorm, step.residualNorm);
+        result.maxDeltaNorm = std::max(result.maxDeltaNorm, step.deltaNorm);
         ++result.totalSolverSteps;
         if (step.validInput && step.converged) {
             result.steps = index + 1;
@@ -50,6 +51,7 @@ TransientReferenceResult TransientReferenceSolver::run(
                 const auto retryStep = solver.step(retryState, retryOptions);
                 result.diagnostics.push_back(retryStep);
                 result.maxResidualNorm = std::max(result.maxResidualNorm, retryStep.residualNorm);
+                result.maxDeltaNorm = std::max(result.maxDeltaNorm, retryStep.deltaNorm);
                 ++result.totalSolverSteps;
                 allSubstepsConverged = retryStep.validInput && retryStep.converged;
             }
@@ -67,11 +69,17 @@ TransientReferenceResult TransientReferenceSolver::run(
             result.converged = false;
             result.failures.push_back("transient step " + std::to_string(index)
                                       + " did not converge, including offline substep retries");
+            result.convergenceRatio = result.totalSolverSteps > 0
+                ? static_cast<double>(result.steps) / static_cast<double>(result.totalSolverSteps)
+                : 0.0;
             return result;
         }
     }
 
     result.converged = true;
+    result.convergenceRatio = result.totalSolverSteps > 0
+        ? static_cast<double>(result.steps) / static_cast<double>(result.totalSolverSteps)
+        : 0.0;
     return result;
 }
 

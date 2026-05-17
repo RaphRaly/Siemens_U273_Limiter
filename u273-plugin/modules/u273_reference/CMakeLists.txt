@@ -2,10 +2,15 @@ add_library(u273_reference STATIC
     src/calibration/ActiveTopologyEvaluator.cpp
     src/calibration/ActiveTopologyCandidate.cpp
     src/calibration/B6B11CalibrationRunner.cpp
+    src/calibration/BoundedCalibrationSolver.cpp
     src/calibration/CalibrationDataset.cpp
     src/calibration/CalibrationResiduals.cpp
+    src/calibration/IdentifiabilityAnalyzer.cpp
     src/calibration/LinearizedAcSolver.cpp
     src/calibration/OperatingPointSolver.cpp
+    src/calibration/ReductionBuilder.cpp
+    src/calibration/SonicTarget.cpp
+    src/calibration/ThdBench.cpp
     src/calibration/TransientReferenceSolver.cpp
     src/GoldenValidationSuite.cpp
     src/ReferenceValidator.cpp

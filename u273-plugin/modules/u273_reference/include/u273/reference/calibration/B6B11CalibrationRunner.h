@@ -11,8 +11,14 @@ namespace u273::reference::calibration {
 
 struct OfflineCalibrationRunOptions {
     OperatingPointOptions operatingPoint {};
-    u273::reference::state_space::SolverOptions transient {};
+    u273::reference::state_space::SolverOptions transient {
+        192000.0,
+        u273::reference::state_space::IntegrationMethod::trBdf2,
+        {}};
     int transientSteps {16};
+    bool enableBoundedCalibration {};
+    bool enableIdentifiability {};
+    bool enableAudioGate {};
 };
 
 class B6B11CalibrationRunner {

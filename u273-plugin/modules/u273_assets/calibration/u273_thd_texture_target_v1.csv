@@ -1,0 +1,19 @@
+target_id,measurement_node,mode,frequency_hz,output_level_dbu,gain_reduction_db,thd_min_percent,thd_target_percent,thd_max_percent,thd_target_db,source_type,confidence,notes
+siemens_before_regulation_40hz,device_output,before_regulation,40,6,0,,0.5,0.5,-46.02,siemens_primary,high,Published 0.5 percent before regulation band endpoint
+siemens_before_regulation_15khz,device_output,before_regulation,15000,6,0,,0.5,0.5,-46.02,siemens_primary,high,Published 0.5 percent before regulation band endpoint
+siemens_regulated_40hz,device_output,regulated,40,6,,,1.0,1.0,-40.00,siemens_primary,high,Published regulated 40 Hz distortion
+siemens_regulated_1khz,device_output,regulated,1000,6,,,0.5,0.5,-46.02,siemens_primary,high,Published regulated 1 kHz to 15 kHz distortion
+siemens_regulated_15khz,device_output,regulated,15000,6,,,0.5,0.5,-46.02,siemens_primary,high,Published regulated 1 kHz to 15 kHz distortion
+siemens_internal_bridge_example,diode_bridge_internal,siemens_example,,,,,0.18,0.18,-54.89,siemens_primary,high,Internal bridge 25 mV signal and 1 V control example not an output THD target
+inferred_nominal_1khz_0gr,device_output,limiter_or_compressor,1000,6,0,0.25,0.40,0.55,-47.96,inferred_modeling_assumption,medium,Nominal output no regulation working range
+inferred_nominal_40hz_0gr,device_output,limiter_or_compressor,40,6,0,0.40,0.60,0.80,-44.44,inferred_modeling_assumption,medium,Low frequency nominal output working range
+inferred_1khz_3gr,device_output,limiter_or_compressor,1000,6,3,0.35,0.50,0.60,-46.02,inferred_modeling_assumption,medium,Light gain reduction texture target
+inferred_1khz_6gr,device_output,limiter_or_compressor,1000,6,6,0.45,0.65,0.80,-43.74,inferred_modeling_assumption,medium,Moderate gain reduction texture target
+inferred_1khz_10gr,device_output,limiter_or_compressor,1000,6,10,0.60,0.85,1.10,-41.41,inferred_modeling_assumption,medium,Strong gain reduction texture target
+inferred_1khz_15gr,device_output,limiter_or_compressor,1000,6,15,0.70,1.00,1.20,-40.00,inferred_modeling_assumption,medium,Heavy gain reduction texture target
+inferred_40hz_6gr,device_output,limiter_or_compressor,40,6,6,0.80,1.10,1.50,-39.17,inferred_modeling_assumption,medium,Low frequency regulation allows ripple and transformer contribution
+inferred_40hz_10gr,device_output,limiter_or_compressor,40,6,10,0.90,1.25,1.50,-38.06,inferred_modeling_assumption,medium,Low frequency strong regulation ceiling follows Siemens low frequency note
+inferred_100hz_6gr,device_output,limiter_or_compressor,100,6,6,0.50,0.75,1.00,-42.50,inferred_modeling_assumption,medium,Low-mid regulation working range
+inferred_5khz_6gr,device_output,limiter_or_compressor,5000,6,6,0.25,0.45,0.70,-46.94,inferred_modeling_assumption,medium,High frequency regulation working range
+inferred_10khz_6gr,device_output,limiter_or_compressor,10000,6,6,0.25,0.45,0.70,-46.94,inferred_modeling_assumption,medium,High frequency regulation working range
+inferred_15khz_6gr,device_output,limiter_or_compressor,15000,6,6,0.25,0.45,0.70,-46.94,inferred_modeling_assumption,medium,High frequency regulation working range

@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "device": "Siemens U273",
+  "targetVersion": "component_priors_v1",
+  "status": "BOUNDED_PRIORS_NOT_FINAL_COMPONENT_MODELS",
+  "warning": "These component entries constrain calibration. They are not a complete measured bill of behavior for a specific hardware unit.",
+  "bridgeInventory": {
+    "sourceType": "schematic_derived",
+    "confidence": "medium",
+    "parts": [
+      {
+        "ref": "D1",
+        "part": "OA154Q"
+      },
+      {
+        "ref": "D2",
+        "part": "SSD55"
+      },
+      {
+        "ref": "D3",
+        "part": "SSD55"
+      },
+      {
+        "ref": "D4",
+        "part": "OA154Q"
+      }
+    ],
+    "notes": "The bridge is a germanium plus silicon branch structure and must not be collapsed to a generic signal-diode clipper for final claims."
+  },
+  "parts": [
+    {
+      "part": "OA154Q",
+      "family": "germanium_point_contact_quartet",
+      "role": "B6 bridge germanium element",
+      "knownData": {
+        "forwardCurrentMaAt1V": 6.0,
+        "reverseLeakageUaAt10V": 10.0,
+        "maxCurrentMa": 20.0,
+        "maxVoltageV": 50.0,
+        "junctionTemperatureMaxDegC": 100.0
+      },
+      "shockleyPrior": {
+        "estimatedFromSingleForwardPoint": true,
+        "nEquals2_isA": 2.4e-11,
+        "nEquals1_5_isA": 3.8e-14,
+        "confidence": "low",
+        "notes": "Single-point Shockley estimates are weak and should be fitted against the Siemens bridge law or measured parts."
+      },
+      "sourceType": "component_datasheet",
+      "confidence": "medium",
+      "sourceUrls": [
+        "https://www.radiomuseum.org/tubes/tube_oa154.html",
+        "https://www.radiomuseum.org/tubes/tube_oa154q.html"
+      ]
+    },
+    {
+      "part": "SSD55",
+      "family": "silicon_diode_unknown_primary_data",
+      "role": "B6 bridge silicon element and B11 diode positions",
+      "knownData": {},
+      "modelingAction": "Use a bounded calibratable silicon-diode prior. Do not hard-code 1N4148 as the final target without measurement or a primary datasheet.",
+      "sourceType": "not_found",
+      "confidence": "low",
+      "sourceUrls": [
+        "https://www.radiomuseum.org/tubes/tube_ssd55.html"
+      ]
+    },
+    {
+      "part": "composite_bridge_branch",
+      "family": "series_germanium_silicon_empirical_branch",
+      "role": "Effective Siemens bridge branch law at 25 degC",
+      "empiricalLaw": {
+        "temperatureDegC": 25.0,
+        "forwardLaw": "U_D_mV = 308 * I_D_uA^0.16",
+        "inverseLaw": "I_D_uA = 2.85e-16 * U_D_mV^6.25",
+        "differentialResistance": "r_d_kOhm = 48.3 * I_D_uA^-0.84",
+        "validCurrentMinUa": 2.0,
+        "validCurrentMaxUa": 500.0,
+        "statedErrorPercentMax": 5.0
+      },
+      "internalExample": {
+        "signalMv": 25.0,
+        "controlV": 1.0,
+        "i1Ua": 18.33,
+        "i3Ua": 0.033,
+        "distortionPercent": 0.18
+      },
+      "sourceType": "siemens_primary",
+      "confidence": "high"
+    },
+    {
+      "part": "U1_U2_B11_Ue_transformers",
+      "family": "unknown_transformer_magnetics",
+      "role": "Input output and sidechain coupling transformers",
+      "knownData": {},
+      "modelingAction": "Keep transformer ratios and magnetic saturation as guarded calibration parameters until measured or sourced.",
+      "sourceType": "not_found",
+      "confidence": "low"
+    },
+    {
+      "part": "ZL10",
+      "family": "rectifier_or_diode_part",
+      "role": "B11 regulation amplifier diode position",
+      "knownData": {},
+      "modelingAction": "Keep as bounded sidechain component until primary data is added.",
+      "sourceType": "not_found",
+      "confidence": "low"
+    },
+    {
+      "part": "B30_C2200",
+      "family": "rectifier_bridge",
+      "role": "B11 regulation rectifier path",
+      "knownData": {},
+      "modelingAction": "Model sidechain rectification behavior from circuit calibration rather than assuming modern bridge behavior.",
+      "sourceType": "schematic_derived",
+      "confidence": "low"
+    }
+  ],
+  "sourceUrls": [
+    "https://gyraf.dk/schematics/Siemens_U273_Limiter.pdf",
+    "https://www.radiomuseum.org/r/siemens_begrenzer_kompressor_verstaerker_u273.html",
+    "https://www.radiomuseum.org/tubes/tube_oa154.html",
+    "https://www.radiomuseum.org/tubes/tube_oa154q.html",
+    "https://www.radiomuseum.org/tubes/tube_ssd55.html"
+  ]
+}
