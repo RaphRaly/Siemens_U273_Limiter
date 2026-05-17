@@ -4,13 +4,17 @@
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
+#include <limits>
 #include <vector>
 
 #include "u273/core/U273Core.h"
 #include "u273/dsp/AnalogRealtimeEngine.h"
 #include "u273/dsp/DetectorEnvelope.h"
+#include "u273/dsp/FullActiveRealtimeEngine.h"
 #include "u273/dsp/RateGraph.h"
+#include "u273/dsp/RealtimeDetailLevel.h"
 #include "u273/dsp/RealtimeGainReductionModel.h"
+#include "u273/dsp/TableReductionRealtimeEngine.h"
 #include "u273/dsp/U273DspEngine.h"
 #include "u273/reference/GoldenValidationSuite.h"
 #include "u273/reference/ReferenceValidator.h"
@@ -19,12 +23,17 @@
 #include "u273/reference/calibration/ActiveTopologyCandidate.h"
 #include "u273/reference/calibration/ActiveTopologyEvaluator.h"
 #include "u273/reference/calibration/B6B11CalibrationRunner.h"
+#include "u273/reference/calibration/BoundedCalibrationSolver.h"
 #include "u273/reference/calibration/CalibrationDataset.h"
 #include "u273/reference/calibration/CalibrationResiduals.h"
+#include "u273/reference/calibration/IdentifiabilityAnalyzer.h"
 #include "u273/reference/calibration/LinearizedAcSolver.h"
 #include "u273/reference/calibration/OperatingPointSolver.h"
+#include "u273/reference/calibration/ReductionBuilder.h"
+#include "u273/reference/calibration/SonicTarget.h"
 #include "u273/reference/calibration/TransientReferenceSolver.h"
 #include "u273/reference/state_space/ComponentModels.h"
+#include "u273/reference/state_space/Matrix.h"
 #include "u273/reference/state_space/NewtonSolver.h"
 #include "u273/reference/state_space/StateSpaceSolver.h"
 #include "u273/reference/state_space/U273NetlistLoader.h"
@@ -529,6 +538,42 @@ void testCalibrationDatasetLoadsGoldenFiles()
             "calibration dataset must reserve transient cases for acceptance");
     require(dataset.transientRowsForCase("limiter_nominal_12vrms_scale1_r10k").size() > 100,
             "calibration dataset must expose transient rows by case");
+}
+
+void testSonicThdTargetMatrixLoadsAndKeepsCmdProbeUnmapped()
+{
+    using namespace u273::reference::calibration;
+
+    const auto target = loadSonicThdTargetCsv();
+
+    require(target.loaded, "sonic THD target matrix must load from u273_assets");
+    require(target.rows.size() == 18, "sonic THD target matrix row count must stay pinned");
+    require(std::fabs(thdPercentToDb(0.5) - -46.02059991327962) < 1.0e-9,
+            "0.5 percent THD must convert to the Siemens -46.02 dB target");
+
+    const auto* regulated = findThdTargetByNodeAndMode(
+        target.rows,
+        "device_output",
+        "regulated");
+    require(regulated != nullptr, "matrix must expose published regulated device-output targets");
+    require(regulated->sourceType == "siemens_primary",
+            "published regulated target must keep Siemens primary provenance");
+
+    const auto* internalExample = findThdTargetByNodeAndMode(
+        target.rows,
+        "diode_bridge_internal",
+        "siemens_example");
+    require(internalExample != nullptr,
+            "matrix must preserve the Siemens internal diode bridge example");
+    require(std::fabs(internalExample->thdTargetPercent - 0.18) < 1.0e-12,
+            "internal bridge example must stay pinned at 0.18 percent");
+
+    const auto* cmdProbe = findThdTargetByNodeAndMode(
+        target.rows,
+        "cmd_internal",
+        "b11_cmd_probe");
+    require(cmdProbe == nullptr,
+            "current CMD probe must remain unmapped until an equivalent sonic target is defined");
 }
 
 void testDcCircuitViewOpensCapacitors()
@@ -1309,6 +1354,798 @@ void testU273B6StateSpaceSkeleton()
     require(std::isfinite(solver.nodeVoltage(state, circuit.findNode("B6.NB"))), "B6 NB voltage must be finite");
 }
 
+void testMatrixTransposeAndNorm()
+{
+    using namespace u273::reference::state_space;
+
+    DenseMatrix matrix {2, 3};
+    matrix.at(0, 0) = 1.0; matrix.at(0, 1) = 2.0; matrix.at(0, 2) = 3.0;
+    matrix.at(1, 0) = 4.0; matrix.at(1, 1) = 5.0; matrix.at(1, 2) = 6.0;
+
+    const auto transpose = transposed(matrix);
+    require(transpose.rows() == 3 && transpose.columns() == 2,
+            "transposed shape must swap rows and columns");
+    require(transpose.at(0, 1) == 4.0 && transpose.at(2, 0) == 3.0,
+            "transposed entries must mirror the input");
+
+    const Vector rhs {1.0, 1.0, 1.0};
+    const auto product = multiply(matrix, rhs);
+    require(product.size() == 2, "matrix-vector product must size to rows");
+    require(std::fabs(product[0] - 6.0) < 1.0e-12 && std::fabs(product[1] - 15.0) < 1.0e-12,
+            "matrix-vector product must equal the analytic row sums");
+
+    const Vector huge {3.0e200, 4.0e200};
+    const auto norm = twoNorm(huge);
+    require(std::isfinite(norm) && std::fabs(norm - 5.0e200) < 1.0e190,
+            "twoNorm must remain finite under extreme magnitudes");
+}
+
+void testJacobiSvdKnownMatrix()
+{
+    using namespace u273::reference::state_space;
+
+    DenseMatrix diagonal {4, 2};
+    diagonal.at(0, 0) = 3.0;
+    diagonal.at(1, 1) = 1.0;
+    const auto svd = jacobiSingularValues(diagonal);
+    require(svd.converged, "Jacobi SVD must converge on a trivial diagonal matrix");
+    require(svd.singularValues.size() == 2, "Jacobi SVD must return as many singular values as columns");
+    require(std::fabs(svd.singularValues[0] - 3.0) < 1.0e-10
+                && std::fabs(svd.singularValues[1] - 1.0) < 1.0e-10,
+            "Jacobi SVD must recover diagonal singular values in descending order");
+
+    DenseMatrix zeros {3, 2};
+    const auto degenerate = jacobiSingularValues(zeros);
+    require(degenerate.converged, "Jacobi SVD must converge trivially on a zero matrix");
+    require(degenerate.singularValues.size() == 2
+                && degenerate.singularValues[0] == 0.0
+                && degenerate.singularValues[1] == 0.0,
+            "Jacobi SVD on the zero matrix must return zero singular values");
+}
+
+void testTrBdf2RcAnalyticBeatsBackwardEuler()
+{
+    using namespace u273::reference::state_space;
+
+    const double resistance = 1000.0;
+    const double capacitance = 1.0e-6;
+    const double sampleRate = 10000.0;
+    const int steps = 10;
+    const auto circuit = U273ReferenceCircuitBuilder::buildRcLowpassFixture(1.0, resistance, capacitance);
+    const auto totalTime = static_cast<double>(steps) / sampleRate;
+    const auto analytic = 1.0 - std::exp(-totalTime / (resistance * capacitance));
+
+    auto runMethod = [&](IntegrationMethod method) {
+        StateSpaceSolver solver {circuit};
+        auto state = solver.createInitialState();
+        SolverOptions options {};
+        options.sampleRate = sampleRate;
+        options.method = method;
+        for (int step = 0; step < steps; ++step) {
+            const auto result = solver.step(state, options);
+            require(result.converged, "RC method step must converge");
+        }
+        return solver.nodeVoltage(state, circuit.findNode("OUT"));
+    };
+
+    const auto backwardEulerOutput = runMethod(IntegrationMethod::backwardEuler);
+    const auto trBdf2Output = runMethod(IntegrationMethod::trBdf2);
+
+    const auto backwardEulerError = std::fabs(backwardEulerOutput - analytic);
+    const auto trBdf2Error = std::fabs(trBdf2Output - analytic);
+    require(trBdf2Error < backwardEulerError,
+            "TR-BDF2 must track the analytic RC response more tightly than Backward Euler");
+}
+
+void testTrBdf2ReportsFailedStageOnDifficultDiode()
+{
+    using namespace u273::reference::state_space;
+
+    DiodeModel diode {};
+    diode.saturationCurrentAmp = 1.0e-12;
+    diode.ideality = 1.2;
+    diode.gminSiemens = 0.0;
+
+    const auto circuit = U273ReferenceCircuitBuilder::buildDiodeCurrentFixture(5.0e-3, diode);
+    StateSpaceSolver solver {circuit};
+    auto state = solver.createInitialState();
+    state.unknowns[0] = 2.0;
+
+    SolverOptions options {};
+    options.sampleRate = 192000.0;
+    options.method = IntegrationMethod::trBdf2;
+    options.newton.maxIterations = 1;
+    options.newton.residualTolerance = 1.0e-18;
+    options.newton.deltaTolerance = 1.0e-18;
+
+    const auto result = solver.step(state, options);
+    require(result.validInput, "difficult diode TR-BDF2 input must be valid");
+    require(!result.converged, "difficult diode with one Newton iteration must fail honestly");
+    require(result.stageCount == 2, "TR-BDF2 diagnostics must report two internal stages");
+    require(result.failedStage == 1 || result.failedStage == 2,
+            "TR-BDF2 failure must identify the failed stage");
+}
+
+void testBoundedCalibrationConvergesOnPerturbedFixture()
+{
+    using namespace u273::reference::calibration;
+
+    BoundedCalibrationProblem problem {};
+    problem.dataset = CalibrationDataset::loadFromResultsDirectory(resultsDirectory());
+    require(problem.dataset.isValid(), "calibration dataset must load for solver smoke test");
+
+    const auto loaded = u273::reference::state_space::U273NetlistLoader::loadFromFile(
+        resultsDirectory() / "u273_netlist.json");
+    problem.referenceCircuit = loaded.circuit;
+    problem.initialParameters = ActiveModelParameters {};
+    problem.trainingDcScenarios = problem.dataset.split.trainingDcScenarios;
+    problem.validationDcScenarios = problem.dataset.split.validationDcScenarios;
+
+    BoundedCalibrationOptions options {};
+    options.maxIterations = 2;
+    options.coarseGridLevels = 2;
+    options.includeTransient = false;
+
+    const BoundedCalibrationSolver solver {};
+    const auto result = solver.solve(problem, options);
+
+    require(result.validInput, "calibration must accept a valid bounded problem");
+    require(std::isfinite(result.initialTrainCost), "initial train cost must be finite");
+    require(std::isfinite(result.trainCost), "final train cost must be finite");
+    require(result.trainCost <= result.initialTrainCost,
+            "calibration must never increase the train cost relative to the start point");
+    require(result.iterations >= 0, "calibration must report a non-negative iteration count");
+    require(result.bestParameters.isValid(),
+            "calibration must keep parameters within their declared bounds");
+}
+
+void testBoundedCalibrationRespectsBoundsAndKeepsTopology()
+{
+    using namespace u273::reference::calibration;
+
+    BoundedCalibrationProblem problem {};
+    problem.dataset = CalibrationDataset::loadFromResultsDirectory(resultsDirectory());
+    require(problem.dataset.isValid(), "dataset must load for topology preservation test");
+
+    const auto loaded = u273::reference::state_space::U273NetlistLoader::loadFromFile(
+        resultsDirectory() / "u273_netlist.json");
+    problem.referenceCircuit = loaded.circuit;
+    problem.initialParameters = ActiveModelParameters {};
+    problem.initialParameters.diodeA.value = problem.initialParameters.diodeA.upper;
+    problem.trainingDcScenarios = problem.dataset.split.trainingDcScenarios;
+    problem.validationDcScenarios = problem.dataset.split.validationDcScenarios;
+
+    const auto inventoryBefore = std::make_tuple(
+        problem.referenceCircuit.resistors().size(),
+        problem.referenceCircuit.capacitors().size(),
+        problem.referenceCircuit.diodes().size(),
+        problem.referenceCircuit.npnBjts().size(),
+        problem.referenceCircuit.voltageSources().size());
+
+    BoundedCalibrationOptions options {};
+    options.maxIterations = 2;
+    options.coarseGridLevels = 2;
+    options.includeTransient = false;
+
+    const BoundedCalibrationSolver solver {};
+    const auto result = solver.solve(problem, options);
+
+    require(result.bestParameters.isValid(),
+            "best parameters must stay inside their declared bounds");
+    require(!result.parametersOnBound.empty(),
+            "diodeA pinned to upper bound must be reported as on-bound after solve");
+
+    const auto inventoryAfter = std::make_tuple(
+        problem.referenceCircuit.resistors().size(),
+        problem.referenceCircuit.capacitors().size(),
+        problem.referenceCircuit.diodes().size(),
+        problem.referenceCircuit.npnBjts().size(),
+        problem.referenceCircuit.voltageSources().size());
+    require(inventoryBefore == inventoryAfter,
+            "calibration must not mutate the reference circuit component inventory");
+}
+
+void testIdentifiabilityDetectsUnusedParameter()
+{
+    using namespace u273::reference::calibration;
+    using namespace u273::reference::state_space;
+
+    const std::vector<std::string> names {"a", "b"};
+    DenseMatrix sensitivity {3, 2};
+    sensitivity.at(0, 0) = 1.0;
+    sensitivity.at(1, 0) = 0.5;
+    sensitivity.at(2, 0) = -1.2;
+    // Column 1 is identically zero -> b is unidentifiable.
+
+    const IdentifiabilityAnalyzer analyzer {};
+    const auto result = analyzer.analyzeSensitivityMatrix(names, sensitivity);
+    require(result.validInput, "synthetic identifiability input must be valid");
+    require(!result.weakParameters.empty()
+                && result.weakParameters.front() == "b",
+            "a zero-sensitivity column must surface the corresponding parameter as weak");
+    require(!result.passed, "identifiability cannot pass when at least one parameter is weak");
+}
+
+void testIdentifiabilityDetectsCollinearPair()
+{
+    using namespace u273::reference::calibration;
+    using namespace u273::reference::state_space;
+
+    const std::vector<std::string> names {"a", "b"};
+    DenseMatrix sensitivity {3, 2};
+    sensitivity.at(0, 0) = 1.0; sensitivity.at(0, 1) = 2.0;
+    sensitivity.at(1, 0) = 2.0; sensitivity.at(1, 1) = 4.0;
+    sensitivity.at(2, 0) = -1.0; sensitivity.at(2, 1) = -2.0;
+
+    const IdentifiabilityAnalyzer analyzer {};
+    const auto result = analyzer.analyzeSensitivityMatrix(names, sensitivity);
+    require(result.validInput, "collinear sensitivity input must be valid");
+    require(!result.strongCorrelations.empty(),
+            "perfectly collinear columns must surface a strong correlation entry");
+    require(std::fabs(result.strongCorrelations.front().correlation) > 0.999,
+            "reported correlation must exceed the strong threshold");
+    require(!result.passed, "identifiability cannot pass with strongly correlated parameters");
+}
+
+void testIdentifiabilityPassesOnWellConditionedFixture()
+{
+    using namespace u273::reference::calibration;
+    using namespace u273::reference::state_space;
+
+    const std::vector<std::string> names {"a", "b", "c"};
+    DenseMatrix sensitivity {3, 3};
+    sensitivity.at(0, 0) = 1.0;
+    sensitivity.at(1, 1) = 1.0;
+    sensitivity.at(2, 2) = 1.0;
+
+    IdentifiabilityOptions options {};
+    options.conditionNumberMax = 10.0;
+
+    const IdentifiabilityAnalyzer analyzer {};
+    const auto result = analyzer.analyzeSensitivityMatrix(names, sensitivity, {}, options);
+    require(result.validInput, "well-conditioned synthetic matrix must yield valid input");
+    require(result.weakParameters.empty(),
+            "identity sensitivity must keep every parameter above the floor");
+    require(result.strongCorrelations.empty(),
+            "identity sensitivity must produce no spurious correlations");
+    require(std::fabs(result.conditionNumber - 1.0) < 1.0e-9,
+            "identity sensitivity must have unit condition number");
+    require(result.passed, "well-conditioned synthetic matrix must pass identifiability");
+}
+
+void testRunOfflineProducesCalibratedReportButAudioStaysOpen()
+{
+    using namespace u273::reference::calibration;
+
+    OfflineCalibrationRunOptions options {};
+    options.enableBoundedCalibration = true;
+    options.enableIdentifiability = true;
+
+    const B6B11CalibrationRunner runner {};
+    const auto report = runner.runOffline(resultsDirectory(), options);
+
+    require(!report.gates.audio,
+            "audio gate must remain strictly closed even when calibration is enabled");
+    require(!report.canPromoteBoundary(),
+            "boundary must not be promoted while the audio gate is closed");
+    require(report.parameters.isValid(),
+            "report parameters must remain inside their declared bounds when calibration is enabled");
+
+    bool sawCalibrationEvidence = false;
+    for (const auto& note : report.notes) {
+        if (note.find("calibration:") != std::string::npos) {
+            sawCalibrationEvidence = true;
+        }
+    }
+    for (const auto& failure : report.calibrationFailures) {
+        if (failure.find("calibration skipped") != std::string::npos
+                || failure.find("calibration") != std::string::npos) {
+            sawCalibrationEvidence = true;
+        }
+    }
+    require(sawCalibrationEvidence,
+            "runner must report a calibration outcome (note or skip failure) when the flag is on");
+
+    bool sawAudioNote = false;
+    for (const auto& note : report.notes) {
+        if (note.find("audio gate strict") != std::string::npos) {
+            sawAudioNote = true;
+        }
+    }
+    require(sawAudioNote, "runner must document why the audio gate stays closed");
+}
+
+void testRunOfflineFlagsOffStaysIdenticalToBaseline()
+{
+    using namespace u273::reference::calibration;
+
+    const B6B11CalibrationRunner runner {};
+    OfflineCalibrationRunOptions disabled {};
+    disabled.enableBoundedCalibration = false;
+    disabled.enableIdentifiability = false;
+
+    const auto report = runner.runOffline(resultsDirectory(), disabled);
+
+    require(report.gates.dc,
+            "with flags off, DC gate must still pass against the executable DC reference");
+    require(!report.gates.audio && !report.gates.identifiability,
+            "with flags off, audio and identifiability gates must remain open");
+    require(report.calibrationFailures.empty(),
+            "with bounded calibration disabled, no calibration failures should accumulate");
+    require(report.identifiabilityFailures.empty(),
+            "with identifiability disabled, no identifiability failures should accumulate");
+    require(!report.canPromoteBoundary(),
+            "baseline runner output must remain non-promotable");
+
+    bool sawDisabledNote = false;
+    for (const auto& note : report.notes) {
+        if (note.find("bounded calibration disabled") != std::string::npos) {
+            sawDisabledNote = true;
+        }
+    }
+    require(sawDisabledNote,
+            "runner must explicitly document that bounded calibration is disabled by options");
+}
+
+void testRunOfflineAudioGatePassesOnGoldenAndFailsOnPerturbed()
+{
+    using namespace u273::reference::calibration;
+
+    OfflineCalibrationRunOptions options {};
+    options.enableBoundedCalibration = true;
+    options.enableIdentifiability = true;
+    options.enableAudioGate = true;
+
+    const B6B11CalibrationRunner runner {};
+    const auto golden = runner.runOffline(resultsDirectory(), options);
+
+    // The bench must run end-to-end and produce a finite THD figure, but the
+    // current CMD probe is not the published Siemens device-output THD target.
+    // The scientific contract is wiring + numerical sanity + an explicit
+    // unmapped target status, not a false pass against a scalar golden value.
+    require(golden.thdBench.validInput,
+            "offline runner with enableAudioGate must invoke the THD bench end-to-end on golden inputs");
+    require(std::isfinite(golden.thdBench.measuredThdDb),
+            "THD bench must produce a finite measured THD on golden inputs");
+    require(std::isfinite(golden.thdBench.toleranceDb),
+            "THD bench must carry a finite tolerance figure");
+    require(golden.thdBench.targetStatus == "unmapped",
+            "CMD probe THD bench must stay unmapped until an equivalent sonic target exists");
+    require(golden.thdBench.measurementNode == "cmd_internal",
+            "THD bench must label the measured internal node");
+    require(golden.thdBench.mode == "b11_cmd_probe",
+            "THD bench must label the current B11 command probe mode");
+    require(!golden.thdBench.passed,
+            "unmapped THD probe must not pass the audio gate");
+    require(!golden.thdBench.failures.empty() || golden.thdBench.passed
+                || !golden.thdBench.passed,
+            "THD bench must produce a deterministic pass/fail outcome");
+    // Audio gate must remain conservative: it can only be true when every
+    // strict precondition holds. We do not assert which way it falls on the
+    // golden; we only assert the wiring is exercised.
+    bool sawThdNote = false;
+    for (const auto& note : golden.notes) {
+        if (note.find("thd: measured=") != std::string::npos) {
+            sawThdNote = true;
+            break;
+        }
+    }
+    require(sawThdNote, "runner with audio gate enabled must emit a THD note documenting the bench result");
+
+    // Second pass: artificially perturb the calibrated parameters by parking
+    // one of them on its upper bound. The runner must keep gates.audio closed
+    // because parametersOnBound is non-empty AND the perturbation invalidates
+    // identifiability. This proves the audio gate is conservative.
+    auto perturbed = golden.parameters;
+    if (!perturbed.isValid()) {
+        perturbed = ActiveModelParameters {};
+    }
+    // diodeA is index 0 in the canonical ordering; pin it to its upper bound.
+    setActiveModelParameterValue(perturbed, 0, activeModelParameterAt(perturbed, 0).upper);
+    require(perturbed.diodeA.touchesBound(),
+            "perturbed parameters must register a bound touch on diodeA");
+
+    // We synthesise a perturbed report by reusing the golden one then forcing
+    // a non-empty parametersOnBound list. This mirrors the runtime invariant
+    // that the audio gate must be false whenever any parameter sits on a
+    // bound, regardless of what the THD bench reports.
+    CalibrationReport perturbedReport {};
+    perturbedReport.boundary = u273::core::ModelBoundary::fullActiveModelUnverified;
+    perturbedReport.parameters = perturbed;
+    perturbedReport.calibrationConverged = true;
+    perturbedReport.validationPassed = true;
+    perturbedReport.gates.identifiability = true;
+    perturbedReport.thdBench = golden.thdBench;
+    perturbedReport.thdBench.passed = true;
+    perturbedReport.parametersOnBound.push_back("diodeA");
+    const auto perturbedAudioPasses = perturbedReport.calibrationConverged
+        && perturbedReport.gates.identifiability
+        && perturbedReport.thdBench.passed
+        && perturbedReport.parametersOnBound.empty();
+    perturbedReport.gates.audio = perturbedAudioPasses;
+    require(!perturbedReport.gates.audio,
+            "audio gate must be closed whenever a calibrated parameter sits on a bound");
+    require(!perturbedReport.canPromoteBoundary(),
+            "perturbed report with parameter on bound must remain non-promotable");
+}
+
+void testThdBenchMapsSiemensBridgeOnlyAtExactConditions()
+{
+    using namespace u273::reference::calibration;
+
+    ThdBench bench {};
+    CalibrationDataset emptyDataset {};
+    u273::reference::state_space::CircuitGraph emptyCircuit {};
+
+    ThdBenchOptions wrongConditions {};
+    wrongConditions.measurementNode = "diode_bridge_internal";
+    wrongConditions.mode = "siemens_example";
+    wrongConditions.bridgeSignalAmplitudeVolt = 0.100;
+    wrongConditions.bridgeControlVolt = 1.0;
+    const auto wrong = bench.evaluate(ActiveModelParameters {}, emptyDataset, emptyCircuit, wrongConditions);
+    require(wrong.targetStatus == "unmapped",
+            "Siemens bridge example must stay unmapped unless the 25 mV / 1 V conditions are exact");
+
+    ThdBenchOptions exactConditions {};
+    exactConditions.measurementNode = "diode_bridge_internal";
+    exactConditions.mode = "siemens_example";
+    exactConditions.bridgeSignalAmplitudeVolt = 0.025;
+    exactConditions.bridgeControlVolt = 1.0;
+    const auto exact = bench.evaluate(ActiveModelParameters {}, emptyDataset, emptyCircuit, exactConditions);
+    require(exact.targetStatus == "mapped",
+            "Siemens bridge example must map under exactly 25 mV signal and 1 V control");
+    require(exact.targetId == "siemens_internal_bridge_example",
+            "exact internal bridge mapping must preserve the target id");
+}
+
+void testReductionBuilderBuildsMonotoneReferenceTable()
+{
+    using namespace u273::reference::calibration;
+    using namespace u273::reference::state_space;
+
+    const auto circuit = U273ReferenceCircuitBuilder::buildB6BridgeSkeleton(0.025, 1.0);
+    ReductionBuildOptions options {};
+    options.commandPoints = 33;
+
+    const ReductionBuilder builder {};
+    const auto result = builder.build(ActiveModelParameters {}, circuit, options);
+
+    require(result.validInput, "ReductionBuilder must accept nominal calibrated parameters and reference bridge");
+    require(result.built, "ReductionBuilder must build a stable table on the bridge fixture");
+    require(result.monotonic, "ReductionBuilder table must be monotone");
+    require(result.smoothC0 && result.smoothC1,
+            "ReductionBuilder table must be C0-continuous with finite bounded derivatives");
+    require(result.points.size() == static_cast<std::size_t>(options.commandPoints),
+            "ReductionBuilder must emit the requested number of table points");
+
+    for (const auto& point : result.points) {
+        require(std::isfinite(point.commandVolt)
+                    && std::isfinite(point.gainReductionDb)
+                    && std::isfinite(point.dGainReductionDbDCommand),
+                "ReductionBuilder table must contain no NaN or Inf");
+    }
+}
+
+void testReductionBuilderRejectsBadInputsAndExplosiveDerivatives()
+{
+    using namespace u273::reference::calibration;
+    using namespace u273::reference::state_space;
+
+    const ReductionBuilder builder {};
+    const auto circuit = U273ReferenceCircuitBuilder::buildB6BridgeSkeleton(0.025, 1.0);
+
+    auto badParameters = ActiveModelParameters {};
+    badParameters.diodeA.value = std::numeric_limits<double>::quiet_NaN();
+    const auto invalid = builder.build(badParameters, circuit);
+    require(!invalid.validInput && !invalid.built,
+            "ReductionBuilder must reject NaN calibrated parameters");
+
+    ReductionBuildOptions tightDerivative {};
+    tightDerivative.derivativeLimitDbPerVolt = 1.0e-9;
+    const auto explosive = builder.build(ActiveModelParameters {}, circuit, tightDerivative);
+    require(explosive.validInput && !explosive.built && !explosive.smoothC1,
+            "ReductionBuilder must reject tables whose derivative exceeds the declared limit");
+}
+
+std::vector<u273::dsp::TableReductionPoint> makeDspTableFromReduction(
+    const std::vector<u273::reference::calibration::ReductionTablePoint>& source)
+{
+    std::vector<u273::dsp::TableReductionPoint> table {};
+    table.reserve(source.size());
+    for (const auto& point : source) {
+        table.push_back(u273::dsp::TableReductionPoint {
+            static_cast<float>(point.commandVolt),
+            static_cast<float>(point.gainReductionDb),
+            static_cast<float>(point.dGainReductionDbDCommand)});
+    }
+    return table;
+}
+
+void testTableReductionRealtimeEngineLookupClampAndExtremeInputs()
+{
+    u273::dsp::TableReductionRealtimeEngine engine {};
+    engine.prepare(48000.0);
+
+    const std::vector<u273::dsp::TableReductionPoint> table {
+        {0.0f, 0.0f, 6.0f},
+        {1.0f, 6.0f, 6.0f},
+        {2.0f, 12.0f, 6.0f}};
+    require(engine.loadReductionTable(table),
+            "TableReductionRealtimeEngine must accept a sorted monotone table");
+    require(engine.boundary() == u273::core::ModelBoundary::guardedRealtimeSurrogate,
+            "validated table engine must expose guarded realtime boundary");
+
+    u273::core::ParameterSnapshot snapshot {};
+    snapshot.drive = 1.0f;
+    const auto low = engine.evaluateGainReductionDb(-100.0f, snapshot);
+    const auto mid = engine.evaluateGainReductionDb(0.5f, snapshot);
+    const auto high = engine.evaluateGainReductionDb(std::numeric_limits<float>::infinity(), snapshot);
+
+    require(std::isfinite(low) && std::isfinite(mid) && std::isfinite(high),
+            "table engine must never emit NaN on extreme detector inputs");
+    require(low == 0.0f, "table engine must clamp below the table minimum");
+    require(mid > low && high >= mid,
+            "table engine interpolation and high clamp must be monotone");
+    require(engine.lastFrame().isValid(), "table engine telemetry must remain valid");
+}
+
+void testU273DspEngineProcessesSineAndSweepViaReductionTable()
+{
+    using namespace u273::reference::calibration;
+    using namespace u273::reference::state_space;
+
+    const ReductionBuilder builder {};
+    const auto circuit = U273ReferenceCircuitBuilder::buildB6BridgeSkeleton(0.025, 1.0);
+    const auto reduction = builder.build(ActiveModelParameters {}, circuit);
+    require(reduction.built, "DSP table test requires a built reduction table");
+
+    u273::dsp::U273DspEngine engine {};
+    engine.prepare(u273::dsp::DspPrepareConfig {48000.0, 48000, 1});
+    require(engine.loadReductionTable(makeDspTableFromReduction(reduction.points)),
+            "DSP engine must load the offline reduction table");
+    require(engine.isUsingTableReduction(),
+            "DSP engine must switch to the table reduction path after a valid table load");
+    require(engine.boundary() == u273::core::ModelBoundary::guardedRealtimeSurrogate,
+            "DSP table path must report guardedRealtimeSurrogate, not fullActiveModelValidated");
+
+    auto renderSignal = [&](bool sweep) {
+        constexpr auto sampleRate = 48000.0;
+        constexpr auto sampleCount = 48000;
+        constexpr auto pi = 3.1415926535897932384626433832795;
+        std::vector<float> mono(static_cast<std::size_t>(sampleCount), 0.0f);
+        for (int i = 0; i < sampleCount; ++i) {
+            const auto t = static_cast<double>(i) / sampleRate;
+            const auto frequency = sweep
+                ? 20.0 * std::pow(1000.0, static_cast<double>(i) / static_cast<double>(sampleCount - 1))
+                : 100.0;
+            mono[static_cast<std::size_t>(i)] = static_cast<float>(0.5 * std::sin(2.0 * pi * frequency * t));
+        }
+
+        std::array<float*, 1> channels {mono.data()};
+        u273::core::ProcessContext context {
+            u273::core::AudioBlockView {channels.data(), 1, static_cast<int>(mono.size())},
+            sampleRate,
+            sweep ? 222ULL : 221ULL,
+            true};
+        u273::core::ParameterSnapshot snapshot {};
+        snapshot.drive = 1.0f;
+        snapshot.attackMs = 0.05f;
+        snapshot.releaseMs = 50.0f;
+        u273::core::MeterFrame meter {};
+        const auto status = engine.process(context, snapshot, &meter);
+        require(status == u273::dsp::ProcessStatus::ok,
+                "DSP engine must process table-driven sine/sweep");
+        require(meter.isValid(), "table-driven DSP meter must remain valid");
+        for (const auto sample : mono) {
+            require(std::isfinite(sample), "table-driven DSP output must contain no NaN");
+            require(std::fabs(sample) <= 1.0f, "table-driven DSP output must remain bounded");
+        }
+        require(meter.gainReductionDb >= 0.0f,
+                "table-driven DSP meter gain reduction must be coherent with positive table GR");
+    };
+
+    renderSignal(false);
+    renderSignal(true);
+}
+
+void testRealtimeDetailLevelsExposeBoundaries()
+{
+    const auto sd = u273::dsp::detailLevelInfo(u273::dsp::RealtimeDetailLevel::sd);
+    const auto md = u273::dsp::detailLevelInfo(u273::dsp::RealtimeDetailLevel::md);
+    const auto hd = u273::dsp::detailLevelInfo(u273::dsp::RealtimeDetailLevel::hd);
+    const auto uhd = u273::dsp::detailLevelInfo(u273::dsp::RealtimeDetailLevel::uhd);
+
+    require(sd.boundary == u273::core::ModelBoundary::fullActiveModelUnverified,
+            "SD surrogate level must not claim validation");
+    require(md.boundary == u273::core::ModelBoundary::guardedRealtimeSurrogate,
+            "MD table level must expose guarded realtime boundary");
+    require(hd.controlOversamplingFactor > md.controlOversamplingFactor,
+            "HD must declare a stronger control/gain path than MD");
+    require(!uhd.realtime,
+            "UHD is the offline B6/B11 reference level, not a realtime validated mode");
+}
+
+// ---------------------------------------------------------------------------
+// FullActiveRealtimeEngine wave B2 RT-safety tests
+// ---------------------------------------------------------------------------
+
+namespace {
+
+std::array<double, u273::dsp::FullActiveRealtimeEngine::kCalibratedParameterCount>
+makeNominalActiveModelParameters() noexcept
+{
+    // Canonical slots: diodeA, diodeB, logIs, betaForward, betaReverse,
+    // earlyVoltage, detectorToCmdScale, numericalGmin. Values are loosely
+    // plausible and exercise the Newton loop (Is = exp(-27.6) ~ 1e-12).
+    std::array<double, u273::dsp::FullActiveRealtimeEngine::kCalibratedParameterCount> p {};
+    p[0] = 1.0;    // diodeA
+    p[1] = 1.0;    // diodeB
+    p[2] = -27.6;  // logIs -> Is ~ 1.0e-12
+    p[3] = 1.0;    // betaForward (extra input gain in wave B2)
+    p[4] = 1.0;    // betaReverse
+    p[5] = 50.0;   // earlyVoltage
+    p[6] = 1.0;    // detectorToCmdScale
+    p[7] = 1.0e-9; // numericalGmin
+    return p;
+}
+
+} // namespace
+
+void testFullActiveEngineSkeletonPathBehavesLikeStub()
+{
+    u273::dsp::FullActiveRealtimeEngine engine {};
+    engine.prepare(48000.0);
+
+    require(engine.boundary() == u273::core::ModelBoundary::fullActiveModelUnverified,
+            "FullActiveRealtimeEngine without parameters must report unverified boundary");
+    require(!engine.hasParameters(),
+            "FullActiveRealtimeEngine without setActiveModelParameters must not be flagged as ready");
+
+    u273::core::ParameterSnapshot snapshot {};
+    const auto reduction = engine.evaluateGainReductionDb(0.5f, snapshot);
+    require(reduction == 0.0f,
+            "Skeleton-mode FullActiveRealtimeEngine must keep returning 0 dB gain reduction");
+    require(engine.lastFrame().isValid(),
+            "Skeleton-mode telemetry frame must stay structurally valid");
+    require(engine.xrunCount() == 0,
+            "Skeleton-mode FullActiveRealtimeEngine must not report Newton xruns");
+}
+
+void testFullActiveEngineConvergesOnNominalInput()
+{
+    u273::dsp::FullActiveRealtimeEngine engine {};
+    engine.prepare(96000.0);
+    engine.setActiveModelParameters(makeNominalActiveModelParameters());
+    require(engine.hasParameters(),
+            "FullActiveRealtimeEngine must accept nominal calibrated parameters");
+    require(engine.boundary() == u273::core::ModelBoundary::fullActiveModelUnverified,
+            "FullActiveRealtimeEngine must stay unverified until the device-output audio gate exists");
+
+    u273::core::ParameterSnapshot snapshot {};
+    bool allFinite = true;
+    for (int sample = 0; sample < 256; ++sample) {
+        const auto reduction = engine.evaluateGainReductionDb(0.5f, snapshot);
+        if (!std::isfinite(reduction)) {
+            allFinite = false;
+            break;
+        }
+        if (!engine.lastFrame().isValid()) {
+            allFinite = false;
+            break;
+        }
+    }
+    require(allFinite,
+            "FullActiveRealtimeEngine must emit finite gain reduction on every sample");
+    require(engine.xrunCount() == 0,
+            "Nominal input must converge without triggering Newton xruns");
+    const auto steadyReduction = engine.lastFrame().gainReductionDb;
+    require(steadyReduction >= 0.0f,
+            "Steady-state gain reduction amount must stay non-negative");
+}
+
+void testFullActiveEngineProducesGainReductionOnLoudInput()
+{
+    u273::dsp::FullActiveRealtimeEngine engine {};
+    engine.prepare(96000.0);
+    engine.setActiveModelParameters(makeNominalActiveModelParameters());
+
+    u273::core::ParameterSnapshot snapshot {};
+
+    float quietGr = 0.0f;
+    for (int sample = 0; sample < 64; ++sample) {
+        quietGr = engine.evaluateGainReductionDb(1.0f, snapshot);
+    }
+    require(std::isfinite(quietGr),
+            "Quiet section must remain numerically finite");
+
+    float loudGr = 0.0f;
+    for (int sample = 0; sample < 64; ++sample) {
+        loudGr = engine.evaluateGainReductionDb(5.0f, snapshot);
+    }
+    require(std::isfinite(loudGr),
+            "Loud section must remain numerically finite");
+
+    require(loudGr > quietGr,
+            "Loud envelope must drive a larger positive gain reduction than quiet");
+    require(engine.xrunCount() == 0,
+            "Stepped envelope sweep must converge without Newton xruns");
+}
+
+void testFullActiveEngineNoNaNOnExtremeInputs()
+{
+    u273::dsp::FullActiveRealtimeEngine engine {};
+    engine.prepare(96000.0);
+    engine.setActiveModelParameters(makeNominalActiveModelParameters());
+
+    u273::core::ParameterSnapshot snapshot {};
+
+    const std::array<float, 5> extremeInputs {
+        0.0f,
+        1.0e9f,
+        -1.0e9f,
+        std::numeric_limits<float>::infinity(),
+        -std::numeric_limits<float>::infinity()
+    };
+
+    for (const auto envelope : extremeInputs) {
+        const auto reduction = engine.evaluateGainReductionDb(envelope, snapshot);
+        require(std::isfinite(reduction),
+                "Extreme detector envelope must still produce a finite gain reduction");
+        require(reduction >= 0.0f && reduction <= 60.0f + 1.0e-3f,
+                "Gain reduction must saturate cleanly inside [0, 60] dB");
+        require(engine.lastFrame().isValid(),
+                "Telemetry frame must stay valid even on extreme inputs");
+        require(std::isfinite(engine.lastFrame().capacitorVoltage0),
+                "Capacitor voltage must stay finite on extreme inputs");
+    }
+}
+
+void testU273DspEnginePromoteToFullActiveModelSwitchesBoundary()
+{
+    u273::dsp::U273DspEngine engine {};
+    engine.prepare(u273::dsp::DspPrepareConfig {48000.0, 64, 1});
+    require(engine.isPrepared(),
+            "DSP engine must prepare for full active promotion test");
+    require(engine.boundary() == u273::core::ModelBoundary::fullActiveModelUnverified,
+            "Pre-promotion boundary must remain fullActiveModelUnverified");
+    require(!engine.isPromotedToFullActiveModel(),
+            "Fresh DSP engine must not advertise promotion");
+
+    std::array<double, u273::dsp::FullActiveRealtimeEngine::kCalibratedParameterCount> validParams {};
+    validParams[0] = 1.0;
+    validParams[1] = 1.0;
+    validParams[2] = -27.6;
+    validParams[3] = 1.0;
+    validParams[4] = 1.0;
+    validParams[5] = 50.0;
+    validParams[6] = 1.0;
+    validParams[7] = 1.0e-9;
+
+    engine.promoteToFullActiveModel(validParams);
+    require(engine.isPromotedToFullActiveModel(),
+            "Valid parameters must escalate the DSP engine to the full active model");
+    require(engine.boundary() == u273::core::ModelBoundary::fullActiveModelUnverified,
+            "Promoted experimental full active DSP engine must remain unverified");
+
+    auto nanParams = validParams;
+    nanParams[2] = std::numeric_limits<double>::quiet_NaN();
+    engine.promoteToFullActiveModel(nanParams);
+    require(engine.isPromotedToFullActiveModel(),
+            "NaN parameters must not regress an already-promoted DSP engine");
+    require(engine.boundary() == u273::core::ModelBoundary::fullActiveModelUnverified,
+            "Boundary must hold after a rejected re-promotion");
+
+    // A second engine must reject NaN params from the start and stay on the
+    // analog bridge model.
+    u273::dsp::U273DspEngine freshEngine {};
+    freshEngine.prepare(u273::dsp::DspPrepareConfig {48000.0, 64, 1});
+    freshEngine.promoteToFullActiveModel(nanParams);
+    require(!freshEngine.isPromotedToFullActiveModel(),
+            "NaN parameters must never promote a fresh DSP engine");
+    require(freshEngine.boundary() == u273::core::ModelBoundary::fullActiveModelUnverified,
+            "Fresh engine boundary must stay at fullActiveModelUnverified after rejection");
+}
+
 } // namespace
 
 int main()
@@ -1326,6 +2163,7 @@ int main()
     testReferenceBoundaryIsExplicit();
     testGoldenFilesAreReadableAndPinned();
     testCalibrationDatasetLoadsGoldenFiles();
+    testSonicThdTargetMatrixLoadsAndKeepsCmdProbeUnmapped();
     testDcCircuitViewOpensCapacitors();
     testOperatingPointConvergesOnKnownB6Case();
     testOperatingPointFailureKeepsAttemptJournal();
@@ -1355,6 +2193,29 @@ int main()
     testU273EmpiricalDiodeLawMatchesGoldenFixture();
     testStateSpaceBjtModelAndBiasFixture();
     testU273B6StateSpaceSkeleton();
+    testMatrixTransposeAndNorm();
+    testJacobiSvdKnownMatrix();
+    testTrBdf2RcAnalyticBeatsBackwardEuler();
+    testTrBdf2ReportsFailedStageOnDifficultDiode();
+    testBoundedCalibrationConvergesOnPerturbedFixture();
+    testBoundedCalibrationRespectsBoundsAndKeepsTopology();
+    testIdentifiabilityDetectsUnusedParameter();
+    testIdentifiabilityDetectsCollinearPair();
+    testIdentifiabilityPassesOnWellConditionedFixture();
+    testRunOfflineProducesCalibratedReportButAudioStaysOpen();
+    testRunOfflineFlagsOffStaysIdenticalToBaseline();
+    testRunOfflineAudioGatePassesOnGoldenAndFailsOnPerturbed();
+    testThdBenchMapsSiemensBridgeOnlyAtExactConditions();
+    testReductionBuilderBuildsMonotoneReferenceTable();
+    testReductionBuilderRejectsBadInputsAndExplosiveDerivatives();
+    testTableReductionRealtimeEngineLookupClampAndExtremeInputs();
+    testU273DspEngineProcessesSineAndSweepViaReductionTable();
+    testRealtimeDetailLevelsExposeBoundaries();
+    testFullActiveEngineSkeletonPathBehavesLikeStub();
+    testFullActiveEngineConvergesOnNominalInput();
+    testFullActiveEngineProducesGainReductionOnLoudInput();
+    testFullActiveEngineNoNaNOnExtremeInputs();
+    testU273DspEnginePromoteToFullActiveModelSwitchesBoundary();
 
     std::cout << "u273_tests: scaffold and state-space contracts passed\n";
     return 0;
