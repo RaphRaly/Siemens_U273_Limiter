@@ -17,6 +17,7 @@
 #include "u273/reference/calibration/LinearizedAcSolver.h"
 #include "u273/reference/calibration/ThdBench.h"
 #include "u273/reference/state_space/U273NetlistLoader.h"
+#include "u273/reference/state_space/U273ReferenceCircuitBuilder.h"
 
 namespace u273::reference::calibration {
 
@@ -170,9 +171,8 @@ void copyNodes(const ss::CircuitGraph& source, ss::CircuitGraph& target)
 
 [[nodiscard]] double nodeVoltageOrNan(const ss::CircuitGraph& circuit,
                                       const ss::CircuitState& state,
-                                      std::string_view nodeName)
+                                      ss::NodeId node)
 {
-    const auto node = circuit.findNode(nodeName);
     if (node.value <= 0 || node.value >= circuit.nodeCount()) {
         return std::numeric_limits<double>::quiet_NaN();
     }
@@ -181,6 +181,94 @@ void copyNodes(const ss::CircuitGraph& source, ss::CircuitGraph& target)
         return std::numeric_limits<double>::quiet_NaN();
     }
     return state.unknowns[index];
+}
+
+[[nodiscard]] double nodeVoltageOrNan(const ss::CircuitGraph& circuit,
+                                      const ss::CircuitState& state,
+                                      std::string_view nodeName)
+{
+    const auto node = circuit.findNode(nodeName);
+    return nodeVoltageOrNan(circuit, state, node);
+}
+
+void setBridgeDiodeConductance(ss::B6BridgeSmallSignalAcOptions& options,
+                               const std::string& diodeId,
+                               double conductanceSiemens)
+{
+    if (!std::isfinite(conductanceSiemens) || conductanceSiemens <= 0.0) {
+        return;
+    }
+
+    if (diodeId == "D1_OA154Q") {
+        options.d1ConductanceSiemens = conductanceSiemens;
+    } else if (diodeId == "D2_SSD55") {
+        options.d2ConductanceSiemens = conductanceSiemens;
+    } else if (diodeId == "D3_SSD55") {
+        options.d3ConductanceSiemens = conductanceSiemens;
+    } else if (diodeId == "D4_OA154Q") {
+        options.d4ConductanceSiemens = conductanceSiemens;
+    }
+}
+
+[[nodiscard]] ss::B6BridgeSmallSignalAcOptions buildB6AcOptionsFromOperatingPoint(
+    const ss::CircuitGraph& dcCircuit,
+    const ss::CircuitState& state,
+    double commandPortResistanceOhm)
+{
+    ss::B6BridgeSmallSignalAcOptions options {};
+    options.commandPortResistanceOhm = commandPortResistanceOhm;
+
+    for (const auto& diode : dcCircuit.diodes()) {
+        const auto anodeVolt = nodeVoltageOrNan(dcCircuit, state, diode.anode);
+        const auto cathodeVolt = nodeVoltageOrNan(dcCircuit, state, diode.cathode);
+        if (!std::isfinite(anodeVolt) || !std::isfinite(cathodeVolt)) {
+            continue;
+        }
+
+        setBridgeDiodeConductance(options,
+                                  diode.id,
+                                  diode.model.conductanceSiemens(anodeVolt - cathodeVolt));
+    }
+
+    return options;
+}
+
+[[nodiscard]] OperatingPointResult makeSolvedLinearOperatingPoint(const ss::CircuitGraph& circuit)
+{
+    const ss::StateSpaceSolver stateFactory {circuit};
+    OperatingPointResult op {};
+    op.validInput = true;
+    op.converged = true;
+    op.state = stateFactory.createInitialState();
+    return op;
+}
+
+[[nodiscard]] AcLinearizationResult solveB6SmallSignalAcReference(const ss::CircuitGraph& dcCircuit,
+                                                                  const OperatingPointResult& dcOperatingPoint,
+                                                                  double commandPortResistanceOhm,
+                                                                  const std::vector<double>& frequencies)
+{
+    const auto acOptions = buildB6AcOptionsFromOperatingPoint(dcCircuit,
+                                                             dcOperatingPoint.state,
+                                                             commandPortResistanceOhm);
+    const auto acCircuit = ss::U273ReferenceCircuitBuilder::buildB6BridgeSmallSignalAcReference(acOptions);
+    const auto output = acCircuit.findNode("CMD");
+    if (output.value <= 0) {
+        AcLinearizationResult failed {};
+        failed.failures.push_back("B6 AC reference CMD output node was not found");
+        return failed;
+    }
+
+    AcSourcePort source {};
+    source.voltageSourceId = "VAC";
+    source.outputNode = output;
+    source.amplitudeVolt = acOptions.sourceAmplitudeVolt;
+
+    const LinearizedAcSolver acSolver {};
+    return acSolver.solveSmallSignal(acCircuit,
+                                     makeSolvedLinearOperatingPoint(acCircuit),
+                                     source,
+                                     frequencies);
 }
 
 struct DynamicTransientCaseResult {
@@ -506,26 +594,16 @@ CalibrationReport B6B11CalibrationRunner::runOffline(const std::filesystem::path
         }
     }
 
-    AcLinearizationResult ac {};
-    const auto sourceId = firstVoltageSourceId(dcReference.circuit);
-    const auto output = dcReference.circuit.findNode("CMD");
-    if (!sourceId.empty() && output.value > 0) {
-        AcSourcePort source {};
-        source.voltageSourceId = sourceId;
-        source.outputNode = output;
-        source.amplitudeVolt = 1.0;
-        const LinearizedAcSolver acSolver {};
-        ac = acSolver.solveSmallSignal(dcReference.circuit, op, source, acFrequenciesOrFallback(dataset));
-    } else {
-        ac.failures.push_back("no usable DC execution AC source/output found in netlist");
-    }
-
     AcResidualOptions acOptions {};
     acOptions.scenario = "rsource_10k";
     acOptions.driveVolt = 1.0;
     acOptions.matchDriveVolt = true;
     acOptions.commandSourceOhm = 10000.0;
     acOptions.matchCommandSourceOhm = true;
+    const auto ac = solveB6SmallSignalAcReference(dcReference.circuit,
+                                                  op,
+                                                  acOptions.commandSourceOhm,
+                                                  acFrequenciesOrFallback(dataset));
     const auto acGate = evaluateAcResiduals(dataset, ac, acOptions);
     report.gates.ac = acGate.passed;
     report.gates.referenceAc = acGate.passed;

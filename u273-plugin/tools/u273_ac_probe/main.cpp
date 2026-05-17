@@ -34,6 +34,7 @@
 #include "u273/reference/calibration/OperatingPointSolver.h"
 #include "u273/reference/state_space/CircuitGraph.h"
 #include "u273/reference/state_space/U273NetlistLoader.h"
+#include "u273/reference/state_space/U273ReferenceCircuitBuilder.h"
 
 namespace fs = std::filesystem;
 namespace calib = u273::reference::calibration;
@@ -139,8 +140,12 @@ struct ScenarioTargetBucket {
 struct AcTargetRun {
     std::string target {};
     std::string nodeName {};
-    ss::NodeId outputNode {};
-    calib::AcLinearizationResult ac {};
+};
+
+struct ModelPointResult {
+    bool solved {};
+    calib::AcLinearizationPoint point {};
+    std::vector<std::string> failures {};
 };
 
 struct CliOptions {
@@ -177,6 +182,214 @@ struct CliOptions {
         }
     }
     return o;
+}
+
+[[nodiscard]] ss::NodeId sameNode(const ss::CircuitGraph& source, ss::CircuitGraph& target, ss::NodeId node)
+{
+    if (node.value <= 0) {
+        return ss::kGroundNode;
+    }
+    return target.findNode(source.nodeName(node));
+}
+
+void copyNodes(const ss::CircuitGraph& source, ss::CircuitGraph& target)
+{
+    for (auto index = 1; index < source.nodeCount(); ++index) {
+        const auto added = target.addNode(source.nodeName(ss::NodeId {index}));
+        (void) added;
+    }
+}
+
+[[nodiscard]] bool resistorConnects(const ss::Resistor& resistor, ss::NodeId a, ss::NodeId b) noexcept
+{
+    return (resistor.positive == a && resistor.negative == b)
+        || (resistor.positive == b && resistor.negative == a);
+}
+
+[[nodiscard]] ss::CircuitGraph cloneWithCommandSource(const ss::CircuitGraph& source,
+                                                      double commandSourceVolt,
+                                                      double commandSourceOhm)
+{
+    ss::CircuitGraph target {};
+    copyNodes(source, target);
+
+    const auto drive = source.findNode("B11_DRV");
+    const auto command = source.findNode("CMD");
+
+    for (const auto& resistor : source.resistors()) {
+        const auto replacement = resistor.id == "RB11_S6_S7_CMD"
+            || (drive.value > 0 && command.value > 0 && resistorConnects(resistor, drive, command))
+            ? commandSourceOhm
+            : resistor.resistanceOhm;
+        target.addResistor(resistor.id,
+                           sameNode(source, target, resistor.positive),
+                           sameNode(source, target, resistor.negative),
+                           replacement);
+    }
+    for (const auto& capacitor : source.capacitors()) {
+        target.addCapacitor(capacitor.id,
+                            sameNode(source, target, capacitor.positive),
+                            sameNode(source, target, capacitor.negative),
+                            capacitor.capacitanceFarad);
+    }
+    for (const auto& currentSource : source.currentSources()) {
+        target.addCurrentSource(currentSource.id,
+                                sameNode(source, target, currentSource.positive),
+                                sameNode(source, target, currentSource.negative),
+                                currentSource.currentAmp);
+    }
+    for (const auto& voltageSource : source.voltageSources()) {
+        const auto sourceDrivesB11 = drive.value > 0
+            && voltageSource.positive == drive
+            && voltageSource.negative == ss::kGroundNode;
+        const auto replacement = sourceDrivesB11 || voltageSource.id.find("B11") != std::string::npos
+            ? commandSourceVolt
+            : voltageSource.voltage;
+        target.addVoltageSource(voltageSource.id,
+                                sameNode(source, target, voltageSource.positive),
+                                sameNode(source, target, voltageSource.negative),
+                                replacement);
+    }
+    for (const auto& diode : source.diodes()) {
+        target.addDiode(diode.id,
+                        sameNode(source, target, diode.anode),
+                        sameNode(source, target, diode.cathode),
+                        diode.model);
+    }
+    for (const auto& bjt : source.npnBjts()) {
+        target.addNpnBjt(bjt.id,
+                         sameNode(source, target, bjt.collector),
+                         sameNode(source, target, bjt.base),
+                         sameNode(source, target, bjt.emitter),
+                         bjt.model);
+    }
+    for (const auto& transformer : source.idealTransformerPorts()) {
+        target.addIdealTransformerPort(transformer.id,
+                                       sameNode(source, target, transformer.primaryPositive),
+                                       sameNode(source, target, transformer.primaryNegative),
+                                       sameNode(source, target, transformer.secondaryPositive),
+                                       sameNode(source, target, transformer.secondaryNegative),
+                                       transformer.turnsRatio,
+                                       transformer.sourceResistanceOhm,
+                                       transformer.loadResistanceOhm);
+    }
+
+    return target;
+}
+
+[[nodiscard]] double nodeVoltageOrNan(const ss::CircuitGraph& circuit,
+                                      const ss::CircuitState& state,
+                                      ss::NodeId node)
+{
+    if (node.value <= 0 || node.value >= circuit.nodeCount()) {
+        return std::numeric_limits<double>::quiet_NaN();
+    }
+    const auto index = static_cast<std::size_t>(node.value - 1);
+    if (index >= state.unknowns.size()) {
+        return std::numeric_limits<double>::quiet_NaN();
+    }
+    return state.unknowns[index];
+}
+
+void setBridgeDiodeConductance(ss::B6BridgeSmallSignalAcOptions& options,
+                               const std::string& diodeId,
+                               double conductanceSiemens)
+{
+    if (!std::isfinite(conductanceSiemens) || conductanceSiemens <= 0.0) {
+        return;
+    }
+
+    if (diodeId == "D1_OA154Q") {
+        options.d1ConductanceSiemens = conductanceSiemens;
+    } else if (diodeId == "D2_SSD55") {
+        options.d2ConductanceSiemens = conductanceSiemens;
+    } else if (diodeId == "D3_SSD55") {
+        options.d3ConductanceSiemens = conductanceSiemens;
+    } else if (diodeId == "D4_OA154Q") {
+        options.d4ConductanceSiemens = conductanceSiemens;
+    }
+}
+
+[[nodiscard]] ss::B6BridgeSmallSignalAcOptions buildB6AcOptionsFromOperatingPoint(
+    const ss::CircuitGraph& dcCircuit,
+    const ss::CircuitState& state,
+    double commandPortResistanceOhm)
+{
+    ss::B6BridgeSmallSignalAcOptions options {};
+    options.commandPortResistanceOhm = commandPortResistanceOhm;
+
+    for (const auto& diode : dcCircuit.diodes()) {
+        const auto anodeVolt = nodeVoltageOrNan(dcCircuit, state, diode.anode);
+        const auto cathodeVolt = nodeVoltageOrNan(dcCircuit, state, diode.cathode);
+        if (std::isfinite(anodeVolt) && std::isfinite(cathodeVolt)) {
+            setBridgeDiodeConductance(options,
+                                      diode.id,
+                                      diode.model.conductanceSiemens(anodeVolt - cathodeVolt));
+        }
+    }
+
+    return options;
+}
+
+[[nodiscard]] calib::OperatingPointResult makeSolvedLinearOperatingPoint(const ss::CircuitGraph& circuit)
+{
+    const ss::StateSpaceSolver stateFactory {circuit};
+    calib::OperatingPointResult op {};
+    op.validInput = true;
+    op.converged = true;
+    op.state = stateFactory.createInitialState();
+    return op;
+}
+
+[[nodiscard]] ModelPointResult solveModelPoint(const ss::CircuitGraph& dcTemplate,
+                                               const calib::AcGoldenPoint& golden,
+                                               const std::string& nodeName)
+{
+    ModelPointResult result {};
+    const auto dcCircuit = cloneWithCommandSource(dcTemplate,
+                                                  golden.driveVolt,
+                                                  golden.commandSourceOhm);
+    const calib::OperatingPointSolver opSolver {};
+    const auto op = opSolver.solve(calib::DCCircuitView::fromCircuit(dcCircuit));
+    if (!op.converged) {
+        result.failures.push_back("DC OP did not converge");
+        for (const auto& failure : op.failures) {
+            result.failures.push_back("OP: " + failure);
+        }
+        return result;
+    }
+
+    const auto acOptions = buildB6AcOptionsFromOperatingPoint(dcCircuit,
+                                                             op.state,
+                                                             golden.commandSourceOhm);
+    const auto acCircuit = ss::U273ReferenceCircuitBuilder::buildB6BridgeSmallSignalAcReference(acOptions);
+    const auto output = acCircuit.findNode(nodeName);
+    if (output.value <= 0) {
+        result.failures.push_back("AC output node not found: " + nodeName);
+        return result;
+    }
+
+    calib::AcSourcePort source {};
+    source.voltageSourceId = "VAC";
+    source.outputNode = output;
+    source.amplitudeVolt = 1.0;
+
+    const calib::LinearizedAcSolver acSolver {};
+    const auto ac = acSolver.solveSmallSignal(acCircuit,
+                                              makeSolvedLinearOperatingPoint(acCircuit),
+                                              source,
+                                              std::vector<double> {golden.frequencyHz});
+    if (!ac.solved || ac.points.empty()) {
+        result.failures.push_back("AC linearization did not solve");
+        for (const auto& failure : ac.failures) {
+            result.failures.push_back("AC: " + failure);
+        }
+        return result;
+    }
+
+    result.solved = true;
+    result.point = ac.points.front();
+    return result;
 }
 
 } // namespace
@@ -235,52 +448,11 @@ int main(int argc, char** argv)
     }
 
     std::array<AcTargetRun, 2> acTargets {{
-        {"VCMD", "CMD", {}, {}},
-        {"VNB", "NB", {}, {}}
+        {"VCMD", "CMD"},
+        {"VNB", "NB"}
     }};
-    if (dcConverged) {
-        const auto sourceId = firstB11SourceId(loaded.circuit);
-        if (sourceId.empty()) {
-            probeFailures.push_back("no usable B11 / first voltage source in netlist");
-        } else {
-            std::vector<double> frequencies {};
-            if (!dataset.acFrequenciesHz.empty()) {
-                frequencies = dataset.acFrequenciesHz;
-            } else {
-                for (const auto& point : dataset.acPoints) {
-                    const auto duplicate = std::find_if(frequencies.begin(), frequencies.end(),
-                        [&point](double existing) { return std::abs(existing - point.frequencyHz) < 1.0e-9; });
-                    if (duplicate == frequencies.end()) {
-                        frequencies.push_back(point.frequencyHz);
-                    }
-                }
-            }
-            std::sort(frequencies.begin(), frequencies.end());
-            const calib::LinearizedAcSolver acSolver {};
-
-            for (auto& target : acTargets) {
-                target.outputNode = loaded.circuit.findNode(target.nodeName);
-                if (target.outputNode.value <= 0) {
-                    probeFailures.push_back(target.nodeName + " output node not found in netlist");
-                    continue;
-                }
-
-                calib::AcSourcePort source {};
-                source.voltageSourceId = sourceId;
-                source.outputNode = target.outputNode;
-                source.amplitudeVolt = 1.0;
-                target.ac = acSolver.solveSmallSignal(loaded.circuit, op, source, frequencies);
-                if (!target.ac.solved) {
-                    probeFailures.push_back("AC linearization did not solve for " + target.target);
-                    for (const auto& failure : target.ac.failures) {
-                        probeFailures.push_back("AC " + target.target + ": " + failure);
-                    }
-                }
-            }
-            probeNotes.push_back("frequencies probed: " + std::to_string(frequencies.size()));
-            probeNotes.push_back("AC source id: " + sourceId);
-        }
-    }
+    probeNotes.push_back("AC model: per-row B6 small-signal reference with finite command source impedance");
+    probeNotes.push_back("AC source id: VAC");
 
     // Compose CSV: per-frequency, per-target (CMD/NB) comparison.
     const auto csvPath = cli.outputDir / "ac_residuals.csv";
@@ -288,7 +460,7 @@ int main(int argc, char** argv)
     if (!csv) {
         probeFailures.push_back("could not open ac_residuals.csv for writing");
     } else {
-        csv << "scenario,target,frequencyHz,goldenMagDb,modelMagDb,deltaMagDb,"
+        csv << "scenario,driveVolt,commandSourceOhm,target,frequencyHz,goldenMagDb,modelMagDb,deltaMagDb,"
             << "goldenPhaseRad,modelPhaseRad,deltaPhaseRad,"
             << "magPassed,phasePassed\n";
         csv << std::scientific << std::setprecision(9);
@@ -312,6 +484,9 @@ int main(int argc, char** argv)
     int totalPoints = 0;
     int totalMagFail = 0;
     int totalPhaseFail = 0;
+    int strictTotal = 0;
+    int strictMagFail = 0;
+    int strictPhaseFail = 0;
     std::vector<ScenarioTargetBucket> scenarioTargetBuckets {};
 
     if (csv && !dataset.acPoints.empty()) {
@@ -342,37 +517,46 @@ int main(int argc, char** argv)
                 return scenarioTargetBuckets.back();
             };
 
-            auto modelForTarget = [&](const std::string& target) -> const calib::AcLinearizationPoint* {
+            auto modelForTarget = [&](const std::string& target) -> ModelPointResult {
                 for (const auto& run : acTargets) {
-                    if (run.target == target && run.ac.solved) {
-                        return nearestModelPoint(run.ac.points, golden.frequencyHz);
+                    if (run.target == target) {
+                        return solveModelPoint(loaded.circuit, golden, run.nodeName);
                     }
                 }
-                return nullptr;
+                ModelPointResult missing {};
+                missing.failures.push_back("unknown AC target: " + target);
+                return missing;
             };
 
             auto emitRow = [&](const std::string& target,
                                double goldenMagDb,
                                double goldenPhaseRad) {
-                const auto* model = modelForTarget(target);
-                if (model == nullptr) {
-                    probeFailures.push_back("missing AC model point for " + target
-                                            + " scenario=" + golden.scenario
-                                            + " frequency=" + std::to_string(golden.frequencyHz));
+                const auto model = modelForTarget(target);
+                if (!model.solved) {
+                    const auto context = " scenario=" + golden.scenario
+                        + " drive=" + std::to_string(golden.driveVolt)
+                        + " sourceOhm=" + std::to_string(golden.commandSourceOhm)
+                        + " frequency=" + std::to_string(golden.frequencyHz);
+                    probeFailures.push_back("missing AC model point for " + target + context);
+                    for (const auto& failure : model.failures) {
+                        probeFailures.push_back("AC " + target + context + ": " + failure);
+                    }
                     return;
                 }
-                const auto deltaMagDb = model->magnitudeDb - goldenMagDb;
-                const auto deltaPhaseRad = wrapPhaseDelta(model->phaseRadians - goldenPhaseRad);
+                const auto deltaMagDb = model.point.magnitudeDb - goldenMagDb;
+                const auto deltaPhaseRad = wrapPhaseDelta(model.point.phaseRadians - goldenPhaseRad);
                 const auto magPassed = std::abs(deltaMagDb) <= kMagnitudeToleranceDb;
                 const auto phasePassed = std::abs(deltaPhaseRad) <= kPhaseToleranceRad;
                 csv << golden.scenario << ","
+                    << golden.driveVolt << ","
+                    << golden.commandSourceOhm << ","
                     << target << ","
                     << golden.frequencyHz << ","
                     << goldenMagDb << ","
-                    << model->magnitudeDb << ","
+                    << model.point.magnitudeDb << ","
                     << deltaMagDb << ","
                     << goldenPhaseRad << ","
-                    << model->phaseRadians << ","
+                    << model.point.phaseRadians << ","
                     << deltaPhaseRad << ","
                     << (magPassed ? "true" : "false") << ","
                     << (phasePassed ? "true" : "false") << "\n";
@@ -380,6 +564,15 @@ int main(int argc, char** argv)
                 ++totalPoints;
                 if (!magPassed) ++totalMagFail;
                 if (!phasePassed) ++totalPhaseFail;
+                const auto inStrictSlice = golden.scenario == "rsource_10k"
+                    && target == "VCMD"
+                    && std::abs(golden.driveVolt - 1.0) < 1.0e-9
+                    && std::abs(golden.commandSourceOhm - 10000.0) < 1.0e-6;
+                if (inStrictSlice) {
+                    ++strictTotal;
+                    if (!magPassed) ++strictMagFail;
+                    if (!phasePassed) ++strictPhaseFail;
+                }
 
                 auto& st = scenarioTargetBucket(target);
                 ++st.total;
@@ -460,9 +653,10 @@ int main(int argc, char** argv)
         for (const auto& target : acTargets) {
             md << "- " << target.target
                << " node=`" << target.nodeName << "`"
-               << " solved=" << boolStr(target.ac.solved)
-               << " modelPoints=" << target.ac.points.size() << "\n";
+               << " solved per golden row\n";
         }
+        md << "- source: `VAC`\n";
+        md << "- command port: finite per-row source impedance from golden `commandSourceOhm`\n";
         md << "\n";
 
         md << "## Per-decade failure counts\n";
@@ -494,24 +688,19 @@ int main(int argc, char** argv)
         }
         md << "\n";
 
-        const auto strictBucket = std::find_if(scenarioTargetBuckets.begin(),
-                                               scenarioTargetBuckets.end(),
-                                               [](const ScenarioTargetBucket& bucket) {
-            return bucket.scenario == "rsource_10k" && bucket.target == "VCMD";
-        });
-        const auto strictPass = strictBucket != scenarioTargetBuckets.end()
-            && strictBucket->total > 0
-            && strictBucket->magFailed == 0
-            && strictBucket->phaseFailed == 0;
+        const auto strictPass = strictTotal > 0 && strictMagFail == 0 && strictPhaseFail == 0;
         md << "## Strict Gate Slice\n";
         md << "- required slice: `rsource_10k / drive=1V / VCMD`\n";
+        md << "- total rows: " << strictTotal << "\n";
+        md << "- magnitude failed: " << strictMagFail << "\n";
+        md << "- phase failed: " << strictPhaseFail << "\n";
         md << "- pass: " << boolStr(strictPass) << "\n\n";
 
         md << "## Diagnostic Hypotheses\n";
         md << "- B11 source port: inspect `AC source id` above and compare against the loaded netlist voltage sources.\n";
         md << "- Target node mapping: VCMD and VNB are solved as separate output nodes; failures isolated to one target imply node/mapping risk.\n";
         md << "- Amplitude normalization: model rows are normalized by the configured 1 V small-signal source.\n";
-        md << "- Dynamic components: this probe uses `dcExecutionReference`; missing capacitors or inactive dynamics will surface as frequency-shaped errors.\n";
+        md << "- Dynamic components: this probe uses a dedicated B6 AC reference circuit with C1/C2/C3/C5/C7 active.\n";
         md << "- Dataset equivalence: if the strict slice fails while source and nodes are correct, treat the golden dataset/topology equivalence as unresolved.\n\n";
 
         md << "## Totals\n";

@@ -1,6 +1,46 @@
 #include "u273/reference/state_space/U273ReferenceCircuitBuilder.h"
 
+#include <cmath>
+#include <string>
+
 namespace u273::reference::state_space {
+
+namespace {
+
+void addFiniteResistor(CircuitGraph& circuit,
+                       std::string id,
+                       NodeId positive,
+                       NodeId negative,
+                       double resistanceOhm)
+{
+    if (resistanceOhm > 0.0 && std::isfinite(resistanceOhm)) {
+        circuit.addResistor(std::move(id), positive, negative, resistanceOhm);
+    }
+}
+
+void addFiniteCapacitor(CircuitGraph& circuit,
+                        std::string id,
+                        NodeId positive,
+                        NodeId negative,
+                        double capacitanceFarad)
+{
+    if (capacitanceFarad > 0.0 && std::isfinite(capacitanceFarad)) {
+        circuit.addCapacitor(std::move(id), positive, negative, capacitanceFarad);
+    }
+}
+
+void addConductanceAsResistor(CircuitGraph& circuit,
+                              std::string id,
+                              NodeId positive,
+                              NodeId negative,
+                              double conductanceSiemens)
+{
+    if (conductanceSiemens > 0.0 && std::isfinite(conductanceSiemens)) {
+        circuit.addResistor(std::move(id), positive, negative, 1.0 / conductanceSiemens);
+    }
+}
+
+} // namespace
 
 CircuitGraph U273ReferenceCircuitBuilder::buildRcLowpassFixture(double inputVoltage,
                                                                 double resistanceOhm,
@@ -77,6 +117,49 @@ CircuitGraph U273ReferenceCircuitBuilder::buildB6BridgeSkeleton(double audioInpu
                                     inputTransformerBoundary().idealTurnsRatio,
                                     inputTransformerBoundary().nominalSourceResistanceOhm,
                                     inputTransformerBoundary().nominalLoadResistanceOhm);
+
+    return circuit;
+}
+
+CircuitGraph U273ReferenceCircuitBuilder::buildB6BridgeSmallSignalAcReference(
+    const B6BridgeSmallSignalAcOptions& options)
+{
+    CircuitGraph circuit {};
+    const auto vs = circuit.addNode("VS");
+    const auto nx = circuit.addNode("NX");
+    const auto na = circuit.addNode("NA");
+    const auto nb = circuit.addNode("NB");
+    const auto command = circuit.addNode("CMD");
+    const auto nl = circuit.addNode("NL");
+    const auto nr = circuit.addNode("NR");
+    const auto n14 = circuit.addNode("N14");
+    const auto n15 = circuit.addNode("N15");
+
+    circuit.addVoltageSource("VAC", vs, kGroundNode, options.sourceAmplitudeVolt);
+    addFiniteResistor(circuit, "R5", vs, nx, options.r5Ohm);
+    addFiniteCapacitor(circuit, "C1_1000p", nx, na, options.c1Farad);
+    addFiniteCapacitor(circuit, "C2_22u", na, nb, options.c2Farad);
+    addFiniteResistor(circuit, "R10_to_CMD", nb, command, options.r10Ohm);
+    addFiniteResistor(circuit, "R9", nb, kGroundNode, options.r9Ohm);
+    addFiniteResistor(circuit, "R7_effective", nl, nr, options.r7EffectiveOhm);
+    addFiniteResistor(circuit, "R8_effective", n14, n15, options.r8EffectiveOhm);
+    addFiniteResistor(circuit, "R6", n14, kGroundNode, options.r6Ohm);
+    addFiniteResistor(circuit, "R11", n15, kGroundNode, options.r11Ohm);
+
+    addConductanceAsResistor(circuit, "D3_gd", nb, nl, options.d3ConductanceSiemens);
+    addConductanceAsResistor(circuit, "D4_gd", nl, n14, options.d4ConductanceSiemens);
+    addConductanceAsResistor(circuit, "D2_gd", nb, nr, options.d2ConductanceSiemens);
+    addConductanceAsResistor(circuit, "D1_gd", nr, n15, options.d1ConductanceSiemens);
+
+    addFiniteCapacitor(circuit, "C3_4u7", n14, kGroundNode, options.c3Farad);
+    addFiniteCapacitor(circuit, "C4_abgl", n14, kGroundNode, options.c4AbglFarad);
+    addFiniteCapacitor(circuit, "C5_150u", n14, n15, options.c5Farad);
+    addFiniteCapacitor(circuit, "C6_abgl", n15, kGroundNode, options.c6AbglFarad);
+    addFiniteCapacitor(circuit, "C7_4u7", n15, kGroundNode, options.c7Farad);
+
+    addFiniteResistor(circuit, "GMIN_NL", nl, kGroundNode, options.gminResistanceOhm);
+    addFiniteResistor(circuit, "GMIN_NR", nr, kGroundNode, options.gminResistanceOhm);
+    addFiniteResistor(circuit, "ZCMD", command, kGroundNode, options.commandPortResistanceOhm);
 
     return circuit;
 }

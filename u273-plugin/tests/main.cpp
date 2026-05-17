@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <iostream>
 #include <limits>
+#include <string>
 #include <vector>
 
 #include "u273/core/U273Core.h"
@@ -729,6 +730,124 @@ void testAcResidualGateMatchesRcClosedForm()
     require(gate.worstWeightedError < 1.0e-6, "AC residual fixture weighted error must be near zero");
 }
 
+[[nodiscard]] double stateNodeVoltageOrNan(const u273::reference::state_space::CircuitGraph& circuit,
+                                           const u273::reference::state_space::CircuitState& state,
+                                           u273::reference::state_space::NodeId node)
+{
+    if (node.value <= 0 || node.value >= circuit.nodeCount()) {
+        return std::numeric_limits<double>::quiet_NaN();
+    }
+    const auto index = static_cast<std::size_t>(node.value - 1);
+    if (index >= state.unknowns.size()) {
+        return std::numeric_limits<double>::quiet_NaN();
+    }
+    return state.unknowns[index];
+}
+
+void setTestBridgeDiodeConductance(u273::reference::state_space::B6BridgeSmallSignalAcOptions& options,
+                                   const std::string& diodeId,
+                                   double conductanceSiemens)
+{
+    if (!std::isfinite(conductanceSiemens) || conductanceSiemens <= 0.0) {
+        return;
+    }
+
+    if (diodeId == "D1_OA154Q") {
+        options.d1ConductanceSiemens = conductanceSiemens;
+    } else if (diodeId == "D2_SSD55") {
+        options.d2ConductanceSiemens = conductanceSiemens;
+    } else if (diodeId == "D3_SSD55") {
+        options.d3ConductanceSiemens = conductanceSiemens;
+    } else if (diodeId == "D4_OA154Q") {
+        options.d4ConductanceSiemens = conductanceSiemens;
+    }
+}
+
+[[nodiscard]] u273::reference::state_space::B6BridgeSmallSignalAcOptions strictB6AcOptionsFromDcOp(
+    const u273::reference::state_space::CircuitGraph& dcCircuit,
+    const u273::reference::state_space::CircuitState& state)
+{
+    u273::reference::state_space::B6BridgeSmallSignalAcOptions options {};
+    options.commandPortResistanceOhm = 10000.0;
+
+    for (const auto& diode : dcCircuit.diodes()) {
+        const auto anodeVolt = stateNodeVoltageOrNan(dcCircuit, state, diode.anode);
+        const auto cathodeVolt = stateNodeVoltageOrNan(dcCircuit, state, diode.cathode);
+        if (std::isfinite(anodeVolt) && std::isfinite(cathodeVolt)) {
+            setTestBridgeDiodeConductance(options,
+                                          diode.id,
+                                          diode.model.conductanceSiemens(anodeVolt - cathodeVolt));
+        }
+    }
+
+    return options;
+}
+
+[[nodiscard]] u273::reference::calibration::OperatingPointResult solvedLinearOpForTest(
+    const u273::reference::state_space::CircuitGraph& circuit)
+{
+    const u273::reference::state_space::StateSpaceSolver stateFactory {circuit};
+    u273::reference::calibration::OperatingPointResult op {};
+    op.validInput = true;
+    op.converged = true;
+    op.state = stateFactory.createInitialState();
+    return op;
+}
+
+void testB6SmallSignalAcReferenceMatchesGoldenStrictSlice()
+{
+    using namespace u273::reference::calibration;
+    using namespace u273::reference::state_space;
+
+    const auto dataset = CalibrationDataset::loadFromResultsDirectory(resultsDirectory());
+    require(dataset.isValid(), "strict B6 AC reference test requires a valid golden dataset");
+    require(!dataset.acFrequenciesHz.empty(), "strict B6 AC reference test requires AC frequencies");
+
+    U273NetlistLoaderOptions loaderOptions {};
+    loaderOptions.source = U273NetlistSource::dcExecutionReference;
+    const auto loaded = U273NetlistLoader::loadFromFile(resultsDirectory() / "u273_netlist.json",
+                                                        loaderOptions);
+    require(loaded.report.hasUsableCircuit(), "strict B6 AC reference test requires the DC execution netlist");
+
+    OperatingPointOptions opOptions {};
+    opOptions.solver.newton.maxIterations = 96;
+    opOptions.solver.newton.residualTolerance = 1.0e-8;
+    opOptions.maxAttempts = 4;
+    const OperatingPointSolver opSolver {opOptions};
+    const auto dcOp = opSolver.solve(DCCircuitView::fromCircuit(loaded.circuit));
+    require(dcOp.converged, "strict B6 AC reference test requires a converged DC operating point");
+
+    const auto acCircuit = U273ReferenceCircuitBuilder::buildB6BridgeSmallSignalAcReference(
+        strictB6AcOptionsFromDcOp(loaded.circuit, dcOp.state));
+    require(acCircuit.findNode("CMD").value > 0, "strict B6 AC reference must expose CMD");
+    require(acCircuit.findNode("NB").value > 0, "strict B6 AC reference must expose NB");
+    require(!acCircuit.capacitors().empty(), "strict B6 AC reference must include dynamic capacitors");
+
+    AcSourcePort source {};
+    source.voltageSourceId = "VAC";
+    source.outputNode = acCircuit.findNode("CMD");
+    source.amplitudeVolt = 1.0;
+
+    const LinearizedAcSolver acSolver {};
+    const auto ac = acSolver.solveSmallSignal(acCircuit,
+                                              solvedLinearOpForTest(acCircuit),
+                                              source,
+                                              dataset.acFrequenciesHz);
+    require(ac.validInput, "strict B6 AC linearization input must be valid");
+    require(ac.solved, "strict B6 AC linearization must solve");
+
+    AcResidualOptions residualOptions {};
+    residualOptions.scenario = "rsource_10k";
+    residualOptions.driveVolt = 1.0;
+    residualOptions.matchDriveVolt = true;
+    residualOptions.commandSourceOhm = 10000.0;
+    residualOptions.matchCommandSourceOhm = true;
+    const auto gate = evaluateAcResiduals(dataset, ac, residualOptions);
+
+    require(gate.validInput, "strict B6 AC residual gate input must be valid");
+    require(gate.passed, "strict B6 AC reference must match the golden VCMD slice");
+}
+
 void testDcResidualGateReportsLoadedGoldenScenarioGaps()
 {
     const auto dataset = u273::reference::calibration::CalibrationDataset::loadFromResultsDirectory(resultsDirectory());
@@ -952,8 +1071,8 @@ void testOfflineCalibrationRunnerStaysNonPromotable()
 
     require(report.gates.dc, "offline runner DC gate must pass against the executable DC reference");
     require(report.gates.referenceDc, "offline runner must expose reference DC gate status");
-    require(!report.gates.ac, "offline runner AC gate must remain open until the model matches golden AC");
-    require(!report.gates.referenceAc, "offline runner reference AC gate must report the current mismatch");
+    require(report.gates.ac, "offline runner AC gate must pass the strict B6 command small-signal reference");
+    require(report.gates.referenceAc, "offline runner must expose reference AC gate status");
     require(report.gates.transient, "offline runner transient gate must pass quasi-static reference summaries");
     require(report.gates.referenceTransient, "offline runner must expose reference transient gate status");
     require(!report.gates.guardedTopologyDiagnostic,
@@ -2169,6 +2288,7 @@ int main()
     testOperatingPointFailureKeepsAttemptJournal();
     testAcLinearizationMatchesRcClosedForm();
     testAcResidualGateMatchesRcClosedForm();
+    testB6SmallSignalAcReferenceMatchesGoldenStrictSlice();
     testDcResidualGateReportsLoadedGoldenScenarioGaps();
     testDcExecutionReferenceLoaderMatchesGoldenTopology();
     testDcResidualGatePassesDcExecutionReference();
