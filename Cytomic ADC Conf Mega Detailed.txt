@@ -1,0 +1,2943 @@
+Cytomic ADC Conf Mega Detailed
+
+ On va l’attaquer comme un cours de modélisation analogique “white-box” pour
+audio, avec les calculs, pas comme une simple conférence.
+L’idée centrale de la conf est :
+Andy Simper dit qu’il veut se concentrer sur les méthodes “white-box”, c’est-à-dire partir
+des composants du circuit, surtout via l’analyse nodale / MNA, parce que c’est la plus
+accessible et que beaucoup d’autres méthodes s’appuient dessus aussi.
+ C’est cohérent avec les cours classiques : la méthode nodale
+repose sur KCL, KVL et la loi d’Ohm pour transformer un circuit en équations.
+1. La carte mentale de la conférence jusqu’à 21 min
+Jusqu’à 21 minutes, il construit trois briques :
+circuit analogique → équations continues → équations discrètes → code audio temps
+réel
+slides ADC Analog Modeling Cyto…
+MIT OpenCours… +1
+ChatGPT Log in Sign up for free
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 1/99
+Temps approximatif Idée Ce qu’il faut vraiment comprendre
+0–8 min Domaine du
+problème
+On veut modéliser un circuit audio analogique en
+gardant sa structure
+8–19 min Diode clipper Exemple sans mémoire : non-linéarité instantanée,
+donc Newton-Raphson
+19–21 min Condensateur Exemple avec mémoire : le condensateur intègre le
+courant, donc il faut discrétiser une équation
+différentielle
+La phrase importante est : on ne fait pas juste un waveshaper tanh(x) arbitraire. On
+essaie de préserver l’interaction physique : tensions, courants, résistances, diodes,
+condensateurs. C’est pour ça que le résultat peut sonner plus “vivant” qu’un bloc DSP
+séparé en “filtre puis saturation”.
+2. White-box vs black-box
+En audio, il y a deux grandes familles :
+Black-box
+Tu observes seulement :
+Puis tu essaies d’imiter la relation entrée/sortie.
+Exemples :
+Avantage : parfois rapide à obtenir.
+Inconvénient : tu ne sais pas vraiment ce qui se passe à l’intérieur. Changer un composant,
+une résistance, une diode, une valeur de condensateur devient difficile.
+entrée audio → boîte inconnue → sortie audio
+neural net
+impulse response
+waveshaper mesuré
+modèle statistique
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 2/99
+White-box
+Tu pars du circuit :
+Puis tu écris les équations. C’est ce que la conf veut faire. Le fichier indique explicitement
+que le but est de passer du circuit aux équations puis au code, en se concentrant sur les
+méthodes composant-par-composant.
+En plugin audio, ça devient :
+3. Pourquoi il commence avec y = mx + b
+Il ne commence pas avec les diodes directement. Il commence avec une droite :
+Pourquoi ? Parce que presque tout ce qu’on va faire revient à :
+Une droite est facile à résoudre.
+Si :
+et qu’on veut trouver , alors :
+résistances
+condensateurs
+diodes
+transistors
+op-amps
+slides ADC Analog Modeling Cyto…
+for each sample:
+ read input voltage
+ solve circuit equations
+ output solved node voltage
+ update capacitor states
+y = mx + b
+transformer temporairement un problème compliqué en problème linéaire.
+y = mx + b
+x
+y − b = mx
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 3/99
+donc :
+Mais il faut que :
+S’il est proche de zéro, division instable. C’est exactement ce qu’il dit dans la conf : quand
+la pente est nulle ou presque nulle, la qualité numérique devient mauvaise.
+4. Le vrai cœur : linéariser une courbe
+Une diode n’est pas une droite. Sa relation courant/tension ressemble à une exponentielle
+:
+Donc on ne peut pas directement faire :
+parce que est caché dans une exponentielle.
+La méthode utilisée est :
+1. On prend une estimation actuelle de la tension.
+2. On regarde la valeur de la courbe à cet endroit.
+3. On regarde la pente de la courbe à cet endroit.
+4. On remplace temporairement la courbe par sa tangente.
+5. On résout une équation linéaire.
+6. On recommence jusqu’à convergence.
+C’est Newton-Raphson. Les simulateurs de type SPICE utilisent exactement cette logique :
+les éléments non linéaires rendent le système algébrique non linéaire, donc on linéarise
+autour d’une estimation, puis on itère.
+x = m
+y − b
+m = 0
+slides ADC Analog Modeling Cyto…
+id = Is (e − 1
+vd/VT )
+solve v2
+v2
+eng.biu.ac.il
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 4/99
+5. Diode clipper : reconstruisons le calcul
+Le premier vrai circuit important est :
+Plus précisément, il y a deux diodes opposées entre le nœud et la masse. Elles font du
+clipping symétrique ou quasi symétrique.
+La variable inconnue est :
+L’entrée est :
+La résistance devient une conductance :
+Dans le pseudo-code de la slide :
+Donc :
+et :
+5.1 Courant dans la résistance
+v1 ── R1 ── v2
+ |
+ d1
+ |
+ ground
+ |
+ d2
+ |
+v2
+v2
+v1
+R1
+gr1 =
+R1
+1
+gr1 = 1.0 / 2.2e3
+R1 = 2200 Ω
+gr1 =
+2200
+1
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 5/99
+Par loi d’Ohm :
+ou, avec une conductance :
+Ici la tension aux bornes de la résistance est :
+Donc le courant de vers est :
+La convention de signe est importante. Si tu choisis l’autre direction, tu obtiens les signes
+inverses, mais le résultat physique final est le même si tu es cohérent.
+5.2 Courants des deux diodes
+La loi simplifiée de la diode est :
+où :
+est le courant de saturation, et :
+est la tension thermique, environ dans la slide.
+Dans le pseudo-code :
+Donc :
+i =
+R
+v
+i = gv
+v2 − v1
+v2 v1
+ir1 = gr1(v2 − v1)
+id = Is (e − 1
+vd/VT )
+Is
+VT
+26 mV
+is1 = is2 = 1e-15
+vt1 = vt2 = 26e-3
+Is = 10
+−15
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 6/99
+et :
+Pour la première diode :
+donc :
+Pour la deuxième diode :
+donc :
+5.3 Kirchhoff Current Law au nœud
+Kirchhoff Current Law dit essentiellement :
+Ou en mots :
+Dans la convention de la slide :
+On remplace chaque courant :
+Et là, point capital :
+est à plusieurs endroits, dont dans des exponentielles.
+VT = 26 × 10 =
+−3 0.026V
+vd1 = 0 − v2
+id1 = Is1 (e − 1
+(0−v2)/VT1 )
+vd2 = v2 − 0
+id2 = Is2 (e − 1
+(v2−0)/VT2 )
+v2
+somme des courants au nœud = 0
+ce qui entre dans le nœud doit ressortir
+0 = ir1 − id1 + id2
+0 = gr1(v2 − v1) − Is1 (e − 1 +
+(0−v2)/VT1 ) Is2 (e − 1
+(v2−0)/VT2 )
+v2
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 7/99
+Donc ce n’est pas une équation linéaire.
+C’est exactement ce que la slide indique : ce n’est pas linéaire, et c’est implicite en .
+6. Pourquoi “implicite” ?
+Une équation explicite ressemble à ça :
+Tu peux directement calculer .
+Une équation implicite ressemble à ça :
+ou :
+Ici :
+Tu ne peux pas isoler proprement . Donc tu dois chercher numériquement la valeur de
+ qui rend l’équation égale à zéro.
+7. Linéarisation de la diode
+On remplace temporairement la diode par une droite.
+La diode :
+Sa pente est la dérivée :
+Calculons-la.
+v2
+slides ADC Analog Modeling Cyto…
+v2 = f(v1)
+v2
+0 = F(v2, v1)
+v2 est cachˊe dans sa propre ˊequation
+0 = gr1(v2 − v1) − Is1 (e − 1 +
+−v2/VT1 ) Is2 (e − 1
+v2/VT2 )
+v2
+v2
+id = Is(e −
+vd/VT 1)
+gd =
+dvd
+did
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 8/99
+La dérivée de est 0.
+La dérivée de :
+est :
+Donc :
+C’est exactement ce que fait le pseudo-code :
+Ensuite on veut une droite :
+On connaît , , et au point actuel. Donc :
+Pseudo-code :
+Donc la diode non linéaire devient temporairement :
+C’est un “companion model”, très proche de l’idée utilisée dans les simulateurs de circuits.
+8. On remplace dans KCL et on résout
+id = Is(e −
+vd/VT 1)
+−1
+e
+vd/VT
+e
+VT
+1 vd/VT
+gd = e
+VT
+Is vd/VT
+gd1 = is1 * ed1 / vt1
+gd2 = is2 * ed2 / vt2
+id ≈ gdvd + ideq
+id gd vd
+ideq = id − gdvd
+id1eq = id1 - gd1 * vd1
+id2eq = id2 - gd2 * vd2
+conductance gd + current source id_eq
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 9/99
+On avait :
+Avec les modèles linéarisés :
+Donc :
+Développons lentement.
+Premier terme :
+Deuxième terme :
+Comme :
+alors :
+Donc :
+Troisième terme :
+Donc l’équation complète devient :
+On regroupe les termes en :
+0 = ir1 − id1 + id2
+ir1 = gr1(v2 − v1)
+id1 ≈ gd1(0 − v2) + id1eq
+id2 ≈ gd2(v2 − 0) + id2eq
+0 = gr1(v2 − v1) − [gd1(0 − v2) + id1eq] + [gd2(v2 − 0) + id2eq]
+gr1(v2 − v1) = gr1v2 − gr1v1
+− [gd1(0 − v2) + id1eq]
+0 − v2 = −v2
+gd1(0 − v2) = −gd1v2
+− [−gd1v2 + id1eq] = gd1v2 − id1eq
+gd2(v2 − 0) + id2eq = gd2v2 + id2eq
+0 = gr1v2 − gr1v1 + gd1v2 − id1eq + gd2v2 + id2eq
+v2
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 10/99
+On déplace le reste de l’autre côté :
+Donc :
+C’est la formule visible dans tes screenshots.
+Et voilà : on a transformé un problème non linéaire en une résolution linéaire temporaire.
+Mais attention : comme cette droite dépend de l’estimation actuelle de , il faut
+recommencer plusieurs fois.
+9. Newton-Raphson dans ce cas
+Le pseudo-code conceptuel est :
+0 = (gr1 + gd1 + gd2)v2 − gr1v1 − id1eq + id2eq
+(gr1 + gd1 + gd2)v2 = gr1v1 + id1eq − id2eq
+v2 =
+gr1 + gd1 + gd2
+gr1v1 + id1eq − id2eq
+v2
+double solveDiodeClipper(double input)
+{
+ double v1 = input;
+ double v2 = 0.0; // Initial guess
+ for (int iter = 0; iter < numIterations; ++iter)
+ {
+ // Compute diode voltages
+ double vd1 = 0.0 - v2;
+ double vd2 = v2 - 0.0;
+ // Evaluate diode exponentials
+ double ed1 = std::exp(vd1 / vt1);
+ double ed2 = std::exp(vd2 / vt2);
+ // Evaluate diode currents
+ double id1 = is1 * ed1 - is1;
+ double id2 = is2 * ed2 - is2;
+ // Evaluate local diode conductances
+ double gd1 = is1 * ed1 / vt1;
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 11/99
+Le truc important : ce n’est pas “une approximation vague”. C’est une approximation locale
+répétée. À chaque itération, la tangente est recalculée plus près de la vraie solution.
+La conf précise qu’avec une mauvaise estimation initiale, comme , il peut falloir
+beaucoup d’itérations, environ 50 dans son exemple, ce qui est coûteux parce qu’il y a
+deux exponentielles par itération.
+10. Ce qu’il faut retenir du diode clipper
+Tu peux résumer le passage 8–19 min comme ça :
+Et dans un plugin audio :
+En pratique, une meilleure estimation que zéro est souvent la valeur précédente de ,
+parce qu’entre deux samples audio consécutifs, la solution ne change généralement pas
+énormément.
+ double gd2 = is2 * ed2 / vt2;
+ // Build equivalent current sources
+ double id1eq = id1 - gd1 * vd1;
+ double id2eq = id2 - gd2 * vd2;
+ // Solve the linearized node equation
+ v2 = (id1eq - id2eq + gr1 * v1) / (gd1 + gd2 + gr1);
+ }
+ return v2;
+}
+v2 = 0
+slides ADC Analog Modeling Cyto…
+Une diode est non linéaire.
+Une équation de circuit avec diode devient implicite.
+On ne peut pas isoler directement v2.
+Donc on linéarise la diode autour d’une estimation.
+On obtient une équation linéaire.
+On résout v2.
+On recommence jusqu’à convergence.
+pour chaque sample :
+ input = v1
+ v2_guess = ancienne valeur ou 0
+ Newton-Raphson loop
+ output = v2
+v2
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 12/99
+11. Passage à 19 min : maintenant les circuits avec mémoire
+Jusque-là, le clipper à diodes est memoryless :
+La sortie dépend seulement de l’entrée actuelle.
+Mais un condensateur introduit de la mémoire :
+La conf dit que le condensateur “intègre le courant” : si tu lui donnes un courant, il
+accumule une tension. Plus précisément, la relation physique
+est :
+Donc :
+Ici :
+ = courant dans le condensateur
+ = capacitance
+ = tension aux bornes du condensateur
+Le condensateur est donc une sorte de mémoire analogique : sa tension actuelle dépend
+de l’histoire du courant qui l’a traversé.
+12. Traduction DSP : intégration = accumulation
+En code, une intégration ressemble à :
+C’est pour ça qu’Andy insiste sur le “plus equals”.
+y[n] = f(x[n])
+y[n] = f(x[n], ˊetat prˊecˊedent)
+slides ADC Analog Modeling Cyto…
+iC = C
+dt
+dvC
+=
+dt
+dvC
+C
+iC
+iC
+C
+vC
+state += increment;
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 13/99
+En continu :
+En discret :
+Le problème devient donc :
+C’est la discrétisation.
+13. Pourquoi la règle trapézoïdale arrive
+À 21 min, il commence à expliquer les méthodes “linear multistep”. La méthode
+trapézoïdale approxime l’aire sous une courbe en prenant la moyenne de la hauteur au
+début et à la fin de l’intervalle. MIT OCW présente la règle trapézoïdale comme une
+méthode d’intégration numérique basée sur les valeurs aux extrémités de l’intervalle.
+Si :
+et que :
+où est la fréquence d’échantillonnage, alors la méthode trapézoïdale donne :
+Le point subtil est ici :
+contient le futur état inconnu .
+vC(t) = vC(t0) + ∫ dτ
+t0
+t
+C
+iC(τ )
+vC[n + 1] = vC[n] + petite aire
+comment approximer cette aire à chaque sample ?
+MIT OpenCours… +1
+y =
+′ f(t, y)
+h =
+fs
+1
+fs
+yn+1 = yn + f(t , y ) + f(t , y )
+2
+h
+[ n n n+1 n+1 ]
+f(tn+1, yn+1)
+yn+1
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 14/99
+Donc la méthode trapézoïdale est implicite.
+14. Pourquoi l’implicite est important en audio analog
+modeling
+Une méthode explicite ferait :
+Elle utilise seulement l’ancien état.
+C’est facile à coder, mais souvent moins stable et moins fidèle près de la fréquence de
+Nyquist.
+Une méthode implicite fait dépendre le nouvel état du nouvel état :
+C’est plus compliqué, parce qu’il faut résoudre une équation, mais ça colle mieux à l’idée
+physique :
+C’est vraiment le cœur de la modélisation analogique : on ne dit pas “filtre d’abord puis
+saturation après”. On résout tous les éléments ensemble.
+15. Le condensateur devient une résistance + source de
+courant
+C’est là que ça devient très important pour le code.
+Un condensateur continu :
+après discrétisation trapézoïdale, peut être réécrit sous une forme linéaire :
+yn+1 = yn + hf(tn, yn)
+yn+1 = yn + f + f
+2
+h
+[ n n+1]
+le circuit entier trouve un équilibre au sample courant.
+iC = C
+dt
+dvC
+iC[n] ≈ gCvC[n] − iCeq[n − 1]
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 15/99
+ou avec l’autre convention de signe :
+Les signes dépendent du sens choisi pour le courant. C’est pour ça qu’il ne faut pas
+apprendre les signes mécaniquement : il faut toujours revenir à la convention de courant.
+Dans les slides de Simper, le pseudo-code utilise :
+Pour trapézoïdal :
+donc :
+et :
+Comme :
+on peut écrire :
+C’est la conductance équivalente du condensateur discrétisé.
+Puis l’état est mis à jour avec une forme du type :
+Pour , ça devient :
+iC[n] ≈ gCvC[n] + iCeq[n − 1]
+m = 1/2
+minv = 1/m
+gc = C * sr * minv
+m =
+2
+1
+minv = 2
+gC = 2Cfs
+h =
+fs
+1
+gC =
+h
+2C
+ic_eq += minv * (gc * vc - ic_eq)
+m = 1/2
+iCeq,new = iCeq,old + 2(gCvC − iCeq,old)
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 16/99
+donc :
+Cette ligne est fondamentale : elle dit comment la mémoire du condensateur est mise à
+jour après avoir résolu le circuit.
+16. Le piège terminologique : Thévenin vs Norton
+La slide parle d’un équivalent avec “current source and resistor in parallel”. En terminologie
+standard :
+Les deux sont convertibles l’un dans l’autre. En circuit simulation, on utilise très souvent la
+forme Norton parce qu’elle s’insère naturellement dans KCL : les courants se somment au
+nœud.
+Donc pour nous :
+C’est exactement pratique pour l’analyse nodale.
+17. Le grand lien entre diode et condensateur
+Maintenant on peut voir la structure complète.
+Diode
+Elle oblige à faire Newton-Raphson.
+Condensateur
+iCeq,new = 2gCvC − iCeq,old
+source de courant + résistance en parallèle = Norton
+source de tension + résistance en série = Thévenin
+condensateur discrétisé ≈ conductance + source de courant mémoire
+non-linéaire mais sans mémoire
+linéaire mais avec mémoire
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 17/99
+Il oblige à discrétiser une équation différentielle.
+Circuit complet avec diodes + condensateurs
+Donc :
+C’est exactement le gros terme intimidant que Simper ne veut pas balancer au début. Mais
+maintenant il devient logique.
+18. Traduction directe pour ton cerveau de programmeur
+C++ / plugin
+Dans un plugin, le modèle mental est :
+Ce qu’il faut remarquer :
+non-linéaire + mémoire
+équations différentielles non linéaires implicites
+for each sample:
+ // 1. Treat input sample as voltage source
+ double v1 = inputSample;
+ // 2. Use old capacitor states as known memory sources
+ // Example: ic1eq, ic2eq
+ // 3. If nonlinear components exist, iterate
+ for each Newton iteration:
+ // Linearize nonlinear components around current guess
+ // Build local conductances and equivalent current sources
+ // Solve nodal linear equations
+ // 4. Output chosen node voltage
+ outputSample = v2;
+ // 5. Update capacitor memory states
+ ic_eq = updatedEquivalentCurrent;
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 18/99
+Sources
+Et le circuit calcule une nouvelle tension de sortie en respectant les courants.
+19. Résumé ultra-important jusqu’à 21 min
+À ce stade, tu dois être capable de dire :
+La suite logique, à partir de 21 min, sera de faire le calcul complet du condensateur
+trapézoïdal, puis d’assembler :
+pour obtenir le premier vrai circuit complet :
+C’est là que ça devient vraiment le modèle “analogique” et pas juste un waveshaper.
+Le sample audio n’est pas juste un nombre abstrait.
+Dans ce modèle, on le traite comme une tension.
+ 
+1. L’analyse nodale écrit une équation de courant pour chaque nœud inconnu.
+2. Une résistance donne un terme linéaire i = g(v_a - v_b).
+3. Une diode donne un terme exponentiel i = Is(exp(vd/Vt)-1).
+4. Comme la diode est non linéaire, on la linéarise localement.
+5. La linéarisation donne gd et id_eq.
+6. On résout une équation linéaire temporaire.
+7. On répète avec Newton-Raphson.
+8. Un condensateur introduit une mémoire.
+9. Le condensateur impose une équation différentielle.
+10. Pour le coder, on discrétise cette équation.
+11. Avec trapézoïdal, le condensateur devient une conductance plus une source de coura
+résistance + condensateurs + diodes
+filtrage + clipping + mémoire + non-linéarité
+Alors vasy on continue la suite de 21 a 35min
+On reprend exactement après le condensateur : le morceau 21–35 min sert surtout à
+comprendre comment on transforme une intégration continue en équations utilisables
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 19/99
+Thought for 1m 6s
+dans un solveur nodal. Je vais détailler la règle trapézoïdale, le paramètre m , le modèle
+équivalent du condensateur, puis les termes “implicit / explicit / RK4 / TRBDF2”.
+Parfait. La section 21–35 min est le moment où la conférence passe de :
+à :
+C’est probablement le passage le plus important pour comprendre comment on code un
+filtre analogique en plugin.
+1. Ce qu’on vient de quitter à 21 min
+Avant 21 min, on avait compris :
+Donc pour chaque sample :
+Mais maintenant il ajoute le condensateur.
+Et un condensateur, ce n’est pas juste une fonction instantanée. Il a une mémoire.
+La relation physique est :
+Donc :
+Ça veut dire :
+“J’ai une diode non linéaire”
+ 
+“J’ai un vrai circuit dynamique avec condensateurs, donc mémoire, donc intégration num
+diode = non-linéarité sans mémoire
+input actuel → solveur Newton-Raphson → output actuel
+iC = C
+dt
+dvC
+=
+dt
+dvC
+C
+iC
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 20/99
+Autrement dit :
+C’est pour ça qu’il insiste autant sur le “plus equals”.
+2. Le problème fondamental : intégrer en discret
+En analogique, le temps est continu :
+En plugin audio, le temps est découpé en samples :
+avec :
+où est la fréquence d’échantillonnage.
+Donc si on a :
+on doit approximer :
+La question devient :
+MIT OCW présente exactement Euler comme l’idée de base : approximer l’intégrale par
+des rectangles, puis utiliser des méthodes plus raffinées pour avoir de meilleures
+le courant dans le condensateur change sa tension au cours du temps
+state += something;
+t
+n = 0, 1, 2, 3,…
+T =
+fs
+1
+fs
+=
+dt
+dy
+f(t, y)
+yn+1 = yn + ∫ f(t, y)dt
+tn
+tn+1
+comment approximer cette petite aire sous la courbe ?
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 21/99
+approximations.
+3. Forward Euler, Backward Euler, Trapézoïdal
+Andy explique qu’on peut prendre différents points pour approximer l’aire.
+Imagine une fonction entre deux samples :
+Forward Euler
+On utilise la pente au début :
+C’est explicite.
+Pourquoi ?
+Parce que tout ce qui est à droite est déjà connu :
+Avantage : facile.
+Inconvénient : souvent moins stable, surtout pour les systèmes raides ou les filtres proches
+de Nyquist.
+Backward Euler
+On utilise la pente à la fin :
+Ici apparaît à droite.
+Donc il faut résoudre une équation.
+C’est implicite.
+MIT OpenCours…
+f(t)
+t_n ---------------- t_{n+1}
+yn+1 = yn + Tf(tn, yn)
+ancien état → nouveau état
+yn+1 = yn + Tf(tn+1, yn+1)
+yn+1
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 22/99
+MIT OCW souligne que Backward Euler possède de bonnes propriétés de stabilité,
+notamment une stabilité inconditionnelle pour certains problèmes linéaires de test.
+Trapézoïdal / Crank-Nicolson
+On prend la moyenne des deux :
+Donc on utilise :
+C’est plus précis que Forward Euler, mais encore implicite, parce que est dans
+.
+La conférence dit justement qu’au milieu du mélange on a la méthode trapézoïdale, et
+qu’elle est souvent utilisée pour les filtres parce qu’elle a de bonnes propriétés pratiques.
+ Un papier DAFx sur les systèmes audio “lumped” donne la
+même formule : la méthode trapézoïdale approxime l’intégrale par la moyenne de la
+fonction au début et à la fin de l’intervalle.
+4. Le paramètre m dans la conférence
+Andy introduit un paramètre de mélange :
+Dans ses slides :
+Pour trapézoïdal :
+MIT OpenCours…
+yn+1 = yn + f(t , y ) + f(t , y )
+2
+T
+[ n n n+1 n+1 ]
+moitié ancien point + moitié nouveau point
+yn+1
+f(tn+1, yn+1)
+slides ADC Analog Modeling Cyto…
+DAFx17
+m
+m = 1 / 2;
+minv = 1 / m;
+gc = C * sr * minv;
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 23/99
+donc :
+et :
+Comme :
+alors :
+Ce , c’est la conductance équivalente du condensateur discrétisé.
+En clair :
+5. Transformation capitale : le condensateur devient une
+droite
+On part de :
+Avec une méthode numérique, on peut réécrire le courant du condensateur sous cette
+forme :
+C’est exactement le retour à :
+m =
+2
+1
+minv = = m
+1
+2
+gC = Cfs ⋅ 2
+T =
+fs
+1
+gC =
+T
+2C
+gC
+le condensateur analogique devient une sorte de résistance + mémoire
+iC = C
+dt
+dvC
+iC[n] = gCvC[n] − iCeq[n − 1]
+y = mx + b
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 24/99
+Ici :
+Élément Rôle
+courant actuel du condensateur
+pente, comme dans
+tension actuelle aux bornes du condensateur
+mémoire venant du passé
+Donc le condensateur devient :
+Petite correction importante : la slide parle d’un équivalent “Thevenin” avec source de
+courant en parallèle avec une résistance. En terminologie standard, source de courant +
+résistance en parallèle = Norton, tandis que source de tension + résistance en série =
+Thévenin. L’idée physique reste correcte : on remplace un composant dynamique par un
+modèle équivalent utilisable dans les équations nodales.
+6. Pourquoi c’est parfait pour l’analyse nodale
+L’analyse nodale utilise KCL :
+Donc si un condensateur devient :
+alors il rentre naturellement dans l’équation comme une résistance plus une source de
+courant.
+C’est là que l’analog modeling devient programmable.
+Au lieu de garder une vraie dérivée continue :
+iC [n]
+gC m y = mx + b
+vC [n]
+iCeq
+[n − 1]
+conductance + source de courant mémoire
+somme des courants au nœud = 0
+iC = gCvC − iCeq
+dt
+dv
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 25/99
+on obtient une équation algébrique discrète :
+Et après avoir résolu le circuit, on met à jour la mémoire.
+7. La mise à jour d’état
+Dans les slides, on a ce genre de code :
+Le fichier montre exactement cette structure pour deux condensateurs, avec m = 1/2 ,
+minv = 1/m , gc1 = 0.47e-6 * sr * minv , gc2 = 0.01e-6 * sr * minv , puis la mise à
+jour de ic1eq et ic2eq .
+Décomposons la première ligne :
+Elle veut dire :
+Le condensateur est entre et , donc sa tension est :
+Donc :
+est le terme “présent” du condensateur.
+Puis :
+iC[n] = gCvC[n] − iCeq[n − 1]
+ic1eq += minv * (gc1 * (v3 - v2) - ic1eq);
+ic2eq += minv * (gc2 * (v3 - 0) - ic2eq);
+slides ADC Analog Modeling Cyto…
+ic1eq += minv * (gc1 * (v3 - v2) - ic1eq);
+ancienne mémoire += correction basée sur la tension actuelle du condensateur
+C1 v3 v2
+vC1 = v3 − v2
+gc1(v3 − v2)
+ic1eq
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 26/99
+est le terme mémoire.
+Pour trapézoïdal :
+Donc :
+Développons :
+donc :
+Cette forme est très classique pour un intégrateur trapézoïdal.
+8. Le premier circuit avec mémoire : deux condensateurs
+À ce moment, il ne met pas encore les diodes. Il regarde seulement la partie filtre.
+Le pseudo-code de la slide est :
+minv = 2
+iCeq,new = iCeq,old + 2 (gCvC − iCeq,old)
+iCeq,new = iCeq,old + 2gCvC − 2iCeq,old
+iCeq,new = 2gCvC − iCeq,old
+init(sr):
+ gr1 = 1 / (2.2e3);
+ gr2 = 1 / (6.8e3);
+ m = 1 / 2;
+ minv = 1 / m;
+ gc1 = 0.47e-6 * sr * minv;
+ gc2 = 0.01e-6 * sr * minv;
+ ic1eq = 0;
+ ic2eq = 0;
+tick(input):
+ v1 = input;
+ v2 = solve for v2 using equations;
+ v3 = solve for v3 using equations;
+ ic1eq += minv * (gc1 * (v3 - v2) - ic1eq);
+ ic2eq += minv * (gc2 * (v3 - 0) - ic2eq);
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 27/99
+Il y a deux nœuds inconnus :
+et :
+Donc il faut deux équations.
+9. Écriture des équations nodales
+On peut reconstruire une forme plausible des équations.
+Pour , tension :
+Courant équivalent :
+Pour , tension :
+Courant équivalent :
+Au nœud , on a la résistance venant de l’entrée et le condensateur .
+On peut écrire :
+Regroupons :
+Au nœud , on a , , et :
+Regroupons :
+v2
+v3
+C1
+vC1 = v3 − v2
+iC1 = gC1(v3 − v2) − iC1eq
+C2
+vC2 = v3 − 0 = v3
+iC2 = gC2v3 − iC2eq
+v2 C1
+0 = gr1(v2 − v1) + gC1(v2 − v3) + iC1eq
+(gr1 + gC1)v2 − gC1v3 = gr1v1 − iC1eq
+v3 C1 C2 R2
+0 = gC1(v3 − v2) − iC1eq + gC2v3 − iC2eq + gr2v3
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 28/99
+Donc le système linéaire est :
+C’est exactement le type de “solve for v2 / solve for v3” que la slide laisse volontairement
+au lecteur.
+10. Résolution du système 2x2
+On pose :
+Le système est :
+Déterminant :
+Solution :
+En code :
+−gC1v2 + (gC1 + gC2 + gr2)v3 = iC1eq + iC2eq
+{
+(gr1 + gC1)v2 − gC1v3 = gr1v1 − iC1eq
+−gC1v2 + (gC1 + gC2 + gr2)v3 = iC1eq + iC2eq
+a11 = gr1 + gC1
+a12 = −gC1
+a21 = −gC1
+a22 = gC1 + gC2 + gr2
+b1 = gr1v1 − iC1eq
+b2 = iC1eq + iC2eq
+a11v2 + a12v3 = b1
+a21v2 + a22v3 = b2
+det = a11a22 − a12a21
+v2 =
+det
+b1a22 − a12b2
+v3 =
+det
+a11b2 − b1a21
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 29/99
+Et ensuite seulement :
+Ordre important :
+Pas l’inverse.
+11. Pourquoi il dit que ça fait low-pass + high-pass
+Dans ce petit réseau :
+un condensateur peut lisser les changements rapides ;
+l’interaction entre deux condensateurs et résistances peut créer des comportements
+low-pass et high-pass ;
+le signal de sortie ne réagit pas seulement au sample actuel mais aussi aux états
+précédents.
+Donc le circuit n’est plus :
+// Solve a 2x2 linear system for the two node voltages.
+double a11 = gr1 + gc1;
+double a12 = -gc1;
+double a21 = -gc1;
+double a22 = gc1 + gc2 + gr2;
+double b1 = gr1 * v1 - ic1eq;
+double b2 = ic1eq + ic2eq;
+double det = a11 * a22 - a12 * a21;
+double v2 = (b1 * a22 - a12 * b2) / det;
+double v3 = (a11 * b2 - b1 * a21) / det;
+// Update capacitor memory states after solving the current sample.
+ic1eq += minv * (gc1 * (v3 - v2) - ic1eq);
+ic2eq += minv * (gc2 * (v3 - 0.0) - ic2eq);
+1. résoudre les tensions actuelles
+2. mettre à jour les états mémoire
+y[n] = f(x[n])
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 30/99
+mais :
+En DSP classique, on dirait :
+Mais en modeling analogique, on préfère penser :
+12. Ensuite il combine mémoire + diodes
+Après avoir expliqué le filtre seul, il remet les diodes.
+Là, on a :
+Le circuit complet devient :
+Donc :
+La slide montre exactement ça : initialisation des résistances, condensateurs, diodes, puis
+dans tick(input) une boucle Newton-Raphson avec exponentielles de diodes, résolution
+de v2 et v3 , puis mise à jour des états ic1eq et ic2eq .
+Le pseudo-code devient conceptuellement :
+y[n] = f(x[n], state[n − 1])
+il y a une différence equation
+les condensateurs transportent la mémoire du circuit
+résistances : linéaires, sans mémoire
+condensateurs : linéaires, avec mémoire
+diodes : non linéaires, sans mémoire
+linéaire + mémoire + non-linéaire
+équations différentielles non linéaires implicites
+slides ADC Analog Modeling Cyto…
+double processSample(double input)
+{
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 31/99
+Remarque très importante : les condensateurs ne sont pas dans la boucle Newton parce
+qu’ils sont déjà linéarisés par la discrétisation. Les diodes, elles, sont recalculées à chaque
+itération parce que leur pente change selon la tension actuelle.
+13. Pourquoi “filtrer puis clipper” n’est pas équivalent
+Andy compare deux approches :
+Approche DSP naïve
+ double v1 = input;
+ // Initial guesses for the unknown node voltages.
+ double v2 = 0.0;
+ double v3 = 0.0;
+ for (int iter = 0; iter < numIterations; ++iter)
+ {
+ // Linearize diode 1 around the current guess.
+ double vd1 = 0.0 - v3;
+ double ed1 = std::exp(vd1 / vt1);
+ double id1 = is1 * ed1 - is1;
+ double gd1 = is1 * ed1 / vt1;
+ double id1eq = id1 - gd1 * vd1;
+ // Linearize diode 2 around the current guess.
+ double vd2 = v3 - 0.0;
+ double ed2 = std::exp(vd2 / vt2);
+ double id2 = is2 * ed2 - is2;
+ double gd2 = is2 * ed2 / vt2;
+ double id2eq = id2 - gd2 * vd2;
+ // Solve the linearized circuit equations for v2 and v3.
+ // The exact coefficients depend on the chosen current directions.
+ solveLinearizedCircuit(v1, v2, v3, gd1, gd2, id1eq, id2eq);
+ }
+ // Update capacitor states after convergence.
+ ic1eq += minv * (gc1 * (v3 - v2) - ic1eq);
+ ic2eq += minv * (gc2 * (v3 - 0.0) - ic2eq);
+ return v3;
+}
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 32/99
+ou :
+Approche circuit
+La différence est énorme.
+Dans le circuit complet, les diodes influencent le comportement du filtre parce que leur
+conductance dynamique change.
+Rappel :
+Quand la diode conduit fortement, augmente énormément.
+Donc elle ne fait pas seulement “couper le haut de la waveform”. Elle charge le circuit
+différemment.
+En clair :
+C’est pour ça que le modèle complet est plus organique.
+Il ne fait pas :
+Il fait :
+C’est probablement l’un des messages les plus importants de toute la conférence.
+input → filtre → clipper
+input → clipper → filtre
+input → solveur commun : filtre + diodes ensemble
+gd = e
+VT
+Is vd/VT
+gd
+quand tu joues fort, la saturation change aussi le comportement fréquentiel
+filtrage statique + distorsion statique
+interaction dynamique entre filtrage et distorsion
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 33/99
+14. Le vocabulaire qu’il révèle après l’exemple
+Une fois qu’on a vu le cas concret, il donne les noms théoriques.
+La slide liste : intégration numérique d’équations différentielles non linéaires, discrétisation
+à fréquence constante, équivalents de circuit, équations implicites non linéaires, implicites
+linéaires et explicites.
+Déchiffrons.
+14.1 Numeric integration of nonlinear Differential Equations
+Ça veut dire :
+Exemple :
+plus :
+Mélange les deux, et tu obtiens une équation différentielle non linéaire.
+14.2 Discretization
+Discrétiser, c’est transformer :
+en :
+Donc :
+slides ADC Analog Modeling Cyto…
+on résout numériquement un système qui évolue dans le temps,
+et qui contient des non-linéarités
+iC = C
+dt
+dv
+iD = Is(e −
+vD/VT 1)
+t ∈ R
+n ∈ Z
+temps continu → samples audio
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 34/99
+La conférence définit la discrétisation comme l’utilisation d’un sample rate constant pour
+résoudre les équations.
+14.3 Implicit nonlinear DE
+Forme conceptuelle :
+Le nouveau dépend de lui-même dans une fonction non linéaire.
+Donc il faut itérer.
+C’est le cas :
+14.4 Implicit linear DE
+Forme :
+Le nouveau dépend de lui-même, mais linéairement.
+Donc pas besoin de Newton-Raphson.
+On fait juste :
+C’est le cas :
+14.5 Explicit DE
+Forme :
+slides ADC Analog Modeling Cyto…
+y[n] = F(y[n], x[n], state[n − 1])
+y[n]
+diodes + condensateurs
+Ay[n] = b
+y[n]
+solve linear system
+résistances + condensateurs, mais sans diodes
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 35/99
+Le nouveau ne dépend pas de lui-même.
+Donc :
+C’est plus simple, mais souvent moins fidèle ou moins stable pour certains circuits audio.
+15. Le passage Runge-Kutta
+Ensuite il montre une longue liste de méthodes Runge-Kutta.
+Ce n’est pas pour qu’on les apprenne toutes.
+C’est pour dire :
+MIT OCW explique que les méthodes Runge-Kutta cherchent à obtenir une meilleure
+précision sans calculer explicitement les dérivées d’ordre supérieur, en évaluant plusieurs
+fois le membre de droite de l’équation différentielle.
+RK4
+RK4 veut dire Runge-Kutta d’ordre 4.
+Pour un système :
+RK4 calcule quatre pentes intermédiaires :
+y[n] = F(x[n], state[n − 1])
+y[n]
+pas de solveur
+pas d’itération
+ 
+on a utilisé trapézoïdal, mais ce n’est qu’un membre d’une grande famille de méthodes
+MIT OpenCours…
+y =
+′ f(t, y)
+k1
+k2
+k3
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 36/99
+Puis les mélange.
+En pseudo-code :
+Le point important pour l’audio :
+La slide dit explicitement que RK4 demande quatre évaluations de chaque non-linéarité
+par sample.
+Si ta non-linéarité contient :
+ou un gros solveur, ça coûte vite cher.
+16. Explicite vs implicite dans Runge-Kutta
+Andy mentionne la diagonale du tableau de Butcher.
+On peut vulgariser comme ça.
+Méthode explicite
+Chaque étape dépend seulement de ce qu’on connaît déjà.
+k4
+// Classical explicit RK4 step.
+double k1 = f(t, y);
+double k2 = f(t + h * 0.5, y + h * 0.5 * k1);
+double k3 = f(t + h * 0.5, y + h * 0.5 * k2);
+double k4 = f(t + h, y + h * k3);
+y = y + (h / 6.0) * (k1 + 2.0 * k2 + 2.0 * k3 + k4);
+RK4 = 4 évaluations de la non-linéarité par sample
+slides ADC Analog Modeling Cyto…
+std::exp(...)
+k1 connu
+k2 dépend de k1
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 37/99
+Pas besoin de résoudre une équation simultanée.
+Méthode implicite
+Une étape peut dépendre d’elle-même.
+ou :
+Donc il faut résoudre.
+C’est plus coûteux, mais souvent plus stable pour les systèmes raides.
+Et beaucoup de circuits analogiques deviennent “raides” numériquement, surtout avec des
+condensateurs très petits, résistances très différentes, diodes exponentielles, etc.
+17. Trapézoïdal vs implicit midpoint
+Andy mentionne aussi l’implicit midpoint.
+La méthode trapézoïdale fait :
+L’implicit midpoint fait plutôt :
+La différence est subtile.
+Si est linéaire, les deux peuvent donner des résultats très proches ou identiques dans
+certains cas.
+Mais si est non linéaire, par exemple :
+k3 dépend de k1, k2
+k4 dépend de k1, k2, k3
+k1 dépend de k1
+k2 dépend de k2
+2
+fn + fn+1
+f (
+2
+yn + yn+1 )
+f
+f
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 38/99
+alors :
+n’est pas forcément égal à :
+C’est ce qu’Andy veut dire : pour les non-linéarités, midpoint et trapézoïdal ne donnent
+pas exactement la même réponse. Le papier DAFx de Germain compare justement
+trapézoïdal et midpoint implicite pour les systèmes audio “lumped”.
+18. Pourquoi il parle de réponse fréquentielle vers 33–34
+min
+Il montre ensuite qu’en changeant le paramètre , la réponse fréquentielle d’un filtre
+change.
+Pour simplifier :
+Dans le code réel de la slide :
+donc si , ça explose.
+Donc en pratique, le cas Forward Euler n’est pas utilisé exactement dans cette même
+forme de solveur implicite. Il faut le traiter comme une méthode explicite séparée.
+Ce qu’il veut surtout montrer :
+f(y) = tanh(y)
+2
+tanh(yn) + tanh(yn+1)
+tanh (
+2
+yn + yn+1 )
+DAFx17
+m
+m = 0.5 → trapézoïdal
+m = 1.0 → backward Euler
+m proche de 0 → forward Euler, mais attention au cas explicite
+gc = C * sr * (1 / m);
+m = 0
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 39/99
+Elle influence :
+la stabilité ;
+la phase ;
+le gain près de Nyquist ;
+la façon dont les non-linéarités réagissent ;
+le son final.
+19. Le bloc 34–35 min : quelles méthodes choisir en audio
+?
+La slide “Discretization Options” dit :
+pour l’audio, les méthodes d’ordre 2 suffisent souvent ;
+les méthodes linéaires multi-step d’ordre 2 sont implicites ;
+TRBDF2 est A-stable et L-stable ;
+RK4 est explicite mais coûte quatre évaluations par sample ;
+il vaut souvent mieux oversampler que dépenser du CPU dans des méthodes d’ordre
+supérieur ;
+on peut utiliser différentes méthodes pour différents composants.
+C’est dense. Détaillons.
+19.1 “2nd order methods are enough”
+Une méthode d’ordre 2 a une erreur qui diminue rapidement quand le pas de temps
+diminue.
+En audio, on travaille déjà à :
+Donc le pas :
+la méthode d’intégration n’est pas neutre
+slides ADC Analog Modeling Cyto…
+44.1 kHz
+48 kHz
+96 kHz
+192 kHz
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 40/99
+est déjà petit.
+Au lieu de prendre une méthode d’ordre 4 très coûteuse, on peut souvent faire :
+Par exemple :
+Ça aide aussi contre l’aliasing des non-linéarités.
+19.2 Pourquoi oversampling peut être meilleur que RK4
+Une saturation génère des harmoniques.
+Si tu entres un sinus à :
+dans une diode ou un tanh, tu peux générer :
+Si ces harmoniques dépassent Nyquist :
+elles se replient dans le spectre audible.
+C’est l’aliasing.
+RK4 peut améliorer la précision temporelle du solveur, mais il ne règle pas magiquement
+le fait qu’une non-linéarité génère des fréquences au-dessus de Nyquist.
+Donc Andy dit :
+T =
+fs
+1
+méthode ordre 2 + oversampling
+48 kHz → 96 kHz → 192 kHz
+1kHz
+2kHz, 3kHz, 4kHz, 5kHz,…
+2
+fs
+souvent, il vaut mieux oversampler pour contenir les harmoniques
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 41/99
+plutôt que de tout mettre dans une méthode d’intégration plus chère.
+19.3 TRBDF2
+TRBDF2 signifie grosso modo :
+C’est une méthode en deux sous-étapes :
+La slide la décrit comme A-stable et L-stable. Des sources
+numériques présentent aussi TR-BDF2 comme une méthode d’ordre 2 pleinement
+implicite et L-stable.
+Intuition :
+En audio, c’est intéressant parce que certains circuits ont des constantes de temps très
+petites.
+Mais c’est plus complexe à implémenter que trapézoïdal simple.
+20. Le message profond de 21–35 min
+Cette section veut te faire comprendre ceci :
+Et :
+TR = trapezoidal rule
+BDF2 = backward differentiation formula order 2
+étape trapézoïdale
+puis étape BDF2
+slides ADC Analog Modeling Cyto…
+Chase the Devil
+A-stable = bonne stabilité pour certains systèmes raides
+L-stable = amortit encore mieux les modes très rapides / très raides
+Un circuit analogique avec condensateurs n’est pas une fonction.
+C’est un système dynamique.
+Un système dynamique doit être intégré dans le temps.
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 42/99
+Mais comme on veut faire ça en plugin audio :
+Puis :
+Et enfin :
+S’il n’y a pas de non-linéarité :
+S’il y a des diodes/transistors :
+21. Version ultra-condensée à mémoriser
+on remplace l’intégration continue par une intégration numérique
+on transforme chaque condensateur en équivalent algébrique
+on résout un système nodal à chaque sample
+un solveur linéaire suffit
+il faut Newton-Raphson ou une autre méthode non linéaire
+Forward Euler :
+ utilise le passé
+ explicite
+ simple mais moins stable
+Backward Euler :
+ utilise le présent inconnu
+ implicite
+ stable mais plus amortissant
+Trapézoïdal :
+ moyenne passé + présent
+ implicite
+ très utilisé pour les filtres audio/circuits
+Condensateur discrétisé :
+ devient conductance + source de courant mémoire
+Circuit linéaire avec condensateurs :
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 43/99
+Sources
+22. Le pont vers la suite après 35 min
+À 35 min, il va commencer à parler de :
+C’est-à-dire différentes manières d’écrire les équations :
+Donc la suite logique sera :
+C’est là qu’il va comparer nodal et state-space, notamment avec le filtre Sallen-Key.
+ solveur linéaire une fois par sample
+Circuit non linéaire avec condensateurs :
+ Newton-Raphson à chaque sample
+RK4 :
+ explicite
+ quatre évaluations de fonction par sample
+ potentiellement cher pour les non-linéarités
+Oversampling :
+ souvent plus utile en audio que des méthodes d’ordre très élevé
+formulation du système
+nodal / MNA
+loop analysis
+state-space
+wave digital filters
+discrete Kirchhoff
+On sait maintenant discrétiser un condensateur.
+Mais comment organiser les équations d’un circuit plus gros ?
+Alors continue avec la section entiere de formulation du
+système
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 44/99
+Thought for 1m 45s
+Ici on va changer de niveau : jusqu’ici on savait “résoudre un petit circuit”, maintenant on
+regarde les différentes façons d’écrire le même circuit en équations. Je vais garder le
+Sallen-Key comme exemple central, parce que c’est exactement le rôle de cette section.
+Oui, on continue avec toute la section “System formulation”, c’est-à-dire grosso modo de
+35 min à environ 47–48 min, juste avant qu’il passe à “Solving efficiency”.
+Le fil logique est :
+Et c’est ça qu’il appelle formulation du système.
+1. “Formulation du système”, ça veut dire quoi ?
+Un même circuit peut être décrit de plusieurs façons mathématiques.
+Par exemple, imagine ce circuit :
+Tu peux choisir de résoudre :
+ou :
+ou :
+ou :
+On sait discrétiser les composants.
+Maintenant : comment organiser les équations du circuit ?
+entrée → résistances / condensateurs / diodes / amplis → sortie
+les tensions aux nœuds
+les courants dans les boucles
+les tensions des condensateurs
+des ondes incidentes/réfléchies
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 45/99
+Physiquement, c’est le même circuit. Mais numériquement, ce ne sont pas les mêmes
+inconnues, pas les mêmes matrices, pas les mêmes coûts CPU, pas les mêmes avantages.
+La slide liste exactement ces familles :
+Donc “formulation” veut dire :
+2. Formulation nodale / MNA
+C’est celle qu’on a utilisée depuis le début.
+Idée
+On choisit les tensions des nœuds comme inconnues :
+Puis on écrit KCL à chaque nœud :
+Donc chaque nœud donne une équation.
+Exemple simple :
+Si est inconnu, on écrit :
+Nodal / MNA
+Loop
+State-space
+Wave Digital Filter
+Discrete Kirchhoff / DK
+PDK
+slides ADC Analog Modeling Cyto…
+quelles variables je choisis,
+quelles lois physiques j’utilise,
+et sous quelle forme j’écris le système à résoudre.
+v1, v2, v3, ...
+∑i = 0
+v1 --- R --- v2 --- C --- ground
+v2
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 46/99
+avec :
+et, après discrétisation du condensateur :
+Donc :
+Puis on résout .
+C’est exactement le style d’équation qu’on a fait avec le clipper et les condensateurs.
+Pourquoi MNA et pas juste “nodal” ?
+La slide dit :
+MNA veut dire Modified Nodal Analysis.
+La différence importante :
+Pourquoi ajouter des courants ?
+Parce que certaines choses sont difficiles à intégrer proprement dans une nodale pure,
+surtout :
+iR + iC = 0
+iR = gR(v2 − v1)
+iC = gCv2 − iCeq
+gR(v2 − v1) + gCv2 − iCeq = 0
+v2
+Nodal - Kirchhoff’s Current Law (MNA)
+analyse nodale simple :
+ inconnues = tensions de nœuds
+MNA :
+ inconnues = tensions de nœuds + certains courants de branche
+sources de tension idéales
+op-amps idéalisés
+éléments contrôlés
+inducteurs dans certaines formes
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 47/99
+Les cours de MNA expliquent justement qu’en MNA, chaque élément ajoute une “stamp”
+dans la matrice du système, ce qui rend la méthode très automatisable. Une autre
+source de simulation de circuits note aussi que MNA est l’approche utilisée dans la plupart
+des simulateurs de circuits modernes.
+Donc pour nous, MNA est intéressante parce que :
+3. Formulation “Loop” / lois de Kirchhoff en tension
+Deuxième option :
+Ici on ne somme plus les courants à un nœud.
+On choisit des boucles, puis on écrit KVL :
+Autrement dit :
+Exemple :
+On pourrait écrire :
+avec :
+EE, IITM
+fides.fe.uni-lj.si
+elle est proche du schéma électronique,
+elle est automatisable,
+elle marche bien avec des composants variés,
+elle donne naturellement une matrice.
+Loop - Kirchhoff’s Voltage Law
+∑v = 0
+en faisant le tour d’une boucle fermée,
+la somme des chutes et montées de tension est zéro.
+source → résistance → condensateur → retour source
+vsource − vR − vC = 0
+vR = Ri
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 48/99
+et :
+Dans cette formulation, les inconnues sont souvent des courants de boucle.
+Pourquoi Andy ne l’utilise pas ici ?
+Parce que pour l’audio analog modeling, surtout quand on veut automatiser des circuits
+complexes, la formulation nodale est souvent plus directe.
+Avec un schéma, tu peux presque dire :
+Alors qu’avec les boucles, il faut identifier des boucles indépendantes. Ça peut devenir
+moins pratique quand le circuit devient gros, non planaire, ou rempli de sources
+contrôlées.
+Donc loop analysis est théoriquement valide, mais moins centrale dans cette conférence.
+4. Formulation state-space
+Là, on change complètement de point de vue.
+En nodal
+On demande :
+Donc :
+En state-space
+On demande plutôt :
+iC = C
+dt
+dvC
+chaque nœud = une équation KCL
+chaque composant = une contribution dans la matrice
+quelles sont les tensions des nœuds ?
+v2, v3, v4,…
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 49/99
+Dans un circuit, les variables d’état naturelles sont généralement :
+Des notes universitaires sur l’analyse d’état rappellent que les circuits avec condensateurs
+et inducteurs donnent lieu à des équations contenant des dérivées de tensions ou de
+courants. Une autre source de cours dit explicitement que les bons choix de
+variables d’état dans les systèmes électriques sont les tensions des condensateurs et les
+courants des inductances.
+Donc pour notre sujet :
+5. Pourquoi c’est intéressant pour l’audio analog modeling
+?
+Parce que les condensateurs sont la mémoire.
+Donc en state-space, au lieu de résoudre d’abord les nœuds puis d’en déduire les tensions
+des condensateurs, on fait l’inverse :
+Forme générale :
+où :
+quelles sont les variables d’état du système ?
+tensions des condensateurs
+courants des inducteurs
+uom.lk
+MA College
+state-space = résoudre directement les variables de mémoire.
+1. résoudre les tensions des condensateurs
+2. reconstruire ensuite les tensions des nœuds
+x[n] = Ax[n − 1] + Bu[n]
+y[n] = Cx[n] + Du[n]
+x = état interne
+u = entrée
+y = sortie
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 50/99
+Mais en circuit non linéaire audio, ça devient plus compliqué :
+Le papier de Holters et Zölzer porte justement sur une méthode systématique pour dériver
+des modèles state-space non linéaires à partir de schémas de circuits, ce qui correspond
+exactement à cette partie de la conférence.
+6. Le Sallen-Key : pourquoi il choisit cet exemple
+Après la liste des formulations, Andy introduit un filtre Sallen-Key.
+Il dit que c’est un circuit hautement paramétrique, proche du type de filtre utilisé dans le
+MS-20. Dans la transcription, il explique que le circuit a une fréquence de coupure variable,
+des éléments qui transforment une différence de tension en courant, deux sections de
+type low-pass, et une boucle de feedback qui donne la résonance.
+Le point pédagogique :
+Il contient :
+Donc c’est déjà plus intéressant qu’un simple diode clipper.
+7. Initialisation du Sallen-Key dans la slide
+La slide donne :
+x[n] = F(x[n − 1], u[n],inonlinear[n])
+hsu-hh.de
+slides ADC Analog Modeling Cyto…
+le Sallen-Key est encore assez simple,
+mais assez riche pour comparer nodal et state-space.
+deux condensateurs
+un paramètre de cutoff
+un paramètre de résonance
+une boucle de feedback
+init(sr):
+ m = 0.5;
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 51/99
+Décomposons.
+m = 0.5
+Ça veut dire :
+Comme on a vu avant :
+donc :
+gc = minv * C * sr
+Ici .
+Donc :
+C’est la conductance équivalente du condensateur discrétisé.
+gcinv = 1.0 / gc
+Ça sert à repasser d’un courant / incrément vers une tension.
+ minv = 1.0 / m;
+ gc = minv * 220e-9 * sr;
+ gcinv = 1.0 / gc;
+ g = gc * tan(pi * cutoff / sr);
+ k = resonance;
+ ic1eq = 0;
+ ic2eq = 0;
+slides ADC Analog Modeling Cyto…
+méthode trapézoïdale
+m =
+2
+1
+minv = = m
+1
+2
+C = 220 nF
+gC = 2Cfs
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 52/99
+Si :
+alors :
+Donc :
+g = gc * tan(pi * cutoff / sr)
+Ici g est le paramètre de cutoff du filtre.
+Le tan(...) vient de la pré-déformation liée à la transformée bilinéaire / trapézoïdale.
+L’idée intuitive :
+Donc on corrige le réglage de cutoff avec une tangente.
+Forme classique utilisée en filtres trapézoïdaux / TPT :
+Dans la slide, il y a un facteur en plus parce que son g est exprimé dans la même
+unité/convention que les conductances du circuit.
+k = resonance
+C’est le feedback.
+En gros :
+i = gCv
+v =
+gC
+i
+v = i * gcinv;
+quand on discrétise un filtre analogique,
+les fréquences ne se placent pas exactement pareil dans le domaine discret.
+g = tan (π
+fs
+fc )
+gC
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 53/99
+Attention : ce n’est pas forcément le même “Q” qu’un filtre biquad standard. Ici, c’est un
+paramètre dans la topologie du circuit.
+8. Version nodale du Sallen-Key
+La slide montre :
+Ici, la formulation nodale choisit comme inconnues :
+et :
+Donc le solveur répond à la question :
+La forme abstraite est :
+où dépend des conductances et de la résonance, et dépend de l’entrée et des états
+mémoire précédents.
+plus k est grand,
+plus le filtre renvoie une partie de la sortie vers l’entrée interne,
+plus la résonance augmente.
+tick_nodal(input):
+ v1 = input;
+ v2 = solve for v2 using nodal equations;
+ v3 = solve for v3 using nodal equations;
+ ic1eq += minv * (gc * (v2 - k * v3) - ic1eq);
+ ic2eq += minv * (gc * (v3 - 0) - ic2eq);
+slides ADC Analog Modeling Cyto…
+v2
+v3
+quelles tensions aux nœuds v2 et v3 rendent KCL vraie ?
+Av [ =
+v2
+v3
+] bv
+Av bv
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 54/99
+Lecture de la mise à jour ic1eq
+Regarde :
+Le condensateur 1 voit une tension du genre :
+Donc sa mise à jour est :
+Pour trapézoïdal :
+donc :
+Même logique pour le deuxième condensateur :
+Donc :
+et :
+9. Ce que ça donnerait en code C++ propre
+On ne connaît pas ici les coefficients exacts des équations nodales parce que la slide ne les
+donne pas complètement dans le texte, mais la structure de code est :
+ic1eq += minv * (gc * (v2 - k * v3) - ic1eq);
+vC1 = v2 − kv3
+iC1eq,new = iC1eq,old + minv(gC(v2 − kv3) − iC1eq,old)
+minv = 2
+iC1eq,new = 2gC(v2 − kv3) − iC1eq,old
+ic2eq += minv * (gc * (v3 - 0) - ic2eq);
+vC2 = v3
+iC2eq,new = 2gCv3 − iC2eq,old
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 55/99
+Le truc conceptuellement important :
+Les états des condensateurs sont mis à jour après.
+10. Version state-space du même filtre
+La slide montre ensuite :
+double processSampleNodal(double input)
+{
+ double v1 = input;
+ // Solve the nodal linear system for the current sample.
+ double v2 = 0.0;
+ double v3 = 0.0;
+ solveNodalEquations(v1, ic1eq, ic2eq, g, gc, k, v2, v3);
+ // Update capacitor equivalent current sources.
+ ic1eq += minv * (gc * (v2 - k * v3) - ic1eq);
+ ic2eq += minv * (gc * (v3 - 0.0) - ic2eq);
+ return v3;
+}
+en nodal, les nœuds sont les inconnues principales.
+tick_state_space(input):
+ v1 = input;
+ dvc1 = solve for dvc1 using state space equations;
+ dvc2 = solve for dvc2 using state space equations;
+ vc1 = (dvc1 + ic1eq) * gcinv;
+ vc2 = (dvc2 + ic2eq) * gcinv;
+ v2 = k * vc2 + v1;
+ v3 = vc2;
+ ic1eq += minv * dvc1;
+ ic2eq += minv * dvc2;
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 56/99
+Ici, les inconnues principales ne sont plus et .
+Ce sont :
+et :
+C’est-à-dire les variations / contributions liées aux tensions des condensateurs.
+La forme abstraite est :
+Puis on reconstruit :
+En code :
+11. Différence profonde entre les deux
+Nodal
+On résout directement les nœuds :
+Puis on met à jour les condensateurs.
+slides ADC Analog Modeling Cyto…
+v2 v3
+dvc1
+dvc2
+Ax [ =
+dvc1
+dvc2
+] bx
+vc1 =
+gC
+dvc1 + iC1eq
+vc2 =
+gC
+dvc2 + iC2eq
+vc1 = (dvc1 + ic1eq) * gcinv;
+vc2 = (dvc2 + ic2eq) * gcinv;
+v2, v3
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 57/99
+State-space
+On résout les états :
+Puis on reconstruit les nœuds.
+Donc le même circuit peut être vu comme :
+ou comme :
+C’est la différence fondamentale.
+12. Pourquoi les deux peuvent donner la même sortie
+Andy dit qu’en pratique, dans son exemple, les deux courbes se superposent : on ne voit
+pas la différence.
+C’est normal.
+Si les deux formulations représentent le même circuit, avec la même discrétisation, elles
+devraient donner la même solution mathématique.
+Mais numériquement, elles ne sont pas identiques en termes de :
+solve node voltages → update capacitor memories
+vc1, vc2
+solve capacitor-related variables → reconstruct node voltages
+un réseau de nœuds
+un système dynamique d’états
+taille du système
+conditionnement de la matrice
+facilité d’automatisation
+gestion des non-linéarités
+facilité de pré-calcul
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 58/99
+Donc :
+13. Pourquoi state-space peut devenir intéressant
+Imaginons un circuit avec beaucoup de nœuds, mais seulement deux condensateurs.
+En nodal, tu peux avoir beaucoup d’inconnues :
+En state-space, tu peux parfois réduire la dynamique à :
+Donc potentiellement moins d’inconnues dynamiques.
+Mais attention : ce n’est pas toujours plus simple. Dans un circuit non linéaire avec
+beaucoup d’éléments couplés, state-space peut devenir algébriquement plus compliqué.
+C’est exactement pourquoi il compare les méthodes plutôt que de dire “celle-ci est
+toujours meilleure”.
+14. Wave Digital Filter
+Ensuite la slide liste :
+L’idée change encore.
+Au lieu de travailler directement avec tension et courant , on définit des variables
+d’onde.
+Typiquement :
+même résultat idéal,
+mais propriétés numériques différentes.
+v1, v2, v3, v4, v5,…
+vc1, vc2
+Wave Digital Filter - Travelling wave formulation
+v i
+a = v + Ri
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 59/99
+où :
+Intuition physique :
+C’est proche de la modélisation d’ondes qui se propagent dans un réseau.
+Le texte de Julius O. Smith sur les WDF décrit les Wave Digital Filters comme des filtres
+numériques basés sur des principes de modélisation physique, avec des éléments de délai
+interprétables comme des états physiques liés par exemple à des condensateurs ou des
+inducteurs. La thèse de Kurt Werner à Stanford traite précisément du virtual
+analog modeling avec WDF pour circuits audio.
+Pourquoi c’est intéressant ?
+Les WDF ont souvent de très bonnes propriétés de stabilité/passivité.
+En audio analog modeling, c’est énorme, parce qu’un circuit passif ne devrait pas exploser
+numériquement sans raison.
+Mais avec des circuits compliqués et plusieurs non-linéarités couplées, les WDF deviennent
+difficiles. C’est pour ça qu’il existe des travaux spécifiques sur les WDF avec plusieurs nonlinéarités ou multiports non linéaires. Le papier DAFx de Werner, Nangia, Smith et Abel
+présente justement un cadre pour développer des WDF à partir de circuits de référence
+avec plusieurs non-linéarités ou multiports.
+Donc :
+b = v − Ri
+a = onde incidente
+b = onde réfléchie
+au lieu de dire “quelle est la tension ici ?”,
+on dit “quelle onde arrive et quelle onde repart ?”
+dsprelated.com
+stacks.stanford.e…
+dafx.de
+ 
+WDF = très élégant et stable,
+mais parfois difficile quand la topologie et les non-linéarités deviennent complexes.
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 60/99
+15. DK : Discrete Kirchhoff Method
+Maintenant on arrive à la partie la plus importante de la fin de cette section.
+La slide liste :
+Le but de DK :
+Rappelle-toi le problème du diode clipper :
+Ça coûte cher.
+Alors DK essaie de séparer :
+et :
+Puis de pré-calculer une partie de la réponse non linéaire.
+Le papier Dempwolf, Holters et Zölzer sur les circuits analogiques paramétriques en temps
+réel explique précisément le problème : les composants paramétriques imposent souvent
+de recalculer des coefficients en temps réel, ce qui peut coûter cher, et l’article propose
+une approche alternative pour réduire ce coût.
+Discrete Kirchhoff’s Method / Nodal / State Space (DK)
+PDK
+slides ADC Analog Modeling Cyto…
+éviter de résoudre toute la non-linéarité en temps réel à chaque sample.
+Newton-Raphson loop
+exp()
+exp()
+solve
+repeat
+partie linéaire
+partie non linéaire
+dafx10.iem.at
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 61/99
+16. Le pseudo-code DK de la slide
+La slide donne :
+Traduction étape par étape.
+Étape 1 : résoudre seulement la partie linéaire
+On ignore temporairement les détails non linéaires.
+On regarde ce que le circuit linéaire “pousse” vers la non-linéarité.
+Étape 2 : calculer vdk1
+tick_dk(input):
+ v1 = input;
+ v2 = solve for v2 using linear contributions equations;
+ v3 = solve for v3 using linear contributions equations;
+ vdk1 = v3 - 0;
+ {id1, id2} = dk_table(vdk1);
+ v2 = solve for v2 using original equations;
+ v3 = solve for v3 using original equations;
+ ic1eq += minv * (gc1 * (v3 - v2) - ic1eq);
+ ic2eq += minv * (gc2 * (v3 - 0) - ic2eq);
+slides ADC Analog Modeling Cyto…
+v2 = solve for v2 using linear contributions equations;
+v3 = solve for v3 using linear contributions equations;
+C++
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 62/99
+Ici, la non-linéarité est entre et la masse.
+Donc :
+Ce nombre est comme une tension effective vue par le bloc non linéaire.
+Étape 3 : passer par une table
+Au lieu de refaire Newton-Raphson complet dans le circuit à chaque sample, on utilise une
+fonction/table qui donne les courants non linéaires :
+à partir de :
+Donc :
+Étape 4 : résoudre le circuit original avec les courants connus
+Une fois qu’on connaît et , les diodes peuvent être vues comme des contributions
+de courant connues.
+vdk1 = v3 - 0;
+v3
+vdk1 = v3
+{id1, id2} = dk_table(vdk1);
+id1,id2
+vdk1
+entrée de la table : tension effective
+sortie de la table : courants de diodes
+v2 = solve for v2 using original equations;
+v3 = solve for v3 using original equations;
+id1 id2
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 63/99
+Donc on peut résoudre plus vite.
+17. La fonction dk_table
+La slide donne :
+Ça ressemble encore à Newton-Raphson.
+Donc question évidente :
+Réponse :
+Tu peux remplir une table au démarrage, ou offline, pour plein de valeurs de .
+dk_table(vdk1):
+ v2 = 0;
+ v3 = 0;
+ nr loop:
+ vd1 = (0 - v3 - vdk1);
+ ed1 = exp(vd1 / vt1);
+ id1 = is1 * ed1 - is1;
+ gd1 = is1 * ed1 / vt1;
+ id1eq = id1 - gd1 * vd1;
+ vd2 = (v3 + vdk1 - 0);
+ ed2 = exp(vd2 / vt2);
+ id2 = is2 * ed2 - is2;
+ gd2 = is2 * ed2 / vt2;
+ id2eq = id2 - gd2 * vd2;
+ v2 = solve for v2 using nonlinear contributions equations;
+ v3 = solve for v3 using nonlinear contributions equations;
+ return {id1, id2};
+slides ADC Analog Modeling Cyto…
+si dk_table fait Newton-Raphson, où est le gain ?
+cette fonction peut être pré-calculée.
+vdk1
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 64/99
+Puis en temps réel :
+au lieu de :
+18. DK en image mentale
+Sans DK :
+Avec DK :
+C’est une stratégie de séparation.
+19. Pourquoi DK n’est pas magique
+Le problème, c’est la dimension de la table.
+Si ta table dépend d’un seul paramètre :
+auto currents = lookup(vdk1);
+for Newton iterations:
+ exp()
+ solve()
+sample audio
+ → Newton-Raphson sur tout le circuit
+ → sortie
+sample audio
+ → résoudre partie linéaire
+ → obtenir vdk
+ → lookup table pour non-linéarité
+ → résoudre circuit final
+ → sortie
+vdk1
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 65/99
+ça va.
+Exemple :
+Facile.
+Mais si elle dépend de :
+alors la table devient multidimensionnelle.
+Et la taille explose.
+C’est la transition vers la section suivante : “Solving efficiency”.
+20. PDK : Parallel DK
+Andy mentionne PDK comme une méthode sur laquelle il travaille.
+L’idée générale qu’il donne ensuite :
+Donc si tu as non-linéarités et points par table :
+Table couplée complète
+Tables séparées
+1024 points
+vdk1
+vdk2
+cutoff
+resonance
+drive
+temperature
+component variation
+au lieu d’avoir une table énorme S^N,
+on essaie de séparer les non-linéarités
+pour avoir quelque chose comme S * N.
+N S
+S
+N
+S ⋅ N
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 66/99
+Exemple :
+Table complète :
+énorme.
+Tables séparées :
+beaucoup plus raisonnable.
+Mais le prix :
+Donc PDK est un compromis :
+21. Comparaison claire des formulations
+Formulation
+Inconnues
+principales Loi utilisée Avantage Problème
+Nodal / MNA tensions de nœuds
++ parfois courants
+KCL proche du
+schéma,
+automatisable
+matrices parfois grosses
+Loop courants de boucle KVL naturel pour
+certains
+circuits
+simples
+moins pratique pour
+automatisation générale
+S = 1024
+N = 4
+1024
+4
+1024 ⋅ 4 = 4096
+il faut réintroduire un peu d’itération entre les blocs.
+moins de mémoire
+un peu d’itération
+meilleur compromis pour certains circuits
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 67/99
+Formulation
+Inconnues
+principales Loi utilisée Avantage Problème
+State-space états des
+composants
+mémoire
+équations
+d’état
+compact pour
+systèmes
+dynamiques
+dérivation parfois
+complexe
+WDF ondes
+incidentes/réfléchies
+scattering /
+passivité
+stabilité,
+élégance
+physique
+difficile avec topologies
+complexes/non-linéaires
+DK variables séparant
+linéaire/non-linéaire
+Kirchhoff
+discret +
+lookup
+peut éviter
+Newton temps
+réel
+tables
+multidimensionnelles
+énormes
+PDK non-linéarités
+séparées
+DK partiel +
+itération
+réduit la
+mémoire
+demande quand même
+des itérations
+22. Le message profond de cette section
+Le message n’est pas :
+ni :
+Le message est :
+Tu choisis selon :
+state-space est meilleur que nodal
+WDF est meilleur que MNA
+la formulation est un choix d’ingénierie.
+taille du circuit
+nombre de non-linéarités
+besoin de contrôle paramétrique
+besoin de stabilité
+CPU disponible
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 68/99
+Pour un petit circuit non linéaire :
+Pour un filtre avec quelques états :
+Pour un circuit passif bien structuré :
+Pour une non-linéarité coûteuse mais peu paramétrique :
+Pour beaucoup de non-linéarités :
+23. Le lien avec ton futur code JUCE / C++
+Dans un plugin, toutes ces formulations finissent en une fonction du style :
+Mais l’intérieur change.
+Nodal
+mémoire disponible
+facilité de génération de code
+MNA + Newton-Raphson peut être très bien.
+state-space peut être élégant.
+WDF peut être très robuste.
+DK peut être excellent.
+PDK ou découpage en sous-circuits peut être intéressant.
+float processSample(float input)
+{
+ // Solve the circuit for one sample.
+ // Update internal states.
+ // Return output voltage.
+}
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 69/99
+State-space
+DK
+float processSampleNodal(float input)
+{
+ // Unknowns are node voltages.
+ solveNodeVoltages();
+ // Update capacitor memory states.
+ updateStates();
+ return outputNode;
+}
+float processSampleStateSpace(float input)
+{
+ // Unknowns are state increments or capacitor states.
+ solveStateVariables();
+ // Reconstruct node voltages from states.
+ computeNodeVoltages();
+ // Update state memory.
+ updateStates();
+ return outputVoltage;
+}
+float processSampleDK(float input)
+{
+ // Solve the linear part first.
+ solveLinearContributions();
+ // Use the reduced variable to query nonlinear currents.
+ lookupNonlinearCurrents();
+ // Solve final circuit using those currents.
+ solveFinalCircuit();
+C++
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 70/99
+Les commentaires sont en anglais comme tu préfères pour le code.
+24. Résumé à mémoriser
+La section entière sert donc à dire :
+À partir de là, la section suivante devient logique : si la formulation change le coût CPU et
+mémoire, comment choisir une stratégie efficace ? C’est exactement “Solving efficiency:
+iteration and pre-computation”.
+ // Update states.
+ updateStates();
+ return outputVoltage;
+}
+Formulation nodale :
+ on résout les tensions des nœuds avec KCL.
+MNA :
+ nodal + certains courants de branche,
+ utile pour sources de tension et automatisation.
+Loop :
+ on résout des courants de boucle avec KVL.
+State-space :
+ on résout les variables d’état,
+ souvent tensions des condensateurs et courants des inducteurs.
+Wave Digital Filter :
+ on transforme tension/courant en ondes incidentes/réfléchies.
+DK :
+ on sépare linéaire et non-linéaire,
+ puis on peut pré-calculer la non-linéarité.
+PDK :
+ on sépare encore plus les non-linéarités pour éviter les tables énormes.
+Même circuit, plusieurs écritures possibles.
+Chaque écriture change le coût, la stabilité, la facilité de coder,
+et la capacité à gérer les non-linéarités en temps réel.
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 71/99
+Sources
+on continue avec la prochaine section
+Thought for 32s
+La prochaine section est la conséquence directe de DK/PDK : comment éviter que le
+solveur devienne trop lent ou que les tables deviennent gigantesques. Je vais donc
+expliquer itération, pré-calcul, tables MIMO, explosion dimensionnelle, réseaux neuronaux,
+découpage en sous-circuits, puis le compromis pratique.
+Oui. Là on arrive à la section :
+C’est une petite section en temps dans la conférence, mais elle est très importante. Elle
+répond à la vraie question d’ingénieur :
+La slide résume le problème : les tables MIMO grandissent exponentiellement avec le
+nombre de paramètres et de non-linéarités ; on peut approximer avec un réseau de
+neurones, séparer les non-linéarités, découper le circuit en sous-blocs, ou parfois garder
+une résolution brute-force optimisée.
+1. Le problème central : CPU vs mémoire
+Dans un plugin audio, tu dois traiter chaque sample très vite.
+À 48 kHz :
+Si ton plugin est stéréo :
+Solving efficiency: iteration and pre-computation
+OK, on sait écrire les équations.
+OK, on sait résoudre avec Newton-Raphson.
+OK, on sait parfois pré-calculer avec DK.
+Mais qu’est-ce qui est réellement faisable en temps réel dans un plugin audio ?
+slides ADC Analog Modeling Cyto…
+48000 samples par seconde
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 72/99
+Et si tu fais de l’oversampling x4 :
+Donc si ton modèle fait :
+ça peut devenir cher très vite.
+Tu as donc deux grandes stratégies :
+2. Stratégie 1 : itération en temps réel
+C’est ce qu’on faisait avec le diode clipper.
+À chaque sample :
+En pseudo-code :
+96000 samples aˋ traiter par seconde
+384000 samples internes par seconde
+for each sample:
+ for each Newton iteration:
+ exp()
+ exp()
+ solveLinearSystem()
+1. Itérer en temps réel.
+2. Pré-calculer une partie du problème.
+1. On prend une estimation de v.
+2. On linéarise les diodes.
+3. On résout le système linéaire.
+4. On recommence jusqu’à convergence.
+double processSample(double input)
+{
+ double v = previousOutput; // Better initial guess than zero
+ for (int iter = 0; iter < maxIterations; ++iter)
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 73/99
+Les commentaires sont importants :
+Pourquoi l’ancienne sortie est une bonne estimation ?
+Parce qu’en audio, entre deux samples consécutifs, la tension ne saute généralement pas
+de manière énorme. Donc :
+Cela peut réduire beaucoup le nombre d’itérations.
+3. Coût d’une itération
+Une itération Newton-Raphson peut contenir :
+Par exemple, pour deux diodes :
+ {
+ // Evaluate nonlinear components at current guess.
+ double diodeCurrent = computeDiodeCurrent(v);
+ double diodeConductance = computeDiodeConductance(v);
+ // Solve the locally linearized circuit.
+ v = solveLinearizedCircuit(input, diodeCurrent, diodeConductance);
+ }
+ previousOutput = v;
+ return v;
+}
+double v = previousOutput; // Better initial guess than zero
+v[n] ≈ v[n − 1]
+exponentielles
+divisions
+résolution de matrice
+branches de sécurité numérique
+double ed1 = std::exp(vd1 / vt1);
+double ed2 = std::exp(vd2 / vt2);
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 74/99
+Or exp() est beaucoup plus chère qu’une addition ou une multiplication.
+Donc le coût approximatif est :
+Si tu as :
+ça donne :
+Donc plus de 3 millions d’itérations de solveur par seconde.
+Et ça, c’est pour un seul bloc non linéaire.
+4. Stratégie 2 : pré-calculer
+L’idée de la pré-computation est :
+Dans la section précédente, avec DK, on avait une fonction :
+La version naïve de dk_table fait encore Newton-Raphson :
+couˆt total = samples × oversampling × canaux × itˊerations × couˆt d’une itˊeration
+48 kHz
+stéréo
+oversampling x4
+8 itérations
+48000 × 2 × 4 × 8 = 3 072 000
+au lieu de refaire Newton-Raphson à chaque sample,
+on calcule la réponse une fois,
+on la stocke,
+puis on fait une lookup table.
+{id1, id2} = dk_table(vdk1);
+dk_table(vdk1):
+ nr loop:
+ compute diode currents
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 75/99
+Mais l’intérêt est que cette fonction peut être calculée à l’avance.
+Donc en temps réel :
+Et non :
+5. Pourquoi une table 1D est acceptable
+Si la table dépend d’une seule variable :
+alors c’est simple.
+Tu peux prendre par exemple :
+Tu stockes :
+Donc la table ressemble à :
+index vdk1 id1 id2
+0 -5.0 ... ...
+ compute diode conductances
+ solve nonlinear contribution equations
+ return {id1, id2}
+double vdk1 = computeLinearVoltageOffset(input, states);
+auto currents = lookupDkTable(vdk1);
+for each Newton iteration:
+ compute exp()
+ solve()
+vdk1
+4096 points
+vdk1 → id1, id2
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 76/99
+index vdk1 id1 id2
+1 -4.997 ... ...
+2 -4.995 ... ...
+... ... ... ...
+4095 +5.0 ... ...
+En temps réel, tu fais :
+Ça peut être très rapide.
+Mais seulement si la table est de faible dimension.
+struct DiodeCurrents
+{
+ double id1;
+ double id2;
+};
+DiodeCurrents lookupDkTable(double vdk)
+{
+ // Convert physical voltage to table position.
+ double position = (vdk - tableMin) * inverseTableStep;
+ // Find neighboring samples.
+ int index = static_cast<int>(position);
+ double frac = position - index;
+ // Clamp to valid table range.
+ index = std::clamp(index, 0, tableSize - 2);
+ // Linear interpolation.
+ DiodeCurrents a = table[index];
+ DiodeCurrents b = table[index + 1];
+ return {
+ a.id1 + frac * (b.id1 - a.id1),
+ a.id2 + frac * (b.id2 - a.id2)
+ };
+}
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 77/99
+6. Le vrai monstre : MIMO table
+Andy parle de MIMO table.
+MIMO veut dire :
+Donc une table qui prend plusieurs entrées et retourne plusieurs sorties.
+Par exemple :
+Mathématiquement :
+où :
+Le problème est que la taille de la table est :
+où :
+Multiple Input Multiple Output
+entrées :
+ vdk1
+ vdk2
+ cutoff
+ resonance
+ drive
+ temperature
+ componentVariation
+sorties :
+ id1
+ id2
+ transistorCurrent1
+ transistorCurrent2
+ ...
+f : R
+D → R
+O
+D = nombre d’entrées de la table
+O = nombre de sorties de la table
+S
+D × O
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 78/99
+Et c’est le qui tue tout.
+7. Exemple : pourquoi la table explose
+Dans la transcription, Andy prend le cas d’un circuit plus complexe avec plusieurs
+gains/paramètres et plusieurs non-linéarités. Il dit qu’on arrive à une table de dimension 7
+avec 5 sorties, et que même avec peu de points par dimension, la mémoire devient
+énorme : il mentionne environ 5 PB pour 128 points, et environ 5 GB pour 16 points.
+Refaisons le calcul pour comprendre.
+Supposons :
+Nombre de cases :
+Calculons étape par étape :
+Donc déjà :
+S = nombre de points par dimension
+D = nombre de dimensions
+O = nombre de valeurs stockées par point
+S
+D
+slides ADC Analog Modeling Cyto…
+D = 7
+O = 5
+S = 16
+16
+7
+16 =
+2 256
+16 =
+3 4096
+16 =
+4 65536
+16 =
+5 1 048 576
+16 =
+6 16 777 216
+16 =
+7 268 435 456
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 79/99
+Chaque position stocke 5 nombres :
+Si chaque nombre est un float 32-bit :
+Donc :
+Environ :
+Donc oui : seulement 16 points par dimension donne déjà environ 5 GB.
+Et 16 points par dimension, c’est très grossier. Pour une non-linéarité exponentielle de
+diode, 16 points, ce n’est probablement pas assez propre.
+8. Maintenant avec 128 points par dimension
+Comme :
+donc :
+Donc environ :
+Avec 5 sorties :
+268 435 456 positions
+268 435 456 × 5 = 1 342 177 280 nombres
+4 bytes
+1 342 177 280 × 4 = 5 368 709 120 bytes
+5.37 GB
+128
+7
+128 = 2
+7
+128 =
+7 2
+49
+2 =
+49 562 949 953 421 312
+5.63 × 10 positions 14
+2.81 × 10 nombres
+15
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 80/99
+Avec float 32-bit :
+C’est autour de 11 PB en float32.
+Andy dit environ 5 PB, probablement selon une hypothèse de stockage plus compacte, par
+exemple 16-bit, ou une estimation orale rapide. L’ordre de grandeur reste le point
+important :
+9. La malédiction de la dimension
+C’est exactement ce qu’on appelle souvent :
+Chaque nouveau paramètre multiplie la table par .
+Si , ajouter une seule dimension multiplie la mémoire par :
+Donc si ta table faisait déjà 100 MB, une dimension de plus donne :
+Deux dimensions de plus :
+Trois dimensions de plus :
+Voilà pourquoi les méthodes à table marchent très bien pour :
+2.81 × 10 ×
+15 4 = 1.125 × 10 bytes
+16
+on n’est plus dans “un tableau un peu gros”.
+on est dans “impossible pour un plugin”.
+curse of dimensionality
+S
+S = 128
+128
+12.8GB
+1.638TB
+209TB
+une non-linéarité simple
+un paramètre
+deux paramètres
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 81/99
+mais deviennent dangereuses pour :
+10. Pourquoi les paramètres audio compliquent tout
+Dans un plugin, l’utilisateur veut tourner des knobs :
+Chaque knob peut devenir une dimension supplémentaire de la table.
+Si tu veux une table pour toutes les valeurs possibles de drive , alors :
+c’est déjà 2D.
+Si tu ajoutes tone :
+3D.
+Si tu ajoutes bias :
+4D.
+Et ainsi de suite.
+Donc le problème n’est pas seulement le nombre de diodes. C’est aussi :
+beaucoup de contrôles
+beaucoup de composants variables
+beaucoup de non-linéarités couplées
+drive
+tone
+cutoff
+resonance
+bias
+sag
+temperature
+component variation
+f(v, drive)
+f(v, drive,tone)
+f(v, drive,tone, bias)
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 82/99
+C’est pour ça que la slide insiste sur les circuits :
+11. Option : réseau de neurones
+Andy dit qu’on peut “throw a Neural Network at the problem”, mais il ajoute
+immédiatement les réserves : il faut l’entraîner, ce n’est pas aussi simple si les valeurs des
+composants changent dynamiquement ou si on veut de la randomisation, et il faut se
+demander si l’approximation est lisse.
+L’idée :
+Donc :
+Avantage :
+Mais il y a des problèmes.
+Problème 1 : entraînement
+Il faut générer des données.
+Pour entraîner le réseau, tu dois quand même produire plein d’exemples :
+Donc tu dois résoudre le circuit beaucoup de fois offline.
+le nombre de paramètres qui changent le comportement de ces diodes dans le circuit.
+highly parametric
+highly nonlinear
+slides ADC Analog Modeling Cyto…
+au lieu de stocker une table énorme,
+on entraîne un réseau à approximer la fonction.
+NN(vdk1, vdk2, cutoff, resonance, ...) ≈ (id1,id2, ...)
+mémoire potentiellement beaucoup plus petite qu’une table énorme.
+entrée → vraie sortie du circuit
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 83/99
+Problème 2 : extrapolation
+Si le réseau a été entraîné sur :
+Que se passe-t-il si l’utilisateur met une combinaison extrême ?
+Le réseau peut extrapoler mal.
+Une table aussi peut mal extrapoler, mais au moins elle peut être clampée clairement.
+Problème 3 : lissage
+En audio, une approximation qui est “presque correcte” visuellement peut sonner mal si
+elle introduit des petites discontinuités.
+Pourquoi ?
+Parce qu’une discontinuité ou un changement brutal de pente crée des hautes fréquences.
+Donc une erreur locale dans la fonction peut produire :
+Andy pose exactement cette question : “Smoothness of fit?”
+C’est très important. En audio, on ne veut pas seulement :
+On veut aussi :
+drive entre 0 et 1
+cutoff entre 100 Hz et 10 kHz
+drive = 1
+cutoff = 20 kHz
+resonance très haute
+input très fort
+zipper noise
+aliasing
+instabilité
+grain numérique
+slides ADC Analog Modeling Cyto…
+minimiser l’erreur moyenne
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 84/99
+12. Option : séparer les non-linéarités
+C’est là qu’il parle de PDK.
+La slide dit qu’on peut séparer les non-linéarités pour obtenir :
+au lieu de :
+tables, mais qu’il faut réintroduire un peu d’itération.
+Prenons un exemple.
+Supposons 4 non-linéarités, chacune avec une variable principale.
+Table couplée complète
+Si tu veux modéliser toutes les interactions en une seule table :
+Avec points par dimension :
+Si :
+alors :
+énorme.
+Tables séparées
+une fonction lisse
+des dérivées raisonnables
+pas de cassures
+pas de comportement violent entre deux points
+S ⋅ N
+S
+N
+slides ADC Analog Modeling Cyto…
+f(v1, v2, v3, v4)
+S
+S
+4
+S = 1024
+1024
+4
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 85/99
+Tu fais plutôt :
+Donc :
+Au lieu de :
+C’est beaucoup plus léger.
+Mais attention : dans un vrai circuit, les non-linéarités interagissent.
+Donc si tu les sépares, tu dois souvent itérer entre elles :
+Donc tu échanges :
+contre :
+C’est souvent un bon compromis.
+13. Pourquoi l’interaction est difficile à séparer
+Imagine deux diodes à deux endroits du circuit.
+f1(v1)
+f2(v2)
+f3(v3)
+f4(v4)
+4S
+S
+4
+1. estimer non-linéarité 1
+2. estimer non-linéarité 2
+3. mettre à jour la solution globale
+4. recommencer un peu
+énorme mémoire
+un peu de CPU
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 86/99
+La première diode change la tension locale.
+Cette tension modifiée change le courant qui passe ailleurs.
+Donc la deuxième diode voit une tension différente.
+Et quand la deuxième diode conduit, elle modifie à son tour les tensions du circuit.
+Donc :
+Mathématiquement :
+Pas juste :
+C’est ça le couplage.
+Une table complète capture le couplage directement, mais elle explose.
+Une séparation réduit la mémoire, mais oblige à approximer ou itérer.
+14. Option : découper le circuit en sous-blocs
+La slide dit aussi qu’on peut découper le circuit en “sub chunks”, mais qu’il faut itérer un
+peu.
+Exemple :
+Tu peux modéliser chaque bloc séparément.
+diode 1 influence diode 2
+diode 2 influence diode 1
+i1 = f1(v1, v2)
+i2 = f2(v1, v2)
+i1 = f1(v1)
+i2 = f2(v2)
+slides ADC Analog Modeling Cyto…
+préampli → tone stack → clipping stage → output buffer
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 87/99
+Mais ça, c’est la version DSP découpée.
+Le souci : dans un vrai circuit, les blocs peuvent se charger mutuellement.
+Autrement dit :
+Donc pour être plus fidèle, il faut parfois faire :
+double processSample(double input)
+{
+ // Process preamp block.
+ double x1 = preamp.process(input);
+ // Process tone block.
+ double x2 = toneStack.process(x1);
+ // Process nonlinear clipping block.
+ double x3 = clipper.process(x2);
+ // Process output buffer.
+ return outputBuffer.process(x3);
+}
+ce qui vient après peut influencer ce qui vient avant
+double processSample(double input)
+{
+ double x1 = previousX1;
+ double x2 = previousX2;
+ double x3 = previousX3;
+ for (int iter = 0; iter < blockIterations; ++iter)
+ {
+ // Each block is solved while considering neighboring block interaction.
+ x1 = preamp.solve(input, x2);
+ x2 = toneStack.solve(x1, x3);
+ x3 = clipper.solve(x2);
+ }
+ previousX1 = x1;
+ previousX2 = x2;
+ previousX3 = x3;
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 88/99
+Ici on ne résout pas une énorme matrice globale, mais on itère entre des sous-systèmes.
+C’est une stratégie intermédiaire.
+15. Option : brute force optimisée
+Andy dit un truc très important : parfois, le brute force avec des schémas d’itération
+adaptés reste le meilleur choix pour les circuits très paramétriques et très non linéaires.
+ Dans la transcription, il ajoute qu’en pratique, dans un produit
+récent, il utilisait une résolution itérative brute-force optimisée parce qu’elle était moins
+chère la plupart du temps, même si PDK peut être meilleur dans le pire cas.
+Ça peut sembler contre-intuitif.
+On pourrait penser :
+Mais non.
+Parce qu’une table énorme coûte :
+Alors qu’un solveur brute-force bien optimisé peut coûter :
+Et surtout, il s’adapte naturellement aux paramètres dynamiques.
+ return x3;
+}
+slides ADC Analog Modeling Cyto…
+slides ADC Analog Modeling Cyto…
+lookup table = toujours plus rapide
+mémoire
+cache misses
+interpolation multidimensionnelle
+manque de flexibilité
+quelques multiplications
+quelques exponentielles approximées
+2 ou 3 itérations
+petite matrice pré-factorisée
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 89/99
+16. Le point CPU moderne : le cache est aussi important
+Un détail très pratique : une grosse table n’est pas seulement lourde en RAM. Elle peut
+être lente parce qu’elle sort du cache CPU.
+Une petite boucle de calcul qui reste dans les registres peut parfois être plus rapide qu’un
+accès mémoire aléatoire dans une table géante.
+Donc :
+En audio temps réel, il faut penser :
+Une fonction mathématique bien optimisée peut battre une table mal localisée.
+17. Comment choisir concrètement ?
+On peut faire une grille mentale.
+Cas 1 : une seule non-linéarité simple
+Exemple :
+Solutions possibles :
+moins de calcul ≠ toujours plus rapide
+CPU
+RAM
+cache
+branchements
+vectorisation
+latence
+prévisibilité
+diode clipper simple
+tanh waveshaper
+soft clipper
+lookup table 1D
+approximation polynomiale
+Newton-Raphson léger
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 90/99
+La table est raisonnable.
+Cas 2 : petit circuit avec 1 ou 2 diodes + quelques condensateurs
+Exemple :
+Solutions possibles :
+Ici DK peut être intéressant.
+Cas 3 : circuit avec beaucoup de paramètres dynamiques
+Exemple :
+Pré-calculer tout devient difficile.
+Solution probable :
+Cas 4 : beaucoup de non-linéarités couplées
+Exemple :
+clipper avec filtre autour
+MNA + Newton-Raphson
+DK table 1D
+hybride table + solveur linéaire
+filtre résonant avec cutoff modulé audio-rate
+drive variable
+feedback variable
+component variation
+brute force optimisée
+petite matrice
+pré-calcul partiel des termes linéaires
+approximation rapide des non-linéarités
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 91/99
+Solutions possibles :
+Aucune solution universelle.
+18. Les pré-calculs utiles même sans table énorme
+Même si tu ne pré-calcules pas toute la non-linéarité, tu peux pré-calculer beaucoup de
+choses.
+Par exemple, si une résistance ne change pas :
+tu ne veux pas recalculer ça à chaque sample.
+Si un knob change lentement, tu peux recalculer seulement quand le paramètre change :
+ampli guitare complet
+plusieurs transistors
+étage tone stack
+feedback global
+lampes
+diodes
+découpage en sous-circuits
+itération entre blocs
+PDK
+réseau neuronal spécialisé
+brute force avec optimisations spécifiques
+gR =
+R
+1
+void prepare(double sampleRate)
+{
+ // Precompute constant conductances.
+ gr1 = 1.0 / r1;
+ gr2 = 1.0 / r2;
+ // Precompute capacitor equivalent conductances.
+ gc1 = 2.0 * c1 * sampleRate;
+ gc2 = 2.0 * c2 * sampleRate;
+}
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 92/99
+Puis dans processSample , tu gardes seulement le strict nécessaire.
+19. Pré-factorisation de matrice
+Si la matrice linéaire garde la même structure, tu peux pré-calculer une partie de la
+résolution.
+Pour un système :
+Si est constante pendant plusieurs samples, tu peux pré-factoriser :
+Puis à chaque sample, tu résous plus vite :
+Mais si les diodes modifient les conductances à chaque itération :
+alors la matrice change.
+Donc tu ne peux pas toujours tout pré-factoriser.
+Par contre, tu peux souvent séparer :
+C’est une optimisation classique dans les solveurs de circuits.
+void updateParameters(double drive, double cutoff)
+{
+ // Recompute only when the user parameter changes.
+ driveGain = computeDriveGain(drive);
+ filterG = std::tan(MathConstants::pi * cutoff / sampleRate);
+}
+Ax = b
+A
+A = LU
+LUx = b
+gd = e
+VT
+Is vd/VT
+partie constante de la matrice
++
+petites contributions variables
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 93/99
+20. Critère pratique : nombre d’itérations
+En brute-force, on peut faire deux approches.
+Nombre fixe d’itérations
+Avantage :
+Inconvénient :
+Critère de convergence
+Avantage :
+for (int iter = 0; iter < 4; ++iter)
+{
+ // Run one Newton iteration.
+ solveOneIteration();
+}
+temps CPU prévisible
+bon pour real-time audio
+peut ne pas converger dans certains cas extrêmes
+for (int iter = 0; iter < maxIterations; ++iter)
+{
+ double oldValue = v;
+ solveOneIteration();
+ if (std::abs(v - oldValue) < tolerance)
+ break;
+}
+moins d’itérations quand tout va bien
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 94/99
+Inconvénient :
+En audio temps réel, le temps variable peut créer des pics CPU.
+Donc souvent, on combine :
+avec un maxIterations strict.
+21. Sécurité numérique
+Dans un vrai plugin, tu dois protéger le solveur.
+Exemples :
+Pourquoi ?
+Parce que :
+explose très vite.
+temps CPU variable
+for (int iter = 0; iter < maxIterations; ++iter)
+{
+ double oldValue = v;
+ solveOneIteration();
+ if (std::abs(v - oldValue) < tolerance)
+ break;
+}
+double safeExp(double x)
+{
+ // Clamp exponential input to avoid overflow.
+ x = std::clamp(x, -60.0, 60.0);
+ return std::exp(x);
+}
+e
+x
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 95/99
+Si , std::exp(1000) overflow.
+Donc pour les diodes :
+Tu sacrifies un peu de fidélité dans une zone extrême, mais tu évites que le plugin sorte
+NaN .
+22. Lien avec le projet JUCE / audio plugin
+Pour ton plugin, cette section te dit :
+Il faut avancer par niveaux.
+Niveau 1 : waveshaper simple
+Facile, mais pas très “white-box”.
+Niveau 2 : diode clipper memoryless
+Newton-Raphson sur une seule inconnue.
+Niveau 3 : diode clipper + condensateurs
+x = 1000
+double computeDiodeCurrent(double vd)
+{
+ // Clamp the exponential argument for numerical safety.
+ double arg = std::clamp(vd / thermalVoltage, -60.0, 60.0);
+ return saturationCurrent * (std::exp(arg) - 1.0);
+}
+Ne commence pas directement avec le circuit le plus complexe.
+sample = std::tanh(drive * sample);
+sample = solveDiodeClipper(sample);
+C++
+C++
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 96/99
+Newton-Raphson + états de condensateurs.
+Niveau 4 : optimisation
+Niveau 5 : DK / table si utile
+Mais il ne faut pas faire une table énorme par réflexe.
+23. Comparaison finale des stratégies
+Stratégie CPU Mémoire
+Paramètres
+dynamiques Fidélité Risque
+Newton
+brute-force
+moyen/haut faible très bon très bonne CPU variable /
+convergence
+Lookup table
+1D
+faible faible limité bonne si table
+fine
+interpolation /
+bornes
+Table MIMO faible en
+calcul
+énorme mauvais si
+beaucoup de
+paramètres
+bonne
+théoriquement
+explosion
+mémoire
+Réseau
+neuronal
+faible/moyen moyen dépend de
+l’entraînement
+variable smoothness /
+extrapolation
+PDK moyen moyen/faible meilleur que
+table
+bonne complexité
+sample = solveDynamicClipper(sample);
+ancien sample comme initial guess
+nombre fixe d’itérations
+pré-calcul des conductances
+approximation rapide de exp
+oversampling
+si une non-linéarité dépend surtout d’une variable,
+alors lookup table possible
+C++
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 97/99
+ 
+Stratégie CPU Mémoire
+Paramètres
+dynamiques Fidélité Risque
+complète
+Sous-circuits
++ itération
+moyen faible bon dépend du
+découpage
+interaction
+approximée
+Brute-force
+optimisée
+moyen faible excellent excellente demande
+expertise
+24. Le vrai message de la section
+Le message profond est :
+La pré-computation est séduisante, mais elle explose avec le nombre de dimensions.
+Les réseaux neuronaux peuvent approximer des tables compliquées, mais il faut s’inquiéter
+de l’entraînement, de la variation des composants et de la douceur de la fonction.
+PDK réduit l’explosion mémoire, mais réintroduit des itérations.
+Le découpage en sous-circuits réduit la taille du problème, mais peut perdre des
+interactions physiques si on découpe mal.
+Et parfois, le meilleur compromis est simplement :
+C’est pour ça qu’Andy finit cette section en disant que, pour des circuits très
+paramétriques et très non linéaires, le brute force avec schéma d’itération taillé sur mesure
+reste parfois le meilleur choix.
+Il n’y a pas de méthode magique.
+un solveur Newton-Raphson très bien optimisé,
+avec des initial guesses intelligentes,
+un nombre d’itérations maîtrisé,
+et des pré-calculs partiels.
+slides ADC Analog Modeling Cyto…
+5/5/26, 4:27 PM Analyse conférence modélisation audio
+https://chatgpt.com/share/69f9f009-b420-8389-8d2a-d98a3ac87a67 98/99
+Sources
+25. Résumé à mémoriser
+La prochaine section, Aliasing, est la suite naturelle : une fois qu’on a un solveur qui
+marche et qui est assez rapide, il faut se demander si la sortie numérique ne crée pas des
+harmoniques qui se replient dans l’audio audible.
+Iteration:
+ on résout le circuit à chaque sample.
+ flexible, précis, mais coûte du CPU.
+Pre-computation:
+ on calcule une réponse à l’avance.
+ rapide en temps réel, mais coûte de la mémoire.
+Lookup table 1D:
+ très utile si la non-linéarité dépend d’une variable.
+MIMO table:
+ explose exponentiellement avec les dimensions.
+Neural network:
+ approxime une table énorme,
+ mais pose des questions de smoothness, training et généralisation.
+PDK:
+ sépare les non-linéarités pour éviter S^N,
+ vise plutôt S*N,
+ mais demande encore un peu d’itération.
+Sub-circuit splitting:
+ découpe un gros problème en petits problèmes,
+ mais il faut gérer les interactions entre blocs.
+Brute-force optimized:
+ parfois meilleur en pratique,
+ surtout pour circuits très paramétriques et très non linéaires.
