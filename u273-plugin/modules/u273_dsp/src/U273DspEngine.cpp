@@ -44,14 +44,62 @@ void U273DspEngine::prepare(const DspPrepareConfig& config) noexcept
     }
 
     detector_.prepare(config.sampleRate);
-    gainReductionModel_->prepare(config.sampleRate);
+    // Prepare both engines so a later promoteToFullActiveModel() call does not
+    // need to revisit the audio thread to re-arm capacitor/Newton state.
+    defaultGainReductionModel_.prepare(config.sampleRate);
+    fullActiveEngine_.prepare(config.sampleRate);
+    tableReductionEngine_.prepare(config.sampleRate);
+    if (gainReductionModel_ != &defaultGainReductionModel_
+        && gainReductionModel_ != &fullActiveEngine_
+        && gainReductionModel_ != &tableReductionEngine_) {
+        gainReductionModel_->prepare(config.sampleRate);
+    }
     prepared_ = true;
 }
 
 void U273DspEngine::reset() noexcept
 {
     detector_.reset();
-    gainReductionModel_->reset();
+    defaultGainReductionModel_.reset();
+    fullActiveEngine_.reset();
+    tableReductionEngine_.reset();
+    if (gainReductionModel_ != &defaultGainReductionModel_
+        && gainReductionModel_ != &fullActiveEngine_
+        && gainReductionModel_ != &tableReductionEngine_) {
+        gainReductionModel_->reset();
+    }
+}
+
+bool U273DspEngine::loadReductionTable(const std::vector<TableReductionPoint>& points)
+{
+    if (!tableReductionEngine_.loadReductionTable(points)) {
+        return false;
+    }
+    gainReductionModel_ = &tableReductionEngine_;
+    return true;
+}
+
+bool U273DspEngine::isUsingTableReduction() const noexcept
+{
+    return gainReductionModel_ == &tableReductionEngine_
+        && tableReductionEngine_.hasValidatedTable();
+}
+
+void U273DspEngine::promoteToFullActiveModel(
+    const std::array<double, FullActiveRealtimeEngine::kCalibratedParameterCount>& parameters) noexcept
+{
+    fullActiveEngine_.setActiveModelParameters(parameters);
+    if (fullActiveEngine_.hasParameters() && !tableReductionEngine_.hasValidatedTable()) {
+        gainReductionModel_ = &fullActiveEngine_;
+    }
+    // On rejection the pointer is intentionally left untouched: a previously
+    // valid full active promotion stays in effect, and a fresh engine keeps the
+    // default analog bridge model.
+}
+
+bool U273DspEngine::isPromotedToFullActiveModel() const noexcept
+{
+    return gainReductionModel_ == &fullActiveEngine_ && fullActiveEngine_.hasParameters();
 }
 
 ProcessStatus U273DspEngine::process(const u273::core::ProcessContext& context,
