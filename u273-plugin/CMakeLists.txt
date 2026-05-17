@@ -45,3 +45,13 @@ if(U273_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
+
+option(U273_BUILD_BENCH_TOOL "Build the u273_bench CLI (scientific demo bench)" ON)
+if(U273_BUILD_BENCH_TOOL)
+    add_subdirectory(tools/u273_bench)
+endif()
+
+option(U273_BUILD_AC_PROBE "Build the u273_ac_probe CLI (per-frequency AC residual diagnostic)" ON)
+if(U273_BUILD_AC_PROBE)
+    add_subdirectory(tools/u273_ac_probe)
+endif()
