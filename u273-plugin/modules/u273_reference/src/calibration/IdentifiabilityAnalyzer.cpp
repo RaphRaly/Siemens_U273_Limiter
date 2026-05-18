@@ -63,6 +63,7 @@ namespace {
             result.weakParameters.push_back(parameterNames[index]);
         }
     }
+    result.sensitivityNorms = columnNorms;
 
     for (std::size_t left = 0; left + 1 < parameterNames.size(); ++left) {
         if (columnNorms[left] < options.minimumSensitivity) {

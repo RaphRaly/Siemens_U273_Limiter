@@ -642,6 +642,7 @@ CalibrationReport B6B11CalibrationRunner::runOffline(const std::filesystem::path
                                                       calibrationOptions);
         report.gates.identifiability = identifiability.passed;
         report.identifiabilityConditionNumber = identifiability.conditionNumber;
+        report.identifiabilitySensitivityNorms = identifiability.sensitivityNorms;
         for (const auto& failure : identifiability.failures) {
             report.identifiabilityFailures.push_back(failure);
         }

@@ -31,6 +31,7 @@
 #include "u273/dsp/U273DspEngine.h"
 #include "u273/reference/calibration/ActiveModelParameters.h"
 #include "u273/reference/calibration/B6B11CalibrationRunner.h"
+#include "u273/reference/calibration/BoundedCalibrationSolver.h"
 #include "u273/reference/calibration/CalibrationDataset.h"
 #include "u273/reference/calibration/CalibrationReport.h"
 #include "u273/reference/calibration/ReductionBuilder.h"
@@ -970,6 +971,23 @@ void writeReport(const fs::path& reportPath,
             out << report.nonIdentifiableParameters[i];
         }
         out << "\n";
+    }
+    const auto identifiableNames = calib::activeModelParameterNames();
+    if (!report.identifiabilitySensitivityNorms.empty()
+        && report.identifiabilitySensitivityNorms.size() == identifiableNames.size()) {
+        out << "- Sensitivity norms:\n\n";
+        out << "| Parameter | Norm | Weak? |\n";
+        out << "|---|---:|---|\n";
+        for (std::size_t i = 0; i < identifiableNames.size(); ++i) {
+            const auto& name = identifiableNames[i];
+            const auto weak = std::find(report.weakParameters.begin(),
+                                        report.weakParameters.end(),
+                                        name) != report.weakParameters.end();
+            out << "| " << name
+                << " | " << formatDouble(report.identifiabilitySensitivityNorms[i], 6)
+                << " | " << boolStr(weak)
+                << " |\n";
+        }
     }
     out << "- Passed: " << boolStr(report.gates.identifiability) << "\n\n";
 

@@ -1682,6 +1682,9 @@ void testIdentifiabilityDetectsUnusedParameter()
     require(!result.weakParameters.empty()
                 && result.weakParameters.front() == "b",
             "a zero-sensitivity column must surface the corresponding parameter as weak");
+    require(result.sensitivityNorms.size() == names.size()
+                && result.sensitivityNorms[1] == 0.0,
+            "identifiability must report per-parameter sensitivity norms");
     require(!result.passed, "identifiability cannot pass when at least one parameter is weak");
 }
 
@@ -1725,6 +1728,9 @@ void testIdentifiabilityPassesOnWellConditionedFixture()
     require(result.validInput, "well-conditioned synthetic matrix must yield valid input");
     require(result.weakParameters.empty(),
             "identity sensitivity must keep every parameter above the floor");
+    require(result.sensitivityNorms.size() == names.size()
+                && std::fabs(result.sensitivityNorms[0] - 1.0) < 1.0e-9,
+            "identity sensitivity must expose unit column norms");
     require(result.strongCorrelations.empty(),
             "identity sensitivity must produce no spurious correlations");
     require(std::fabs(result.conditionNumber - 1.0) < 1.0e-9,
