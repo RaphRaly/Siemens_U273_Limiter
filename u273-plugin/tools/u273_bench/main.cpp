@@ -37,6 +37,7 @@
 #include "u273/reference/calibration/CalibrationDataset.h"
 #include "u273/reference/calibration/CalibrationReport.h"
 #include "u273/reference/calibration/ReductionBuilder.h"
+#include "u273/reference/calibration/SonicTarget.h"
 #include "u273/reference/calibration/ThdBench.h"
 #include "u273/reference/state_space/CircuitGraph.h"
 #include "u273/reference/state_space/StateSpaceSolver.h"
@@ -190,6 +191,7 @@ struct RealtimeDspSignalMetrics {
     double maxMeterGrDb {};
     double avgMeterGrDb {};
     double thdDb {std::numeric_limits<double>::quiet_NaN()};
+    double thdFrequencyHz {};
     bool processedOk {};
     bool clipped {};
     bool usingReductionTable {};
@@ -199,6 +201,21 @@ struct RealtimeDspSignalMetrics {
     std::string inputCsv {};
     std::string outputCsv {};
     std::vector<std::string> failures {};
+};
+
+struct DeviceOutputThdComparison {
+    std::string signal {};
+    std::string status {"not_evaluated"};
+    std::string targetId {};
+    std::string sourceType {};
+    std::string confidence {};
+    double frequencyHz {std::numeric_limits<double>::quiet_NaN()};
+    double avgGainReductionDb {std::numeric_limits<double>::quiet_NaN()};
+    double targetGainReductionDb {std::numeric_limits<double>::quiet_NaN()};
+    double measuredThdDb {std::numeric_limits<double>::quiet_NaN()};
+    double targetCeilingDb {std::numeric_limits<double>::quiet_NaN()};
+    double toleranceDb {0.5};
+    bool passed {};
 };
 
 [[nodiscard]] double linToDb(double linear)
@@ -506,6 +523,95 @@ void writeWavFloatMono(const fs::path& path, const std::vector<float>& samples, 
     return value ? "true" : "false";
 }
 
+[[nodiscard]] double targetCeilingDb(const calib::SonicThdTargetRow& row) noexcept
+{
+    if (row.hasFiniteCeilingPercent()) {
+        return calib::thdPercentToDb(row.thdMaxPercent);
+    }
+    return row.thdTargetDb;
+}
+
+[[nodiscard]] const calib::SonicThdTargetRow* bestDeviceOutputThdTarget(
+    const std::vector<calib::SonicThdTargetRow>& rows,
+    double frequencyHz,
+    double avgGainReductionDb) noexcept
+{
+    const calib::SonicThdTargetRow* best = nullptr;
+    auto bestScore = std::numeric_limits<double>::infinity();
+    for (const auto& row : rows) {
+        if (row.measurementNode != "device_output"
+            || row.mode != "limiter_or_compressor"
+            || !std::isfinite(row.frequencyHz)
+            || std::fabs(row.frequencyHz - frequencyHz) > 1.0e-6
+            || !std::isfinite(row.gainReductionDb)
+            || !std::isfinite(targetCeilingDb(row))) {
+            continue;
+        }
+
+        const auto score = std::fabs(row.gainReductionDb - avgGainReductionDb);
+        if (score < bestScore) {
+            bestScore = score;
+            best = &row;
+        }
+    }
+    return best;
+}
+
+[[nodiscard]] std::vector<DeviceOutputThdComparison> compareDeviceOutputThdTargets(
+    const std::vector<RealtimeDspSignalMetrics>& metrics,
+    std::vector<std::string>& notes,
+    std::vector<std::string>& failures)
+{
+    std::vector<DeviceOutputThdComparison> comparisons {};
+    const auto targetMatrix = calib::loadSonicThdTargetCsv();
+    if (!targetMatrix.loaded) {
+        for (const auto& failure : targetMatrix.failures) {
+            failures.push_back("device-output THD target: " + failure);
+        }
+    }
+
+    for (const auto& metric : metrics) {
+        if (!std::isfinite(metric.thdDb)) {
+            continue;
+        }
+
+        DeviceOutputThdComparison comparison {};
+        comparison.signal = metric.name;
+        comparison.frequencyHz = metric.thdFrequencyHz;
+        comparison.avgGainReductionDb = metric.avgMeterGrDb;
+        comparison.measuredThdDb = metric.thdDb;
+
+        if (!metric.processedOk) {
+            comparison.status = "render_failed";
+        } else if (!targetMatrix.loaded) {
+            comparison.status = "target_load_failed";
+        } else if (const auto* target = bestDeviceOutputThdTarget(targetMatrix.rows,
+                                                                  metric.thdFrequencyHz,
+                                                                  metric.avgMeterGrDb)) {
+            comparison.status = "mapped";
+            comparison.targetId = target->targetId;
+            comparison.sourceType = target->sourceType;
+            comparison.confidence = target->confidence;
+            comparison.targetGainReductionDb = target->gainReductionDb;
+            comparison.targetCeilingDb = targetCeilingDb(*target);
+            comparison.passed = comparison.measuredThdDb
+                <= comparison.targetCeilingDb + comparison.toleranceDb;
+            if (!comparison.passed) {
+                failures.push_back("device-output THD " + metric.name
+                                   + " exceeds target " + comparison.targetId);
+            }
+        } else {
+            comparison.status = "unmapped";
+            notes.push_back("device-output THD target unmapped for " + metric.name
+                            + " at " + formatDouble(metric.thdFrequencyHz, 1)
+                            + " Hz");
+        }
+
+        comparisons.push_back(comparison);
+    }
+    return comparisons;
+}
+
 [[nodiscard]] std::string timestampNow()
 {
     const auto now = std::chrono::system_clock::now();
@@ -709,7 +815,8 @@ void writeRealtimeDspMetricsCsv(const fs::path& path,
         return;
     }
     out << "signal,duration_s,sample_rate,peak_in_db,peak_out_db,rms_in_db,rms_out_db,rms_gain_db,"
-           "max_meter_gr_db,avg_meter_gr_db,thd_db,processed_ok,clipped,using_reduction_table,boundary,input_wav,output_wav\n";
+           "max_meter_gr_db,avg_meter_gr_db,thd_db,thd_frequency_hz,processed_ok,clipped,using_reduction_table,"
+           "boundary,input_wav,output_wav\n";
     for (const auto& m : metrics) {
         out << m.name
             << "," << formatDouble(m.durationSeconds, 6)
@@ -722,6 +829,7 @@ void writeRealtimeDspMetricsCsv(const fs::path& path,
             << "," << formatDouble(m.maxMeterGrDb, 3)
             << "," << formatDouble(m.avgMeterGrDb, 3)
             << "," << formatDouble(m.thdDb, 3)
+            << "," << formatDouble(m.thdFrequencyHz, 3)
             << "," << boolStr(m.processedOk)
             << "," << boolStr(m.clipped)
             << "," << boolStr(m.usingReductionTable)
@@ -913,6 +1021,7 @@ void writeReport(const fs::path& reportPath,
                  const calib::CalibrationReport& report,
                  const std::vector<SignalMetrics>& signals,
                  const std::vector<RealtimeDspSignalMetrics>& realtimeDspSignals,
+                 const std::vector<DeviceOutputThdComparison>& deviceOutputThdComparisons,
                  const std::vector<AliasingBenchMetrics>& aliasingMetrics,
                  const std::vector<std::string>& benchNotes,
                  const std::vector<std::string>& benchFailures)
@@ -1039,6 +1148,30 @@ void writeReport(const fs::path& reportPath,
             << " |\n";
     }
     out << "\n";
+
+    out << "## Device-output THD target comparison\n";
+    out << "- Scope: realtime plugin output versus `device_output` rows in `u273_thd_texture_target_v1.csv`; the internal CMD probe above remains unmapped.\n";
+    if (deviceOutputThdComparisons.empty()) {
+        out << "- No realtime sine THD rows were available for target comparison.\n\n";
+    } else {
+        out << "| Signal | Status | Target | Freq (Hz) | Avg GR (dB) | Target GR (dB) | THD (dB) | Ceiling (dB) | Tol (dB) | Source | Pass |\n";
+        out << "|---|---|---|---:|---:|---:|---:|---:|---:|---|---|\n";
+        for (const auto& row : deviceOutputThdComparisons) {
+            out << "| " << row.signal
+                << " | " << row.status
+                << " | " << (row.targetId.empty() ? std::string {"n/a"} : row.targetId)
+                << " | " << formatDouble(row.frequencyHz, 1)
+                << " | " << formatDouble(row.avgGainReductionDb, 2)
+                << " | " << formatDouble(row.targetGainReductionDb, 2)
+                << " | " << formatDouble(row.measuredThdDb, 2)
+                << " | " << formatDouble(row.targetCeilingDb, 2)
+                << " | " << formatDouble(row.toleranceDb, 2)
+                << " | " << (row.sourceType.empty() ? std::string {"n/a"} : row.sourceType)
+                << " | " << boolStr(row.passed)
+                << " |\n";
+        }
+        out << "\n";
+    }
 
     out << "## Aliasing and smoothness bench\n";
     out << "- Oversampling factors: 1x, 2x, 4x, 8x\n";
@@ -1380,6 +1513,12 @@ int main(int argc, char** argv)
         true,
         100.0});
     realtimeSpecs.push_back(RealtimeSpec {
+        "dsp_sine_1khz_1s",
+        "1 kHz sine, 1 second, -6 dBFS peak",
+        synthesizeSineFloat(oneSecondSamples, cli.sampleRate, 1000.0, -6.0),
+        true,
+        1000.0});
+    realtimeSpecs.push_back(RealtimeSpec {
         "dsp_log_sweep_20hz_20khz_2s",
         "log sweep, 2 seconds, -6 dBFS peak",
         synthesizeLogSweepFloat(twoSecondSamples, cli.sampleRate, 20.0, sweepEndHz, -6.0),
@@ -1398,6 +1537,7 @@ int main(int argc, char** argv)
         metrics.outputCsv = spec.name + "_output.csv";
         metrics.inputWav = spec.name + "_input.wav";
         metrics.outputWav = spec.name + "_output.wav";
+        metrics.thdFrequencyHz = spec.measureThd ? spec.thdFrequencyHz : std::numeric_limits<double>::quiet_NaN();
 
         const auto rendered = renderRealtimeDspSignal(spec.input,
                                                       cli.sampleRate,
@@ -1430,6 +1570,8 @@ int main(int argc, char** argv)
         realtimeDspResults.push_back(std::move(metrics));
     }
     writeRealtimeDspMetricsCsv(cli.outputDir / "realtime_dsp_audio_metrics.csv", realtimeDspResults);
+    const auto deviceOutputThdComparisons =
+        compareDeviceOutputThdTargets(realtimeDspResults, benchNotes, benchFailures);
 
     const auto aliasingMetrics = runAliasingBench(
         cli.sampleRate,
@@ -1444,6 +1586,7 @@ int main(int argc, char** argv)
                 report,
                 signalResults,
                 realtimeDspResults,
+                deviceOutputThdComparisons,
                 aliasingMetrics,
                 benchNotes,
                 benchFailures);
