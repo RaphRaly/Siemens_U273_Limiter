@@ -26,6 +26,7 @@ void U273AudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
         samplesPerBlock,
         std::max(1, std::min(getTotalNumOutputChannels(), u273::core::kMaxRealtimeChannels))});
     (void) dspEngine_.loadReductionTable(u273::dsp::makeNominalU273ReductionTable());
+    setLatencySamples(dspEngine_.latencySamples());
 }
 
 void U273AudioProcessor::releaseResources()
