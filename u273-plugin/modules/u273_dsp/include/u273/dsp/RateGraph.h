@@ -25,6 +25,7 @@ struct RateStage {
     double processingSampleRate {};
     double targetBandwidthHz {};
     bool latencyCompensated {true};
+    bool executesOversampling {false};
 };
 
 struct RateGraph {
@@ -43,6 +44,9 @@ struct RateGraph {
 
 [[nodiscard]] bool isRealtimeQualityModeValid(RealtimeQualityMode mode) noexcept;
 [[nodiscard]] RateGraph buildRateGraph(const RateGraphConfig& config) noexcept;
+[[nodiscard]] bool setRateStageOversamplingExecution(RateGraph& graph,
+                                                     const char* name,
+                                                     bool executesOversampling) noexcept;
 [[nodiscard]] int totalLatencySamples(const RateGraph& graph) noexcept;
 [[nodiscard]] const RateStage* findRateStage(const RateGraph& graph, const char* name) noexcept;
 

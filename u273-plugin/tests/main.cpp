@@ -71,9 +71,9 @@ public:
         float detectorEnvelope,
         const u273::core::ParameterSnapshot& snapshot) noexcept override
     {
-        (void) detectorEnvelope;
         (void) snapshot;
         ++evaluateCalls;
+        lastDetectorEnvelope = detectorEnvelope;
         return gainReductionDb;
     }
 
@@ -83,6 +83,7 @@ public:
     }
 
     float gainReductionDb {6.0f};
+    float lastDetectorEnvelope {};
     double lastSampleRate {};
     int prepareCalls {};
     int resetCalls {};
@@ -359,15 +360,19 @@ void testDspPrepareStoresRateGraphAndLatency()
         require(engine.rateGraph().isValid(), "DSP engine must expose a valid prepared rate graph");
         require(engine.latencySamples() == u273::dsp::totalLatencySamples(engine.rateGraph()),
                 "DSP engine latency must match the prepared rate graph");
-        require(engine.latencySamples() == 0, "DSP skeleton latency must remain zero before resampler execution");
-        require(!engine.oversamplingExecutionEnabled(),
-                "DSP skeleton must expose oversampling as declared but not executed");
+        require(engine.latencySamples() == 0, "DSP sidechain oversampling must remain zero-latency");
+        require(engine.oversamplingExecutionEnabled(),
+                "DSP engine must execute the sidechain rate island when oversampling is declared");
+        require(requireRateStage(engine.rateGraph(), "sidechain").executesOversampling,
+                "DSP engine must mark sidechain oversampling as executed");
+        require(!requireRateStage(engine.rateGraph(), "gainCell").executesOversampling,
+                "DSP engine must leave gain-cell oversampling disabled until the audio resampler exists");
         require(engine.boundary() == u273::core::ModelBoundary::fullActiveModelUnverified,
                 "quality modes must not promote the analog realtime model boundary");
     }
 }
 
-void testRenderRateGraphDoesNotOversampleExecutionYet()
+void testRenderRateGraphExecutesSidechainOnly()
 {
     FixedGainReductionModel model {};
     u273::dsp::U273DspEngine engine {model};
@@ -382,8 +387,12 @@ void testRenderRateGraphDoesNotOversampleExecutionYet()
             "Render mode must declare sidechain 16x at 48 kHz");
     require(requireRateStage(engine.rateGraph(), "gainCell").oversamplingFactor == 8,
             "Render mode must declare gain-cell 8x at 48 kHz");
-    require(!engine.oversamplingExecutionEnabled(),
-            "Render mode must not execute oversampling in the skeleton milestone");
+    require(engine.oversamplingExecutionEnabled(),
+            "Render mode must execute sidechain oversampling");
+    require(requireRateStage(engine.rateGraph(), "sidechain").executesOversampling,
+            "Render mode must mark sidechain execution");
+    require(!requireRateStage(engine.rateGraph(), "gainCell").executesOversampling,
+            "Render mode must not execute gain-cell oversampling before the audio resampler exists");
 
     std::array<float, 8> mono {};
     mono.fill(0.5f);
@@ -401,7 +410,57 @@ void testRenderRateGraphDoesNotOversampleExecutionYet()
 
     require(status == u273::dsp::ProcessStatus::ok, "render skeleton block must process");
     require(model.evaluateCalls == static_cast<int>(mono.size()),
-            "render skeleton must evaluate the gain model once per host sample");
+            "render sidechain island must still evaluate the gain model once per host sample");
+}
+
+void testDspSidechainRunsAtDeclaredInternalRate()
+{
+    FixedGainReductionModel model {};
+    model.gainReductionDb = 0.0f;
+    u273::dsp::U273DspEngine engine {model};
+    engine.prepare(u273::dsp::DspPrepareConfig {
+        48000.0,
+        1,
+        1,
+        u273::dsp::RealtimeQualityMode::precise});
+
+    const auto sidechainFactor = requireRateStage(engine.rateGraph(), "sidechain").oversamplingFactor;
+    require(sidechainFactor == 8, "48 kHz precise sidechain factor must be pinned at 8x");
+    require(requireRateStage(engine.rateGraph(), "sidechain").executesOversampling,
+            "48 kHz precise sidechain must execute oversampling");
+
+    std::array<float, 1> mono {1.0f};
+    std::array<float*, 1> channels {mono.data()};
+    u273::core::ProcessContext context {
+        u273::core::AudioBlockView {channels.data(), 1, static_cast<int>(mono.size())},
+        48000.0,
+        25,
+        true};
+
+    u273::core::ParameterSnapshot snapshot {};
+    snapshot.inputGainDb = 0.0f;
+    snapshot.outputGainDb = 0.0f;
+    snapshot.detectorScale = 1.0f;
+    snapshot.attackMs = 3.0f;
+    snapshot.releaseMs = 160.0f;
+
+    u273::dsp::DetectorEnvelope reference {};
+    reference.prepare(48000.0 * static_cast<double>(sidechainFactor));
+    reference.setTimeConstants(snapshot.attackMs, snapshot.releaseMs);
+    auto expectedEnvelope = reference.value();
+    for (auto step = 0; step < sidechainFactor; ++step) {
+        expectedEnvelope = reference.processSample(1.0f);
+    }
+
+    u273::core::MeterFrame meter {};
+    const auto status = engine.process(context, snapshot, &meter);
+
+    require(status == u273::dsp::ProcessStatus::ok,
+            "sidechain oversampling rate test block must process");
+    require(std::fabs(model.lastDetectorEnvelope - expectedEnvelope) <= 1.0e-7f,
+            "DSP sidechain detector must advance at the declared internal rate");
+    require(model.evaluateCalls == 1,
+            "gain model must still be evaluated once per host sample");
 }
 
 void testDspHotSignalReducesGain()
@@ -2447,7 +2506,8 @@ int main()
     testRateGraphAdaptsFactorsAtHighHostRates();
     testRateGraphRejectsInvalidConfig();
     testDspPrepareStoresRateGraphAndLatency();
-    testRenderRateGraphDoesNotOversampleExecutionYet();
+    testRenderRateGraphExecutesSidechainOnly();
+    testDspSidechainRunsAtDeclaredInternalRate();
     testDspHotSignalReducesGain();
     testDspEngineUsesInjectedGainReductionModel();
     testDspZeroReductionUsesTransparentDeltaPath();

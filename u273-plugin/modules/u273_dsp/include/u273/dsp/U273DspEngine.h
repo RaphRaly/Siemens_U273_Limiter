@@ -82,6 +82,7 @@ private:
     bool prepared_ {false};
     DspPrepareConfig config_ {};
     RateGraph rateGraph_ {};
+    int sidechainOversamplingFactor_ {1};
     DetectorEnvelope detector_ {};
     // Default model keeps normal construction allocation-free; tests and future
     // variants can inject another implementation through the alternate ctor.

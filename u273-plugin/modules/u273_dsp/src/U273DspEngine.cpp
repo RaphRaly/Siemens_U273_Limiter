@@ -31,6 +31,7 @@ void U273DspEngine::prepare(const DspPrepareConfig& config) noexcept
 {
     prepared_ = false;
     rateGraph_ = RateGraph {};
+    sidechainOversamplingFactor_ = 1;
 
     if (!config.isValid()) {
         return;
@@ -43,7 +44,12 @@ void U273DspEngine::prepare(const DspPrepareConfig& config) noexcept
         return;
     }
 
-    detector_.prepare(config.sampleRate);
+    if (const auto* sidechainStage = findRateStage(rateGraph_, "sidechain")) {
+        sidechainOversamplingFactor_ = std::max(1, sidechainStage->oversamplingFactor);
+        (void) setRateStageOversamplingExecution(rateGraph_, "sidechain", true);
+    }
+
+    detector_.prepare(config.sampleRate * static_cast<double>(sidechainOversamplingFactor_));
     // Prepare both engines so a later promoteToFullActiveModel() call does not
     // need to revisit the audio thread to re-arm capacitor/Newton state.
     defaultGainReductionModel_.prepare(config.sampleRate);
@@ -168,7 +174,10 @@ ProcessStatus U273DspEngine::process(const u273::core::ProcessContext& context,
         }
 
         const auto detectorInput = sidechainPeak * snapshot.detectorScale;
-        const auto envelope = detector_.processSample(detectorInput);
+        auto envelope = detector_.value();
+        for (auto step = 0; step < sidechainOversamplingFactor_; ++step) {
+            envelope = detector_.processSample(detectorInput);
+        }
         const auto reductionDb = gainReductionModel_->evaluateGainReductionDb(envelope, snapshot);
         const auto reductionGain = u273::core::dbToLinear(-reductionDb);
         const auto wetGain = reductionGain * outputGain;

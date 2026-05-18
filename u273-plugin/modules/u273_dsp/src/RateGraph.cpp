@@ -80,7 +80,7 @@ struct MultiRateFactors {
 
 [[nodiscard]] RateStage makeHostStage(const char* name, double hostSampleRate) noexcept
 {
-    return RateStage {name, 1, 0, true, hostSampleRate, hostSampleRate * 0.5, true};
+    return RateStage {name, 1, 0, true, hostSampleRate, hostSampleRate * 0.5, true, false};
 }
 
 [[nodiscard]] RateStage makeOversampledStage(const char* name,
@@ -95,7 +95,8 @@ struct MultiRateFactors {
         true,
         hostSampleRate * static_cast<double>(factor),
         targetBandwidthHz,
-        true};
+        true,
+        false};
 }
 
 [[nodiscard]] bool isConfigValid(const RateGraphConfig& config) noexcept
@@ -115,6 +116,22 @@ void appendStage(RateGraph& graph, const RateStage& stage) noexcept
 
     graph.stages[static_cast<std::size_t>(graph.stageCount)] = stage;
     ++graph.stageCount;
+}
+
+void refreshOversamplingExecution(RateGraph& graph) noexcept
+{
+    graph.oversamplingExecutionEnabled = false;
+    if (!graph.isValid()) {
+        return;
+    }
+
+    for (auto index = 0; index < graph.stageCount; ++index) {
+        const auto& stage = graph.stages[static_cast<std::size_t>(index)];
+        if (stage.enabled && stage.executesOversampling && stage.oversamplingFactor > 1) {
+            graph.oversamplingExecutionEnabled = true;
+            return;
+        }
+    }
 }
 
 } // namespace
@@ -159,10 +176,30 @@ RateGraph buildRateGraph(const RateGraphConfig& config) noexcept
         kGainCellStage, factors.gainCell, config.hostSampleRate, 0.0));
     appendStage(graph, makeOversampledStage(
         kTruePeakStage, factors.truePeak, config.hostSampleRate, 0.0));
-    appendStage(graph, RateStage {kUiMeterStage, 1, 0, true, kUiMeterRateHz, 0.0, true});
+    appendStage(graph, RateStage {kUiMeterStage, 1, 0, true, kUiMeterRateHz, 0.0, true, false});
     appendStage(graph, makeHostStage(kAudioOutputStage, config.hostSampleRate));
 
     return graph;
+}
+
+bool setRateStageOversamplingExecution(RateGraph& graph,
+                                       const char* name,
+                                       bool executesOversampling) noexcept
+{
+    if (name == nullptr || !graph.isValid()) {
+        return false;
+    }
+
+    for (auto index = 0; index < graph.stageCount; ++index) {
+        auto& stage = graph.stages[static_cast<std::size_t>(index)];
+        if (stage.name != nullptr && std::strcmp(stage.name, name) == 0) {
+            stage.executesOversampling = executesOversampling && stage.oversamplingFactor > 1;
+            refreshOversamplingExecution(graph);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 int totalLatencySamples(const RateGraph& graph) noexcept
