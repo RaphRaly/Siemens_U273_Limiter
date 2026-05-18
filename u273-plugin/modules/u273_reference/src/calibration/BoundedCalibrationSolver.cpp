@@ -9,8 +9,8 @@
 #include <string>
 #include <utility>
 
+#include "u273/reference/calibration/B6SmallSignalAcReference.h"
 #include "u273/reference/calibration/CalibrationResiduals.h"
-#include "u273/reference/calibration/LinearizedAcSolver.h"
 #include "u273/reference/calibration/OperatingPointSolver.h"
 #include "u273/reference/state_space/Matrix.h"
 
@@ -108,16 +108,6 @@ void appendResidualPoints(std::vector<double>& sink, const ResidualGateResult& g
     }
 }
 
-[[nodiscard]] std::string firstB11VoltageSourceId(const ss::CircuitGraph& circuit)
-{
-    for (const auto& source : circuit.voltageSources()) {
-        if (source.id.find("B11") != std::string::npos) {
-            return source.id;
-        }
-    }
-    return circuit.voltageSources().empty() ? std::string {} : circuit.voltageSources().front().id;
-}
-
 void recordAcResiduals(std::vector<double>& sink,
                        std::vector<std::string>& failures,
                        const BoundedCalibrationProblem& problem,
@@ -125,23 +115,9 @@ void recordAcResiduals(std::vector<double>& sink,
                        const OperatingPointResult& op,
                        bool& acPassed)
 {
-    const auto sourceId = firstB11VoltageSourceId(circuit);
-    const auto outputNode = circuit.findNode("CMD");
-    if (sourceId.empty() || outputNode.value <= 0) {
-        failures.push_back("AC source/output not found in reference circuit");
-        return;
-    }
-
-    AcSourcePort source {};
-    source.voltageSourceId = sourceId;
-    source.outputNode = outputNode;
-    source.amplitudeVolt = 1.0;
-
-    const LinearizedAcSolver acSolver {};
     const auto frequencies = problem.dataset.acFrequenciesHz.empty()
         ? std::vector<double> {}
         : problem.dataset.acFrequenciesHz;
-    const auto ac = acSolver.solveSmallSignal(circuit, op, source, frequencies);
 
     AcResidualOptions acOptions {};
     acOptions.scenario = "rsource_10k";
@@ -149,10 +125,18 @@ void recordAcResiduals(std::vector<double>& sink,
     acOptions.matchDriveVolt = true;
     acOptions.commandSourceOhm = 10000.0;
     acOptions.matchCommandSourceOhm = true;
+
+    const auto ac = solveB6SmallSignalAcReference(circuit,
+                                                  op,
+                                                  acOptions.commandSourceOhm,
+                                                  frequencies);
     const auto gate = evaluateAcResiduals(problem.dataset, ac, acOptions);
     acPassed = gate.passed;
     appendResidualPoints(sink, gate);
 
+    for (const auto& failure : ac.failures) {
+        failures.push_back("AC solver: " + failure);
+    }
     for (const auto& failure : gate.failures) {
         failures.push_back("AC: " + failure);
     }
@@ -503,6 +487,18 @@ BoundedCalibrationResult BoundedCalibrationSolver::solve(
 
     if (!result.converged && currentCost < result.initialTrainCost) {
         result.converged = true;
+    }
+
+    const auto finalTraining = evaluate(problem, current, trainingScenarios, options);
+    if (finalTraining.validInput) {
+        currentCost = finalTraining.cost();
+        if (!result.converged
+            && !finalTraining.normalizedResiduals.empty()
+            && finalTraining.dcPassed
+            && finalTraining.acPassed
+            && finalTraining.transientPassed) {
+            result.converged = true;
+        }
     }
 
     result.bestParameters = current;

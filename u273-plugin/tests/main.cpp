@@ -1747,6 +1747,8 @@ void testRunOfflineProducesCalibratedReportButAudioStaysOpen()
             "audio gate must remain strictly closed even when calibration is enabled");
     require(!report.canPromoteBoundary(),
             "boundary must not be promoted while the audio gate is closed");
+    require(report.calibrationConverged,
+            "offline runner calibration must converge once DC, AC and transient gates pass");
     require(report.parameters.isValid(),
             "report parameters must remain inside their declared bounds when calibration is enabled");
 
