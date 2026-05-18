@@ -225,13 +225,24 @@ void testRateGraphQualityModesDeclareExpectedRates()
     const auto eco = u273::dsp::buildRateGraph(
         u273::dsp::RateGraphConfig {48000.0, 64, u273::dsp::RealtimeQualityMode::eco});
     require(eco.isValid(), "Eco rate graph must be valid");
-    require(eco.stageCount == 4, "Eco rate graph must expose all realtime stages");
+    require(eco.stageCount == 7, "Eco rate graph must expose all multi-rate islands");
+    require(eco.deltaPathEnabled, "Eco rate graph must declare delta-path output");
+    require(eco.dryPathTransparentAtZeroReduction,
+            "Eco rate graph must preserve dry transparency at zero reduction");
     require(requireRateStage(eco, "audioInput").oversamplingFactor == 1,
             "Eco audio input must stay at host rate");
-    require(requireRateStage(eco, "sidechain").oversamplingFactor == 1,
-            "Eco sidechain must stay at host rate");
-    require(requireRateStage(eco, "gainCell").oversamplingFactor == 1,
-            "Eco gain-cell must stay at host rate");
+    require(requireRateStage(eco, "dryPath").oversamplingFactor == 1,
+            "Eco dry path must stay at host rate");
+    require(requireRateStage(eco, "sidechain").oversamplingFactor == 4,
+            "Eco sidechain must declare 4x at 48 kHz");
+    require(requireRateStage(eco, "sidechain").targetBandwidthHz == 100000.0,
+            "Eco sidechain must target 100 kHz internal bandwidth");
+    require(requireRateStage(eco, "gainCell").oversamplingFactor == 2,
+            "Eco gain-cell must declare 2x at 48 kHz");
+    require(requireRateStage(eco, "truePeak").oversamplingFactor == 4,
+            "Eco true-peak island must declare 4x");
+    require(std::fabs(requireRateStage(eco, "uiMeter").processingSampleRate - 60.0) < 1.0e-12,
+            "Eco UI meter island must run at UI rate");
     require(requireRateStage(eco, "audioOutput").oversamplingFactor == 1,
             "Eco audio output must stay at host rate");
     require(totalLatencySamples(eco) == 0, "Eco skeleton latency must be zero until resamplers execute");
@@ -242,10 +253,16 @@ void testRateGraphQualityModesDeclareExpectedRates()
     require(precise.isValid(), "Precise rate graph must be valid");
     require(requireRateStage(precise, "audioInput").oversamplingFactor == 1,
             "Precise audio input must stay at host rate");
-    require(requireRateStage(precise, "sidechain").oversamplingFactor == 2,
-            "Precise sidechain must declare 2x oversampling");
-    require(requireRateStage(precise, "gainCell").oversamplingFactor == 2,
-            "Precise gain-cell must declare 2x oversampling");
+    require(requireRateStage(precise, "dryPath").oversamplingFactor == 1,
+            "Precise dry path must stay at host rate");
+    require(requireRateStage(precise, "sidechain").oversamplingFactor == 8,
+            "Precise sidechain must declare 8x at 48 kHz");
+    require(requireRateStage(precise, "sidechain").targetBandwidthHz == 200000.0,
+            "Precise sidechain must target 200 kHz internal bandwidth");
+    require(requireRateStage(precise, "gainCell").oversamplingFactor == 4,
+            "Precise gain-cell must declare 4x at 48 kHz");
+    require(requireRateStage(precise, "truePeak").oversamplingFactor == 8,
+            "Precise true-peak island must declare 8x");
     require(requireRateStage(precise, "audioOutput").oversamplingFactor == 1,
             "Precise audio output must stay at host rate");
     require(totalLatencySamples(precise) == 0,
@@ -257,14 +274,47 @@ void testRateGraphQualityModesDeclareExpectedRates()
     require(render.isValid(), "Render rate graph must be valid");
     require(requireRateStage(render, "audioInput").oversamplingFactor == 1,
             "Render audio input must stay at host rate");
-    require(requireRateStage(render, "sidechain").oversamplingFactor == 4,
-            "Render sidechain must declare 4x oversampling");
-    require(requireRateStage(render, "gainCell").oversamplingFactor == 4,
-            "Render gain-cell must declare 4x oversampling");
+    require(requireRateStage(render, "dryPath").oversamplingFactor == 1,
+            "Render dry path must stay at host rate");
+    require(requireRateStage(render, "sidechain").oversamplingFactor == 16,
+            "Render sidechain must declare 16x at 48 kHz");
+    require(requireRateStage(render, "sidechain").targetBandwidthHz == 400000.0,
+            "Render sidechain must target 400 kHz internal bandwidth");
+    require(requireRateStage(render, "gainCell").oversamplingFactor == 8,
+            "Render gain-cell must declare 8x at 48 kHz");
+    require(requireRateStage(render, "truePeak").oversamplingFactor == 16,
+            "Render true-peak island must declare 16x");
     require(requireRateStage(render, "audioOutput").oversamplingFactor == 1,
             "Render audio output must stay at host rate");
     require(totalLatencySamples(render) == 0, "Render skeleton latency must stay zero until resamplers execute");
     require(!render.oversamplingExecutionEnabled, "Render skeleton must not execute oversampling yet");
+}
+
+void testRateGraphAdaptsFactorsAtHighHostRates()
+{
+    const auto precise96 = u273::dsp::buildRateGraph(
+        u273::dsp::RateGraphConfig {96000.0, 64, u273::dsp::RealtimeQualityMode::precise});
+    require(precise96.isValid(), "96 kHz precise rate graph must be valid");
+    require(requireRateStage(precise96, "sidechain").oversamplingFactor == 4,
+            "96 kHz precise sidechain must declare 4x");
+    require(requireRateStage(precise96, "gainCell").oversamplingFactor == 2,
+            "96 kHz precise gain-cell must declare 2x");
+
+    const auto eco192 = u273::dsp::buildRateGraph(
+        u273::dsp::RateGraphConfig {192000.0, 64, u273::dsp::RealtimeQualityMode::eco});
+    require(eco192.isValid(), "192 kHz eco rate graph must be valid");
+    require(requireRateStage(eco192, "sidechain").oversamplingFactor == 1,
+            "192 kHz eco sidechain must stay at host rate");
+    require(requireRateStage(eco192, "gainCell").oversamplingFactor == 1,
+            "192 kHz eco gain-cell must stay at host rate");
+
+    const auto render192 = u273::dsp::buildRateGraph(
+        u273::dsp::RateGraphConfig {192000.0, 64, u273::dsp::RealtimeQualityMode::render});
+    require(render192.isValid(), "192 kHz render rate graph must be valid");
+    require(requireRateStage(render192, "sidechain").oversamplingFactor == 4,
+            "192 kHz render sidechain must declare 4x");
+    require(requireRateStage(render192, "gainCell").oversamplingFactor == 2,
+            "192 kHz render gain-cell must declare 2x");
 }
 
 void testRateGraphRejectsInvalidConfig()
@@ -328,10 +378,10 @@ void testRenderRateGraphDoesNotOversampleExecutionYet()
         u273::dsp::RealtimeQualityMode::render});
 
     require(engine.isPrepared(), "DSP engine must prepare render quality mode");
-    require(requireRateStage(engine.rateGraph(), "sidechain").oversamplingFactor == 4,
-            "Render mode must declare sidechain 4x oversampling");
-    require(requireRateStage(engine.rateGraph(), "gainCell").oversamplingFactor == 4,
-            "Render mode must declare gain-cell 4x oversampling");
+    require(requireRateStage(engine.rateGraph(), "sidechain").oversamplingFactor == 16,
+            "Render mode must declare sidechain 16x at 48 kHz");
+    require(requireRateStage(engine.rateGraph(), "gainCell").oversamplingFactor == 8,
+            "Render mode must declare gain-cell 8x at 48 kHz");
     require(!engine.oversamplingExecutionEnabled(),
             "Render mode must not execute oversampling in the skeleton milestone");
 
@@ -419,6 +469,44 @@ void testDspEngineUsesInjectedGainReductionModel()
     require(std::fabs(meter.gainReductionDb - model.gainReductionDb) < 1.0e-6f,
             "meter gain reduction must reflect the injected model");
     require(mono.back() < 0.5f, "injected model gain reduction must affect audio output");
+}
+
+void testDspZeroReductionUsesTransparentDeltaPath()
+{
+    FixedGainReductionModel model {};
+    model.gainReductionDb = 0.0f;
+    u273::dsp::U273DspEngine engine {model};
+    engine.prepare(u273::dsp::DspPrepareConfig {48000.0, 8, 1});
+    require(engine.rateGraph().deltaPathEnabled, "DSP graph must declare the delta path");
+    require(engine.rateGraph().dryPathTransparentAtZeroReduction,
+            "DSP graph must declare zero-reduction dry transparency");
+
+    std::array<float, 8> mono {-0.75f, -0.5f, -0.125f, 0.0f, 0.125f, 0.25f, 0.5f, 0.75f};
+    const auto original = mono;
+    std::array<float*, 1> channels {mono.data()};
+
+    u273::core::ProcessContext context {
+        u273::core::AudioBlockView {channels.data(), 1, static_cast<int>(mono.size())},
+        48000.0,
+        24,
+        true};
+
+    u273::core::ParameterSnapshot snapshot {};
+    snapshot.inputGainDb = 0.0f;
+    snapshot.outputGainDb = 0.0f;
+    snapshot.mix = 1.0f;
+
+    u273::core::MeterFrame meter {};
+    const auto status = engine.process(context, snapshot, &meter);
+
+    require(status == u273::dsp::ProcessStatus::ok,
+            "zero-reduction delta path block must process");
+    for (std::size_t index = 0; index < mono.size(); ++index) {
+        require(std::fabs(mono[index] - original[index]) <= 1.0e-7f,
+                "zero-reduction delta path must preserve samples");
+    }
+    require(std::fabs(meter.gainReductionDb) <= 1.0e-7f,
+            "zero-reduction delta path must report zero gain reduction");
 }
 
 void testAnalogRealtimeBridgeLawIsMonotonic()
@@ -2356,11 +2444,13 @@ int main()
     testParameterSnapshotContract();
     testDspSilenceIsStable();
     testRateGraphQualityModesDeclareExpectedRates();
+    testRateGraphAdaptsFactorsAtHighHostRates();
     testRateGraphRejectsInvalidConfig();
     testDspPrepareStoresRateGraphAndLatency();
     testRenderRateGraphDoesNotOversampleExecutionYet();
     testDspHotSignalReducesGain();
     testDspEngineUsesInjectedGainReductionModel();
+    testDspZeroReductionUsesTransparentDeltaPath();
     testAnalogRealtimeBridgeLawIsMonotonic();
     testBypassPreservesSignal();
     testReferenceBoundaryIsExplicit();

@@ -22,16 +22,21 @@ struct RateStage {
     int oversamplingFactor {1};
     int latencySamples {};
     bool enabled {true};
+    double processingSampleRate {};
+    double targetBandwidthHz {};
+    bool latencyCompensated {true};
 };
 
 struct RateGraph {
-    static constexpr int kMaxStages = 4;
+    static constexpr int kMaxStages = 7;
 
     RateGraphConfig config {};
     std::array<RateStage, kMaxStages> stages {};
     int stageCount {};
     bool valid {false};
     bool oversamplingExecutionEnabled {false};
+    bool deltaPathEnabled {true};
+    bool dryPathTransparentAtZeroReduction {true};
 
     [[nodiscard]] bool isValid() const noexcept { return valid; }
 };

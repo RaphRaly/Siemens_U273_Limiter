@@ -149,7 +149,6 @@ ProcessStatus U273DspEngine::process(const u273::core::ProcessContext& context,
     const auto inputGain = u273::core::dbToLinear(snapshot.inputGainDb);
     const auto outputGain = u273::core::dbToLinear(snapshot.outputGainDb);
     const auto wetMix = u273::core::clampFloat(snapshot.mix, 0.0f, 1.0f);
-    const auto dryMix = 1.0f - wetMix;
 
     auto inputPeak = 0.0f;
     auto outputPeak = 0.0f;
@@ -179,7 +178,8 @@ ProcessStatus U273DspEngine::process(const u273::core::ProcessContext& context,
         for (int channel = 0; channel < context.audio.numChannels; ++channel) {
             const auto dry = context.audio.getSample(channel, sample);
             const auto wet = dry * inputGain * wetGain;
-            const auto output = dry * dryMix + wet * wetMix;
+            const auto delta = wet - dry;
+            const auto output = dry + delta * wetMix;
             context.audio.setSample(channel, sample, output);
 
             const auto absOutput = std::fabs(output);
