@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "u273/dsp/NominalReductionTable.h"
 #include "u273/plugin/PluginEditor.h"
 
 namespace u273::plugin {
@@ -24,6 +25,7 @@ void U273AudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
         sampleRate,
         samplesPerBlock,
         std::max(1, std::min(getTotalNumOutputChannels(), u273::core::kMaxRealtimeChannels))});
+    (void) dspEngine_.loadReductionTable(u273::dsp::makeNominalU273ReductionTable());
 }
 
 void U273AudioProcessor::releaseResources()

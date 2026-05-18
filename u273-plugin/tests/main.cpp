@@ -12,6 +12,7 @@
 #include "u273/dsp/AnalogRealtimeEngine.h"
 #include "u273/dsp/DetectorEnvelope.h"
 #include "u273/dsp/FullActiveRealtimeEngine.h"
+#include "u273/dsp/NominalReductionTable.h"
 #include "u273/dsp/RateGraph.h"
 #include "u273/dsp/RealtimeDetailLevel.h"
 #include "u273/dsp/RealtimeGainReductionModel.h"
@@ -2113,6 +2114,43 @@ void testU273DspEngineProcessesSineAndSweepViaReductionTable()
     renderSignal(true);
 }
 
+void testNominalReductionTablePromotesDspEngineToTablePath()
+{
+    const auto table = u273::dsp::makeNominalU273ReductionTable();
+    require(table.size() == 65,
+            "nominal U273 reduction table must match the offline builder point count");
+
+    u273::dsp::U273DspEngine engine {};
+    engine.prepare(u273::dsp::DspPrepareConfig {48000.0, 4096, 1});
+    require(engine.loadReductionTable(table),
+            "DSP engine must accept the built-in nominal reduction table");
+    require(engine.isUsingTableReduction(),
+            "loaded nominal table must switch the DSP engine to table reduction");
+    require(engine.boundary() == u273::core::ModelBoundary::guardedRealtimeSurrogate,
+            "table-driven DSP path must expose guarded realtime boundary");
+
+    std::array<float, 4096> mono {};
+    mono.fill(0.9f);
+    std::array<float*, 1> channels {mono.data()};
+    u273::core::ProcessContext context {
+        u273::core::AudioBlockView {channels.data(), 1, static_cast<int>(mono.size())},
+        48000.0,
+        32,
+        true};
+
+    u273::core::ParameterSnapshot snapshot {};
+    snapshot.drive = 1.0f;
+    snapshot.detectorScale = 4.0f;
+    snapshot.attackMs = 0.05f;
+    snapshot.releaseMs = 50.0f;
+    u273::core::MeterFrame meter {};
+    const auto status = engine.process(context, snapshot, &meter);
+    require(status == u273::dsp::ProcessStatus::ok,
+            "table-driven nominal DSP path must process audio");
+    require(meter.gainReductionDb > 0.0f,
+            "table-driven nominal DSP path must produce gain reduction");
+}
+
 void testRealtimeDetailLevelsExposeBoundaries()
 {
     const auto sd = u273::dsp::detailLevelInfo(u273::dsp::RealtimeDetailLevel::sd);
@@ -2377,6 +2415,7 @@ int main()
     testReductionBuilderRejectsBadInputsAndExplosiveDerivatives();
     testTableReductionRealtimeEngineLookupClampAndExtremeInputs();
     testU273DspEngineProcessesSineAndSweepViaReductionTable();
+    testNominalReductionTablePromotesDspEngineToTablePath();
     testRealtimeDetailLevelsExposeBoundaries();
     testFullActiveEngineSkeletonPathBehavesLikeStub();
     testFullActiveEngineConvergesOnNominalInput();
