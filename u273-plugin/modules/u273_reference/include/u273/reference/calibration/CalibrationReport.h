@@ -49,7 +49,9 @@ struct CalibrationReport {
     double calibrationValidationCost {};
     int calibrationIterations {};
     double identifiabilityConditionNumber {};
+    std::vector<std::string> identifiabilitySensitivityParameterNames {};
     std::vector<double> identifiabilitySensitivityNorms {};
+    std::vector<std::string> inactiveIdentifiabilityParameters {};
     CalibrationGateStatus gates {};
     std::vector<std::string> notes {};
     std::vector<std::string> rejectedTopologyReasons {};

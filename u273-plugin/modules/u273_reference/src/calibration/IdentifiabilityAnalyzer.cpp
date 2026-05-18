@@ -57,6 +57,7 @@ namespace {
     }
 
     std::vector<double> columnNorms(parameterNames.size(), 0.0);
+    result.sensitivityParameterNames = parameterNames;
     for (std::size_t index = 0; index < parameterNames.size(); ++index) {
         columnNorms[index] = columnTwoNorm(sensitivity, index);
         if (columnNorms[index] < options.minimumSensitivity) {
@@ -121,6 +122,59 @@ namespace {
     return result;
 }
 
+[[nodiscard]] bool containsIndex(const std::vector<std::size_t>& indices,
+                                 std::size_t candidate) noexcept
+{
+    return std::find(indices.begin(), indices.end(), candidate) != indices.end();
+}
+
+[[nodiscard]] std::vector<std::size_t> activeIdentifiabilityIndices(
+    const ss::CircuitGraph& circuit)
+{
+    bool hasEmpiricalDiode {};
+    bool hasShockleyDiode {};
+    for (const auto& diode : circuit.diodes()) {
+        if (diode.model.law == u273::reference::state_space::DiodeLaw::u273EmpiricalComposite) {
+            hasEmpiricalDiode = true;
+        } else {
+            hasShockleyDiode = true;
+        }
+    }
+
+    const auto hasBjt = !circuit.npnBjts().empty();
+    const auto hasDeviceGmin = !circuit.diodes().empty() || hasBjt;
+
+    std::vector<std::size_t> indices {};
+    if (hasEmpiricalDiode) {
+        indices.push_back(0); // diodeA
+        indices.push_back(1); // diodeB
+    }
+    if (hasShockleyDiode || hasBjt) {
+        indices.push_back(2); // logIs
+    }
+    if (hasBjt) {
+        indices.push_back(3); // betaForward
+        indices.push_back(4); // betaReverse
+    }
+    if (hasDeviceGmin) {
+        indices.push_back(7); // numericalGmin
+    }
+    return indices;
+}
+
+[[nodiscard]] std::vector<std::string> inactiveParameterNames(
+    const std::vector<std::string>& names,
+    const std::vector<std::size_t>& activeIndices)
+{
+    std::vector<std::string> inactive {};
+    for (std::size_t index = 0; index < names.size(); ++index) {
+        if (!containsIndex(activeIndices, index)) {
+            inactive.push_back(names[index]);
+        }
+    }
+    return inactive;
+}
+
 } // namespace
 
 IdentifiabilityResult IdentifiabilityAnalyzer::analyze(
@@ -138,6 +192,19 @@ IdentifiabilityResult IdentifiabilityAnalyzer::analyze(
 
     const BoundedCalibrationSolver solver {};
     const auto names = activeModelParameterNames();
+    const auto activeIndices = activeIdentifiabilityIndices(problem.referenceCircuit);
+    if (activeIndices.empty()) {
+        result.failures.push_back("identifiability has no active parameters for this circuit boundary");
+        result.inactiveParameters = names;
+        return result;
+    }
+
+    std::vector<std::string> activeNames {};
+    activeNames.reserve(activeIndices.size());
+    for (const auto index : activeIndices) {
+        activeNames.push_back(names[index]);
+    }
+
     const auto centerEvaluation = solver.evaluate(problem,
                                                   parameters,
                                                   problem.trainingDcScenarios,
@@ -155,13 +222,14 @@ IdentifiabilityResult IdentifiabilityAnalyzer::analyze(
     }
 
     std::vector<std::string> parametersOnBound {};
-    ss::DenseMatrix sensitivity {residualCount, names.size()};
+    ss::DenseMatrix sensitivity {residualCount, activeNames.size()};
 
-    for (std::size_t index = 0; index < names.size(); ++index) {
+    for (std::size_t column = 0; column < activeIndices.size(); ++column) {
+        const auto index = activeIndices[column];
         const auto& bound = activeModelParameterAt(parameters, index);
         const auto span = bound.upper - bound.lower;
         const auto step = options.perturbationRelative * (span > 0.0 ? span : 1.0);
-        if (step <= 0.0) {
+        if (step <= 0.0 || span <= 0.0) {
             continue;
         }
 
@@ -188,10 +256,14 @@ IdentifiabilityResult IdentifiabilityAnalyzer::analyze(
             if (effectiveStep <= 0.0) {
                 continue;
             }
+            const auto normalizedStep = effectiveStep / span;
+            if (normalizedStep <= 0.0) {
+                continue;
+            }
             for (std::size_t row = 0; row < rows; ++row) {
                 const auto derivative = (plusEvaluation.normalizedResiduals[row]
-                    - minusEvaluation.normalizedResiduals[row]) / effectiveStep;
-                sensitivity.at(row, index) = std::isfinite(derivative) ? derivative : 0.0;
+                    - minusEvaluation.normalizedResiduals[row]) / normalizedStep;
+                sensitivity.at(row, column) = std::isfinite(derivative) ? derivative : 0.0;
             }
             onBound = true;
         } else if (lowerHeadroom < step * 0.5) {
@@ -211,10 +283,14 @@ IdentifiabilityResult IdentifiabilityAnalyzer::analyze(
             if (effectiveStep <= 0.0) {
                 continue;
             }
+            const auto normalizedStep = effectiveStep / span;
+            if (normalizedStep <= 0.0) {
+                continue;
+            }
             for (std::size_t row = 0; row < rows; ++row) {
                 const auto derivative = (plusEvaluation.normalizedResiduals[row]
-                    - minusEvaluation.normalizedResiduals[row]) / effectiveStep;
-                sensitivity.at(row, index) = std::isfinite(derivative) ? derivative : 0.0;
+                    - minusEvaluation.normalizedResiduals[row]) / normalizedStep;
+                sensitivity.at(row, column) = std::isfinite(derivative) ? derivative : 0.0;
             }
             onBound = true;
         } else {
@@ -240,19 +316,25 @@ IdentifiabilityResult IdentifiabilityAnalyzer::analyze(
             if (totalStep <= 0.0) {
                 continue;
             }
+            const auto normalizedStep = totalStep / span;
+            if (normalizedStep <= 0.0) {
+                continue;
+            }
             for (std::size_t row = 0; row < rows; ++row) {
                 const auto derivative = (plusEvaluation.normalizedResiduals[row]
-                    - minusEvaluation.normalizedResiduals[row]) / totalStep;
-                sensitivity.at(row, index) = std::isfinite(derivative) ? derivative : 0.0;
+                    - minusEvaluation.normalizedResiduals[row]) / normalizedStep;
+                sensitivity.at(row, column) = std::isfinite(derivative) ? derivative : 0.0;
             }
         }
 
         if (onBound) {
-            parametersOnBound.push_back(names[index]);
+            parametersOnBound.push_back(activeNames[column]);
         }
     }
 
-    return evaluateFromSensitivity(names, sensitivity, parametersOnBound, options);
+    auto evaluated = evaluateFromSensitivity(activeNames, sensitivity, parametersOnBound, options);
+    evaluated.inactiveParameters = inactiveParameterNames(names, activeIndices);
+    return evaluated;
 }
 
 IdentifiabilityResult IdentifiabilityAnalyzer::analyzeSensitivityMatrix(

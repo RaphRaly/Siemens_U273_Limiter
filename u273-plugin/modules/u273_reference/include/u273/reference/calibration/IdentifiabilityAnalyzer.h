@@ -25,9 +25,11 @@ struct IdentifiabilityResult {
     bool validInput {};
     bool passed {};
     std::vector<double> singularValues {};
+    std::vector<std::string> sensitivityParameterNames {};
     std::vector<double> sensitivityNorms {};
     double conditionNumber {};
     std::vector<std::string> weakParameters {};
+    std::vector<std::string> inactiveParameters {};
     std::vector<std::string> parametersOnBound {};
     std::vector<ParameterCorrelation> strongCorrelations {};
     std::vector<std::string> failures {};

@@ -954,10 +954,12 @@ void writeReport(const fs::path& reportPath,
         }
         out << "\n";
     }
-    const auto identifiableNames = calib::activeModelParameterNames();
+    const auto identifiableNames = report.identifiabilitySensitivityParameterNames.empty()
+        ? calib::activeModelParameterNames()
+        : report.identifiabilitySensitivityParameterNames;
     if (!report.identifiabilitySensitivityNorms.empty()
         && report.identifiabilitySensitivityNorms.size() == identifiableNames.size()) {
-        out << "- Sensitivity norms:\n\n";
+        out << "- Active sensitivity norms:\n\n";
         out << "| Parameter | Norm | Weak? |\n";
         out << "|---|---:|---|\n";
         for (std::size_t i = 0; i < identifiableNames.size(); ++i) {
@@ -970,6 +972,14 @@ void writeReport(const fs::path& reportPath,
                 << " | " << boolStr(weak)
                 << " |\n";
         }
+    }
+    if (!report.inactiveIdentifiabilityParameters.empty()) {
+        out << "- Inactive in current calibration boundary: ";
+        for (std::size_t i = 0; i < report.inactiveIdentifiabilityParameters.size(); ++i) {
+            if (i > 0) out << ", ";
+            out << report.inactiveIdentifiabilityParameters[i];
+        }
+        out << "\n";
     }
     out << "- Passed: " << boolStr(report.gates.identifiability) << "\n\n";
 

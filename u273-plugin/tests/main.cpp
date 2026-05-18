@@ -1686,6 +1686,8 @@ void testIdentifiabilityDetectsUnusedParameter()
     require(result.sensitivityNorms.size() == names.size()
                 && result.sensitivityNorms[1] == 0.0,
             "identifiability must report per-parameter sensitivity norms");
+    require(result.sensitivityParameterNames == names,
+            "identifiability must preserve sensitivity parameter names");
     require(!result.passed, "identifiability cannot pass when at least one parameter is weak");
 }
 
@@ -1786,6 +1788,11 @@ void testRunOfflineProducesCalibratedReportButAudioStaysOpen()
             "boundary must not be promoted while the audio gate is closed");
     require(report.calibrationConverged,
             "offline runner calibration must converge once DC, AC and transient gates pass");
+    require(report.gates.identifiability,
+            "offline runner identifiability must pass for the active B6 empirical diode subset");
+    require(report.identifiabilitySensitivityParameterNames.size() == 3
+                && report.inactiveIdentifiabilityParameters.size() == 5,
+            "offline runner must separate active B6 parameters from inactive future-model parameters");
     require(report.parameters.isValid(),
             "report parameters must remain inside their declared bounds when calibration is enabled");
 

@@ -642,7 +642,9 @@ CalibrationReport B6B11CalibrationRunner::runOffline(const std::filesystem::path
                                                       calibrationOptions);
         report.gates.identifiability = identifiability.passed;
         report.identifiabilityConditionNumber = identifiability.conditionNumber;
+        report.identifiabilitySensitivityParameterNames = identifiability.sensitivityParameterNames;
         report.identifiabilitySensitivityNorms = identifiability.sensitivityNorms;
+        report.inactiveIdentifiabilityParameters = identifiability.inactiveParameters;
         for (const auto& failure : identifiability.failures) {
             report.identifiabilityFailures.push_back(failure);
         }
@@ -660,7 +662,8 @@ CalibrationReport B6B11CalibrationRunner::runOffline(const std::filesystem::path
         summary << "identifiability: condition=" << identifiability.conditionNumber
                 << ", weak=" << identifiability.weakParameters.size()
                 << ", correlations=" << identifiability.strongCorrelations.size()
-                << ", onBound=" << identifiability.parametersOnBound.size();
+                << ", onBound=" << identifiability.parametersOnBound.size()
+                << ", inactive=" << identifiability.inactiveParameters.size();
         report.notes.push_back(summary.str());
     } else if (options.enableIdentifiability) {
         report.identifiabilityFailures.push_back("identifiability skipped: calibration did not converge");
