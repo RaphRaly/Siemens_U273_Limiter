@@ -21,6 +21,7 @@
 #include "u273/reference/ReferenceValidator.h"
 #include "u273/reference/ScientificReferenceModel.h"
 #include "u273/reference/U273TechnicalSpecs.h"
+#include "u273/reference/calibration/ActiveModelParameterMapping.h"
 #include "u273/reference/calibration/ActiveTopologyCandidate.h"
 #include "u273/reference/calibration/ActiveTopologyEvaluator.h"
 #include "u273/reference/calibration/B6B11CalibrationRunner.h"
@@ -1738,6 +1739,36 @@ void testIdentifiabilityPassesOnWellConditionedFixture()
     require(result.passed, "well-conditioned synthetic matrix must pass identifiability");
 }
 
+void testActiveParameterMappingBindsEmpiricalDiodeLaw()
+{
+    using namespace u273::reference::calibration;
+    using namespace u273::reference::state_space;
+
+    CircuitGraph circuit {};
+    const auto node = circuit.addNode("D");
+    circuit.addDiode("D1", node, kGroundNode, makeU273EmpiricalCompositeDiode());
+
+    ActiveModelParameters parameters {};
+    parameters.diodeA.value = 320.0;
+    parameters.diodeB.value = 0.2;
+    parameters.numericalGmin.value = 5.0e-12;
+
+    const auto mapped = applyActiveModelParametersToCircuit(circuit, parameters);
+    require(mapped.diodes().size() == 1,
+            "active-parameter mapping must preserve diode inventory");
+
+    const auto& diode = mapped.diodes().front();
+    const auto expectedExponent = 5.0;
+    const auto expectedCoefficient = std::pow(1.0 / parameters.diodeA.value, expectedExponent);
+    require(std::fabs(diode.model.empiricalVoltageExponent - expectedExponent) < 1.0e-12,
+            "diodeB must bind to the inverse empirical diode exponent");
+    require(std::fabs(diode.model.empiricalCurrentCoefficientMicroAmpPerMilliVolt
+                - expectedCoefficient) < expectedCoefficient * 1.0e-9,
+            "diodeA must bind to the inverse empirical diode coefficient");
+    require(std::fabs(diode.model.gminSiemens - parameters.numericalGmin.value) < 1.0e-18,
+            "numericalGmin must remain bound on empirical diodes");
+}
+
 void testRunOfflineProducesCalibratedReportButAudioStaysOpen()
 {
     using namespace u273::reference::calibration;
@@ -2330,6 +2361,7 @@ int main()
     testIdentifiabilityDetectsUnusedParameter();
     testIdentifiabilityDetectsCollinearPair();
     testIdentifiabilityPassesOnWellConditionedFixture();
+    testActiveParameterMappingBindsEmpiricalDiodeLaw();
     testRunOfflineProducesCalibratedReportButAudioStaysOpen();
     testRunOfflineFlagsOffStaysIdenticalToBaseline();
     testRunOfflineAudioGatePassesOnGoldenAndFailsOnPerturbed();

@@ -6,6 +6,7 @@
 #include <limits>
 #include <string>
 
+#include "u273/reference/calibration/ActiveModelParameterMapping.h"
 #include "u273/reference/calibration/SonicTarget.h"
 #include "u273/reference/state_space/StateSpaceSolver.h"
 
@@ -19,35 +20,6 @@ constexpr double kPi = 3.14159265358979323846;
 constexpr int kHarmonicCount = 5;
 constexpr int kWarmupSamples = 256;
 constexpr double kThdFloorDb = -120.0;
-// Guardrails matching the rest of the calibration stack: clamp arguments to
-// std::exp through std::clamp before evaluation. ThdBench itself never calls
-// std::exp directly because parameter -> circuit translation is done by the
-// reference runner; the constant lives here only for documentation.
-constexpr double kSafeExpClampHi = 60.0;
-constexpr double kSafeExpClampLo = -60.0;
-
-[[nodiscard]] double safeExp(double argument)
-{
-    const auto clamped = std::clamp(argument, kSafeExpClampLo, kSafeExpClampHi);
-    return std::exp(clamped);
-}
-
-[[nodiscard]] ss::CircuitGraph applyParameters(ss::CircuitGraph circuit,
-                                                const ActiveModelParameters& parameters)
-{
-    const auto saturationCurrent = safeExp(parameters.logIs.value);
-    for (auto& diode : circuit.mutableDiodes()) {
-        diode.model.saturationCurrentAmp = saturationCurrent;
-        diode.model.gminSiemens = parameters.numericalGmin.value;
-    }
-    for (auto& bjt : circuit.mutableNpnBjts()) {
-        bjt.model.saturationCurrentAmp = saturationCurrent;
-        bjt.model.betaForward = parameters.betaForward.value;
-        bjt.model.betaReverse = parameters.betaReverse.value;
-        bjt.model.gminSiemens = parameters.numericalGmin.value;
-    }
-    return circuit;
-}
 
 [[nodiscard]] ss::NodeId sameNode(const ss::CircuitGraph& source,
                                   ss::CircuitGraph& target,
@@ -289,7 +261,7 @@ ThdBenchResult ThdBench::evaluate(const ActiveModelParameters& parameters,
     }
     const auto outputIndex = static_cast<std::size_t>(outputNode.value - 1);
 
-    const auto calibratedCircuit = applyParameters(referenceCircuit, parameters);
+    const auto calibratedCircuit = applyActiveModelParametersToCircuit(referenceCircuit, parameters);
     const auto dcBias = dcBiasFor(calibratedCircuit, commandSourceId);
     const auto amplitudeNorm = std::pow(10.0, options.inputAmplitudeDbfs / 20.0);
 

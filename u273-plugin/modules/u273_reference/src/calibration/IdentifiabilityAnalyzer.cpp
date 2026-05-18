@@ -121,23 +121,6 @@ namespace {
     return result;
 }
 
-[[nodiscard]] ss::CircuitGraph applyParametersCopy(ss::CircuitGraph circuit,
-                                                   const ActiveModelParameters& parameters)
-{
-    const auto saturationCurrent = std::exp(parameters.logIs.value);
-    for (auto& diode : circuit.mutableDiodes()) {
-        diode.model.saturationCurrentAmp = saturationCurrent;
-        diode.model.gminSiemens = parameters.numericalGmin.value;
-    }
-    for (auto& bjt : circuit.mutableNpnBjts()) {
-        bjt.model.saturationCurrentAmp = saturationCurrent;
-        bjt.model.betaForward = parameters.betaForward.value;
-        bjt.model.betaReverse = parameters.betaReverse.value;
-        bjt.model.gminSiemens = parameters.numericalGmin.value;
-    }
-    return circuit;
-}
-
 } // namespace
 
 IdentifiabilityResult IdentifiabilityAnalyzer::analyze(
@@ -268,10 +251,6 @@ IdentifiabilityResult IdentifiabilityAnalyzer::analyze(
             parametersOnBound.push_back(names[index]);
         }
     }
-
-    // Apply the parameters once so that residuals remain self-consistent with
-    // the center evaluation (defensive: the helper does not retain state).
-    (void) applyParametersCopy(problem.referenceCircuit, parameters);
 
     return evaluateFromSensitivity(names, sensitivity, parametersOnBound, options);
 }

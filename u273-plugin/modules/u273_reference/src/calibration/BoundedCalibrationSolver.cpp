@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "u273/reference/calibration/ActiveModelParameterMapping.h"
 #include "u273/reference/calibration/B6SmallSignalAcReference.h"
 #include "u273/reference/calibration/CalibrationResiduals.h"
 #include "u273/reference/calibration/OperatingPointSolver.h"
@@ -67,29 +68,6 @@ constexpr std::size_t kParameterCount = 8;
     case 7: return parameters.numericalGmin;
     default: throw std::out_of_range("activeModelParameter index out of range");
     }
-}
-
-// Maps a subset of ActiveModelParameters to the CircuitGraph's diode and BJT
-// model coefficients. The remaining four parameters (diodeA, diodeB,
-// earlyVoltage, detectorToCmdScale) are not yet bound to circuit-level
-// observables: identifiability analysis will correctly classify them as
-// weak parameters, surfacing the gap as a measurable artefact rather than
-// silent freedom.
-[[nodiscard]] ss::CircuitGraph applyParametersToCircuit(ss::CircuitGraph circuit,
-                                                        const ActiveModelParameters& parameters)
-{
-    const auto saturationCurrent = std::exp(parameters.logIs.value);
-    for (auto& diode : circuit.mutableDiodes()) {
-        diode.model.saturationCurrentAmp = saturationCurrent;
-        diode.model.gminSiemens = parameters.numericalGmin.value;
-    }
-    for (auto& bjt : circuit.mutableNpnBjts()) {
-        bjt.model.saturationCurrentAmp = saturationCurrent;
-        bjt.model.betaForward = parameters.betaForward.value;
-        bjt.model.betaReverse = parameters.betaReverse.value;
-        bjt.model.gminSiemens = parameters.numericalGmin.value;
-    }
-    return circuit;
 }
 
 void appendResidualPoints(std::vector<double>& sink, const ResidualGateResult& gate)
@@ -190,7 +168,7 @@ CalibrationResidualVector BoundedCalibrationSolver::evaluate(
         return result;
     }
 
-    auto circuit = applyParametersToCircuit(problem.referenceCircuit, parameters);
+    auto circuit = applyActiveModelParametersToCircuit(problem.referenceCircuit, parameters);
     const auto dcView = DCCircuitView::fromCircuit(circuit);
     if (!dcView.isValid()) {
         result.failures.push_back("DC view rejected the reference circuit");

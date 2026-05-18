@@ -25,10 +25,12 @@
 #include <random>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "u273/core/ProcessContext.h"
 #include "u273/dsp/U273DspEngine.h"
+#include "u273/reference/calibration/ActiveModelParameterMapping.h"
 #include "u273/reference/calibration/ActiveModelParameters.h"
 #include "u273/reference/calibration/B6B11CalibrationRunner.h"
 #include "u273/reference/calibration/BoundedCalibrationSolver.h"
@@ -48,37 +50,17 @@ namespace {
 
 constexpr double kPi = 3.14159265358979323846;
 constexpr int kWarmupSamples = 256;
-constexpr double kSafeExpClampHi = 60.0;
-constexpr double kSafeExpClampLo = -60.0;
 
 #ifndef U273_DEFAULT_DATASET_DIR
 #define U273_DEFAULT_DATASET_DIR "results"
 #endif
 
-[[nodiscard]] double safeExp(double argument)
-{
-    const auto clamped = std::clamp(argument, kSafeExpClampLo, kSafeExpClampHi);
-    return std::exp(clamped);
-}
-
-// Apply calibrated active-model parameters to the reference circuit. Mirrors
-// the private helper in ThdBench.cpp so the bench drives exactly the same
-// circuit the audio gate evaluates.
+// Apply calibrated active-model parameters through the same shared mapping
+// used by the calibration solver and audio gate.
 [[nodiscard]] ss::CircuitGraph applyParameters(ss::CircuitGraph circuit,
                                                 const calib::ActiveModelParameters& parameters)
 {
-    const auto saturationCurrent = safeExp(parameters.logIs.value);
-    for (auto& diode : circuit.mutableDiodes()) {
-        diode.model.saturationCurrentAmp = saturationCurrent;
-        diode.model.gminSiemens = parameters.numericalGmin.value;
-    }
-    for (auto& bjt : circuit.mutableNpnBjts()) {
-        bjt.model.saturationCurrentAmp = saturationCurrent;
-        bjt.model.betaForward = parameters.betaForward.value;
-        bjt.model.betaReverse = parameters.betaReverse.value;
-        bjt.model.gminSiemens = parameters.numericalGmin.value;
-    }
-    return circuit;
+    return calib::applyActiveModelParametersToCircuit(std::move(circuit), parameters);
 }
 
 [[nodiscard]] ss::NodeId sameNode(const ss::CircuitGraph& source,
