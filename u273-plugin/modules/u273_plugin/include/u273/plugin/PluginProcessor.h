@@ -43,6 +43,10 @@ public:
 
     [[nodiscard]] MeterBridge& meterBridge() noexcept { return meterBridge_; }
     [[nodiscard]] const MeterBridge& meterBridge() const noexcept { return meterBridge_; }
+    [[nodiscard]] juce::AudioProcessorValueTreeState& parameters() noexcept { return parameters_; }
+    [[nodiscard]] const juce::AudioProcessorValueTreeState& parameters() const noexcept { return parameters_; }
+    [[nodiscard]] int reportedLatencySamples() const noexcept { return getLatencySamples(); }
+    [[nodiscard]] int gainCellOversamplingFactor() const noexcept { return dspEngine_.gainCellOversamplingFactor(); }
 
 private:
     juce::AudioProcessorValueTreeState parameters_;

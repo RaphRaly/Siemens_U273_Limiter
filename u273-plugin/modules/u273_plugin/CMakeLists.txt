@@ -51,3 +51,13 @@ target_compile_definitions(u273_plugin PUBLIC
     JUCE_VST3_CAN_REPLACE_VST2=0)
 
 u273_target_defaults(u273_plugin)
+
+if(TARGET u273_plugin_Standalone)
+    set(U273_CURRENT_STANDALONE_DIR "${CMAKE_SOURCE_DIR}/../standAloneActuel")
+    add_custom_command(TARGET u273_plugin_Standalone POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E make_directory "${U273_CURRENT_STANDALONE_DIR}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+            "$<TARGET_FILE:u273_plugin_Standalone>"
+            "${U273_CURRENT_STANDALONE_DIR}/U273 Limiter.exe"
+        COMMENT "Refreshing current Standalone demo at ${U273_CURRENT_STANDALONE_DIR}")
+endif()

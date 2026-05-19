@@ -53,6 +53,7 @@ public:
     [[nodiscard]] const RateGraph& rateGraph() const noexcept { return rateGraph_; }
     [[nodiscard]] int latencySamples() const noexcept { return totalLatencySamples(rateGraph_); }
     [[nodiscard]] RealtimeQualityMode qualityMode() const noexcept { return config_.qualityMode; }
+    [[nodiscard]] int gainCellOversamplingFactor() const noexcept { return gainCellOversamplingFactor_; }
     [[nodiscard]] bool oversamplingExecutionEnabled() const noexcept
     {
         return rateGraph_.oversamplingExecutionEnabled;
