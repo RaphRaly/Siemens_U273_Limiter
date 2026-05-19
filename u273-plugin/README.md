@@ -9,7 +9,8 @@ Current public beta:
 - [U273_Limiter_Beta_1.0_Windows_VST3.zip](releases/Beta_1.0/U273_Limiter_Beta_1.0_Windows_VST3.zip)
 - Platform: Windows x64
 - Format: VST3
-- SHA256: `EEFC08BD26946040D64D47E64A98088A416BEF28A7DB494092493366AF7C7FF9`
+- Build: Release
+- SHA256: `24C53D82628706E741EE9A98FA24657DC966E42D4EA02F72864C16F70CE3061F`
 
 ### Install the VST3
 
