@@ -80,7 +80,19 @@ struct MultiRateFactors {
 
 [[nodiscard]] RateStage makeHostStage(const char* name, double hostSampleRate) noexcept
 {
-    return RateStage {name, 1, 0, true, hostSampleRate, hostSampleRate * 0.5, true, false};
+    return RateStage {
+        name,
+        1,
+        0,
+        0.0,
+        0,
+        0,
+        true,
+        hostSampleRate,
+        hostSampleRate * 0.5,
+        true,
+        false,
+        MultiratePhaseMode::linearPhaseIntegerLatency};
 }
 
 [[nodiscard]] RateStage makeOversampledStage(const char* name,
@@ -92,11 +104,15 @@ struct MultiRateFactors {
         name,
         factor,
         0,
+        0.0,
+        0,
+        0,
         true,
         hostSampleRate * static_cast<double>(factor),
         targetBandwidthHz,
         true,
-        false};
+        false,
+        MultiratePhaseMode::linearPhaseIntegerLatency};
 }
 
 [[nodiscard]] bool isConfigValid(const RateGraphConfig& config) noexcept
@@ -134,6 +150,30 @@ void refreshOversamplingExecution(RateGraph& graph) noexcept
     }
 }
 
+void refreshLatencyContract(RateGraph& graph) noexcept
+{
+    graph.latencySamplesExact = 0.0;
+    graph.hostReportedLatencySamples = 0;
+    graph.dryCompensationSamples = 0;
+
+    if (!graph.isValid()) {
+        return;
+    }
+
+    for (auto index = 0; index < graph.stageCount; ++index) {
+        const auto& stage = graph.stages[static_cast<std::size_t>(index)];
+        if (!stage.enabled || !stage.latencyCompensated) {
+            continue;
+        }
+
+        if (stage.hostReportedLatencySamples > graph.hostReportedLatencySamples) {
+            graph.latencySamplesExact = stage.latencySamplesExact;
+            graph.hostReportedLatencySamples = stage.hostReportedLatencySamples;
+            graph.dryCompensationSamples = stage.dryCompensationSamples;
+        }
+    }
+}
+
 } // namespace
 
 bool isRealtimeQualityModeValid(RealtimeQualityMode mode) noexcept
@@ -164,6 +204,9 @@ RateGraph buildRateGraph(const RateGraphConfig& config) noexcept
 
     graph.valid = true;
     graph.oversamplingExecutionEnabled = false;
+    graph.latencySamplesExact = 0.0;
+    graph.hostReportedLatencySamples = 0;
+    graph.dryCompensationSamples = 0;
     graph.deltaPathEnabled = true;
     graph.dryPathTransparentAtZeroReduction = true;
 
@@ -176,7 +219,19 @@ RateGraph buildRateGraph(const RateGraphConfig& config) noexcept
         kGainCellStage, factors.gainCell, config.hostSampleRate, 0.0));
     appendStage(graph, makeOversampledStage(
         kTruePeakStage, factors.truePeak, config.hostSampleRate, 0.0));
-    appendStage(graph, RateStage {kUiMeterStage, 1, 0, true, kUiMeterRateHz, 0.0, true, false});
+    appendStage(graph, RateStage {
+        kUiMeterStage,
+        1,
+        0,
+        0.0,
+        0,
+        0,
+        true,
+        kUiMeterRateHz,
+        0.0,
+        true,
+        false,
+        MultiratePhaseMode::linearPhaseIntegerLatency});
     appendStage(graph, makeHostStage(kAudioOutputStage, config.hostSampleRate));
 
     return graph;
@@ -202,21 +257,47 @@ bool setRateStageOversamplingExecution(RateGraph& graph,
     return false;
 }
 
+bool setRateStageLatency(RateGraph& graph,
+                         const char* name,
+                         double latencySamplesExact,
+                         int hostReportedLatencySamples,
+                         int dryCompensationSamples) noexcept
+{
+    if (name == nullptr || !graph.isValid()) {
+        return false;
+    }
+
+    if (!u273::core::isFinite(latencySamplesExact)
+        || latencySamplesExact < 0.0
+        || hostReportedLatencySamples < 0
+        || dryCompensationSamples < 0) {
+        return false;
+    }
+
+    for (auto index = 0; index < graph.stageCount; ++index) {
+        auto& stage = graph.stages[static_cast<std::size_t>(index)];
+        if (stage.name != nullptr && std::strcmp(stage.name, name) == 0) {
+            stage.latencySamplesExact = latencySamplesExact;
+            stage.hostReportedLatencySamples = hostReportedLatencySamples;
+            stage.latencySamples = hostReportedLatencySamples;
+            stage.dryCompensationSamples = dryCompensationSamples;
+            stage.latencyCompensated = dryCompensationSamples == hostReportedLatencySamples;
+            stage.phaseMode = MultiratePhaseMode::linearPhaseIntegerLatency;
+            refreshLatencyContract(graph);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 int totalLatencySamples(const RateGraph& graph) noexcept
 {
     if (!graph.isValid()) {
         return 0;
     }
 
-    auto latency = 0;
-    for (auto index = 0; index < graph.stageCount; ++index) {
-        const auto& stage = graph.stages[static_cast<std::size_t>(index)];
-        if (stage.enabled) {
-            latency += stage.latencySamples;
-        }
-    }
-
-    return latency;
+    return graph.hostReportedLatencySamples;
 }
 
 const RateStage* findRateStage(const RateGraph& graph, const char* name) noexcept

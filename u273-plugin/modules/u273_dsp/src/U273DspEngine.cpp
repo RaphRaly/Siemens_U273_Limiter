@@ -32,6 +32,7 @@ void U273DspEngine::prepare(const DspPrepareConfig& config) noexcept
     prepared_ = false;
     rateGraph_ = RateGraph {};
     sidechainOversamplingFactor_ = 1;
+    gainCellOversamplingFactor_ = 1;
 
     if (!config.isValid()) {
         return;
@@ -47,6 +48,26 @@ void U273DspEngine::prepare(const DspPrepareConfig& config) noexcept
     if (const auto* sidechainStage = findRateStage(rateGraph_, "sidechain")) {
         sidechainOversamplingFactor_ = std::max(1, sidechainStage->oversamplingFactor);
         (void) setRateStageOversamplingExecution(rateGraph_, "sidechain", true);
+    }
+
+    if (const auto* gainCellStage = findRateStage(rateGraph_, "gainCell")) {
+        gainCellOversamplingFactor_ = std::max(1, gainCellStage->oversamplingFactor);
+    }
+
+    if (!gainCellDeltaPath_.prepare(gainCellOversamplingFactor_, config.numChannels)) {
+        rateGraph_ = RateGraph {};
+        gainCellOversamplingFactor_ = 1;
+        return;
+    }
+
+    if (gainCellOversamplingFactor_ > 1) {
+        (void) setRateStageOversamplingExecution(rateGraph_, "gainCell", true);
+        (void) setRateStageLatency(
+            rateGraph_,
+            "gainCell",
+            gainCellDeltaPath_.latencySamplesExact(),
+            gainCellDeltaPath_.latencySamples(),
+            gainCellDeltaPath_.latencySamples());
     }
 
     detector_.prepare(config.sampleRate * static_cast<double>(sidechainOversamplingFactor_));
@@ -66,6 +87,7 @@ void U273DspEngine::prepare(const DspPrepareConfig& config) noexcept
 void U273DspEngine::reset() noexcept
 {
     detector_.reset();
+    gainCellDeltaPath_.reset();
     defaultGainReductionModel_.reset();
     fullActiveEngine_.reset();
     tableReductionEngine_.reset();
@@ -125,23 +147,29 @@ ProcessStatus U273DspEngine::process(const u273::core::ProcessContext& context,
     }
 
     if (snapshot.isBypassed()) {
-        // Bypass is still metered, but it must not apply gain, detector, or
-        // analog-model state changes to the audio stream.
+        // Bypass is still metered and latency-aligned with the active gain-cell
+        // path, but it must not apply gain, detector, or analog-model state
+        // changes to the audio stream.
         auto peak = 0.0f;
+        auto outputPeak = 0.0f;
         auto clipped = false;
 
         for (int sample = 0; sample < context.audio.numSamples; ++sample) {
             for (int channel = 0; channel < context.audio.numChannels; ++channel) {
                 const auto value = context.audio.getSample(channel, sample);
+                const auto output = gainCellDeltaPath_.processSample(channel, value, 1.0f, 0.0f);
+                context.audio.setSample(channel, sample, output);
                 const auto absValue = std::fabs(value);
+                const auto absOutput = std::fabs(output);
                 peak = std::max(peak, absValue);
-                clipped = clipped || absValue >= 1.0f;
+                outputPeak = std::max(outputPeak, absOutput);
+                clipped = clipped || absOutput >= 1.0f;
             }
         }
 
         if (meterFrame != nullptr) {
             meterFrame->inputPeakDb = u273::core::linearToDb(peak);
-            meterFrame->outputPeakDb = u273::core::linearToDb(peak);
+            meterFrame->outputPeakDb = u273::core::linearToDb(outputPeak);
             meterFrame->gainReductionDb = 0.0f;
             meterFrame->clipFlag = clipped;
             meterFrame->sequence = context.blockSequence;
@@ -180,15 +208,13 @@ ProcessStatus U273DspEngine::process(const u273::core::ProcessContext& context,
         }
         const auto reductionDb = gainReductionModel_->evaluateGainReductionDb(envelope, snapshot);
         const auto reductionGain = u273::core::dbToLinear(-reductionDb);
-        const auto wetGain = reductionGain * outputGain;
+        const auto wetGain = inputGain * reductionGain * outputGain;
 
         maxReductionDb = std::max(maxReductionDb, reductionDb);
 
         for (int channel = 0; channel < context.audio.numChannels; ++channel) {
             const auto dry = context.audio.getSample(channel, sample);
-            const auto wet = dry * inputGain * wetGain;
-            const auto delta = wet - dry;
-            const auto output = dry + delta * wetMix;
+            const auto output = gainCellDeltaPath_.processSample(channel, dry, wetGain, wetMix);
             context.audio.setSample(channel, sample, output);
 
             const auto absOutput = std::fabs(output);

@@ -9,6 +9,7 @@
 #include "u273/dsp/AnalogRealtimeEngine.h"
 #include "u273/dsp/DetectorEnvelope.h"
 #include "u273/dsp/FullActiveRealtimeEngine.h"
+#include "u273/dsp/GainCellDeltaPath.h"
 #include "u273/dsp/RateGraph.h"
 #include "u273/dsp/RealtimeGainReductionModel.h"
 #include "u273/dsp/TableReductionRealtimeEngine.h"
@@ -83,7 +84,9 @@ private:
     DspPrepareConfig config_ {};
     RateGraph rateGraph_ {};
     int sidechainOversamplingFactor_ {1};
+    int gainCellOversamplingFactor_ {1};
     DetectorEnvelope detector_ {};
+    GainCellDeltaPath gainCellDeltaPath_ {};
     // Default model keeps normal construction allocation-free; tests and future
     // variants can inject another implementation through the alternate ctor.
     AnalogRealtimeEngine defaultGainReductionModel_ {};

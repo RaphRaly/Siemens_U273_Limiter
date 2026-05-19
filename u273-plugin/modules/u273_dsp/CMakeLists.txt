@@ -1,5 +1,7 @@
 add_library(u273_dsp STATIC
     include/u273/dsp/FullActiveRealtimeEngine.h
+    include/u273/dsp/GainCellDeltaPath.h
+    include/u273/dsp/LinearPhaseFirResampler.h
     include/u273/dsp/NominalReductionTable.h
     include/u273/dsp/RateGraph.h
     include/u273/dsp/RealtimeGainReductionModel.h
@@ -9,7 +11,9 @@ add_library(u273_dsp STATIC
     src/B6BridgeRealtimeModel.cpp
     src/DetectorEnvelope.cpp
     src/FullActiveRealtimeEngine.cpp
+    src/GainCellDeltaPath.cpp
     src/GainReductionComputer.cpp
+    src/LinearPhaseFirResampler.cpp
     src/NominalReductionTable.cpp
     src/RateGraph.cpp
     src/TableReductionRealtimeEngine.cpp

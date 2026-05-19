@@ -12,6 +12,8 @@
 #include "u273/dsp/AnalogRealtimeEngine.h"
 #include "u273/dsp/DetectorEnvelope.h"
 #include "u273/dsp/FullActiveRealtimeEngine.h"
+#include "u273/dsp/GainCellDeltaPath.h"
+#include "u273/dsp/LinearPhaseFirResampler.h"
 #include "u273/dsp/NominalReductionTable.h"
 #include "u273/dsp/RateGraph.h"
 #include "u273/dsp/RealtimeDetailLevel.h"
@@ -158,17 +160,36 @@ double thdPercent(const std::vector<float>& samples, int fundamentalBin, int hig
     return std::sqrt(harmonicPower) / fundamental * 100.0;
 }
 
+void requireDelayedCopy(const std::vector<float>& output,
+                        const std::vector<float>& input,
+                        int latency,
+                        float tolerance,
+                        const char* message)
+{
+    require(output.size() == input.size(), "delayed-copy helper requires equal vector sizes");
+    for (std::size_t index = 0; index < output.size(); ++index) {
+        const auto expected = static_cast<int>(index) >= latency
+            ? input[static_cast<std::size_t>(static_cast<int>(index) - latency)]
+            : 0.0f;
+        require(std::fabs(output[index] - expected) <= tolerance, message);
+    }
+}
+
 std::vector<float> processSine(float frequencyHz, float amplitude, u273::core::ParameterSnapshot snapshot)
 {
     constexpr auto sampleRate = 48000.0;
-    constexpr auto sampleCount = 4800;
+    constexpr auto analysisSampleCount = 4800;
+    constexpr auto warmupSamples = 1024;
     constexpr auto pi = 3.1415926535897932384626433832795;
 
     u273::dsp::U273DspEngine engine {};
-    engine.prepare(u273::dsp::DspPrepareConfig {sampleRate, sampleCount, 1});
+    engine.prepare(u273::dsp::DspPrepareConfig {
+        sampleRate,
+        analysisSampleCount + warmupSamples,
+        1});
 
-    std::vector<float> samples(static_cast<std::size_t>(sampleCount), 0.0f);
-    for (int sample = 0; sample < sampleCount; ++sample) {
+    std::vector<float> samples(static_cast<std::size_t>(analysisSampleCount + warmupSamples), 0.0f);
+    for (int sample = 0; sample < static_cast<int>(samples.size()); ++sample) {
         samples[static_cast<std::size_t>(sample)] = amplitude
             * static_cast<float>(std::sin(2.0 * pi * static_cast<double>(frequencyHz) * sample / sampleRate));
     }
@@ -184,7 +205,10 @@ std::vector<float> processSine(float frequencyHz, float amplitude, u273::core::P
     const auto status = engine.process(context, snapshot, &meter);
     require(status == u273::dsp::ProcessStatus::ok, "sine render must process for FFT validation");
     require(meter.isValid(), "sine render meter must stay valid");
-    return samples;
+
+    return std::vector<float> {
+        samples.begin() + warmupSamples,
+        samples.begin() + warmupSamples + analysisSampleCount};
 }
 
 void testParameterSnapshotContract()
@@ -344,6 +368,88 @@ void testRateGraphRejectsInvalidConfig()
     require(!invalidConfig.isValid(), "DSP prepare config must reject unknown quality modes");
 }
 
+void testLinearPhaseFirResamplerImpulseLatencyAndMatchedNull()
+{
+    u273::dsp::LinearPhaseFirResampler resampler {};
+    require(resampler.prepare(4), "FIR resampler must prepare supported 4x factor");
+    require(resampler.latencySamples() == u273::dsp::LinearPhaseFirResampler::kHostLatencySamples,
+            "FIR resampler must expose integer host latency");
+    require(resampler.tapCount() == 4 * u273::dsp::LinearPhaseFirResampler::kHostLatencySamples + 1,
+            "FIR resampler tap count must produce integer pair latency");
+
+    std::vector<float> impulse(64, 0.0f);
+    impulse[0] = 1.0f;
+    auto maxIndex = 0;
+    auto maxValue = 0.0f;
+    for (int index = 0; index < static_cast<int>(impulse.size()); ++index) {
+        const auto value = std::fabs(resampler.process(impulse[static_cast<std::size_t>(index)], 1.0f));
+        if (value > maxValue) {
+            maxValue = value;
+            maxIndex = index;
+        }
+    }
+    require(maxIndex == resampler.latencySamples(),
+            "FIR resampler impulse peak must land on the reported host latency");
+    require(maxValue > 0.1f, "FIR resampler impulse response must produce a usable main lobe");
+
+    u273::dsp::LinearPhaseFirResampler lhs {};
+    u273::dsp::LinearPhaseFirResampler rhs {};
+    require(lhs.prepare(8) && rhs.prepare(8), "matched FIR resamplers must prepare 8x factor");
+    for (int index = 0; index < 128; ++index) {
+        const auto input = 0.25f * static_cast<float>(std::sin(0.02 * static_cast<double>(index)));
+        const auto left = lhs.process(input, 1.0f);
+        const auto right = rhs.process(input, 1.0f);
+        require(std::fabs(left - right) <= 1.0e-8f,
+                "matched FIR resamplers must null exactly for identical input and state");
+    }
+
+    require(!resampler.prepare(3), "FIR resampler must reject unsupported factors");
+}
+
+void testGainCellDeltaPathContracts()
+{
+    u273::dsp::GainCellDeltaPath path {};
+    require(path.prepare(4, 1), "GainCellDeltaPath must prepare an oversampled mono path");
+    require(path.latencySamples() == u273::dsp::LinearPhaseFirResampler::kHostLatencySamples,
+            "GainCellDeltaPath must expose the FIR pair latency");
+
+    std::vector<float> input(96, 0.0f);
+    for (std::size_t index = 0; index < input.size(); ++index) {
+        input[index] = static_cast<float>(0.4 * std::sin(0.05 * static_cast<double>(index)));
+    }
+
+    std::vector<float> output(input.size(), 0.0f);
+    for (std::size_t index = 0; index < input.size(); ++index) {
+        output[index] = path.processSample(0, input[index], 1.0f, 1.0f);
+    }
+    requireDelayedCopy(output, input, path.latencySamples(), 1.0e-7f,
+                       "zero-GR oversampled gain-cell path must null against delayed dry");
+
+    path.reset();
+    for (std::size_t index = 0; index < input.size(); ++index) {
+        output[index] = path.processSample(0, input[index], 0.25f, 0.0f);
+    }
+    requireDelayedCopy(output, input, path.latencySamples(), 1.0e-7f,
+                       "mix 0 oversampled gain-cell path must output delayed dry");
+
+    path.reset();
+    std::vector<float> constant(128, 1.0f);
+    output.resize(constant.size());
+    for (std::size_t index = 0; index < constant.size(); ++index) {
+        output[index] = path.processSample(0, constant[index], 0.5f, 1.0f);
+    }
+    require(std::fabs(output.back() - 0.5f) <= 1.0e-3f,
+            "mix 1 fixed gain must attenuate correctly after FIR latency and settling");
+
+    require(path.prepare(1, 1), "GainCellDeltaPath must prepare exact 1x fallback");
+    const auto dry = 0.8f;
+    const auto gain = 0.5f;
+    const auto mix = 0.25f;
+    const auto expected = dry + (dry * gain - dry) * mix;
+    require(std::fabs(path.processSample(0, dry, gain, mix) - expected) <= 1.0e-7f,
+            "1x gain-cell path must exactly match the legacy dry + mix * (wet - dry) law");
+}
+
 void testDspPrepareStoresRateGraphAndLatency()
 {
     const std::array modes {
@@ -360,19 +466,41 @@ void testDspPrepareStoresRateGraphAndLatency()
         require(engine.rateGraph().isValid(), "DSP engine must expose a valid prepared rate graph");
         require(engine.latencySamples() == u273::dsp::totalLatencySamples(engine.rateGraph()),
                 "DSP engine latency must match the prepared rate graph");
-        require(engine.latencySamples() == 0, "DSP sidechain oversampling must remain zero-latency");
         require(engine.oversamplingExecutionEnabled(),
-                "DSP engine must execute the sidechain rate island when oversampling is declared");
-        require(requireRateStage(engine.rateGraph(), "sidechain").executesOversampling,
-                "DSP engine must mark sidechain oversampling as executed");
-        require(!requireRateStage(engine.rateGraph(), "gainCell").executesOversampling,
-                "DSP engine must leave gain-cell oversampling disabled until the audio resampler exists");
+                "DSP engine must execute declared oversampling islands");
+
+        const auto& sidechain = requireRateStage(engine.rateGraph(), "sidechain");
+        require(sidechain.executesOversampling == (sidechain.oversamplingFactor > 1),
+                "DSP engine must mark sidechain execution only when the factor is greater than 1x");
+
+        const auto& gainCell = requireRateStage(engine.rateGraph(), "gainCell");
+        require(gainCell.executesOversampling == (gainCell.oversamplingFactor > 1),
+                "DSP engine must execute gain-cell oversampling when the factor is greater than 1x");
+        require(gainCell.phaseMode == u273::dsp::MultiratePhaseMode::linearPhaseIntegerLatency,
+                "gain-cell oversampling must expose the linear-phase integer-latency contract");
+        if (gainCell.oversamplingFactor > 1) {
+            require(gainCell.latencySamplesExact > 0.0,
+                    "executed gain-cell oversampling must report finite non-zero exact latency");
+            require(gainCell.hostReportedLatencySamples == gainCell.latencySamples,
+                    "legacy latency field must mirror host-reported gain-cell latency");
+            require(gainCell.dryCompensationSamples == gainCell.hostReportedLatencySamples,
+                    "gain-cell dry compensation must match host-reported latency");
+            require(engine.latencySamples() == gainCell.hostReportedLatencySamples,
+                    "host latency must be the compensated gain-cell latency, not a sum of parallel islands");
+            require(engine.rateGraph().dryCompensationSamples == engine.latencySamples(),
+                    "prepared rate graph dry compensation must match host latency");
+        } else {
+            require(gainCell.hostReportedLatencySamples == 0,
+                    "1x gain-cell path must not add host latency");
+            require(engine.latencySamples() == 0,
+                    "1x gain-cell path must keep the host-reported latency at zero");
+        }
         require(engine.boundary() == u273::core::ModelBoundary::fullActiveModelUnverified,
                 "quality modes must not promote the analog realtime model boundary");
     }
 }
 
-void testRenderRateGraphExecutesSidechainOnly()
+void testRenderRateGraphExecutesSidechainAndGainCell()
 {
     FixedGainReductionModel model {};
     u273::dsp::U273DspEngine engine {model};
@@ -391,8 +519,10 @@ void testRenderRateGraphExecutesSidechainOnly()
             "Render mode must execute sidechain oversampling");
     require(requireRateStage(engine.rateGraph(), "sidechain").executesOversampling,
             "Render mode must mark sidechain execution");
-    require(!requireRateStage(engine.rateGraph(), "gainCell").executesOversampling,
-            "Render mode must not execute gain-cell oversampling before the audio resampler exists");
+    require(requireRateStage(engine.rateGraph(), "gainCell").executesOversampling,
+            "Render mode must execute gain-cell oversampling");
+    require(requireRateStage(engine.rateGraph(), "gainCell").hostReportedLatencySamples > 0,
+            "Render gain-cell oversampling must report compensated latency");
 
     std::array<float, 8> mono {};
     mono.fill(0.5f);
@@ -408,7 +538,7 @@ void testRenderRateGraphExecutesSidechainOnly()
     u273::core::MeterFrame meter {};
     const auto status = engine.process(context, snapshot, &meter);
 
-    require(status == u273::dsp::ProcessStatus::ok, "render skeleton block must process");
+    require(status == u273::dsp::ProcessStatus::ok, "render gain-cell oversampling block must process");
     require(model.evaluateCalls == static_cast<int>(mono.size()),
             "render sidechain island must still evaluate the gain model once per host sample");
 }
@@ -535,12 +665,17 @@ void testDspZeroReductionUsesTransparentDeltaPath()
     FixedGainReductionModel model {};
     model.gainReductionDb = 0.0f;
     u273::dsp::U273DspEngine engine {model};
-    engine.prepare(u273::dsp::DspPrepareConfig {48000.0, 8, 1});
+    engine.prepare(u273::dsp::DspPrepareConfig {48000.0, 64, 1});
     require(engine.rateGraph().deltaPathEnabled, "DSP graph must declare the delta path");
     require(engine.rateGraph().dryPathTransparentAtZeroReduction,
             "DSP graph must declare zero-reduction dry transparency");
+    require(engine.latencySamples() > 0,
+            "48 kHz precise gain-cell path must report non-zero FIR latency");
 
-    std::array<float, 8> mono {-0.75f, -0.5f, -0.125f, 0.0f, 0.125f, 0.25f, 0.5f, 0.75f};
+    std::vector<float> mono(64, 0.0f);
+    for (std::size_t index = 0; index < mono.size(); ++index) {
+        mono[index] = -0.75f + static_cast<float>(index) * 1.5f / static_cast<float>(mono.size() - 1);
+    }
     const auto original = mono;
     std::array<float*, 1> channels {mono.data()};
 
@@ -560,10 +695,8 @@ void testDspZeroReductionUsesTransparentDeltaPath()
 
     require(status == u273::dsp::ProcessStatus::ok,
             "zero-reduction delta path block must process");
-    for (std::size_t index = 0; index < mono.size(); ++index) {
-        require(std::fabs(mono[index] - original[index]) <= 1.0e-7f,
-                "zero-reduction delta path must preserve samples");
-    }
+    requireDelayedCopy(mono, original, engine.latencySamples(), 1.0e-7f,
+                       "zero-reduction delta path must preserve delayed dry samples");
     require(std::fabs(meter.gainReductionDb) <= 1.0e-7f,
             "zero-reduction delta path must report zero gain reduction");
 }
@@ -591,13 +724,13 @@ void testAnalogRealtimeBridgeLawIsMonotonic()
 void testBypassPreservesSignal()
 {
     u273::dsp::U273DspEngine engine {};
-    engine.prepare(u273::dsp::DspPrepareConfig {48000.0, 16, 1});
+    engine.prepare(u273::dsp::DspPrepareConfig {48000.0, 64, 1});
 
-    std::array<float, 16> mono {};
+    std::vector<float> mono(64, 0.0f);
     for (std::size_t index = 0; index < mono.size(); ++index) {
-        mono[index] = static_cast<float>(index) / 16.0f;
+        mono[index] = static_cast<float>(index) / static_cast<float>(mono.size());
     }
-    const auto lastBefore = mono.back();
+    const auto original = mono;
 
     std::array<float*, 1> channels {mono.data()};
     u273::core::ProcessContext context {
@@ -615,7 +748,8 @@ void testBypassPreservesSignal()
     const auto status = engine.process(context, snapshot, &meter);
 
     require(status == u273::dsp::ProcessStatus::ok, "bypass block must process");
-    require(std::fabs(mono.back() - lastBefore) < 0.000001f, "bypass must preserve signal");
+    requireDelayedCopy(mono, original, engine.latencySamples(), 1.0e-7f,
+                       "bypass must preserve signal through the latency-compensated dry path");
     require(meter.gainReductionDb == 0.0f, "bypass must report zero gain reduction");
 }
 
@@ -2505,8 +2639,10 @@ int main()
     testRateGraphQualityModesDeclareExpectedRates();
     testRateGraphAdaptsFactorsAtHighHostRates();
     testRateGraphRejectsInvalidConfig();
+    testLinearPhaseFirResamplerImpulseLatencyAndMatchedNull();
+    testGainCellDeltaPathContracts();
     testDspPrepareStoresRateGraphAndLatency();
-    testRenderRateGraphExecutesSidechainOnly();
+    testRenderRateGraphExecutesSidechainAndGainCell();
     testDspSidechainRunsAtDeclaredInternalRate();
     testDspHotSignalReducesGain();
     testDspEngineUsesInjectedGainReductionModel();
