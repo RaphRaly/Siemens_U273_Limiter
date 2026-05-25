@@ -2,6 +2,7 @@ add_library(u273_reference STATIC
     src/calibration/ActiveModelParameterMapping.cpp
     src/calibration/ActiveTopologyEvaluator.cpp
     src/calibration/ActiveTopologyCandidate.cpp
+    src/calibration/ActiveTopologyInventory.cpp
     src/calibration/B6B11CalibrationRunner.cpp
     src/calibration/B6SmallSignalAcReference.cpp
     src/calibration/BoundedCalibrationSolver.cpp

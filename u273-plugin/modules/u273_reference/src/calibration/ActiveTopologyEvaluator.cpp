@@ -1,11 +1,10 @@
 #include "u273/reference/calibration/ActiveTopologyEvaluator.h"
 
+#include "u273/reference/calibration/ActiveTopologyInventory.h"
+
 #include <algorithm>
 #include <array>
 #include <cmath>
-#include <sstream>
-#include <string_view>
-#include <utility>
 
 namespace u273::reference::calibration {
 
@@ -99,45 +98,6 @@ namespace {
     return current;
 }
 
-[[nodiscard]] ss::NodeId firstExistingNode(const ss::CircuitGraph& circuit,
-                                           std::string_view first,
-                                           std::string_view fallback = {})
-{
-    const auto primary = circuit.findNode(first);
-    if (primary.value > 0 || fallback.empty()) {
-        return primary;
-    }
-    return circuit.findNode(fallback);
-}
-
-[[nodiscard]] ActiveTopologyCandidate makeCandidate(const ss::CircuitGraph& circuit,
-                                                    std::string id,
-                                                    std::string device,
-                                                    ss::NodeId collector,
-                                                    ss::NodeId base,
-                                                    ss::NodeId emitter,
-                                                    double score)
-{
-    ActiveTopologyCandidate candidate {};
-    candidate.id = std::move(id);
-    candidate.device = std::move(device);
-    candidate.kind = ActiveDeviceKind::npn;
-    candidate.collector = collector;
-    candidate.base = base;
-    candidate.emitter = emitter;
-    candidate.priorScore = score;
-    if (!candidate.hasUsablePins()) {
-        std::ostringstream message {};
-        message << "missing or duplicated pins for " << candidate.device
-                << " (C=" << collector.value
-                << ", B=" << base.value
-                << ", E=" << emitter.value << ")";
-        candidate.reject(message.str());
-    }
-    (void) circuit;
-    return candidate;
-}
-
 } // namespace
 
 ActiveTopologyEvaluationResult ActiveTopologyEvaluator::evaluate(
@@ -209,32 +169,42 @@ ActiveTopologyEvaluationResult ActiveTopologyEvaluator::evaluate(
     return result;
 }
 
+std::vector<ActiveTopologyEvaluationResult> ActiveTopologyEvaluator::evaluateCandidates(
+    const ss::CircuitGraph& circuit,
+    const OperatingPointResult& operatingPoint,
+    const std::vector<ActiveTopologyCandidate>& candidates,
+    const ActiveTopologyEvaluationOptions& options) const
+{
+    std::vector<ActiveTopologyEvaluationResult> results {};
+    results.reserve(candidates.size());
+    for (const auto& candidate : candidates) {
+        results.push_back(evaluate(circuit, operatingPoint, candidate, options));
+    }
+    return results;
+}
+
 std::vector<ActiveTopologyEvaluationResult> ActiveTopologyEvaluator::evaluateB6GuardedCandidates(
     const ss::CircuitGraph& circuit,
     const OperatingPointResult& operatingPoint,
     const ActiveTopologyEvaluationOptions& options) const
 {
-    std::vector<ActiveTopologyEvaluationResult> results {};
-    results.reserve(2);
+    return evaluateCandidates(
+        circuit,
+        operatingPoint,
+        instantiateActiveTopologyCandidates(circuit, defaultB6ActiveTopologyCandidateSpecs()),
+        options);
+}
 
-    const auto ts2 = makeCandidate(circuit,
-                                   "B6.Ts2",
-                                   "Ts2",
-                                   firstExistingNode(circuit, "V64", "N64_T2"),
-                                   firstExistingNode(circuit, "N38"),
-                                   firstExistingNode(circuit, "N32"),
-                                   0.5);
-    const auto ts4 = makeCandidate(circuit,
-                                   "B6.Ts4",
-                                   "Ts4",
-                                   firstExistingNode(circuit, "N48"),
-                                   firstExistingNode(circuit, "N24"),
-                                   firstExistingNode(circuit, "N18"),
-                                   0.5);
-
-    results.push_back(evaluate(circuit, operatingPoint, ts2, options));
-    results.push_back(evaluate(circuit, operatingPoint, ts4, options));
-    return results;
+std::vector<ActiveTopologyEvaluationResult> ActiveTopologyEvaluator::evaluateB6B11GuardedCandidates(
+    const ss::CircuitGraph& circuit,
+    const OperatingPointResult& operatingPoint,
+    const ActiveTopologyEvaluationOptions& options) const
+{
+    return evaluateCandidates(
+        circuit,
+        operatingPoint,
+        instantiateActiveTopologyCandidates(circuit, defaultB6B11ActiveTopologyCandidateSpecs()),
+        options);
 }
 
 } // namespace u273::reference::calibration

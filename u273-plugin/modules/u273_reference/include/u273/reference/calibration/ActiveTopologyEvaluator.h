@@ -37,7 +37,18 @@ public:
         const ActiveTopologyCandidate& candidate,
         const ActiveTopologyEvaluationOptions& options = {}) const;
 
+    [[nodiscard]] std::vector<ActiveTopologyEvaluationResult> evaluateCandidates(
+        const u273::reference::state_space::CircuitGraph& circuit,
+        const OperatingPointResult& operatingPoint,
+        const std::vector<ActiveTopologyCandidate>& candidates,
+        const ActiveTopologyEvaluationOptions& options = {}) const;
+
     [[nodiscard]] std::vector<ActiveTopologyEvaluationResult> evaluateB6GuardedCandidates(
+        const u273::reference::state_space::CircuitGraph& circuit,
+        const OperatingPointResult& operatingPoint,
+        const ActiveTopologyEvaluationOptions& options = {}) const;
+
+    [[nodiscard]] std::vector<ActiveTopologyEvaluationResult> evaluateB6B11GuardedCandidates(
         const u273::reference::state_space::CircuitGraph& circuit,
         const OperatingPointResult& operatingPoint,
         const ActiveTopologyEvaluationOptions& options = {}) const;

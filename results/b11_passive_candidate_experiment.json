@@ -1,0 +1,334 @@
+{
+  "id": "B11_PASSIVE_CANDIDATE_EXPERIMENTAL_PROBE",
+  "status": "CANDIDATE",
+  "enabled": true,
+  "enabled_by_default": false,
+  "explicit_enable_flag": "--enable-b11-passive-candidate-experiment",
+  "allowed_scope": "isolated_passive_kcl_probe",
+  "isolated_from_executable_netlist": true,
+  "modifies_official_components": false,
+  "expected_executable_component_count_without_this_candidate": 88,
+  "result": {
+    "subcircuit_id": "B11_PASSIVE_CANDIDATE_SUBCIRCUIT",
+    "executable_component_count_unchanged": true,
+    "official_component_count_reference": 88,
+    "printed_voltage_clamps_volt": {
+      "B11_V24": 24,
+      "B11_N215": 21.5,
+      "B11_N145": 14.5,
+      "B11_N10": 10,
+      "B11_N9": 9,
+      "B11_N05": 0.5
+    },
+    "stamped_resistor_count": 7,
+    "excluded_component_count": 13,
+    "stamped_resistors": [
+      {
+        "name": "B11.PASSIVE.R10",
+        "n1": "B11_V24",
+        "n2": "B11_N215",
+        "value": 2000,
+        "source_component_id": "B11.PASSIVE.R10",
+        "voltage_n1_volt": 24,
+        "voltage_n2_volt": 21.5,
+        "current_from_n1_to_n2_amp": 0.00125
+      },
+      {
+        "name": "B11.PASSIVE.R11",
+        "n1": "B11_N215",
+        "n2": "B11_N10",
+        "value": 10000,
+        "source_component_id": "B11.PASSIVE.R11",
+        "voltage_n1_volt": 21.5,
+        "voltage_n2_volt": 10,
+        "current_from_n1_to_n2_amp": 0.00115
+      },
+      {
+        "name": "B11.PASSIVE.R15",
+        "n1": "B11_V24",
+        "n2": "B11_N145",
+        "value": 1200,
+        "source_component_id": "B11.PASSIVE.R15",
+        "voltage_n1_volt": 24,
+        "voltage_n2_volt": 14.5,
+        "current_from_n1_to_n2_amp": 0.007916666666666667
+      },
+      {
+        "name": "B11.PASSIVE.R13",
+        "n1": "B11_N9",
+        "n2": "B11_N05",
+        "value": 220000,
+        "source_component_id": "B11.PASSIVE.R13",
+        "voltage_n1_volt": 9,
+        "voltage_n2_volt": 0.5,
+        "current_from_n1_to_n2_amp": 0.000038636363636363636
+      },
+      {
+        "name": "B11.PASSIVE.R16",
+        "n1": "B11_N9",
+        "n2": "B11_REF",
+        "value": 1200,
+        "source_component_id": "B11.PASSIVE.R16",
+        "voltage_n1_volt": 9,
+        "voltage_n2_volt": 0,
+        "current_from_n1_to_n2_amp": 0.0075
+      },
+      {
+        "name": "B11.PASSIVE.R12",
+        "n1": "B11_N05",
+        "n2": "B11_REF",
+        "value": 120,
+        "source_component_id": "B11.PASSIVE.R12",
+        "voltage_n1_volt": 0.5,
+        "voltage_n2_volt": 0,
+        "current_from_n1_to_n2_amp": 0.004166666666666667
+      },
+      {
+        "name": "B11.PASSIVE.R9",
+        "n1": "B11_N05",
+        "n2": "B11_REF",
+        "value": 56000,
+        "source_component_id": "B11.PASSIVE.R9",
+        "voltage_n1_volt": 0.5,
+        "voltage_n2_volt": 0,
+        "current_from_n1_to_n2_amp": 0.00000892857142857143
+      }
+    ],
+    "excluded_components": [
+      {
+        "id": "B11.PASSIVE.C7",
+        "type": "capacitor",
+        "reason": "capacitor_open_in_dc_probe"
+      },
+      {
+        "id": "B11.PASSIVE.R14",
+        "type": "resistor",
+        "reason": "series_R14_C6_branch_open_for_dc"
+      },
+      {
+        "id": "B11.PASSIVE.C6",
+        "type": "capacitor",
+        "reason": "capacitor_open_in_dc_probe"
+      },
+      {
+        "id": "B11.PASSIVE.C8",
+        "type": "capacitor",
+        "reason": "capacitor_open_in_dc_probe"
+      },
+      {
+        "id": "B11.PASSIVE.C9",
+        "type": "capacitor",
+        "reason": "capacitor_open_in_dc_probe"
+      },
+      {
+        "id": "B11.PASSIVE.C5",
+        "type": "capacitor",
+        "reason": "capacitor_open_in_dc_probe"
+      },
+      {
+        "id": "B11.PASSIVE.R7_EFFECTIVE_MIN",
+        "type": "resistor",
+        "reason": "behind_series_C5_open_for_dc"
+      },
+      {
+        "id": "B11.PASSIVE.R7_EFFECTIVE_MAX",
+        "type": "resistor",
+        "reason": "behind_series_C5_open_for_dc"
+      },
+      {
+        "id": "B11.PASSIVE.R17",
+        "type": "resistor",
+        "reason": "local_node_not_tied_to_current_printed_B11_probe"
+      },
+      {
+        "id": "B11.PASSIVE.C11",
+        "type": "capacitor",
+        "reason": "capacitor_open_in_dc_probe"
+      },
+      {
+        "id": "B11.PASSIVE.R31",
+        "type": "resistor",
+        "reason": "endpoint_voltage_not_available_in_printed_B11_probe"
+      },
+      {
+        "id": "B11.DIODE.D2_SSD55",
+        "type": "diode",
+        "reason": "diode_model_guarded_in_passive_probe"
+      },
+      {
+        "id": "B11.DIODE.D1_ZL10",
+        "type": "zener_diode",
+        "reason": "diode_model_guarded_in_passive_probe"
+      }
+    ],
+    "isolated_dc_solve": {
+      "converged": true,
+      "iterations": 2,
+      "residual_max_abs": 0,
+      "residual_rms": 0
+    },
+    "node_current_balance_amp": [
+      {
+        "node": "B11_V24",
+        "printed_voltage_volt": 24,
+        "passive_current_leaving_node_amp": 0.009166666666666667,
+        "mna_voltage_source_current_from_node_to_reference_amp": -0.009166666666666663,
+        "external_current_required_into_node_amp": 0.009166666666666667,
+        "interpretation": "positive means the omitted active circuitry or supply clamp must source this current into the printed node"
+      },
+      {
+        "node": "B11_N215",
+        "printed_voltage_volt": 21.5,
+        "passive_current_leaving_node_amp": -0.00010000000000000005,
+        "mna_voltage_source_current_from_node_to_reference_amp": 0.0000999999999999994,
+        "external_current_required_into_node_amp": -0.00010000000000000005,
+        "interpretation": "negative means the omitted active circuitry must sink current from this printed node"
+      },
+      {
+        "node": "B11_N145",
+        "printed_voltage_volt": 14.5,
+        "passive_current_leaving_node_amp": -0.007916666666666667,
+        "mna_voltage_source_current_from_node_to_reference_amp": 0.007916666666666666,
+        "external_current_required_into_node_amp": -0.007916666666666667,
+        "interpretation": "negative means the omitted active circuitry must sink current from this printed node"
+      },
+      {
+        "node": "B11_N10",
+        "printed_voltage_volt": 10,
+        "passive_current_leaving_node_amp": -0.00115,
+        "mna_voltage_source_current_from_node_to_reference_amp": 0.00115,
+        "external_current_required_into_node_amp": -0.00115,
+        "interpretation": "negative means the omitted active circuitry must sink current from this printed node"
+      },
+      {
+        "node": "B11_N9",
+        "printed_voltage_volt": 9,
+        "passive_current_leaving_node_amp": 0.007538636363636364,
+        "mna_voltage_source_current_from_node_to_reference_amp": -0.007538636363636364,
+        "external_current_required_into_node_amp": 0.007538636363636364,
+        "interpretation": "positive means the omitted active circuitry or supply clamp must source this current into the printed node"
+      },
+      {
+        "node": "B11_N05",
+        "printed_voltage_volt": 0.5,
+        "passive_current_leaving_node_amp": 0.004136958874458874,
+        "mna_voltage_source_current_from_node_to_reference_amp": -0.004136958874458875,
+        "external_current_required_into_node_amp": 0.004136958874458874,
+        "interpretation": "positive means the omitted active circuitry or supply clamp must source this current into the printed node"
+      }
+    ],
+    "active_current_requirements": [
+      {
+        "node": "B11_N215",
+        "printed_voltage_volt": 21.5,
+        "required_active_current_into_node_amp": -0.00010000000000000005,
+        "required_active_current_leaving_node_amp": 0.00010000000000000005,
+        "magnitude_abs_amp": 0.00010000000000000005,
+        "required_action": "sink_current_from_printed_node",
+        "status": "CANDIDATE",
+        "allowed_use": "future_hypothesis_rejection_constraint_only",
+        "forbidden_use": "do_not_accept_or_stamp_any_BJT_from_this_constraint",
+        "local_area": "B11 Ts1/Ts2 upper local balance",
+        "possible_related_devices": [
+          "B11.Ts1",
+          "B11.Ts2"
+        ],
+        "evidence_limit": "Only a 0.1 mA passive residual between R10 and R11 is visible under printed-voltage clamps."
+      },
+      {
+        "node": "B11_N145",
+        "printed_voltage_volt": 14.5,
+        "required_active_current_into_node_amp": -0.007916666666666667,
+        "required_active_current_leaving_node_amp": 0.007916666666666667,
+        "magnitude_abs_amp": 0.007916666666666667,
+        "required_action": "sink_current_from_printed_node",
+        "status": "CANDIDATE",
+        "allowed_use": "future_hypothesis_rejection_constraint_only",
+        "forbidden_use": "do_not_accept_or_stamp_any_BJT_from_this_constraint",
+        "local_area": "B11 upper feed from R15",
+        "possible_related_devices": [
+          "B11.Ts2"
+        ],
+        "evidence_limit": "R15 injects current into N145, but the active route leaving N145 is not yet pinned."
+      },
+      {
+        "node": "B11_N10",
+        "printed_voltage_volt": 10,
+        "required_active_current_into_node_amp": -0.00115,
+        "required_active_current_leaving_node_amp": 0.00115,
+        "magnitude_abs_amp": 0.00115,
+        "required_action": "sink_current_from_printed_node",
+        "status": "CANDIDATE",
+        "allowed_use": "future_hypothesis_rejection_constraint_only",
+        "forbidden_use": "do_not_accept_or_stamp_any_BJT_from_this_constraint",
+        "local_area": "B11 Ts1/Ts2 mid node",
+        "possible_related_devices": [
+          "B11.Ts1",
+          "B11.Ts2"
+        ],
+        "evidence_limit": "R11 injects current into N10. The sink path is active/topological, not identified here."
+      },
+      {
+        "node": "B11_N9",
+        "printed_voltage_volt": 9,
+        "required_active_current_into_node_amp": 0.007538636363636364,
+        "required_active_current_leaving_node_amp": -0.007538636363636364,
+        "magnitude_abs_amp": 0.007538636363636364,
+        "required_action": "source_current_into_printed_node",
+        "status": "CANDIDATE",
+        "allowed_use": "future_hypothesis_rejection_constraint_only",
+        "forbidden_use": "do_not_accept_or_stamp_any_BJT_from_this_constraint",
+        "local_area": "B11 lower control node",
+        "possible_related_devices": [
+          "B11.Ts1",
+          "B11.Ts2"
+        ],
+        "evidence_limit": "R13 and R16 demand source current at N9 under the current visual candidate."
+      },
+      {
+        "node": "B11_N05",
+        "printed_voltage_volt": 0.5,
+        "required_active_current_into_node_amp": 0.004136958874458874,
+        "required_active_current_leaving_node_amp": -0.004136958874458874,
+        "magnitude_abs_amp": 0.004136958874458874,
+        "required_action": "source_current_into_printed_node",
+        "status": "CANDIDATE",
+        "allowed_use": "future_hypothesis_rejection_constraint_only",
+        "forbidden_use": "do_not_accept_or_stamp_any_BJT_from_this_constraint",
+        "local_area": "B11 low-voltage reference/control node",
+        "possible_related_devices": [
+          "B11.Ts1",
+          "B11.Ts2"
+        ],
+        "evidence_limit": "R12/R9 demand exceeds the R13 inflow; the missing source path is active and unpinned."
+      }
+    ],
+    "active_current_requirement_summary": {
+      "status": "CANDIDATE",
+      "constraint_count": 5,
+      "source_into_node_count": 2,
+      "sink_from_node_count": 3,
+      "largest_constraint_node": "B11_N145",
+      "largest_constraint_abs_amp": 0.007916666666666667,
+      "rail_supply_current_from_24v_amp": 0.009166666666666667,
+      "required_next_proof": "Map these sign/magnitude constraints onto explicit diode/BJT terminal hypotheses, then reject hypotheses that cannot supply the required node current without impossible VBE/VCE or KCL.",
+      "boundary": "Current requirements are derived from passive printed-node clamps only. They are not transistor pin assignments and they do not replace the guarded B11 Thevenin source."
+    },
+    "cross_checks": {
+      "r10MinusR11Amp": 0.00010000000000000005,
+      "r10MinusR11ReferenceAmp": 0.00010000000000000005,
+      "n9PassiveDemandAmp": 0.007538636363636364,
+      "n9PassiveDemandReferenceAmp": 0.007538636363636364,
+      "n05DeficitAfterR13Amp": 0.004136958874458874,
+      "n05DeficitAfterR13ReferenceAmp": 0.004136958874458874
+    },
+    "scientific_boundary": "The clamp currents are missing-current bookkeeping for a passive candidate only. They are not transistor operating points and must not be used as B/C/E proof."
+  },
+  "blocked_outputs": [
+    "active B11 simulation",
+    "BJT pin inference",
+    "replacement of the B11/S6/S7 Thevenin command source",
+    "promotion of switch contact candidates"
+  ],
+  "boundary": "This probe is opt-in only. It may instantiate the B11 passive candidate in an isolated local DC clamp calculation, but it must not alter the official netlist or claim B11 active closure."
+}

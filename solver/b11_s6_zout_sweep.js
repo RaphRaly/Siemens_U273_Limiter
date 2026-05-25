@@ -11,8 +11,8 @@ const values = Object.freeze({
   r4: 7.5e3,
   r5: 15e3,
   r6: 3.9e3,
-  c1: 5e-9,
-  c2: 5e-9,
+  c1: 3e-9,
+  c2: 3e-9,
   c3: 3.3e-9,
   c4: 3e-9,
 });

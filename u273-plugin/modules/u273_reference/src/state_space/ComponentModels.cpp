@@ -5,6 +5,34 @@
 
 namespace u273::reference::state_space {
 
+namespace {
+
+[[nodiscard]] double reverseBreakdownCurrent(const DiodeModel& model, double voltageAnodeCathode) noexcept
+{
+    if (!model.hasReverseBreakdown() || voltageAnodeCathode >= -model.reverseBreakdownVoltage) {
+        return 0.0;
+    }
+
+    const auto exponent = (-voltageAnodeCathode - model.reverseBreakdownVoltage)
+        / (model.reverseBreakdownIdeality * model.thermalVoltage);
+    return -model.reverseBreakdownCurrentAmp * (limitedExp(exponent, model.maxExpArgument) - 1.0);
+}
+
+[[nodiscard]] double reverseBreakdownConductance(const DiodeModel& model, double voltageAnodeCathode) noexcept
+{
+    if (!model.hasReverseBreakdown() || voltageAnodeCathode >= -model.reverseBreakdownVoltage) {
+        return 0.0;
+    }
+
+    const auto exponent = (-voltageAnodeCathode - model.reverseBreakdownVoltage)
+        / (model.reverseBreakdownIdeality * model.thermalVoltage);
+    return model.reverseBreakdownCurrentAmp
+        * limitedExp(exponent, model.maxExpArgument)
+        / (model.reverseBreakdownIdeality * model.thermalVoltage);
+}
+
+} // namespace
+
 double limitedExp(double argument, double maxArgument) noexcept
 {
     const auto limited = std::clamp(argument, -maxArgument, maxArgument);
@@ -24,7 +52,16 @@ bool DiodeModel::isValid() const noexcept
         && ideality > 0.0
         && thermalVoltage > 0.0
         && gminSiemens >= 0.0
-        && maxExpArgument > 1.0;
+        && maxExpArgument > 1.0
+        && (reverseBreakdownVoltage <= 0.0
+            || (reverseBreakdownCurrentAmp > 0.0 && reverseBreakdownIdeality > 0.0));
+}
+
+bool DiodeModel::hasReverseBreakdown() const noexcept
+{
+    return reverseBreakdownVoltage > 0.0
+        && reverseBreakdownCurrentAmp > 0.0
+        && reverseBreakdownIdeality > 0.0;
 }
 
 double DiodeModel::currentAmp(double voltageAnodeCathode) const noexcept
@@ -47,6 +84,7 @@ double DiodeModel::currentAmp(double voltageAnodeCathode) const noexcept
 
     const auto exponent = voltageAnodeCathode / (ideality * thermalVoltage);
     return saturationCurrentAmp * (limitedExp(exponent, maxExpArgument) - 1.0)
+        + reverseBreakdownCurrent(*this, voltageAnodeCathode)
         + gminSiemens * voltageAnodeCathode;
 }
 
@@ -71,6 +109,7 @@ double DiodeModel::conductanceSiemens(double voltageAnodeCathode) const noexcept
 
     const auto exponent = voltageAnodeCathode / (ideality * thermalVoltage);
     return saturationCurrentAmp * limitedExp(exponent, maxExpArgument) / (ideality * thermalVoltage)
+        + reverseBreakdownConductance(*this, voltageAnodeCathode)
         + gminSiemens;
 }
 
@@ -137,6 +176,18 @@ DiodeModel makeSsd55Approximation() noexcept
     DiodeModel model {};
     model.saturationCurrentAmp = 2.5e-12;
     model.ideality = 1.85;
+    model.gminSiemens = 1.0e-12;
+    return model;
+}
+
+DiodeModel makeZl10Approximation() noexcept
+{
+    DiodeModel model {};
+    model.saturationCurrentAmp = 1.0e-12;
+    model.ideality = 2.0;
+    model.reverseBreakdownVoltage = 10.0;
+    model.reverseBreakdownCurrentAmp = 1.0e-6;
+    model.reverseBreakdownIdeality = 6.0;
     model.gminSiemens = 1.0e-12;
     return model;
 }

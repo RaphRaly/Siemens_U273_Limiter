@@ -20,7 +20,24 @@
     "dcScenarios": 4,
     "acRows": 80,
     "transientRows": 933,
-    "transientCases": 3
+    "transientCases": 3,
+    "officialExecutableComponents": 88,
+    "b11LocalLedgerStatus": "CANDIDAT_SCHEMA_PARTIEL",
+    "b11LocalR15R16ResidualAmp": 0.000378030303030304,
+    "b11PdfEvidenceStatus": "CANDIDAT_SCHEMA_PARTIEL",
+    "b11PdfEvidenceActivePromotable": false,
+    "b11PdfActiveConstraintRows": 3,
+    "b11RetranscriptionCrosscheckStatus": "CANDIDATE",
+    "b11PriorAuditArtifacts": 4,
+    "b11DirectPrintedNodePinHypotheses": 96,
+    "b11DirectPrintedNodeSoftCandidates": 0,
+    "b11D1D2PolarityPairs": 4,
+    "b11D1D2FunctionalPassCandidates": 1,
+    "b11D1D2AcceptedGuardedCandidate": "D1_ZL10_GRAPHIC_CANDIDATE__D2_SSD55_GRAPHIC_CANDIDATE",
+    "b11PassiveExperimentStampedResistors": 7,
+    "b11PassiveExperimentExcludedComponents": 13,
+    "b11PassiveCurrentConstraints": 5,
+    "b11PassiveLargestConstraintNode": "B11_N145"
   },
   "failures": []
 }

@@ -23,12 +23,16 @@ struct DiodeModel {
     double thermalVoltage {kRoomTemperatureThermalVoltage};
     double gminSiemens {1.0e-12};
     double maxExpArgument {40.0};
+    double reverseBreakdownVoltage {};
+    double reverseBreakdownCurrentAmp {};
+    double reverseBreakdownIdeality {6.0};
     double empiricalCurrentCoefficientMicroAmpPerMilliVolt {2.85e-16};
     double empiricalVoltageExponent {6.25};
     double empiricalMaxVoltage {1.2};
 
     [[nodiscard]] double currentAmp(double voltageAnodeCathode) const noexcept;
     [[nodiscard]] double conductanceSiemens(double voltageAnodeCathode) const noexcept;
+    [[nodiscard]] bool hasReverseBreakdown() const noexcept;
     [[nodiscard]] bool isValid() const noexcept;
 };
 
@@ -57,6 +61,7 @@ struct BjtEvaluation {
                                                  double emitterVolt) noexcept;
 
 [[nodiscard]] DiodeModel makeSsd55Approximation() noexcept;
+[[nodiscard]] DiodeModel makeZl10Approximation() noexcept;
 [[nodiscard]] DiodeModel makeOa154Approximation() noexcept;
 [[nodiscard]] DiodeModel makeU273EmpiricalCompositeDiode() noexcept;
 [[nodiscard]] NpnBjtModel makeSmallSignalNpnApproximation(double betaForward) noexcept;

@@ -1,11 +1,13 @@
 {
   "title": "Siemens U273 orchestrated parametric netlist",
   "version": "u273_orchestrator_v0_1",
-  "generated_at": "2026-05-03T16:47:33.733Z",
+  "generated_at": "2026-05-21T13:59:42.190Z",
   "status": "PARTIEL",
   "coupling_mode": "thevenin_b11_s6_s7_reference",
   "scientific_boundary": "The current executable DC netlist keeps the B11/S6/S7 command path as a finite Thevenin reference. Full active B11+B6 closure waits for unread transistor routes and complete B11 netlist proof.",
   "selected_modes": {
+    "debug_config_id": "U273_DEBUG_CONFIG_001",
+    "debug_config_mode": "limiter_drawn_position",
     "s6_position": "delivery_linear",
     "s7_mode": "limiter_drawn_17_to_18",
     "command_source_volt": 1,
@@ -70,7 +72,7 @@
       "c17": 0.0001,
       "c18": 0.00005,
       "c19": 0.00022,
-      "c20": 0.00015,
+      "c20": 0.00005,
       "c21": 0.0005,
       "gminResistance": 1000000000000,
       "rAmpInput": "Infinity",
@@ -82,6 +84,3707 @@
       "commandDcMode": "thevenin",
       "commandAcMode": "ideal",
       "adjustmentModel": "R7/R8 are effective two-terminal resistances unless alpha7/alpha8 is explicitly supplied as a rheostat simplification."
+    }
+  },
+  "topology_step1": {
+    "debug_config": {
+      "id": "U273_DEBUG_CONFIG_001",
+      "status": "PARTIAL_TOPOLOGY_SAFE_DC_CLOSURE",
+      "mode": "limiter_drawn_position",
+      "source_of_truth": {
+        "pdf": "Siemens_U273_Limiter.pdf",
+        "page": 1,
+        "treatment": "visual schematic proof; OCR text is not trusted"
+      },
+      "supply_volt": 24,
+      "output_load_ohm": 300,
+      "selected_switch_positions": {
+        "S3": {
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "target": "drawn output position, nominal 300 ohm output",
+          "truth_table_status": "UNKNOWN"
+        },
+        "S4": {
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "target": "drawn output return position, nominal 300 ohm output",
+          "truth_table_status": "UNKNOWN"
+        },
+        "S6": {
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "selected_position": "delivery_linear",
+          "truth_table_status": "UNKNOWN"
+        },
+        "S7": {
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "selected_mode": "limiter_drawn_17_to_18",
+          "target": "drawn limiter/Begrenzer position",
+          "truth_table_status": "UNKNOWN"
+        }
+      },
+      "potentiometers": {
+        "representation": "three-terminal explicit components where present",
+        "default_wiper_fraction": 0.5,
+        "policy": "debug default only; not a calibrated Siemens setting"
+      },
+      "locked_now": [
+        "B6 corrected output topology around R36/R33/C20/R34/C21/U2",
+        "C21 is a series coupling capacitor from N105 to U2_PRI_TOP",
+        "B6 output passive KCL checkpoint can be evaluated from printed voltages"
+      ],
+      "not_locked": [
+        "S3/S4/S6/S7 complete mechanical truth tables",
+        "U1/U2 ratios and winding parasitics",
+        "B6 Ts1/Ts3/Ts5/Ts6 and all B11 transistor pinouts",
+        "B11 full active regulator loop",
+        "junction capacitances, charge storage, transformer dynamics"
+      ]
+    },
+    "switch_contact_candidates": {
+      "id": "U273_DEBUG_CONFIG_001.SWITCH_CONTACT_CANDIDATES",
+      "status": "SWITCH_CONTACT_CANDIDATE",
+      "truth_table_status": "UNKNOWN",
+      "applied_to_executable_netlist": false,
+      "boundary": "Contacts are encoded as explicit candidates for review only. The executable DC path still uses guarded component boundaries and the B11/S6/S7 Thevenin command source.",
+      "contacts": [
+        {
+          "id": "S3_DRAWN_22_23_CLOSED",
+          "switch": "S3",
+          "selected_config": "U273_DEBUG_CONFIG_001",
+          "selected_mode": "limiter_drawn_position",
+          "selected_position": "drawn_output_300_ohm",
+          "terminals": [
+            "22",
+            "23"
+          ],
+          "contact_state": "candidate_closed",
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "truth_table_status": "UNKNOWN",
+          "evidence": "B6 output switch upper section in the current Etape 26 schematic transcription.",
+          "mna_action": "boundary_only_not_stamped",
+          "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+        },
+        {
+          "id": "S4_DRAWN_25_26_CLOSED",
+          "switch": "S4",
+          "selected_config": "U273_DEBUG_CONFIG_001",
+          "selected_mode": "limiter_drawn_position",
+          "selected_position": "drawn_output_300_ohm",
+          "terminals": [
+            "25",
+            "26"
+          ],
+          "contact_state": "candidate_closed",
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "truth_table_status": "UNKNOWN",
+          "evidence": "B6 output switch lower section in the current Etape 26 schematic transcription.",
+          "mna_action": "boundary_only_not_stamped",
+          "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+        },
+        {
+          "id": "S6_DELIVERY_4_5_CLOSED",
+          "switch": "S6",
+          "selected_config": "U273_DEBUG_CONFIG_001",
+          "selected_mode": "limiter_drawn_position",
+          "selected_position": "delivery_linear",
+          "terminals": [
+            "4",
+            "5"
+          ],
+          "contact_state": "candidate_closed",
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "truth_table_status": "UNKNOWN",
+          "evidence": "Provisional delivery-linear S6 reading from Etape 20/21/24.",
+          "mna_action": "boundary_only_not_stamped",
+          "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+        },
+        {
+          "id": "S6_DELIVERY_8_9_CLOSED",
+          "switch": "S6",
+          "selected_config": "U273_DEBUG_CONFIG_001",
+          "selected_mode": "limiter_drawn_position",
+          "selected_position": "delivery_linear",
+          "terminals": [
+            "8",
+            "9"
+          ],
+          "contact_state": "candidate_closed",
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "truth_table_status": "UNKNOWN",
+          "evidence": "Provisional delivery-linear S6 reading from Etape 20/21/24.",
+          "mna_action": "boundary_only_not_stamped",
+          "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+        },
+        {
+          "id": "S6_DELIVERY_5_6_OPEN",
+          "switch": "S6",
+          "selected_config": "U273_DEBUG_CONFIG_001",
+          "selected_mode": "limiter_drawn_position",
+          "selected_position": "delivery_linear",
+          "terminals": [
+            "5",
+            "6"
+          ],
+          "contact_state": "candidate_open",
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "truth_table_status": "UNKNOWN",
+          "evidence": "Provisional delivery-linear S6 reading from Etape 20/21/24.",
+          "mna_action": "boundary_only_not_stamped",
+          "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+        },
+        {
+          "id": "S6_DELIVERY_7_8_OPEN",
+          "switch": "S6",
+          "selected_config": "U273_DEBUG_CONFIG_001",
+          "selected_mode": "limiter_drawn_position",
+          "selected_position": "delivery_linear",
+          "terminals": [
+            "7",
+            "8"
+          ],
+          "contact_state": "candidate_open",
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "truth_table_status": "UNKNOWN",
+          "evidence": "Provisional delivery-linear S6 reading from Etape 20/21/24.",
+          "mna_action": "boundary_only_not_stamped",
+          "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+        },
+        {
+          "id": "S6_DELIVERY_5_3_1_CHAIN_CLOSED",
+          "switch": "S6",
+          "selected_config": "U273_DEBUG_CONFIG_001",
+          "selected_mode": "limiter_drawn_position",
+          "selected_position": "delivery_linear",
+          "terminals": [
+            "5",
+            "3",
+            "1"
+          ],
+          "contact_state": "candidate_closed_chain",
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "truth_table_status": "UNKNOWN",
+          "evidence": "Provisional delivery-linear S6 reading from Etape 20/21/24; represented as a chain, not as a proven switch wafer truth table.",
+          "mna_action": "boundary_only_not_stamped",
+          "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+        },
+        {
+          "id": "S6_DELIVERY_2_OPEN",
+          "switch": "S6",
+          "selected_config": "U273_DEBUG_CONFIG_001",
+          "selected_mode": "limiter_drawn_position",
+          "selected_position": "delivery_linear",
+          "terminals": [
+            "2"
+          ],
+          "contact_state": "candidate_open_unconnected",
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "truth_table_status": "UNKNOWN",
+          "evidence": "Provisional delivery-linear S6 reading from Etape 20/21/24.",
+          "mna_action": "boundary_only_not_stamped",
+          "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+        },
+        {
+          "id": "S7_DRAWN_17_18_CLOSED",
+          "switch": "S7",
+          "selected_config": "U273_DEBUG_CONFIG_001",
+          "selected_mode": "limiter_drawn_position",
+          "selected_position": "limiter_drawn_17_to_18",
+          "terminals": [
+            "17",
+            "18"
+          ],
+          "contact_state": "candidate_closed",
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "truth_table_status": "UNKNOWN",
+          "evidence": "Drawn limiter/Begrenzer S7 state from the current S7 contact table.",
+          "mna_action": "boundary_only_not_stamped",
+          "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+        },
+        {
+          "id": "S7_DRAWN_17_19_OPEN",
+          "switch": "S7",
+          "selected_config": "U273_DEBUG_CONFIG_001",
+          "selected_mode": "limiter_drawn_position",
+          "selected_position": "limiter_drawn_17_to_18",
+          "terminals": [
+            "17",
+            "19"
+          ],
+          "contact_state": "candidate_open",
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "truth_table_status": "UNKNOWN",
+          "evidence": "Complementary open contact in the drawn limiter/Begrenzer S7 state.",
+          "mna_action": "boundary_only_not_stamped",
+          "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+        }
+      ]
+    },
+    "b11_s6_s7_switch_matrix_candidate": {
+      "id": "B11_S6_S7_SWITCH_MATRIX_CANDIDATE_STEP1",
+      "status": "SWITCH_CONTACT_CANDIDATE",
+      "switch_matrix_status": "SWITCH_MATRIX_CANDIDATE",
+      "truth_table_status": "UNKNOWN",
+      "selected_debug_position": {
+        "S6": "delivery_linear",
+        "S7": "limiter_drawn_17_to_18"
+      },
+      "executable_netlist_effect": "none; this is a switch-matrix closure checklist and does not alter the official B11/S6/S7 Thevenin boundary",
+      "known_network_values": {
+        "R3_ohm": 7500,
+        "R4_ohm": 7500,
+        "R5_ohm": 15000,
+        "R6_ohm": 3900,
+        "C1_farad": 3e-9,
+        "C2_farad": 3e-9,
+        "C3_farad": 3.3e-9,
+        "C4_farad": 3e-9,
+        "R1_ohm": 3000,
+        "R2_user_candidate_ohm": 1000
+      },
+      "value_boundaries": [
+        {
+          "component": "R2",
+          "candidate_ohm": 1000,
+          "status": "CANDIDATE",
+          "promotion_limit": "User/GPT note proposes 1k. Prior local crop notes saw an ambiguous high-value R2 branch, so R2 must be re-read before executable stamping."
+        }
+      ],
+      "possible_topology_effects": [
+        "preemphasis_bypassed_linear",
+        "preemphasis_partially_inserted",
+        "preemphasis_fully_inserted",
+        "connected_to_detector_command_path",
+        "isolated_from_detector_command_path"
+      ],
+      "forbidden_shortcuts": [
+        "S6 = mode_limiter",
+        "S7 = mode_compressor",
+        "single global S6/S7 truth table without per-contact proof",
+        "Thevenin replacement from a selected debug contact only"
+      ],
+      "per_position_required_fields": [
+        "mechanical_position",
+        "contact_closed",
+        "contact_open",
+        "left_node",
+        "right_node",
+        "effect_on_preemphasis",
+        "effect_on_CMD_D1_D2",
+        "evidence_crop",
+        "promotion_decision"
+      ],
+      "currently_encoded_contacts_are_candidates_only": true,
+      "contact_candidates_source": "U273_DEBUG_CONFIG_001.SWITCH_CONTACT_CANDIDATES",
+      "activation_criterion": "Every mechanical position must have closed/open contacts and left/right nodes proven before S6/S7 can drive active B11 CMD routing.",
+      "boundary": "S6/S7 remain a switch matrix candidate. Values can be used as passive network constants, but modes and command routing are not promoted."
+    },
+    "b11_visual_inventory": {
+      "id": "B11_VISUAL_INVENTORY_STEP1",
+      "status": "CANDIDATE",
+      "source": "solver/b11_crop_ts1_ts2_corrected_topology.js plus generated B11 result artifacts",
+      "source_limits": "Existing local B11 crop scripts are useful evidence, but they are not a complete PDF-wide B11 netlist proof.",
+      "active_simulation_allowed_for_step1": false,
+      "mna_action": "inventory_only_not_stamped",
+      "printed_voltages": {
+        "V24": 24,
+        "N215": 21.5,
+        "N145": 14.5,
+        "N10": 10,
+        "N9": 9,
+        "N05": 0.5,
+        "REF": 0
+      },
+      "resistor_candidates_ohm": {
+        "R10": 2000,
+        "R11": 10000,
+        "R13": 220000,
+        "R14": 2000,
+        "R15": 1200,
+        "R16": 1200,
+        "R17": 6800
+      },
+      "topology_candidates": [
+        {
+          "item": "R10",
+          "visible_connection": "V24_to_N215",
+          "proposed_dc_stamp": "g10 between V24 and N215",
+          "source_status": "confirmed_by_user_crop",
+          "status": "CANDIDATE",
+          "mna_action": "inventory_only_not_stamped",
+          "boundary": "B11 visual inventory candidate only. Do not use as an active MNA stamp until the full B11 topology and BJT pins are proven."
+        },
+        {
+          "item": "R11",
+          "visible_connection": "N215_to_N10",
+          "proposed_dc_stamp": "g11 between N215 and N10",
+          "source_status": "confirmed_by_user_crop",
+          "status": "CANDIDATE",
+          "mna_action": "inventory_only_not_stamped",
+          "boundary": "B11 visual inventory candidate only. Do not use as an active MNA stamp until the full B11 topology and BJT pins are proven."
+        },
+        {
+          "item": "R15",
+          "visible_connection": "V24_to_N145",
+          "proposed_dc_stamp": "g15 between V24 and N145",
+          "source_status": "corrects_latest_path_file_that_used_N215_to_N145",
+          "status": "CANDIDATE",
+          "mna_action": "inventory_only_not_stamped",
+          "boundary": "B11 visual inventory candidate only. Do not use as an active MNA stamp until the full B11 topology and BJT pins are proven."
+        },
+        {
+          "item": "R14_C6",
+          "visible_connection": "N145_to_R14_to_X_R14C6_to_C6_to_N10",
+          "proposed_dc_stamp": "open",
+          "source_status": "corrects_previous_N05_endpoint_assumption",
+          "status": "CANDIDATE",
+          "mna_action": "inventory_only_not_stamped",
+          "boundary": "B11 visual inventory candidate only. Do not use as an active MNA stamp until the full B11 topology and BJT pins are proven."
+        },
+        {
+          "item": "R13",
+          "visible_connection": "N9_to_N05",
+          "proposed_dc_stamp": "g13 between N9 and N05",
+          "source_status": "confirmed_by_user_crop",
+          "status": "CANDIDATE",
+          "mna_action": "inventory_only_not_stamped",
+          "boundary": "B11 visual inventory candidate only. Do not use as an active MNA stamp until the full B11 topology and BJT pins are proven."
+        },
+        {
+          "item": "R16",
+          "visible_connection": "N9_to_reference",
+          "proposed_dc_stamp": "g16 between N9 and REF",
+          "source_status": "confirmed_by_second_user_crop",
+          "status": "CANDIDATE",
+          "mna_action": "inventory_only_not_stamped",
+          "boundary": "B11 visual inventory candidate only. Do not use as an active MNA stamp until the full B11 topology and BJT pins are proven."
+        },
+        {
+          "item": "R12_R9",
+          "visible_connection": "N05_to_reference",
+          "proposed_dc_stamp": "g12 and g9 between N05 and REF",
+          "source_status": "confirmed_by_second_user_crop",
+          "status": "CANDIDATE",
+          "mna_action": "inventory_only_not_stamped",
+          "boundary": "B11 visual inventory candidate only. Do not use as an active MNA stamp until the full B11 topology and BJT pins are proven."
+        },
+        {
+          "item": "R7_R8",
+          "visible_connection": "N05_to_C5_100uF_to_N150; N150_to_R7_500_adjustable_to_R8_680_to_reference",
+          "proposed_dc_stamp": "open from N05 because C5 is series/open in DC",
+          "source_status": "corrected_by_global_user_crop",
+          "status": "CANDIDATE",
+          "mna_action": "inventory_only_not_stamped",
+          "boundary": "B11 visual inventory candidate only. Do not use as an active MNA stamp until the full B11 topology and BJT pins are proven."
+        },
+        {
+          "item": "R17_C10",
+          "visible_connection": "N4_to_R17_6k8_parallel_C10_100p_to_reference",
+          "proposed_dc_stamp": "g17 between N4 and REF; C10 open in DC and dynamic in AC/transient",
+          "source_status": "confirmed_by_screenshot_092120_not_N05",
+          "status": "CANDIDATE",
+          "mna_action": "inventory_only_not_stamped",
+          "boundary": "B11 visual inventory candidate only. Do not use as an active MNA stamp until the full B11 topology and BJT pins are proven."
+        },
+        {
+          "item": "S6_core",
+          "visible_connection": "R5/C3 between left and right nodes; R4/C2 and R3/C1 split through VM; C4/R6 from VM to reference",
+          "proposed_dc_stamp": "S6 contact table still guarded",
+          "source_status": "visible_in_global_user_crop",
+          "status": "CANDIDATE",
+          "mna_action": "inventory_only_not_stamped",
+          "boundary": "B11 visual inventory candidate only. Do not use as an active MNA stamp until the full B11 topology and BJT pins are proven."
+        },
+        {
+          "item": "R1_R2",
+          "visible_connection": "right side of S6 shows R1=3k and R2 visible as 1M adjustable",
+          "proposed_dc_stamp": "guarded until exact S6 position/contact routing is assigned",
+          "source_status": "corrects_previous_R2_5k1_read_for_this_visible_branch",
+          "status": "CANDIDATE",
+          "mna_action": "inventory_only_not_stamped",
+          "boundary": "B11 visual inventory candidate only. Do not use as an active MNA stamp until the full B11 topology and BJT pins are proven."
+        },
+        {
+          "item": "Ts1_Ts2",
+          "visible_connection": "SST117 terminals are visible around N145/N10/N9 and N10/N05",
+          "proposed_dc_stamp": "guarded",
+          "source_status": "pin names B/C/E still unassigned",
+          "status": "CANDIDATE",
+          "mna_action": "inventory_only_not_stamped",
+          "boundary": "B11 visual inventory candidate only. Do not use as an active MNA stamp until the full B11 topology and BJT pins are proven."
+        }
+      ],
+      "local_dc_checkpoints": {
+        "id": "B11_TS1_TS2_LOCAL_PASSIVE_KCL",
+        "status": "CANDIDATE",
+        "currents_amp": {
+          "iR10": 0.00125,
+          "iR11": 0.00115,
+          "n215ResidualFromPrintedVoltagesAmp": 0.00010000000000000005,
+          "iR15": 0.007916666666666667,
+          "iR13": 0.000038636363636363636,
+          "iR16": 0.0075,
+          "n9PassiveDemandAmp": 0.007538636363636364,
+          "n145MinusN9PassiveDemandAmp": 0.00037803030303030366,
+          "iR12": 0.004166666666666667,
+          "iR9": 0.00000892857142857143,
+          "n05DemandWithoutR17Amp": 0.004175595238095238,
+          "n05DeficitAfterR13Amp": 0.004136958874458874
+        },
+        "boundary": "These currents are local passive consistency checks around B11 Ts1/Ts2. They do not identify B/C/E pins and do not close the active regulator."
+      },
+      "unresolved_before_active_b11": [
+        "Full B11 component graph around detector, regulator, S6, S7, C11 and command output.",
+        "B/C/E orientation for all B11 active devices.",
+        "Resolution of value/path divergences in prior notes before promoting R15/R16/R13 to closed global netlist stamps.",
+        "Connection between B11 detector storage/C11 and the real B6 CMD drive node."
+      ]
+    },
+    "b11_local_topology_proof_ledger": {
+      "id": "B11_LOCAL_TOPOLOGY_PROOF_LEDGER_STEP1",
+      "status": "CANDIDAT_SCHEMA_PARTIEL",
+      "mna_action": "topology_ledger_only_not_stamped",
+      "scope": "Local B11 topology proof ledger around N145/N10/N9/N05/C5/R13/R16/R17/S6/S7/C11/CMD.",
+      "canonical_value_reading_ohm": {
+        "R15": 1200,
+        "R16": 1200,
+        "R13": 220000
+      },
+      "rejected_value_readings": [
+        {
+          "component": "R15",
+          "rejected_value_ohm": 12000,
+          "accepted_value_ohm": 1200,
+          "reason": "German decimal-comma scan reading is 1,2 kOhm, not 12 kOhm."
+        },
+        {
+          "component": "R16",
+          "rejected_value_ohm": 12000,
+          "accepted_value_ohm": 1200,
+          "reason": "German decimal-comma scan reading is 1,2 kOhm, not 12 kOhm."
+        }
+      ],
+      "printed_voltages_volt": {
+        "V24": 24,
+        "N145": 14.5,
+        "N9": 9,
+        "N05": 0.5,
+        "N10": 10
+      },
+      "local_kcl_checkpoint": {
+        "id": "B11_N145_N9_N05_R15_R16_R13_KCL",
+        "status": "CANDIDAT_FORT",
+        "closure_status": "not_closed_by_R15_R16_R13_alone",
+        "iR15_from_V24_to_N145_amp": 0.007916666666666667,
+        "iR16_from_N9_to_reference_amp": 0.0075,
+        "iR13_from_N9_to_N05_amp": 0.000038636363636363636,
+        "iR16_plus_iR13_amp": 0.007538636363636364,
+        "residual_iR15_minus_iR16_minus_iR13_amp": 0.000378030303030304,
+        "residual_ratio_of_iR15": 0.04775119617224892,
+        "verdict": "Coherent order of magnitude, but not FERME_SCHEMA. PDF evidence confirms the local passive endpoints; about 0.378 mA remains to explain through Ts2 active current and adjacent active routes.",
+        "promotion_blocker": "Do not use IR15 ~= IR16 + IR13 as a closed proof: PDF evidence confirms R13/R16/Ts2/C8/C9 local endpoints, but Ts2 B/C/E and the active side-current route remain unproven."
+      },
+      "route_proof_table": [
+        {
+          "node": "B11_N145",
+          "components_touching_candidate": [
+            "R15",
+            "Ts2 terminal",
+            "R14/C6",
+            "C8"
+          ],
+          "confidence": "PDF_VISUAL_CONFIRMED_CANDIDATE",
+          "must_prove": "Ts2 B/C/E orientation and the active current path that accounts for the 0.378 mA residual."
+        },
+        {
+          "node": "B11_N10",
+          "components_touching_candidate": [
+            "R11",
+            "Ts1 terminal",
+            "R14/C6"
+          ],
+          "confidence": "PDF_VISUAL_CONFIRMED_CANDIDATE",
+          "must_prove": "Ts1 B/C/E orientation and any hidden/intermediate base route before active stamping."
+        },
+        {
+          "node": "B11_N9",
+          "components_touching_candidate": [
+            "R16",
+            "R13",
+            "Ts2 terminal",
+            "C9"
+          ],
+          "confidence": "PDF_VISUAL_CONFIRMED_CANDIDATE",
+          "must_prove": "Ts2 B/C/E orientation and the active source/sink relation at N9."
+        },
+        {
+          "node": "B11_N05",
+          "components_touching_candidate": [
+            "R12",
+            "R9",
+            "R13",
+            "Ts1 terminal",
+            "C5"
+          ],
+          "confidence": "PDF_VISUAL_CONFIRMED_CANDIDATE",
+          "must_prove": "Ts1 B/C/E orientation and the active branch that supplies the remaining N05 current."
+        },
+        {
+          "node": "B11_C5_ROUTE",
+          "components_touching_candidate": [
+            "C5",
+            "R7/R8 branch",
+            "N05?"
+          ],
+          "confidence": "PDF_VISUAL_CONFIRMED_CANDIDATE",
+          "must_prove": "Transient stamp and charge model; C5 is visually a series dynamic path and remains open in DC."
+        },
+        {
+          "node": "B11_R17_ROUTE",
+          "components_touching_candidate": [
+            "R17",
+            "C10?",
+            "N4?"
+          ],
+          "confidence": "CANDIDATE",
+          "must_prove": "R17 must not be silently tied to N05 unless the PDF route proves it."
+        },
+        {
+          "node": "B11_S6_S7_C11_CMD",
+          "components_touching_candidate": [
+            "S6",
+            "S7",
+            "C11",
+            "CMD"
+          ],
+          "confidence": "MODE_DEPENDENT_CANDIDATE_SWITCH_NETWORK",
+          "must_prove": "Contact truth table and C11/CMD route per mode before any single active B11 command path is promoted."
+        }
+      ],
+      "priority_route_proofs": [
+        "R13 endpoints are now PDF-confirmed as N9-to-N05 for topology evidence only.",
+        "R16 endpoints are now PDF-confirmed as N9-to-reference for topology evidence only.",
+        "R17 endpoints: keep N4-to-reference as the current candidate; do not reuse old N05 assumptions.",
+        "Ts2 terminal graph around N145/N9/C8/C9 is PDF-confirmed; B/C/E assignment remains guarded.",
+        "Ts1 local graph around N10/N05/C5 is PDF-confirmed only as terminal topology; B/C/E assignment remains guarded.",
+        "S6/S7/C11/CMD mode routes before replacing the Thevenin command source."
+      ],
+      "boundary": "This is a topology proof ledger, not a simulation. It encodes corrected values and KCL evidence while blocking active B11 promotion."
+    },
+    "b11_pdf_topology_evidence_ledger": {
+      "id": "B11_PDF_TOPOLOGY_EVIDENCE_STEP1",
+      "status": "CANDIDAT_SCHEMA_PARTIEL",
+      "source_pdf": "Siemens_U273_Limiter.pdf",
+      "extracted_image": "results/pdf_evidence/pdf_image_obj56_3289x2304_photometric0.png",
+      "extractor": "solver/extract_pdf_ccitt_images.js",
+      "mna_action": "pdf_evidence_only_not_stamped",
+      "active_simulation_allowed": false,
+      "evidence_crops": {
+        "ts2_r13_r16_c8_c9": "results/pdf_evidence/crop_b11_ts2_r15_r16_c8_c9_close.png",
+        "c5_s6": "results/pdf_evidence/crop_b11_c5_s6_close.png",
+        "c11_detector_rectifier": "results/pdf_evidence/crop_b11_c11_detector_cmd_area.png",
+        "detector_command_r31_d1_d2": "results/pdf_evidence/crop_b11_c11_detector_cmd_area.png",
+        "s7_detector_boundary": "results/pdf_evidence/crop_b11_s7_c11_bridge_boundary.png",
+        "s6_to_b6_boundary_cmd_trace": "results/pdf_evidence/crop_b11_s6_to_b6_boundary_cmd_trace.png",
+        "s6_right_output_r1_r2_trace": "results/pdf_evidence/crop_b11_s6_right_output_r1_r2_trace.png"
+      },
+      "proof_rows": [
+        {
+          "component": "R13",
+          "status": "PDF_VISUAL_CONFIRMED_CANDIDATE",
+          "value_ohm": 220000,
+          "visual_route": "B11_N9 -> R13 220k -> B11_N05_Ts1_LOW",
+          "dc_stamp_candidate": "g13 between B11_N9 and B11_N05",
+          "evidence_crop": "crop_b11_ts2_r15_r16_c8_c9_close.png",
+          "promotion_limit": "Passive endpoint proof only; does not close the active Ts1/Ts2 current path."
+        },
+        {
+          "component": "R16",
+          "status": "PDF_VISUAL_CONFIRMED_CANDIDATE",
+          "value_ohm": 1200,
+          "visual_route": "B11_N9 -> R16 1.2k -> B11_REF",
+          "dc_stamp_candidate": "g16 between B11_N9 and B11_REF",
+          "evidence_crop": "crop_b11_ts2_r15_r16_c8_c9_close.png",
+          "promotion_limit": "Endpoint proof only; old N145->N9 R16 reading remains rejected."
+        },
+        {
+          "component": "Ts2",
+          "status": "PDF_VISUAL_CONFIRMED_CANDIDATE",
+          "device": "SST117",
+          "terminal_graph": {
+            "upper_terminal": "B11_N145 shared with R15 bottom, R14 left/right chain and C8 right",
+            "lower_terminal": "B11_N9 shared with R16 top, R13 left and C9 right",
+            "control_terminal_candidate": "route into the R14/C6/N10/Ts1 local network"
+          },
+          "pinout_status": "BCE_UNASSIGNED_GUARDED",
+          "evidence_crop": "crop_b11_ts2_r15_r16_c8_c9_close.png",
+          "promotion_limit": "Terminal graph is visual evidence; B/C/E names and Ebers-Moll stamps remain forbidden until an active hypothesis passes VBE/VCE/KCL."
+        },
+        {
+          "component": "C8",
+          "status": "PDF_VISUAL_CONFIRMED_CANDIDATE",
+          "value_farads": 0.000025,
+          "visual_route": "B11_NDRV_C78_CANDIDATE -> C8 25u -> B11_N145",
+          "dc_policy": "open_in_dc",
+          "evidence_crop": "crop_b11_ts2_r15_r16_c8_c9_close.png",
+          "endpoint_coupling_limit": "C7/C8 common driver is a strong candidate only. Do not merge NDRV_C78 with NDRV_C9 without visible continuous conductor proof.",
+          "promotion_limit": "Dynamic endpoint proof only; no AC/transient stamp is promoted in the official netlist."
+        },
+        {
+          "component": "C9",
+          "status": "PDF_VISUAL_CONFIRMED_CANDIDATE",
+          "value_farads": 0.000025,
+          "visual_route": "B11_NDRV_C9_CANDIDATE -> C9 25u -> B11_N9",
+          "dc_policy": "open_in_dc",
+          "evidence_crop": "crop_b11_ts2_r15_r16_c8_c9_close.png",
+          "endpoint_coupling_limit": "C9 remains a separate driver-side candidate from NDRV_C78 until a visible continuous conductor proof says otherwise.",
+          "promotion_limit": "Dynamic endpoint proof only; no AC/transient stamp is promoted in the official netlist."
+        },
+        {
+          "component": "C7",
+          "status": "PDF_VISUAL_CONFIRMED_CANDIDATE",
+          "value_farads": 0.000025,
+          "visual_route": "B11_NDRV_C78_CANDIDATE -> C7 25u -> B11_N215",
+          "dc_policy": "open_in_dc",
+          "evidence_crop": "crop_b11_c5_c11_cmd_wide.png",
+          "endpoint_coupling_limit": "C7/C8 common driver is a strong candidate only. Do not merge NDRV_C78 with NDRV_C9 without visible continuous conductor proof.",
+          "promotion_limit": "Dynamic endpoint proof only; no AC/transient stamp is promoted in the official netlist."
+        },
+        {
+          "component": "C5",
+          "status": "PDF_VISUAL_CONFIRMED_CANDIDATE",
+          "value_farads": 0.0001,
+          "visual_route": "B11_N05_Ts1_LOW -> C5 100u -> B11_N150_R7_TOP -> R7/R8/S6",
+          "dc_policy": "open_in_dc_between_N05_and_R7_R8_S6",
+          "evidence_crop": "crop_b11_c5_s6_close.png",
+          "promotion_limit": "C5 proves R7/R8/S6 are not direct DC load at N05; transient/attack-release still needs an implicit capacitor stamp."
+        },
+        {
+          "component": "C11",
+          "status": "PDF_VISUAL_CONFIRMED_CANDIDATE",
+          "value_farads": 0.0005,
+          "visual_route": "B11_NRECT_FILTERED_AFTER_R30_SI -> C11 500u -> B11_RECT_RETURN_22_24",
+          "role": "rectifier_filter_storage_not_direct_cmd",
+          "evidence_crop": "crop_b11_c11_detector_cmd_area.png",
+          "promotion_limit": "C11 is visually tied to the rectifier/fused storage area. The direct detector-to-B6-CMD transfer function is still not visually closed."
+        },
+        {
+          "component": "R31",
+          "status": "PDF_VISUAL_CONFIRMED_CANDIDATE",
+          "value_ohm": 51000,
+          "visual_route": "B11_ND2_BOT_RAW -> R31 51k -> B11_NCMD_LOCAL",
+          "dc_stamp_candidate": "g31 between B11_ND2_BOT_RAW and B11_NCMD_LOCAL",
+          "evidence_crop": "crop_b11_c11_detector_cmd_area.png",
+          "promotion_limit": "Detector/control endpoint proof only; B11_NCMD_LOCAL is not the software B6 CMD node and must not replace the Thevenin command path."
+        },
+        {
+          "component": "D2_SSD55",
+          "status": "PDF_VISUAL_CONFIRMED_CANDIDATE",
+          "model_candidate": "SSD55_candidate",
+          "visual_route": "B11_N20_D2_TOP -> D2 SSD55 -> B11_ND2_BOT_RAW",
+          "polarity_status": "graphical_endpoint_only_guarded",
+          "n_top": "B11_N20_D2_TOP",
+          "n_bar": "B11_ND2_BOT_RAW",
+          "anode_candidate": "B11_N20_D2_TOP",
+          "cathode_candidate": "B11_ND2_BOT_RAW",
+          "spice_polarity_promoted": false,
+          "evidence_crop": "crop_b11_c11_detector_cmd_area.png",
+          "promotion_limit": "Diode endpoint proof only; Shockley/RS parameters and final polarity stamp remain guarded."
+        },
+        {
+          "component": "D1_ZL10",
+          "status": "PDF_VISUAL_CONFIRMED_CANDIDATE",
+          "model_candidate": "ZL10_candidate",
+          "visual_route": "B11_NCMD_LOCAL -> D1 ZL10 -> B11_NZENER_OUT_18_19",
+          "polarity_status": "graphical_endpoint_only_guarded",
+          "zener_bar_candidate": "B11_NCMD_LOCAL",
+          "other_terminal": "B11_NZENER_OUT_18_19",
+          "anode_candidate": "B11_NZENER_OUT_18_19",
+          "cathode_candidate": "B11_NCMD_LOCAL",
+          "bv_volt_candidate": 10,
+          "functional_role_from_pdf_text": "limiter_threshold_zener",
+          "s7_bypass_in_compressor_functional_from_pdf_text": true,
+          "model_parameters_candidate": {
+            "BV": 10,
+            "IBV": 0.001,
+            "N": 2,
+            "RS": 5,
+            "CJO": 0
+          },
+          "spice_polarity_promoted": false,
+          "evidence_crop": "crop_b11_c11_detector_cmd_area.png",
+          "promotion_limit": "Zener endpoint and functional limiter-threshold role are captured, but polarity stamp and S7 17/18/19 truth table remain guarded."
+        },
+        {
+          "component": "CMD_ROUTE",
+          "status": "MODE_DEPENDENT_CANDIDATE_SWITCH_NETWORK",
+          "visual_route": "B11 active output -> C5/R7/R8/S6 visible network -> S6 right contacts -> R1/R2 boundary conductor candidate -> B6 bridge command remains represented by Thevenin port",
+          "boundary_trace_confirmed": true,
+          "c11_direct_to_cmd_proven": false,
+          "replace_thevenin_b11_s6_s7_cmd": false,
+          "evidence_crop": "crop_b11_s6_to_b6_boundary_cmd_trace.png",
+          "promotion_limit": "The PDF confirms a visible S6/R1/R2 boundary conductor candidate, but not a complete active output impedance or all mode contacts. Do not replace B11_S6_S7.VB11_S6_S7 + RB11_S6_S7_CMD until S6/S7 truth tables and active B11 output impedance are closed."
+        }
+      ],
+      "closure_verdict": {
+        "passive_routes_proven": [
+          "R13",
+          "R16",
+          "Ts2 terminal graph",
+          "C8",
+          "C9",
+          "C7",
+          "C5",
+          "C11",
+          "R31",
+          "D2_SSD55",
+          "D1_ZL10"
+        ],
+        "still_guarded": [
+          "Ts1/Ts2 B/C/E",
+          "active current closure",
+          "S6/S7 full truth tables",
+          "diode model parameters and polarities",
+          "C7/C8/C9 driver-side common-node hypothesis",
+          "C11/detector-to-CMD transfer",
+          "Thevenin replacement"
+        ],
+        "bjt_pinout_promotable": false,
+        "active_b11_promotable": false,
+        "replace_thevenin_b11_s6_s7_cmd": false
+      },
+      "boundary": "PDF visual proof closes several local routes but remains topology evidence only. It must not stamp B11, assign BJT pins, or replace the guarded realtime/Thevenin command path."
+    },
+    "b11_pdf_text_functional_evidence": {
+      "id": "B11_PDF_TEXT_FUNCTIONAL_EVIDENCE_STEP1",
+      "status": "PDF_TEXT_FUNCTIONAL_CONFIRMED",
+      "source_pdf": "Siemens_U273_Limiter.pdf",
+      "source_text_file": "C:/Users/user/.claude/plans/Analyse texte du pdf U273.txt",
+      "source_encoding": "UTF-8",
+      "authority": "PDF text functional evidence only. It can constrain mode behavior and validation targets, but it cannot promote contact truth tables, diode polarity, BJT pins, or MNA stamps.",
+      "mna_action": "functional_evidence_only_not_stamped",
+      "active_simulation_allowed": false,
+      "executable_netlist_effect": "none",
+      "confirmed_functional_facts": [
+        {
+          "id": "B11_REGELVERSTAERKER_FEEDBACK_FROM_B6_OUTPUT",
+          "fact": "B11 is the regulation amplifier fed from the B6 signal amplifier output, so the control path is feedback, not arbitrary feed-forward.",
+          "modeling_consequence": "Future active closure must derive B11 drive from the B6 output node and cannot keep a free detector drive as proof."
+        },
+        {
+          "id": "B11_RECTIFIER_BEFORE_DC_CONTROL",
+          "fact": "The B11 output is followed by a silicon rectifier that produces the DC control voltage.",
+          "modeling_consequence": "The detector path must be part of the offline active reference before C11/CMD dynamics can be promoted."
+        },
+        {
+          "id": "COMPRESSOR_DIRECT_CONTROL_TO_BRIDGE",
+          "fact": "In compressor mode, the rectified DC control voltage is sent directly to the gain-control diode bridge.",
+          "modeling_consequence": "A compressor-mode candidate may bypass the limiter zener, but only after S7 contacts are proven."
+        },
+        {
+          "id": "LIMITER_ZL10_THRESHOLD",
+          "fact": "In limiter mode, a ZL10 zener is inserted so regulation starts close to nominal output.",
+          "modeling_consequence": "D1_ZL10 has a functionally confirmed limiter-threshold role with BV around 10 V as a candidate model parameter."
+        },
+        {
+          "id": "S7_BYPASSES_ZL10_IN_COMPRESSOR",
+          "fact": "The text says the zener is short-circuited by a switch in compressor mode.",
+          "modeling_consequence": "S7 has a functionally confirmed D1-bypass role candidate, but the exact 17/18/19 contact truth table still comes from the schematic."
+        },
+        {
+          "id": "S6_PREEMPHASIS_SWITCHING",
+          "fact": "The regulation-amplifier input divider can bypass a resistance with a capacitor for FM pre-emphasis.",
+          "modeling_consequence": "S6/S7 must be treated as a mode-dependent pre-emphasis and command-routing switch matrix, not a single RC shortcut."
+        },
+        {
+          "id": "AUDIO_GAIN_BRIDGE_GE_SI_BRANCH",
+          "fact": "Each audio gain-control bridge branch uses one germanium diode plus one silicon diode in series.",
+          "modeling_consequence": "The B6 gain bridge should use the Siemens empirical branch law or a Ge+Si equivalent, not a generic four-silicon-diode shortcut."
+        }
+      ],
+      "mode_logic_candidates": {
+        "limiter": {
+          "d1_zl10": "inserted_as_threshold_zener",
+          "functional_path_candidate": "B11 rectifier -> D1 ZL10 threshold -> gain-control diode bridge",
+          "contact_truth_table_promoted": false,
+          "contact_proof_required": "prove which S7 contact state inserts D1_ZL10 instead of bypassing it"
+        },
+        "compressor": {
+          "d1_zl10": "bypassed_by_switch_candidate",
+          "functional_path_candidate": "B11 rectifier -> S7 bypass around D1_ZL10 -> gain-control diode bridge",
+          "contact_truth_table_promoted": false,
+          "contact_proof_required": "prove the S7 short across D1_ZL10 on the page-1 contact graph"
+        }
+      },
+      "component_constraints": [
+        {
+          "component": "D1_ZL10",
+          "functional_role": "limiter_threshold_zener",
+          "bv_volt_candidate": 10,
+          "s7_bypass_in_compressor_functional": true,
+          "spice_polarity_promoted": false,
+          "contact_truth_table_promoted": false,
+          "promotion_limit": "The text confirms D1 function, not its SPICE polarity or the exact S7 contact pair."
+        },
+        {
+          "component": "S7",
+          "functional_role": "compressor_bypass_of_D1_ZL10_and_limiter_insertion_of_D1_ZL10",
+          "promoted_labels_forbidden": [
+            "S7 = compressor",
+            "S7 = limiter"
+          ],
+          "required_contact_proof": "per mechanical position: contact_closed/contact_open/left_node/right_node/effect_on_CMD_D1_D2"
+        },
+        {
+          "component": "S6",
+          "functional_role": "preemphasis_insertion_or_bypass_in_regulation_amplifier_input_network",
+          "promoted_truth_table": false,
+          "required_contact_proof": "per mechanical position: prove which R/C branches are inserted, bypassed, or isolated"
+        },
+        {
+          "component": "C11",
+          "functional_role": "detector_storage_release_candidate",
+          "direct_cmd_connection_promoted": false,
+          "dynamic_targets_source": "PDF text attack/release values constrain future transient validation, but do not prove C11-to-CMD topology."
+        }
+      ],
+      "empirical_diode_branch_law": {
+        "scope": "B6 audio gain-control diode bridge branch, not D1_ZL10 or D2_SSD55 detector diodes",
+        "branch_composition": "one germanium diode plus one silicon diode in series",
+        "valid_current_range_uA": [
+          2,
+          500
+        ],
+        "voltage_formula": "UD_mV = 308 * ID_uA^0.16",
+        "current_formula": "ID_uA = 2.85e-16 * UD_mV^6.25",
+        "differential_resistance_formula": "R_kohm = 48.3 * ID_uA^-0.84",
+        "bridge_signal_target_mV": {
+          "min": 10,
+          "nominal": 25,
+          "max": 50
+        },
+        "promotion_limit": "This law can validate the gain-control bridge model, but it is not a detector diode model and does not close B11."
+      },
+      "dynamic_plausibility_targets": {
+        "attack_ms": {
+          "limiter": 0.5,
+          "compressor": 1
+        },
+        "release_s": {
+          "min": 0.5,
+          "max": 1.5
+        },
+        "nominal_output_volt": 1.55,
+        "output_impedance_ohm": 30,
+        "load_ohm": 300,
+        "frequency_range_hz": [
+          40,
+          15000
+        ]
+      },
+      "not_confirmed_from_text": [
+        "Complete S6/S7 contact truth table.",
+        "Exact SPICE polarity of D1_ZL10 and D2_SSD55.",
+        "Direct C11-to-B6-CMD connection.",
+        "Whether C7/C8/C9 driver-side terminals share one conductor.",
+        "B/C/E pinout for Ts1/Ts2/Ts3/Ts4 or any other active transistor."
+      ],
+      "activation_criterion_for_next_step": [
+        "Prove visually which S7 contact bypasses D1_ZL10 in compressor mode.",
+        "Prove visually which S6 contacts insert or bypass the pre-emphasis network.",
+        "Run a guarded D1_ZL10 polarity experiment only after the S7 path is contact-proven.",
+        "Keep the Siemens empirical diode law scoped to the audio gain bridge until detector diode models are separately proven."
+      ],
+      "closure_verdict": {
+        "d1_zl10_functional_role_confirmed": true,
+        "s7_d1_bypass_function_confirmed": true,
+        "s7_contact_truth_table_promoted": false,
+        "s6_preemphasis_function_confirmed": true,
+        "diode_bridge_empirical_law_confirmed_for_audio_bridge": true,
+        "active_b11_promotable": false,
+        "replace_thevenin_b11_s6_s7_cmd": false
+      },
+      "boundary": "The PDF text strengthens the functional model and future validation gates, but it does not activate B11, stamp D1/D2, assign BJT pins, or replace the guarded Thevenin command port."
+    },
+    "b11_gpt_reponse_2_promotion_audit": {
+      "id": "B11_GPT_REPONSE_2_2105_PROMOTION_AUDIT",
+      "status": "CANDIDATE",
+      "source_file": "C:/Users/user/.claude/plans/Gpt reponse 2 2105.txt",
+      "source_encoding": "UTF-8",
+      "authority": "External promotion proposal audit only. It can add cross-checks and explicit rejections, but it cannot promote topology, contacts, diode stamps, or active B11.",
+      "mna_action": "audit_only_not_stamped",
+      "active_simulation_allowed": false,
+      "executable_netlist_effect": "none",
+      "claims_accepted_as_guarded_constraints": [
+        {
+          "claim": "D1_ZL10 anode=NZENER_OUT, cathode=NCMD, BV about 10 V",
+          "project_action": "Already recorded as a polarity/model candidate and as text-confirmed limiter-threshold function; spice_polarity_promoted remains false."
+        },
+        {
+          "claim": "D2_SSD55 anode=N20_METER_TOP, cathode=NRECT_MINUS/ND2_BOT_RAW",
+          "project_action": "Already recorded as a polarity candidate; SSD55 model and polarity stamp remain guarded."
+        },
+        {
+          "claim": "R31 is 51k between detector raw minus and local NCMD",
+          "project_action": "Already recorded as B11_ND2_BOT_RAW -> R31 -> B11_NCMD_LOCAL, outside the software B6 CMD boundary."
+        },
+        {
+          "claim": "C11 must not appear in KCL(NCMD)",
+          "project_action": "Accepted as a promotion blocker: C11 remains not-direct-CMD evidence and is not connected to the software CMD node."
+        },
+        {
+          "claim": "S7 bypasses D1 in compressor and leaves D1 active in limiter",
+          "project_action": "Accepted only as functional mode logic from the PDF text; S7 contact truth table remains unpromoted."
+        }
+      ],
+      "claims_rejected_or_not_promotable": [
+        {
+          "claim": "C7.right = +24V rail",
+          "project_verdict": "REJECT_FOR_STEP1",
+          "reason": "The local crop used by the current ledger shows C7 terminating on the printed 21.5 V node, not on the 24 V rail. Keep B11.PASSIVE.C7 as NDRV_C78_CANDIDATE -> B11_N215.",
+          "evidence_crop": "results/pdf_evidence/crop_b11_c5_c11_cmd_wide.png"
+        },
+        {
+          "claim": "C7/C8/C9 driver topology is resolved",
+          "project_verdict": "TOO_STRONG",
+          "reason": "C7/C8/C9 endpoints are useful, but the driver-side conductor grouping is still a guarded visual hypothesis. Do not merge or stamp the dynamic driver nodes from this file."
+        },
+        {
+          "claim": "D1 and D2 polarity and stamps are promotable now",
+          "project_verdict": "TOO_STRONG",
+          "reason": "The graphical polarity candidates agree with the current ledger, but diode model parameters and S7 mode routing still need an explicit guarded experiment before stamping."
+        },
+        {
+          "claim": "S6 minimum limiter/compressor truth table is resolved as 3->1 and 3->2",
+          "project_verdict": "TOO_STRONG",
+          "reason": "The project still requires per-position closed/open contacts, left/right nodes, and CMD/D1/D2 effects before S6 can drive active B11 routing."
+        },
+        {
+          "claim": "B11 can move to partial_promoted_guarded official components",
+          "project_verdict": "REJECT_FOR_STEP1",
+          "reason": "No active B11 transistor pinout, no full S6/S7 truth table, no validated D1/D2 nonlinear experiment, and no real B11-to-B6 CMD KCL equation are available yet."
+        }
+      ],
+      "canonical_project_decisions_after_audit": {
+        "c7_endpoint": "B11_NDRV_C78_CANDIDATE -> B11_N215",
+        "c8_endpoint": "B11_NDRV_C78_CANDIDATE -> B11_N145",
+        "c9_endpoint": "B11_NDRV_C9_CANDIDATE -> B11_N9",
+        "c11_cmd_policy": "not_direct_cmd_not_in_kcl_ncmd",
+        "d1_zl10_policy": "polarity_candidate_and_function_confirmed_but_not_stamped",
+        "d2_ssd55_policy": "polarity_candidate_but_not_stamped",
+        "s7_policy": "functional_bypass_logic_confirmed_contact_truth_table_unpromoted",
+        "s6_policy": "switch_matrix_candidate_only",
+        "b11_activation_status": "blocked_before_active_promotion"
+      },
+      "next_experimental_gate_unlocked_by_this_audit": [
+        "Add a guarded D1/D2 polarity experiment only after S7 contact routing is proven.",
+        "Re-read the C7 endpoint against the full PDF crop before any dynamic driver-node promotion.",
+        "Keep C11 excluded from NCMD KCL in all B11 candidate experiments.",
+        "Use S7 limiter/compressor bypass logic as a test expectation, not as a contact-table stamp."
+      ],
+      "closure_verdict": {
+        "useful_crosscheck": true,
+        "contains_step1_conflict": true,
+        "c7_to_v24_rejected": true,
+        "active_b11_promotable": false,
+        "add_official_b11_components_now": false,
+        "replace_thevenin_b11_s6_s7_cmd": false
+      },
+      "boundary": "This audit absorbs the useful parts of Gpt reponse 2 2105 while blocking its premature activation recommendation."
+    },
+    "b11_scientific_activation_research_ledger": {
+      "id": "B11_SCIENTIFIC_ACTIVATION_RESEARCH_LEDGER",
+      "status": "CANDIDATE",
+      "research_date": "2026-05-21",
+      "mna_action": "research_requirements_only_not_stamped",
+      "active_simulation_allowed": false,
+      "executable_netlist_effect": "none",
+      "authority": "This ledger records source-backed modelling requirements for the next guarded activation step. It does not promote topology, diode polarity, BJT pins, or official B11 components.",
+      "source_policy": {
+        "acceptable_for_stamp_equations": "primary papers, simulator manuals, and manufacturer/component datasheets or scans",
+        "acceptable_for_component_identity": "model-specific museum/manufacturer literature can identify old parts when manufacturer datasheets are missing",
+        "not_acceptable_for_promotion": "forum substitutions, marketplace AI summaries, and unsourced equivalents can only create test hypotheses"
+      },
+      "scientific_sources": [
+        {
+          "id": "HO_RUEHLI_BRENNAN_MNA_1975",
+          "kind": "paper",
+          "url": "https://doi.org/10.1109/TCS.1975.1084079",
+          "finding": "Modified nodal analysis is the correct equation framework for circuits with voltage sources and current-defined branches.",
+          "project_consequence": "Keep B11 activation inside the existing MNA residual/Jacobian path rather than building an ad-hoc detector law."
+        },
+        {
+          "id": "NGSPICE_DIODE_BJT_MODEL_REFERENCE",
+          "kind": "simulator_manual",
+          "url": "https://ngspice.sourceforge.io/docs/ngspice-manual.pdf",
+          "finding": "SPICE diode models use IS/N/RS plus optional reverse breakdown parameters BV and IBV; BJT models expose NPN/PNP device models with nonlinear DC and charge parameters.",
+          "project_consequence": "D1_ZL10 cannot be represented by the current forward-only Shockley diode. Add an optional zener breakdown branch before any D1 stamp experiment."
+        },
+        {
+          "id": "HOLTERS_ZOLZER_NONLINEAR_STATE_SPACE_2015",
+          "kind": "paper",
+          "url": "https://www.hsu-hh.de/ant/wp-content/uploads/sites/699/2017/10/Holters-Z%C3%B6lzer-2015-A-Generalized-Method-for-the-Derivation-of-Non-linear-State-space-Models-from-Circuit-Schematics.pdf",
+          "finding": "Nonlinear state-space models can be derived from schematics while separating linear state evolution from nonlinear device currents.",
+          "project_consequence": "Use this only after offline B11 MNA closure. It is a reduction path for realtime, not a substitute for proving B11 topology."
+        }
+      ],
+      "required_stamps_before_b11_activation": [
+        {
+          "device": "ordinary_diode",
+          "current_convention": "current leaves anode and enters cathode as I(Va - Vc); Jacobian is dI/dV stamped on anode/cathode nodes",
+          "current_project_status": "implemented_for_forward_shockley_u273_empirical_audio_bridge_and_guarded_zener_breakdown",
+          "missing_for_b11": "series resistance still needs a bounded implementation before detector/zener parameter fitting"
+        },
+        {
+          "device": "zener_diode",
+          "current_convention": "same two-terminal nonlinear stamp as diode, with an additional reverse-breakdown current for V(anode,cathode) below -BV",
+          "minimum_parameters": [
+            "IS",
+            "N",
+            "RS",
+            "BV",
+            "IBV",
+            "NBV or breakdownIdeality",
+            "gmin"
+          ],
+          "current_project_status": "guarded reverse-breakdown diode capability exists; D1_ZL10 is still not stamped",
+          "activation_gate": "D1_ZL10 stamp experiments must sweep both graphical polarities and reject the one that violates S7 mode behavior and printed-node KCL."
+        },
+        {
+          "device": "npn_bjt_dc",
+          "current_convention": "terminal currents are positive leaving collector/base/emitter; Ebers-Moll Jacobian is stamped against collector/base/emitter node voltages",
+          "current_project_status": "minimal NPN Ebers-Moll residual/Jacobian already exists",
+          "missing_for_b11": "B/C/E pin assignments, source-stepping tests, and hidden/intermediate route proof for Ts1/Ts2"
+        },
+        {
+          "device": "charge_and_capacitance",
+          "current_convention": "junction and storage capacitances must be implicit companion stamps tied to the nonlinear operating point",
+          "current_project_status": "linear capacitors are implicit; nonlinear diode/BJT capacitances are not implemented",
+          "activation_gate": "not required for first DC-only B11 activation, required before transient/audio claims"
+        }
+      ],
+      "component_data_ledger": [
+        {
+          "component": "D1_ZL10",
+          "role_in_project": "B11 limiter-threshold zener candidate",
+          "source_url": "https://www.radiomuseum.org/tubes/tube_zl10.html",
+          "source_strength": "identity_and_nominal_voltage",
+          "source_facts": [
+            "silicon reference regulator diode",
+            "10 V nominal",
+            "12.5 W listed on the component page"
+          ],
+          "model_candidate": {
+            "type": "zener_diode",
+            "BV_volt": 10,
+            "IBV_amp": 0.001,
+            "IS_amp": "sweep_or_fit",
+            "N": "sweep_or_fit",
+            "RS_ohm": "sweep_or_fit",
+            "CJO_farad": "0_for_DC_first"
+          },
+          "data_gap": "The source gives identity/nominal breakdown but not a full SPICE model. IBV/IS/N/RS are candidate parameters until I-V fit or datasheet scan is found.",
+          "promotion_allowed_now": false
+        },
+        {
+          "component": "D2_SSD55",
+          "role_in_project": "B11 silicon rectifier/detector diode candidate",
+          "source_url": "https://www.radiomuseum.org/tubes/tube_ssd55.html",
+          "source_strength": "weak_identity_only",
+          "source_facts": [
+            "silicon diode is likely",
+            "no data available on the component page"
+          ],
+          "model_candidate": {
+            "type": "silicon_shockley_with_rs",
+            "IS_amp": "bounded_sweep",
+            "N": "bounded_sweep",
+            "RS_ohm": "bounded_sweep",
+            "CJO_farad": "0_for_DC_first"
+          },
+          "data_gap": "No reliable SSD55 electrical datasheet found. Treat existing makeSsd55Approximation as a hypothesis, not evidence.",
+          "promotion_allowed_now": false
+        },
+        {
+          "component": "OA154Q",
+          "role_in_project": "B6 audio gain bridge germanium diode element, not D1/D2 detector",
+          "source_url": "https://www.radiomuseum.org/tubes/tube_oa154q.html",
+          "source_strength": "component_electrical_summary",
+          "source_facts": [
+            "germanium point-contact diode quartet",
+            "IF 6 mA at UF 1 V",
+            "reverse leakage 10 uA at 10 V",
+            "Imax 20 mA",
+            "Umax 50 V",
+            "Tj max 100 C"
+          ],
+          "project_preferred_model": "Use the Siemens U273 empirical Ge+Si branch law for the audio bridge where available; do not copy this model to D1_ZL10 or D2_SSD55.",
+          "promotion_allowed_now": false
+        },
+        {
+          "component": "BCY66",
+          "role_in_project": "small-signal silicon NPN candidate in U273 active stages",
+          "source_url": "https://www.alldatasheet.com/datasheet-pdf/pdf/44426/SIEMENS/BCY66.html",
+          "source_strength": "manufacturer_datasheet_scan_indexed",
+          "source_facts": [
+            "Siemens NPN silicon planar transistor"
+          ],
+          "model_candidate": {
+            "type": "npn_ebers_moll_dc",
+            "betaForward": "bounded_fit_from_operating_point_or_datasheet_parse",
+            "betaReverse": 2,
+            "IS_amp": "bounded_fit",
+            "capacitances": "defer_to_version_1"
+          },
+          "data_gap": "The datasheet exists but project has not parsed a source-backed beta/capacitance table into calibration bounds.",
+          "promotion_allowed_now": false
+        },
+        {
+          "component": "SST117",
+          "role_in_project": "B11/B6 silicon NPN candidate",
+          "source_url": "https://www.radiomuseum.org/tubes/tube_sst117.html",
+          "source_strength": "identity_and_polarity_only",
+          "source_facts": [
+            "NPN silicon planar transistor"
+          ],
+          "model_candidate": {
+            "type": "npn_ebers_moll_dc",
+            "betaForward": "wide_bounded_sweep",
+            "betaReverse": 2,
+            "IS_amp": "wide_bounded_sweep"
+          },
+          "data_gap": "No manufacturer electrical datasheet found. Forum claims such as BSX45/2N2219A similarity remain hypothesis only.",
+          "promotion_allowed_now": false
+        },
+        {
+          "component": "SST116",
+          "role_in_project": "B11/B6 silicon NPN candidate",
+          "source_url": "https://www.radiomuseum.org/tubes/tube_sst116.html",
+          "source_strength": "weak_identity_and_polarity",
+          "source_facts": [
+            "NPN (?) silicon planar transistor"
+          ],
+          "model_candidate": {
+            "type": "npn_ebers_moll_dc_if_pinout_passes",
+            "betaForward": "wide_bounded_sweep",
+            "betaReverse": 2,
+            "IS_amp": "wide_bounded_sweep"
+          },
+          "data_gap": "Polarity is not as strong as SST117. Require stronger route proof and operating-point rejection before any stamp.",
+          "promotion_allowed_now": false
+        },
+        {
+          "component": "2N3054",
+          "role_in_project": "power NPN transistor listed for U273, not the immediate B11 Ts1/Ts2 blocker",
+          "source_url": "https://my.centralsemi.com/datasheets/2N3054.PDF",
+          "source_strength": "modern_manufacturer_datasheet",
+          "source_facts": [
+            "silicon NPN power transistor",
+            "TO-66 package",
+            "VCEO class about 55 V in accessible datasheet summaries",
+            "IC class about 4 A"
+          ],
+          "model_candidate": {
+            "type": "npn_ebers_moll_dc_then_power_bjt_bounds",
+            "immediate_b11_use": false
+          },
+          "data_gap": "Useful for inventory completeness, but not a reason to relax Ts1/Ts2 pinout proof.",
+          "promotion_allowed_now": false
+        }
+      ],
+      "activation_sequence_recommended_by_research": [
+        {
+          "step": "A",
+          "title": "Use the guarded zener-capable DiodeModel in isolated tests",
+          "scope": "C++ model capability only, with D1_ZL10-like polarity sweeps. No B11 topology promotion."
+        },
+        {
+          "step": "B",
+          "title": "Add a guarded component-model inventory",
+          "scope": "Expose source strength and data gaps for ZL10, SSD55, OA154Q, BCY66, SST117, SST116, and 2N3054."
+        },
+        {
+          "step": "C",
+          "title": "Run isolated D1/D2 detector polarity experiments",
+          "scope": "Use S7 functional constraints as rejection rules, but keep B11_NCMD_LOCAL separate from B6 CMD."
+        },
+        {
+          "step": "D",
+          "title": "Only then start B11 active DC experiment",
+          "scope": "Stamp Ts1/Ts2 Ebers-Moll only under an explicit experimental flag and only for pinout hypotheses that pass VBE/VCE/KCL."
+        }
+      ],
+      "promotion_blockers_remaining_after_research": [
+        "ZL10 has nominal BV evidence but no full I-V model.",
+        "SSD55 has no trustworthy electrical parameter data.",
+        "SST116/SST117 have weak or missing electrical datasheets.",
+        "B11 Ts1/Ts2 B/C/E pinout is still unproven.",
+        "S6/S7 contact truth tables still block the real CMD route.",
+        "C11 remains rectifier/filter storage evidence, not direct CMD proof."
+      ],
+      "closure_verdict": {
+        "zener_model_required_before_d1_stamp": true,
+        "ebers_moll_dc_is_sufficient_for_first_active_dc_experiment": true,
+        "gummel_poon_required_now": false,
+        "component_data_complete_enough_for_official_activation": false,
+        "active_b11_promotable": false,
+        "replace_thevenin_b11_s6_s7_cmd": false
+      },
+      "boundary": "Research unlocks the next implementation step: zener-capable guarded experiments. It does not unlock official active B11 promotion."
+    },
+    "b11_pdf_active_hypothesis_constraints": {
+      "id": "B11_PDF_ACTIVE_HYPOTHESIS_CONSTRAINTS_STEP1",
+      "status": "CANDIDATE",
+      "source": "B11_PDF_TOPOLOGY_EVIDENCE_STEP1 plus B11 passive printed-node KCL",
+      "mna_action": "hypothesis_constraints_only_not_stamped",
+      "allowed_use": "Use these rows to reject future Ts1/Ts2 active hypotheses that cannot meet sign and magnitude constraints.",
+      "forbidden_use": "Do not infer B/C/E, do not stamp Ebers-Moll, and do not replace the B11/S6/S7 Thevenin command source from these rows.",
+      "current_constraints": [
+        {
+          "node": "B11_N145",
+          "printed_voltage_volt": 14.5,
+          "required_active_current_into_node_amp": -0.007916666666666667,
+          "required_action": "sink_current_from_printed_node",
+          "magnitude_abs_amp": 0.007916666666666667,
+          "likely_local_device_candidates": [
+            "B11.Ts2"
+          ],
+          "evidence": "R15 injects current from V24 into N145; PDF shows Ts2 terminal, R14/C6 and C8 also touch this local region.",
+          "rejection_rule": "Reject a Ts2 hypothesis if it cannot remove about 7.92 mA from N145 while keeping VBE/VCE plausible."
+        },
+        {
+          "node": "B11_N9",
+          "printed_voltage_volt": 9,
+          "required_active_current_into_node_amp": 0.007538636363636364,
+          "required_action": "source_current_into_printed_node",
+          "magnitude_abs_amp": 0.007538636363636364,
+          "likely_local_device_candidates": [
+            "B11.Ts2",
+            "B11.Ts1"
+          ],
+          "evidence": "R16 and R13 draw current from N9; PDF shows Ts2 lower terminal, C9 and R13/R16 at this node.",
+          "rejection_rule": "Reject an isolated Ts2 hypothesis if it assumes R15/R16/R13 alone close KCL; N9 still needs about 7.54 mA sourced."
+        },
+        {
+          "node": "B11_N05",
+          "printed_voltage_volt": 0.5,
+          "required_active_current_into_node_amp": 0.004136958874458874,
+          "required_action": "source_current_into_printed_node",
+          "magnitude_abs_amp": 0.004136958874458874,
+          "likely_local_device_candidates": [
+            "B11.Ts1"
+          ],
+          "evidence": "R12/R9 draw current from N05; R13 contributes only 38.6 uA, and C5/R7/R8/S6 is DC-open through C5.",
+          "rejection_rule": "Reject a Ts1 hypothesis if it cannot source about 4.14 mA into N05 without impossible beta or VBE/VCE."
+        }
+      ],
+      "candidate_next_tests": [
+        {
+          "device": "B11.Ts2",
+          "visual_terminal_graph": "N145 terminal, N9 terminal, control route into R14/C6/N10/Ts1 region",
+          "required_dc_behavior": "sink current at N145 and source current at N9, with remaining/base/side current reconciled through a proven control route",
+          "not_yet_allowed": "Do not label N145 collector or N9 emitter until the package pin mapping and base/control node are proven."
+        },
+        {
+          "device": "B11.Ts1",
+          "visual_terminal_graph": "N10 terminal, N05 terminal, local connection to R13/C5/R12/R9 region",
+          "required_dc_behavior": "source the N05 residual current after R13 while remaining consistent with the N10/R11 balance",
+          "not_yet_allowed": "Do not label N10/N05 as collector/emitter until the hidden base/control route is proven."
+        }
+      ],
+      "closure_verdict": "The PDF now gives enough route topology to build a constrained BJT-hypothesis evaluator, but not enough to accept a BJT pinout.",
+      "boundary": "These are active-hypothesis constraints, not active devices. They intentionally sit before Ebers-Moll stamping."
+    },
+    "b11_retranscription_crosscheck": {
+      "id": "B11_UTF8_RETRANSCRIPTION_CROSSCHECK_STEP1",
+      "status": "CANDIDATE",
+      "source_file": "C:/Users/user/.claude/plans/Retranscit gpt u273.txt",
+      "secondary_source_files": [
+        "C:/Users/user/.claude/plans/gpt reponse 2105.txt",
+        "C:/Users/user/.claude/plans/Gpt reponse 2 2105.txt"
+      ],
+      "source_encoding": "UTF-8",
+      "authority": "Secondary checklist only. The retranscription can suggest KCL rows and routes, but PDF evidence and executable tests remain the promotion authority.",
+      "mna_action": "crosscheck_only_not_stamped",
+      "agrees_with_pdf_ledger": [
+        {
+          "item": "R13",
+          "retranscription": "R13 = 220k between N9V and N05V",
+          "project_status": "already captured as B11_N9 -> R13 -> B11_N05_Ts1_LOW"
+        },
+        {
+          "item": "R16",
+          "retranscription": "R16 = 1.2k between N9V and reference",
+          "project_status": "already captured as B11_N9 -> R16 -> B11_REF"
+        },
+        {
+          "item": "R15",
+          "retranscription": "R15 = 1.2k between V24 and N14V3/N145",
+          "project_status": "already captured and used in the non-closed R15/R16/R13 KCL checkpoint"
+        },
+        {
+          "item": "Ts2",
+          "retranscription": "graphic terminals TOP=N14V3, RIGHT=NT2_R, BOTTOM=N9V",
+          "project_status": "compatible with the guarded terminal graph; B/C/E still unassigned"
+        },
+        {
+          "item": "C5",
+          "retranscription": "C5 = 100u from Ts1 right/output route toward R7",
+          "project_status": "compatible with the PDF ledger: C5 is a DC-open route into R7/R8/S6"
+        },
+        {
+          "item": "C8/C9",
+          "retranscription": "C8 and C9 are 25u dynamic branches into N145 and N9",
+          "project_status": "compatible with PDF endpoints; C7/C8 share NDRV_C78 as a guarded candidate while C9 stays separate"
+        },
+        {
+          "item": "C11",
+          "retranscription": "C11 = 500u in the detector/control region",
+          "project_status": "compatible in value, but the project keeps C11 as rectifier/filter storage, not direct CMD proof"
+        },
+        {
+          "item": "R31/D1/D2/NCMD",
+          "retranscription": "gpt reponse 2105 asserts D2 -> R31 51k -> NCMD -> D1 ZL10 -> 18/19/S7",
+          "project_status": "accepted as PDF visual endpoint evidence only; B11_NCMD_LOCAL is not the software B6 CMD node"
+        },
+        {
+          "item": "C7",
+          "retranscription": "C7 = 25u into the 21.5 V region with a driver-side candidate conductor",
+          "project_status": "accepted as a PDF visual endpoint candidate; C7/C8 common-driver hypothesis remains guarded"
+        }
+      ],
+      "useful_new_checklist_items": [
+        {
+          "item": "B11.R31/D1/D2/NCMD",
+          "proposed_route": "D2 SSD55 into raw detector node, R31 = 51k toward NCMD, D1 ZL10 from NCMD toward points 18/19 and S7 logic",
+          "action": "Captured as detector endpoint evidence and disabled candidate components; still not a B6 CMD/Thevenin replacement."
+        },
+        {
+          "item": "S6/S7 Vorentzerrung network",
+          "proposed_values": "R3=7.5k, R4=7.5k, R5=15k, R6=3.9k, C1=3n, C2=3n, C3=3.3n, C4=3n",
+          "action": "Use as a value checklist for the switch truth-table proof; do not reduce the switched network to one RC branch."
+        },
+        {
+          "item": "C7",
+          "proposed_route": "C7 = 25u from a driver-side node into the N21.5V region",
+          "action": "Captured as a disabled dynamic candidate; prove or reject the C7/C8 common-driver hypothesis before dynamic B11 simulation."
+        },
+        {
+          "item": "NDRV_A/NDRV_B/NDRV_C",
+          "proposed_rule": "driver-side capacitor terminals are internal excitation/coupling nodes, not ground",
+          "action": "Do not clamp them to reference. Keep C7/C8 as NDRV_C78 candidate and C9 as NDRV_C9 candidate until a continuous-conductor proof promotes or rejects the grouping."
+        }
+      ],
+      "conflicts_or_unverified_items": [
+        {
+          "item": "R2",
+          "retranscription_value": "1k trimmer",
+          "current_project_note": "existing visual inventory has a conflicting R2 visible-branch reading",
+          "verdict": "keep unresolved until the S6/R1/R2 boundary crop is re-read"
+        },
+        {
+          "item": "C11 to CMD",
+          "retranscription_value": "control-region candidate",
+          "current_project_note": "PDF ledger does not prove direct C11-to-B6-CMD transfer",
+          "verdict": "do not replace B11_S6_S7 Thevenin command port"
+        },
+        {
+          "item": "Ts1/Ts2 pin names",
+          "retranscription_value": "graphic terminals only",
+          "current_project_note": "matches project guard policy",
+          "verdict": "no Ebers-Moll BJT stamp from this retranscription"
+        }
+      ],
+      "rejected_bad_readings_called_out_by_transcription": [
+        {
+          "component": "R7",
+          "rejected": "3k",
+          "candidate": "500 ohm trimmer"
+        },
+        {
+          "component": "R9",
+          "rejected": "5.6k",
+          "candidate": "56k"
+        },
+        {
+          "component": "R14",
+          "rejected": "1k",
+          "candidate": "2k"
+        },
+        {
+          "component": "R17",
+          "rejected": "750 ohm",
+          "candidate": "6.8k"
+        },
+        {
+          "component": "R31",
+          "rejected": "51 ohm",
+          "candidate": "51k"
+        },
+        {
+          "component": "C6",
+          "rejected": "10u",
+          "candidate": "1n"
+        },
+        {
+          "component": "C11",
+          "rejected": "25u",
+          "candidate": "500u"
+        }
+      ],
+      "next_pdf_proof_targets": [
+        "B11.R31/D1/D2/NCMD electrical polarity and diode/zener model parameters",
+        "B11.C7/C8 common-driver route promotion proof",
+        "S6/S7 full switch truth table in limiter/compressor positions",
+        "R1/R2/S6 boundary value and contact routing",
+        "Whether NDRV_C78 and NDRV_C9 are separate nodes or a common conductor"
+      ],
+      "closure_verdict": "The retranscription is useful for KCL preparation and for finding the next PDF crops. It does not promote B11, assign B/C/E, or replace the guarded Thevenin CMD path."
+    },
+    "b11_prior_artifact_audit": {
+      "id": "B11_STEP1_PRIOR_ARTIFACT_AUDIT",
+      "status": "CANDIDATE",
+      "canonical_step1_sources": [
+        "B11_VISUAL_INVENTORY_STEP1",
+        "B11_PASSIVE_CANDIDATE_SUBCIRCUIT",
+        "B11_PASSIVE_CANDIDATE_EXPERIMENTAL_PROBE when explicitly enabled"
+      ],
+      "promotion_rule": "Any prior B11 script with a listed conflict must be reconciled before it can feed active topology, BJT pin inference, or calibration promotion.",
+      "artifact_count": 4,
+      "artifacts": [
+        {
+          "artifact": "solver/b11_ts1_ts2_topology_constraints.js",
+          "status": "SUPERSEDED_FOR_STEP1",
+          "issue_class": "dc_path_superseded_by_C5_open_reading",
+          "prior_assumption": "R7/R8 participates in the N05 DC demand bounds.",
+          "step1_canonical_reading": "C5 is a series capacitor from N05 toward the R7/R8 branch, so R7/R8 is DC-open from N05 in the passive clamp probe.",
+          "must_not_use_for": [
+            "N05 DC demand proof",
+            "B11 Ts1/Ts2 beta inference",
+            "BJT pin promotion"
+          ],
+          "allowed_use": "historical comparison only after its assumptions are explicitly reconciled with B11_PASSIVE_CANDIDATE_EXPERIMENTAL_PROBE"
+        },
+        {
+          "artifact": "solver/b11_ts2_r15_to_n05_path_solver.js",
+          "status": "CONFLICTS_WITH_STEP1_CANONICAL_TOPOLOGY",
+          "issue_class": "r16_r17_path_conflict",
+          "prior_assumption": "R16 is treated as N145->N9 and R17 as N05->reference.",
+          "step1_canonical_reading": "The current B11 visual inventory keeps R16 as N9->reference and R17 as N4->reference, not tied to N05.",
+          "must_not_use_for": [
+            "Ts2 collector-current proof",
+            "N05 path closure",
+            "R7 fit",
+            "BJT pin promotion"
+          ],
+          "allowed_use": "only as a rejected/alternative hypothesis until the PDF route proof explicitly resolves R16/R17"
+        },
+        {
+          "artifact": "solver/b11_active_bjt_linearization_estimates.js",
+          "status": "SUPERSEDED_FOR_STEP1",
+          "issue_class": "derived_from_pre_step1_current_bounds",
+          "prior_assumption": "Some q-point rows use local branch estimates and old N05 demand bounds as BJT small-signal seeds.",
+          "step1_canonical_reading": "Small-signal BJT estimates must now be regenerated from active_current_requirements after topology proof, not from mixed prior bounds.",
+          "must_not_use_for": [
+            "gm/rpi acceptance",
+            "B11 active model validation",
+            "realtime surrogate derivation"
+          ],
+          "allowed_use": "rough order-of-magnitude context only"
+        },
+        {
+          "artifact": "solver/b11_active_hybrid_pi_inventory.js",
+          "status": "SUPERSEDED_FOR_STEP1",
+          "issue_class": "inherits_unproven_qpoint_rows",
+          "prior_assumption": "Hybrid-pi rows are generated before B11 terminal mapping and before the step-1 passive-current ledger.",
+          "step1_canonical_reading": "Hybrid-pi rows remain inventory-only until a unique B/C/E topology passes DC/KCL and later AC/transient gates.",
+          "must_not_use_for": [
+            "terminal mapping",
+            "active stamp generation",
+            "promotion gate evidence"
+          ],
+          "allowed_use": "not-stamped inventory reference only"
+        }
+      ],
+      "boundary": "This audit prevents older exploratory B11 scripts from becoming silent evidence. It does not delete them and does not select an active topology."
+    },
+    "b11_direct_printed_node_pin_prefilter": {
+      "id": "B11_TS1_TS2_DIRECT_PRINTED_NODE_PIN_PREFILTER",
+      "status": "CANDIDATE",
+      "mna_action": "prefilter_only_not_stamped",
+      "criteria": {
+        "softVbeMinVolt": 0.45,
+        "softVbeMaxVolt": 0.85,
+        "strictVbeMinVolt": 0.55,
+        "strictVbeMaxVolt": 0.75,
+        "softVceMinVolt": 0.2,
+        "strictVceMinVolt": 0.4
+      },
+      "tested_device_count": 2,
+      "tested_hypothesis_count": 96,
+      "soft_active_candidate_count": 0,
+      "strict_active_candidate_count": 0,
+      "direct_printed_node_hypotheses": [
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N215",
+          "base": "B11_N10",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 21.5,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 9,
+          "drive_volt": 1,
+          "output_volt": 12.5,
+          "base_collector_reverse_volt": 11.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 1.000 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N215",
+          "base": "B11_N10",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 21.5,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 9,
+          "drive_volt": -1,
+          "output_volt": -12.5,
+          "base_collector_reverse_volt": -11.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -1.000 V outside soft VBE window; output -12.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N215",
+          "base": "B11_N10",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 21.5,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": 9.5,
+          "output_volt": 21,
+          "base_collector_reverse_volt": 11.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 9.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N215",
+          "base": "B11_N10",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 21.5,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": -9.5,
+          "output_volt": -21,
+          "base_collector_reverse_volt": -11.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -9.500 V outside soft VBE window; output -21.000 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N215",
+          "base": "B11_N9",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 21.5,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 10,
+          "drive_volt": -1,
+          "output_volt": 11.5,
+          "base_collector_reverse_volt": 12.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -1.000 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N215",
+          "base": "B11_N9",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 21.5,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 10,
+          "drive_volt": 1,
+          "output_volt": -11.5,
+          "base_collector_reverse_volt": -12.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 1.000 V outside soft VBE window; output -11.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N215",
+          "base": "B11_N9",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 21.5,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": 8.5,
+          "output_volt": 21,
+          "base_collector_reverse_volt": 12.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 8.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N215",
+          "base": "B11_N9",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 21.5,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": -8.5,
+          "output_volt": -21,
+          "base_collector_reverse_volt": -12.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -8.500 V outside soft VBE window; output -21.000 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N215",
+          "base": "B11_N05",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 21.5,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 10,
+          "drive_volt": -9.5,
+          "output_volt": 11.5,
+          "base_collector_reverse_volt": 21,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -9.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N215",
+          "base": "B11_N05",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 21.5,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 10,
+          "drive_volt": 9.5,
+          "output_volt": -11.5,
+          "base_collector_reverse_volt": -21,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 9.500 V outside soft VBE window; output -11.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N215",
+          "base": "B11_N05",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 21.5,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 9,
+          "drive_volt": -8.5,
+          "output_volt": 12.5,
+          "base_collector_reverse_volt": 21,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -8.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N215",
+          "base": "B11_N05",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 21.5,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 9,
+          "drive_volt": 8.5,
+          "output_volt": -12.5,
+          "base_collector_reverse_volt": -21,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 8.500 V outside soft VBE window; output -12.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N10",
+          "base": "B11_N215",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 21.5,
+          "emitter_voltage_volt": 9,
+          "drive_volt": 12.5,
+          "output_volt": 1,
+          "base_collector_reverse_volt": -11.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 12.500 V outside soft VBE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N10",
+          "base": "B11_N215",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 21.5,
+          "emitter_voltage_volt": 9,
+          "drive_volt": -12.5,
+          "output_volt": -1,
+          "base_collector_reverse_volt": 11.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -12.500 V outside soft VBE window; output -1.000 V below soft VCE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N10",
+          "base": "B11_N215",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 21.5,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": 21,
+          "output_volt": 9.5,
+          "base_collector_reverse_volt": -11.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 21.000 V outside soft VBE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N10",
+          "base": "B11_N215",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 21.5,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": -21,
+          "output_volt": -9.5,
+          "base_collector_reverse_volt": 11.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -21.000 V outside soft VBE window; output -9.500 V below soft VCE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N10",
+          "base": "B11_N9",
+          "emitter": "B11_N215",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 21.5,
+          "drive_volt": -12.5,
+          "output_volt": -11.5,
+          "base_collector_reverse_volt": 1,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -12.500 V outside soft VBE window; output -11.500 V below soft VCE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N10",
+          "base": "B11_N9",
+          "emitter": "B11_N215",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 21.5,
+          "drive_volt": 12.5,
+          "output_volt": 11.5,
+          "base_collector_reverse_volt": -1,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 12.500 V outside soft VBE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N10",
+          "base": "B11_N9",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": 8.5,
+          "output_volt": 9.5,
+          "base_collector_reverse_volt": 1,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 8.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N10",
+          "base": "B11_N9",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": -8.5,
+          "output_volt": -9.5,
+          "base_collector_reverse_volt": -1,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -8.500 V outside soft VBE window; output -9.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N10",
+          "base": "B11_N05",
+          "emitter": "B11_N215",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 21.5,
+          "drive_volt": -21,
+          "output_volt": -11.5,
+          "base_collector_reverse_volt": 9.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -21.000 V outside soft VBE window; output -11.500 V below soft VCE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N10",
+          "base": "B11_N05",
+          "emitter": "B11_N215",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 21.5,
+          "drive_volt": 21,
+          "output_volt": 11.5,
+          "base_collector_reverse_volt": -9.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 21.000 V outside soft VBE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N10",
+          "base": "B11_N05",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 9,
+          "drive_volt": -8.5,
+          "output_volt": 1,
+          "base_collector_reverse_volt": 9.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -8.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N10",
+          "base": "B11_N05",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 9,
+          "drive_volt": 8.5,
+          "output_volt": -1,
+          "base_collector_reverse_volt": -9.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 8.500 V outside soft VBE window; output -1.000 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N9",
+          "base": "B11_N215",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 21.5,
+          "emitter_voltage_volt": 10,
+          "drive_volt": 11.5,
+          "output_volt": -1,
+          "base_collector_reverse_volt": -12.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 11.500 V outside soft VBE window; output -1.000 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N9",
+          "base": "B11_N215",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 21.5,
+          "emitter_voltage_volt": 10,
+          "drive_volt": -11.5,
+          "output_volt": 1,
+          "base_collector_reverse_volt": 12.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -11.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N9",
+          "base": "B11_N215",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 21.5,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": 21,
+          "output_volt": 8.5,
+          "base_collector_reverse_volt": -12.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 21.000 V outside soft VBE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N9",
+          "base": "B11_N215",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 21.5,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": -21,
+          "output_volt": -8.5,
+          "base_collector_reverse_volt": 12.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -21.000 V outside soft VBE window; output -8.500 V below soft VCE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N9",
+          "base": "B11_N10",
+          "emitter": "B11_N215",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 21.5,
+          "drive_volt": -11.5,
+          "output_volt": -12.5,
+          "base_collector_reverse_volt": -1,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -11.500 V outside soft VBE window; output -12.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N9",
+          "base": "B11_N10",
+          "emitter": "B11_N215",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 21.5,
+          "drive_volt": 11.5,
+          "output_volt": 12.5,
+          "base_collector_reverse_volt": 1,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 11.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N9",
+          "base": "B11_N10",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": 9.5,
+          "output_volt": 8.5,
+          "base_collector_reverse_volt": -1,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 9.500 V outside soft VBE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N9",
+          "base": "B11_N10",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": -9.5,
+          "output_volt": -8.5,
+          "base_collector_reverse_volt": 1,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -9.500 V outside soft VBE window; output -8.500 V below soft VCE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N9",
+          "base": "B11_N05",
+          "emitter": "B11_N215",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 21.5,
+          "drive_volt": -21,
+          "output_volt": -12.5,
+          "base_collector_reverse_volt": 8.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -21.000 V outside soft VBE window; output -12.500 V below soft VCE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N9",
+          "base": "B11_N05",
+          "emitter": "B11_N215",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 21.5,
+          "drive_volt": 21,
+          "output_volt": 12.5,
+          "base_collector_reverse_volt": -8.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 21.000 V outside soft VBE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N9",
+          "base": "B11_N05",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 10,
+          "drive_volt": -9.5,
+          "output_volt": -1,
+          "base_collector_reverse_volt": 8.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -9.500 V outside soft VBE window; output -1.000 V below soft VCE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N9",
+          "base": "B11_N05",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 10,
+          "drive_volt": 9.5,
+          "output_volt": 1,
+          "base_collector_reverse_volt": -8.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 9.500 V outside soft VBE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N05",
+          "base": "B11_N215",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 21.5,
+          "emitter_voltage_volt": 10,
+          "drive_volt": 11.5,
+          "output_volt": -9.5,
+          "base_collector_reverse_volt": -21,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 11.500 V outside soft VBE window; output -9.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N05",
+          "base": "B11_N215",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 21.5,
+          "emitter_voltage_volt": 10,
+          "drive_volt": -11.5,
+          "output_volt": 9.5,
+          "base_collector_reverse_volt": 21,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -11.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N05",
+          "base": "B11_N215",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 21.5,
+          "emitter_voltage_volt": 9,
+          "drive_volt": 12.5,
+          "output_volt": -8.5,
+          "base_collector_reverse_volt": -21,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 12.500 V outside soft VBE window; output -8.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N05",
+          "base": "B11_N215",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 21.5,
+          "emitter_voltage_volt": 9,
+          "drive_volt": -12.5,
+          "output_volt": 8.5,
+          "base_collector_reverse_volt": 21,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -12.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N05",
+          "base": "B11_N10",
+          "emitter": "B11_N215",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 21.5,
+          "drive_volt": -11.5,
+          "output_volt": -21,
+          "base_collector_reverse_volt": -9.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -11.500 V outside soft VBE window; output -21.000 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N05",
+          "base": "B11_N10",
+          "emitter": "B11_N215",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 21.5,
+          "drive_volt": 11.5,
+          "output_volt": 21,
+          "base_collector_reverse_volt": 9.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 11.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N05",
+          "base": "B11_N10",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 9,
+          "drive_volt": 1,
+          "output_volt": -8.5,
+          "base_collector_reverse_volt": -9.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 1.000 V outside soft VBE window; output -8.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N05",
+          "base": "B11_N10",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 9,
+          "drive_volt": -1,
+          "output_volt": 8.5,
+          "base_collector_reverse_volt": 9.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -1.000 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N05",
+          "base": "B11_N9",
+          "emitter": "B11_N215",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 21.5,
+          "drive_volt": -12.5,
+          "output_volt": -21,
+          "base_collector_reverse_volt": -8.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -12.500 V outside soft VBE window; output -21.000 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N05",
+          "base": "B11_N9",
+          "emitter": "B11_N215",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 21.5,
+          "drive_volt": 12.5,
+          "output_volt": 21,
+          "base_collector_reverse_volt": 8.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 12.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "npn",
+          "collector": "B11_N05",
+          "base": "B11_N9",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 10,
+          "drive_volt": -1,
+          "output_volt": -9.5,
+          "base_collector_reverse_volt": -8.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -1.000 V outside soft VBE window; output -9.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts1",
+          "kind": "pnp",
+          "collector": "B11_N05",
+          "base": "B11_N9",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 10,
+          "drive_volt": 1,
+          "output_volt": 9.5,
+          "base_collector_reverse_volt": 8.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 1.000 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N145",
+          "base": "B11_N10",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 14.5,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 9,
+          "drive_volt": 1,
+          "output_volt": 5.5,
+          "base_collector_reverse_volt": 4.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 1.000 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N145",
+          "base": "B11_N10",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 14.5,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 9,
+          "drive_volt": -1,
+          "output_volt": -5.5,
+          "base_collector_reverse_volt": -4.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -1.000 V outside soft VBE window; output -5.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N145",
+          "base": "B11_N10",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 14.5,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": 9.5,
+          "output_volt": 14,
+          "base_collector_reverse_volt": 4.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 9.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N145",
+          "base": "B11_N10",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 14.5,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": -9.5,
+          "output_volt": -14,
+          "base_collector_reverse_volt": -4.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -9.500 V outside soft VBE window; output -14.000 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N145",
+          "base": "B11_N9",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 14.5,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 10,
+          "drive_volt": -1,
+          "output_volt": 4.5,
+          "base_collector_reverse_volt": 5.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -1.000 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N145",
+          "base": "B11_N9",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 14.5,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 10,
+          "drive_volt": 1,
+          "output_volt": -4.5,
+          "base_collector_reverse_volt": -5.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 1.000 V outside soft VBE window; output -4.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N145",
+          "base": "B11_N9",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 14.5,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": 8.5,
+          "output_volt": 14,
+          "base_collector_reverse_volt": 5.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 8.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N145",
+          "base": "B11_N9",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 14.5,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": -8.5,
+          "output_volt": -14,
+          "base_collector_reverse_volt": -5.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -8.500 V outside soft VBE window; output -14.000 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N145",
+          "base": "B11_N05",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 14.5,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 10,
+          "drive_volt": -9.5,
+          "output_volt": 4.5,
+          "base_collector_reverse_volt": 14,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -9.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N145",
+          "base": "B11_N05",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 14.5,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 10,
+          "drive_volt": 9.5,
+          "output_volt": -4.5,
+          "base_collector_reverse_volt": -14,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 9.500 V outside soft VBE window; output -4.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N145",
+          "base": "B11_N05",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 14.5,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 9,
+          "drive_volt": -8.5,
+          "output_volt": 5.5,
+          "base_collector_reverse_volt": 14,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -8.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N145",
+          "base": "B11_N05",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 14.5,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 9,
+          "drive_volt": 8.5,
+          "output_volt": -5.5,
+          "base_collector_reverse_volt": -14,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 8.500 V outside soft VBE window; output -5.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N10",
+          "base": "B11_N145",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 14.5,
+          "emitter_voltage_volt": 9,
+          "drive_volt": 5.5,
+          "output_volt": 1,
+          "base_collector_reverse_volt": -4.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 5.500 V outside soft VBE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N10",
+          "base": "B11_N145",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 14.5,
+          "emitter_voltage_volt": 9,
+          "drive_volt": -5.5,
+          "output_volt": -1,
+          "base_collector_reverse_volt": 4.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -5.500 V outside soft VBE window; output -1.000 V below soft VCE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N10",
+          "base": "B11_N145",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 14.5,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": 14,
+          "output_volt": 9.5,
+          "base_collector_reverse_volt": -4.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 14.000 V outside soft VBE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N10",
+          "base": "B11_N145",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 14.5,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": -14,
+          "output_volt": -9.5,
+          "base_collector_reverse_volt": 4.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -14.000 V outside soft VBE window; output -9.500 V below soft VCE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N10",
+          "base": "B11_N9",
+          "emitter": "B11_N145",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 14.5,
+          "drive_volt": -5.5,
+          "output_volt": -4.5,
+          "base_collector_reverse_volt": 1,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -5.500 V outside soft VBE window; output -4.500 V below soft VCE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N10",
+          "base": "B11_N9",
+          "emitter": "B11_N145",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 14.5,
+          "drive_volt": 5.5,
+          "output_volt": 4.5,
+          "base_collector_reverse_volt": -1,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 5.500 V outside soft VBE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N10",
+          "base": "B11_N9",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": 8.5,
+          "output_volt": 9.5,
+          "base_collector_reverse_volt": 1,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 8.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N10",
+          "base": "B11_N9",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": -8.5,
+          "output_volt": -9.5,
+          "base_collector_reverse_volt": -1,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -8.500 V outside soft VBE window; output -9.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N10",
+          "base": "B11_N05",
+          "emitter": "B11_N145",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 14.5,
+          "drive_volt": -14,
+          "output_volt": -4.5,
+          "base_collector_reverse_volt": 9.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -14.000 V outside soft VBE window; output -4.500 V below soft VCE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N10",
+          "base": "B11_N05",
+          "emitter": "B11_N145",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 14.5,
+          "drive_volt": 14,
+          "output_volt": 4.5,
+          "base_collector_reverse_volt": -9.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 14.000 V outside soft VBE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N10",
+          "base": "B11_N05",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 9,
+          "drive_volt": -8.5,
+          "output_volt": 1,
+          "base_collector_reverse_volt": 9.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -8.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N10",
+          "base": "B11_N05",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 10,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 9,
+          "drive_volt": 8.5,
+          "output_volt": -1,
+          "base_collector_reverse_volt": -9.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 8.500 V outside soft VBE window; output -1.000 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N9",
+          "base": "B11_N145",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 14.5,
+          "emitter_voltage_volt": 10,
+          "drive_volt": 4.5,
+          "output_volt": -1,
+          "base_collector_reverse_volt": -5.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 4.500 V outside soft VBE window; output -1.000 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N9",
+          "base": "B11_N145",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 14.5,
+          "emitter_voltage_volt": 10,
+          "drive_volt": -4.5,
+          "output_volt": 1,
+          "base_collector_reverse_volt": 5.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -4.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N9",
+          "base": "B11_N145",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 14.5,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": 14,
+          "output_volt": 8.5,
+          "base_collector_reverse_volt": -5.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 14.000 V outside soft VBE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N9",
+          "base": "B11_N145",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 14.5,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": -14,
+          "output_volt": -8.5,
+          "base_collector_reverse_volt": 5.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -14.000 V outside soft VBE window; output -8.500 V below soft VCE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N9",
+          "base": "B11_N10",
+          "emitter": "B11_N145",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 14.5,
+          "drive_volt": -4.5,
+          "output_volt": -5.5,
+          "base_collector_reverse_volt": -1,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -4.500 V outside soft VBE window; output -5.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N9",
+          "base": "B11_N10",
+          "emitter": "B11_N145",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 14.5,
+          "drive_volt": 4.5,
+          "output_volt": 5.5,
+          "base_collector_reverse_volt": 1,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 4.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N9",
+          "base": "B11_N10",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": 9.5,
+          "output_volt": 8.5,
+          "base_collector_reverse_volt": -1,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 9.500 V outside soft VBE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N9",
+          "base": "B11_N10",
+          "emitter": "B11_N05",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 0.5,
+          "drive_volt": -9.5,
+          "output_volt": -8.5,
+          "base_collector_reverse_volt": 1,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -9.500 V outside soft VBE window; output -8.500 V below soft VCE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N9",
+          "base": "B11_N05",
+          "emitter": "B11_N145",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 14.5,
+          "drive_volt": -14,
+          "output_volt": -5.5,
+          "base_collector_reverse_volt": 8.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -14.000 V outside soft VBE window; output -5.500 V below soft VCE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N9",
+          "base": "B11_N05",
+          "emitter": "B11_N145",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 14.5,
+          "drive_volt": 14,
+          "output_volt": 5.5,
+          "base_collector_reverse_volt": -8.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 14.000 V outside soft VBE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N9",
+          "base": "B11_N05",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 10,
+          "drive_volt": -9.5,
+          "output_volt": -1,
+          "base_collector_reverse_volt": 8.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -9.500 V outside soft VBE window; output -1.000 V below soft VCE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N9",
+          "base": "B11_N05",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 9,
+          "base_voltage_volt": 0.5,
+          "emitter_voltage_volt": 10,
+          "drive_volt": 9.5,
+          "output_volt": 1,
+          "base_collector_reverse_volt": -8.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 9.500 V outside soft VBE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N05",
+          "base": "B11_N145",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 14.5,
+          "emitter_voltage_volt": 10,
+          "drive_volt": 4.5,
+          "output_volt": -9.5,
+          "base_collector_reverse_volt": -14,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 4.500 V outside soft VBE window; output -9.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N05",
+          "base": "B11_N145",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 14.5,
+          "emitter_voltage_volt": 10,
+          "drive_volt": -4.5,
+          "output_volt": 9.5,
+          "base_collector_reverse_volt": 14,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -4.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N05",
+          "base": "B11_N145",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 14.5,
+          "emitter_voltage_volt": 9,
+          "drive_volt": 5.5,
+          "output_volt": -8.5,
+          "base_collector_reverse_volt": -14,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 5.500 V outside soft VBE window; output -8.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N05",
+          "base": "B11_N145",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 14.5,
+          "emitter_voltage_volt": 9,
+          "drive_volt": -5.5,
+          "output_volt": 8.5,
+          "base_collector_reverse_volt": 14,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -5.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N05",
+          "base": "B11_N10",
+          "emitter": "B11_N145",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 14.5,
+          "drive_volt": -4.5,
+          "output_volt": -14,
+          "base_collector_reverse_volt": -9.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -4.500 V outside soft VBE window; output -14.000 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N05",
+          "base": "B11_N10",
+          "emitter": "B11_N145",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 14.5,
+          "drive_volt": 4.5,
+          "output_volt": 14,
+          "base_collector_reverse_volt": 9.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 4.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N05",
+          "base": "B11_N10",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 9,
+          "drive_volt": 1,
+          "output_volt": -8.5,
+          "base_collector_reverse_volt": -9.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 1.000 V outside soft VBE window; output -8.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N05",
+          "base": "B11_N10",
+          "emitter": "B11_N9",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 10,
+          "emitter_voltage_volt": 9,
+          "drive_volt": -1,
+          "output_volt": 8.5,
+          "base_collector_reverse_volt": 9.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -1.000 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N05",
+          "base": "B11_N9",
+          "emitter": "B11_N145",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 14.5,
+          "drive_volt": -5.5,
+          "output_volt": -14,
+          "base_collector_reverse_volt": -8.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -5.500 V outside soft VBE window; output -14.000 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N05",
+          "base": "B11_N9",
+          "emitter": "B11_N145",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 14.5,
+          "drive_volt": 5.5,
+          "output_volt": 14,
+          "base_collector_reverse_volt": 8.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 5.500 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "npn",
+          "collector": "B11_N05",
+          "base": "B11_N9",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 10,
+          "drive_volt": -1,
+          "output_volt": -9.5,
+          "base_collector_reverse_volt": -8.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive -1.000 V outside soft VBE window; output -9.500 V below soft VCE window; collector/base ordering is not reverse-biased",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        },
+        {
+          "device": "B11.Ts2",
+          "kind": "pnp",
+          "collector": "B11_N05",
+          "base": "B11_N9",
+          "emitter": "B11_N10",
+          "collector_voltage_volt": 0.5,
+          "base_voltage_volt": 9,
+          "emitter_voltage_volt": 10,
+          "drive_volt": 1,
+          "output_volt": 9.5,
+          "base_collector_reverse_volt": 8.5,
+          "soft_active_plausible": false,
+          "strict_active_plausible": false,
+          "rejection_reason": "drive 1.000 V outside soft VBE window",
+          "status": "REJECTED_BY_DIRECT_PRINTED_NODE_VOLTAGE"
+        }
+      ],
+      "conclusion": "No direct B/C/E permutation of the currently printed B11 Ts1/Ts2 nodes passes the soft voltage prefilter. B11 active closure needs hidden/intermediate route proof, not a direct printed-node guess.",
+      "allowed_use": "Reject naive direct printed-node BJT pin assignments that violate VBE/VCE ordering.",
+      "forbidden_use": "Do not treat this as proof that the transistor is absent, and do not accept any BJT pinout from this prefilter alone.",
+      "boundary": "This prefilter uses printed DC voltages only. It does not use an active model, does not stamp BJTs, and does not replace route proof from the schematic/PDF."
+    },
+    "b11_d1_d2_polarity_experiment": {
+      "id": "B11_D1_D2_POLARITY_EXPERIMENT",
+      "status": "CANDIDATE",
+      "enabled": false,
+      "enabled_by_default": false,
+      "explicit_enable_flag": "--enable-b11-d1-d2-polarity-experiment",
+      "allowed_scope": "isolated_diode_polarity_functional_probe",
+      "isolated_from_executable_netlist": true,
+      "modifies_official_components": false,
+      "b11_ncmd_local_separate_from_b6_cmd": true,
+      "s7_contact_truth_table_promoted": false,
+      "d1_polarity_candidates": [
+        {
+          "id": "D1_ZL10_GRAPHIC_CANDIDATE",
+          "component": "D1_ZL10",
+          "polarity": "graphic_zener_candidate",
+          "anode": "B11_NZENER_OUT_18_19",
+          "cathode": "B11_NCMD_LOCAL",
+          "model": "zener_with_reverse_breakdown_candidate",
+          "reverseBreakdownVolt": 10,
+          "forwardDropVolt": 0.65,
+          "expectedLimiterContributionVolt": 10
+        },
+        {
+          "id": "D1_ZL10_REVERSED_CONTROL",
+          "component": "D1_ZL10",
+          "polarity": "reversed_control",
+          "anode": "B11_NCMD_LOCAL",
+          "cathode": "B11_NZENER_OUT_18_19",
+          "model": "forward_diode_control_no_zener_threshold_in_limiter_path",
+          "reverseBreakdownVolt": 10,
+          "forwardDropVolt": 0.65,
+          "expectedLimiterContributionVolt": 0.65
+        }
+      ],
+      "d2_polarity_candidates": [
+        {
+          "id": "D2_SSD55_GRAPHIC_CANDIDATE",
+          "component": "D2_SSD55",
+          "polarity": "graphic_detector_candidate",
+          "anode": "B11_N20_D2_TOP",
+          "cathode": "B11_ND2_BOT_RAW",
+          "model": "shockley_identity_only_candidate",
+          "forwardDropVolt": 0.3,
+          "conductsPositiveDetector": true
+        },
+        {
+          "id": "D2_SSD55_REVERSED_CONTROL",
+          "component": "D2_SSD55",
+          "polarity": "reversed_control",
+          "anode": "B11_ND2_BOT_RAW",
+          "cathode": "B11_N20_D2_TOP",
+          "model": "shockley_reversed_control",
+          "forwardDropVolt": 0.3,
+          "conductsPositiveDetector": false
+        }
+      ],
+      "result": null,
+      "blocked_outputs": [
+        "official D1/D2 MNA stamping",
+        "S7 truth-table promotion",
+        "active B11 simulation",
+        "B11_NCMD_LOCAL to B6 CMD merge",
+        "replacement of B11_S6_S7.VB11_S6_S7 + RB11_S6_S7_CMD"
+      ],
+      "boundary": "This experiment can reject diode polarity controls against S7 functional behavior, but it remains isolated from the executable netlist and cannot promote active B11."
+    },
+    "b11_passive_candidate_subcircuit": {
+      "id": "B11_PASSIVE_CANDIDATE_SUBCIRCUIT",
+      "status": "CANDIDATE",
+      "enabled_in_executable_netlist": false,
+      "stamp_policy": "disabled_by_default",
+      "promotion_required_before_stamp": [
+        "PDF-wide B11 passive topology proof",
+        "switch contact proof for S6/S7 in the selected debug position",
+        "resolution of R15/R16/R13 value and path divergences across prior notes",
+        "explicit connection from B11 detector/C11 storage to the B6 CMD drive node"
+      ],
+      "candidate_component_count": 20,
+      "expected_executable_component_count_without_this_candidate": 88,
+      "local_dc_checkpoints": {
+        "n215ResidualFromPrintedVoltagesAmp": 0.00010000000000000005,
+        "n9PassiveDemandAmp": 0.007538636363636364,
+        "n145MinusN9PassiveDemandAmp": 0.00037803030303030366,
+        "n05DemandWithoutR17Amp": 0.004175595238095238,
+        "n05DeficitAfterR13Amp": 0.004136958874458874
+      },
+      "candidate_components": [
+        {
+          "id": "B11.PASSIVE.R10",
+          "type": "resistor",
+          "value": 2000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "B11_V24",
+            "n2": "B11_N215"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "candidate supply/feed branch from printed 24 V node to 21.5 V node",
+          "dc_current_checkpoint_amp": 0.00125
+        },
+        {
+          "id": "B11.PASSIVE.R11",
+          "type": "resistor",
+          "value": 10000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "B11_N215",
+            "n2": "B11_N10"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "candidate branch from printed 21.5 V node to 10 V node",
+          "dc_current_checkpoint_amp": 0.00115
+        },
+        {
+          "id": "B11.PASSIVE.C7",
+          "type": "capacitor",
+          "value": 0.000025,
+          "unit": "farad",
+          "nodes": {
+            "n1": "B11_NDRV_C78_CANDIDATE",
+            "n2": "B11_N215"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "PDF-confirmed dynamic branch into the printed 21.5 V R10/R11 node",
+          "dc_policy": "open",
+          "route_limit": "C7/C8 common driver-side conductor is only a candidate; keep separate from NDRV_C9",
+          "evidence_crop": "results/pdf_evidence/crop_b11_c5_c11_cmd_wide.png"
+        },
+        {
+          "id": "B11.PASSIVE.R15",
+          "type": "resistor",
+          "value": 1200,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "B11_V24",
+            "n2": "B11_N145"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "candidate feed into Ts1/Ts2 upper local node",
+          "dc_current_checkpoint_amp": 0.007916666666666667
+        },
+        {
+          "id": "B11.PASSIVE.R14",
+          "type": "resistor",
+          "value": 2000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "B11_N145",
+            "n2": "B11_R14_C6_MID"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "candidate AC compensation branch series resistor",
+          "dc_policy": "blocked_by_series_C6"
+        },
+        {
+          "id": "B11.PASSIVE.C6",
+          "type": "capacitor",
+          "value": 1e-9,
+          "unit": "farad",
+          "nodes": {
+            "n1": "B11_R14_C6_MID",
+            "n2": "B11_N10"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "candidate AC compensation branch series capacitor",
+          "dc_policy": "open"
+        },
+        {
+          "id": "B11.PASSIVE.C8",
+          "type": "capacitor",
+          "value": 0.000025,
+          "unit": "farad",
+          "nodes": {
+            "n1": "B11_NDRV_C78_CANDIDATE",
+            "n2": "B11_N145"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "PDF-confirmed dynamic branch into the printed 14.5 V Ts2/R15 node",
+          "dc_policy": "open",
+          "route_limit": "C7/C8 common driver-side conductor is only a candidate; keep separate from NDRV_C9",
+          "evidence_crop": "results/pdf_evidence/crop_b11_ts2_r15_r16_c8_c9_close.png"
+        },
+        {
+          "id": "B11.PASSIVE.C9",
+          "type": "capacitor",
+          "value": 0.000025,
+          "unit": "farad",
+          "nodes": {
+            "n1": "B11_NDRV_C9_CANDIDATE",
+            "n2": "B11_N9"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "PDF-confirmed dynamic branch into the printed 9 V Ts2/R16/R13 node",
+          "dc_policy": "open",
+          "route_limit": "C9 driver-side endpoint remains separate from NDRV_C78 until conductor proof",
+          "evidence_crop": "results/pdf_evidence/crop_b11_ts2_r15_r16_c8_c9_close.png"
+        },
+        {
+          "id": "B11.PASSIVE.R13",
+          "type": "resistor",
+          "value": 220000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "B11_N9",
+            "n2": "B11_N05"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "candidate high-value link between printed 9 V and 0.5 V nodes",
+          "dc_current_checkpoint_amp": 0.000038636363636363636
+        },
+        {
+          "id": "B11.PASSIVE.R16",
+          "type": "resistor",
+          "value": 1200,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "B11_N9",
+            "n2": "B11_REF"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "candidate N9-to-reference branch",
+          "dc_current_checkpoint_amp": 0.0075
+        },
+        {
+          "id": "B11.PASSIVE.R12",
+          "type": "resistor",
+          "value": 120,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "B11_N05",
+            "n2": "B11_REF"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "candidate N05 low-ohm reference branch",
+          "dc_current_checkpoint_amp": 0.004166666666666667
+        },
+        {
+          "id": "B11.PASSIVE.R9",
+          "type": "resistor",
+          "value": 56000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "B11_N05",
+            "n2": "B11_REF"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "candidate N05 high-ohm reference branch",
+          "dc_current_checkpoint_amp": 0.00000892857142857143
+        },
+        {
+          "id": "B11.PASSIVE.C5",
+          "type": "capacitor",
+          "value": 0.0001,
+          "unit": "farad",
+          "nodes": {
+            "n1": "B11_N05",
+            "n2": "B11_N150"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "candidate N05 coupling/storage path toward R7/R8 branch",
+          "dc_policy": "open"
+        },
+        {
+          "id": "B11.PASSIVE.R7_EFFECTIVE_MIN",
+          "type": "resistor",
+          "value": 680,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "B11_N150",
+            "n2": "B11_REF"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "candidate lower-bound effective R7/R8 branch after C5",
+          "dc_policy": "not_seen_from_N05_for_dc_because_C5_is_open"
+        },
+        {
+          "id": "B11.PASSIVE.R7_EFFECTIVE_MAX",
+          "type": "resistor",
+          "value": 1180,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "B11_N150",
+            "n2": "B11_REF"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "candidate upper-bound effective R7/R8 branch after C5",
+          "dc_policy": "not_seen_from_N05_for_dc_because_C5_is_open"
+        },
+        {
+          "id": "B11.PASSIVE.R17",
+          "type": "resistor",
+          "value": 6800,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "B11_N4",
+            "n2": "B11_REF"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "candidate R17 branch from printed N4 region to reference",
+          "topology_status": "not_connected_to_N05_in_current_visual_inventory"
+        },
+        {
+          "id": "B11.PASSIVE.C11",
+          "type": "capacitor",
+          "value": 0.0005,
+          "unit": "farad",
+          "nodes": {
+            "n1": "B11_NRECT_FILTERED_AFTER_R30_SI",
+            "n2": "B11_RECT_RETURN_22_24"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "PDF-confirmed rectifier/filter storage capacitor, not direct CMD proof",
+          "dc_policy": "open",
+          "evidence_crop": "results/pdf_evidence/crop_b11_c11_detector_cmd_area.png"
+        },
+        {
+          "id": "B11.PASSIVE.R31",
+          "type": "resistor",
+          "value": 51000,
+          "unit": "ohm",
+          "nodes": {
+            "n1": "B11_ND2_BOT_RAW",
+            "n2": "B11_NCMD_LOCAL"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "PDF-confirmed detector/control resistor from D2 raw node to local NCMD",
+          "topology_status": "detector_endpoint_proven_cmd_boundary_guarded",
+          "evidence_crop": "results/pdf_evidence/crop_b11_c11_detector_cmd_area.png",
+          "promotion_limit": "B11_NCMD_LOCAL is not the software B6 CMD node."
+        },
+        {
+          "id": "B11.DIODE.D2_SSD55",
+          "type": "diode",
+          "value": "SSD55_candidate",
+          "unit": "model",
+          "nodes": {
+            "n1": "B11_N20_D2_TOP",
+            "n2": "B11_ND2_BOT_RAW"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "PDF-confirmed detector diode endpoint candidate",
+          "polarity_status": "graphical_endpoint_only_guarded",
+          "anode_candidate": "B11_N20_D2_TOP",
+          "cathode_candidate": "B11_ND2_BOT_RAW",
+          "spice_polarity_promoted": false,
+          "evidence_crop": "results/pdf_evidence/crop_b11_c11_detector_cmd_area.png"
+        },
+        {
+          "id": "B11.DIODE.D1_ZL10",
+          "type": "zener_diode",
+          "value": "ZL10_candidate",
+          "unit": "model",
+          "nodes": {
+            "n1": "B11_NCMD_LOCAL",
+            "n2": "B11_NZENER_OUT_18_19"
+          },
+          "status": "CANDIDATE",
+          "card": "B11",
+          "enabled_in_executable_netlist": false,
+          "mna_action": "candidate_disabled_not_stamped",
+          "source": "B11_VISUAL_INVENTORY_STEP1",
+          "boundary": "Passive B11 candidate component only. It is not part of the executable top-level components array and must not be stamped until topology proof promotes the subcircuit.",
+          "function": "PDF-confirmed local command zener endpoint and text-confirmed limiter-threshold function candidate",
+          "polarity_status": "graphical_endpoint_only_guarded",
+          "anode_candidate": "B11_NZENER_OUT_18_19",
+          "cathode_candidate": "B11_NCMD_LOCAL",
+          "bv_volt_candidate": 10,
+          "functional_role_from_pdf_text": "limiter_threshold_zener",
+          "s7_bypass_in_compressor_functional_from_pdf_text": true,
+          "spice_polarity_promoted": false,
+          "evidence_crop": "results/pdf_evidence/crop_b11_c11_detector_cmd_area.png"
+        }
+      ],
+      "boundary": "This subcircuit is the next-step B11 passive candidate, deliberately stored outside the executable netlist. It is suitable for review and KCL bookkeeping only."
+    },
+    "b11_passive_candidate_experiment": {
+      "id": "B11_PASSIVE_CANDIDATE_EXPERIMENTAL_PROBE",
+      "status": "CANDIDATE",
+      "enabled": false,
+      "enabled_by_default": false,
+      "explicit_enable_flag": "--enable-b11-passive-candidate-experiment",
+      "allowed_scope": "isolated_passive_kcl_probe",
+      "isolated_from_executable_netlist": true,
+      "modifies_official_components": false,
+      "expected_executable_component_count_without_this_candidate": 88,
+      "result": null,
+      "blocked_outputs": [
+        "active B11 simulation",
+        "BJT pin inference",
+        "replacement of the B11/S6/S7 Thevenin command source",
+        "promotion of switch contact candidates"
+      ],
+      "boundary": "This probe is opt-in only. It may instantiate the B11 passive candidate in an isolated local DC clamp calculation, but it must not alter the official netlist or claim B11 active closure."
+    },
+    "local_dc_checkpoints": [
+      {
+        "id": "B6_OUTPUT_BIAS_LEFT_KCL",
+        "status": "CANDIDATE",
+        "source": "Siemens_U273_Limiter.pdf page 1 visual schematic; printed voltages used as checkpoints",
+        "locked_topology": [
+          "R36: V22 -> N215",
+          "R33: OUTPUT_BIAS_LEFT -> N215",
+          "C20: OUTPUT_BIAS_LEFT -> N215",
+          "R34: OUTPUT_BIAS_LEFT -> N105",
+          "C21: N105 -> U2_PRI_TOP",
+          "U2 primary starts after C21"
+        ],
+        "printed_voltages": {
+          "V22": 22,
+          "N215": 21.5,
+          "N105": 10.5,
+          "OUTPUT_BIAS_LEFT_SOLVED_FROM_PASSIVE_KCL": 2.5797793151764603
+        },
+        "currents_amp": {
+          "ir33FromN215ToBiasAmp": 0.000946011034241177,
+          "ir34FromN105ToBiasAmp": 0.002200061301339872,
+          "ir35FromBiasToGroundAmp": 0.0031460723355810493,
+          "ir36FromV22ToN215Amp": 0.020833333333333332
+        },
+        "kcl_residual_amp": -4.336808689942018e-19,
+        "boundary": "This is a local passive KCL checkpoint only. It does not prove Ts5/Ts6 pinout or the active output stage."
+      }
+    ],
+    "b11_status": {
+      "status": "PARTIEL",
+      "inventory_required": true,
+      "active_simulation_required_for_step1": false,
+      "note": "B11 remains too reduced for closure. Existing R15/R16/R13 notes are useful candidates, but not a full visual netlist proof."
     }
   },
   "components": [
@@ -795,13 +4498,13 @@
       "value": 20000,
       "unit": "ohm",
       "nodes": {
-        "n1": "V22",
+        "n1": "OUTPUT_BIAS_LEFT",
         "n2": "N215"
       },
       "card": "B6",
-      "status": "FERME_SCHEMA",
+      "status": "PARTIEL",
       "source_etape": "Etape 26",
-      "function": "output upper bias/feed"
+      "function": "output-stage bias feedback from left bias rail to 21.5 V node"
     },
     {
       "id": "B6.R34",
@@ -809,13 +4512,13 @@
       "value": 3600,
       "unit": "ohm",
       "nodes": {
-        "n1": "N105",
-        "n2": "U2_PRI_TOP"
+        "n1": "OUTPUT_BIAS_LEFT",
+        "n2": "N105"
       },
       "card": "B6",
-      "status": "FERME_SCHEMA",
+      "status": "PARTIEL",
       "source_etape": "Etape 26",
-      "function": "output transformer drive"
+      "function": "output-stage bias feed into Ts5/Ts6 midpoint"
     },
     {
       "id": "B6.R35",
@@ -827,9 +4530,9 @@
         "n2": "0"
       },
       "card": "B6",
-      "status": "FERME_SCHEMA",
+      "status": "PARTIEL",
       "source_etape": "Etape 26",
-      "function": "output-stage lower bias"
+      "function": "output-stage lower bias return"
     },
     {
       "id": "B6.R36",
@@ -855,9 +4558,9 @@
         "n2": "0"
       },
       "card": "B6",
-      "status": "FERME_SCHEMA",
+      "status": "PARTIEL",
       "source_etape": "Etape 26",
-      "function": "output lower emitter resistor"
+      "function": "output lower emitter resistor; Ts6 terminal proof still guarded"
     },
     {
       "id": "B6.R38",
@@ -1044,16 +4747,16 @@
     {
       "id": "B6.C20",
       "type": "capacitor",
-      "value": 0.00015,
+      "value": 0.00005,
       "unit": "farad",
       "nodes": {
-        "n1": "N215",
-        "n2": "V22"
+        "n1": "OUTPUT_BIAS_LEFT",
+        "n2": "N215"
       },
       "card": "B6",
-      "status": "FERME_SCHEMA",
+      "status": "PARTIEL",
       "source_etape": "Etape 26",
-      "function": "upper output bootstrap/decoupling"
+      "function": "output-stage AC feedback/decoupling from left bias rail to 21.5 V node"
     },
     {
       "id": "B6.C21",
@@ -1061,13 +4764,13 @@
       "value": 0.0005,
       "unit": "farad",
       "nodes": {
-        "n1": "U2_PRI_TOP",
-        "n2": "U2_PRI_BOTTOM"
+        "n1": "N105",
+        "n2": "U2_PRI_TOP"
       },
       "card": "B6",
-      "status": "FERME_SCHEMA",
+      "status": "PARTIEL",
       "source_etape": "Etape 26",
-      "function": "output coupling to transformer"
+      "function": "series output coupling capacitor feeding U2 primary"
     },
     {
       "id": "B6.Ts1",
@@ -1177,7 +4880,7 @@
         "secondary": "B6_OUT_300R"
       },
       "card": "B6",
-      "status": "FERME_SCHEMA",
+      "status": "PARTIEL",
       "source_etape": "Etape 26",
       "function": "output transformer"
     },
@@ -1196,7 +4899,22 @@
       "card": "B6",
       "status": "COMMUTATEUR_SCHEMA",
       "source_etape": "Etape 26",
-      "function": "output switch upper section"
+      "function": "output switch upper section",
+      "contact_truth_status": "SWITCH_CONTACT_CANDIDATE",
+      "selected_config": "U273_DEBUG_CONFIG_001",
+      "contact_candidates": [
+        {
+          "id": "S3_DRAWN_22_23_CLOSED",
+          "terminals": [
+            "22",
+            "23"
+          ],
+          "contact_state": "candidate_closed",
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "truth_table_status": "UNKNOWN",
+          "mna_action": "boundary_only_not_stamped"
+        }
+      ]
     },
     {
       "id": "B6.S4",
@@ -1213,7 +4931,22 @@
       "card": "B6",
       "status": "COMMUTATEUR_SCHEMA",
       "source_etape": "Etape 26",
-      "function": "output switch lower section"
+      "function": "output switch lower section",
+      "contact_truth_status": "SWITCH_CONTACT_CANDIDATE",
+      "selected_config": "U273_DEBUG_CONFIG_001",
+      "contact_candidates": [
+        {
+          "id": "S4_DRAWN_25_26_CLOSED",
+          "terminals": [
+            "25",
+            "26"
+          ],
+          "contact_state": "candidate_closed",
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "truth_table_status": "UNKNOWN",
+          "mna_action": "boundary_only_not_stamped"
+        }
+      ]
     },
     {
       "id": "B6.GMIN_NL",
@@ -1260,7 +4993,7 @@
     {
       "id": "B11.S6.C2",
       "type": "capacitor",
-      "value": 5e-9,
+      "value": 3e-9,
       "unit": "farad",
       "nodes": {
         "n1": "VL",
@@ -1288,7 +5021,7 @@
     {
       "id": "B11.S6.C1",
       "type": "capacitor",
-      "value": 5e-9,
+      "value": 3e-9,
       "unit": "farad",
       "nodes": {
         "n1": "VM",
@@ -1520,9 +5253,6 @@
       "id": "U1_SEC_H/U1_SEC_L"
     },
     {
-      "id": "U2_PRI_BOTTOM"
-    },
-    {
       "id": "U2_PRI_TOP"
     },
     {
@@ -1553,9 +5283,9 @@
   "schematic_inventories": {
     "B6": {
       "title": "Siemens U273 B6 complete schematic inventory",
-      "status": "FERME_SCHEMA_AVEC_MODELES_ACTIFS_GARDES",
+      "status": "INVENTAIRE_SCHEMA_AVEC_SORTIE_ACTIVE_PARTIELLE",
       "source": "Etape 26",
-      "boundary": "All visible B6 service-sheet components are inventoried. Active BJT nonlinear stamps remain guarded; bridge DC/AC execution uses the closed diode/passive subset.",
+      "boundary": "Visible B6 service-sheet components are inventoried. The bridge/passive subset is usable, but the Ts5/Ts6/C21/U2 output stage remains partial and all active BJT nonlinear stamps stay guarded.",
       "node_aliases": {
         "NA_25MV": "printed 25 mV bridge input node",
         "NB": "bridge command/input node below C2",
@@ -1566,7 +5296,8 @@
         "V122": "printed 12.2 V rail",
         "V22": "printed 22 V rail",
         "N215": "printed 21.5 V output upper node",
-        "N105": "printed 10.5 V output midpoint"
+        "N105": "printed 10.5 V output midpoint",
+        "OUTPUT_BIAS_LEFT": "output-stage left bias rail feeding R33/C20/R34/R35"
       },
       "components": [
         {
@@ -2251,13 +5982,13 @@
           "value": 20000,
           "unit": "ohm",
           "nodes": {
-            "n1": "V22",
+            "n1": "OUTPUT_BIAS_LEFT",
             "n2": "N215"
           },
           "card": "B6",
-          "status": "FERME_SCHEMA",
+          "status": "PARTIEL",
           "source_etape": "Etape 26",
-          "function": "output upper bias/feed"
+          "function": "output-stage bias feedback from left bias rail to 21.5 V node"
         },
         {
           "id": "B6.R34",
@@ -2265,13 +5996,13 @@
           "value": 3600,
           "unit": "ohm",
           "nodes": {
-            "n1": "N105",
-            "n2": "U2_PRI_TOP"
+            "n1": "OUTPUT_BIAS_LEFT",
+            "n2": "N105"
           },
           "card": "B6",
-          "status": "FERME_SCHEMA",
+          "status": "PARTIEL",
           "source_etape": "Etape 26",
-          "function": "output transformer drive"
+          "function": "output-stage bias feed into Ts5/Ts6 midpoint"
         },
         {
           "id": "B6.R35",
@@ -2283,9 +6014,9 @@
             "n2": "0"
           },
           "card": "B6",
-          "status": "FERME_SCHEMA",
+          "status": "PARTIEL",
           "source_etape": "Etape 26",
-          "function": "output-stage lower bias"
+          "function": "output-stage lower bias return"
         },
         {
           "id": "B6.R36",
@@ -2311,9 +6042,9 @@
             "n2": "0"
           },
           "card": "B6",
-          "status": "FERME_SCHEMA",
+          "status": "PARTIEL",
           "source_etape": "Etape 26",
-          "function": "output lower emitter resistor"
+          "function": "output lower emitter resistor; Ts6 terminal proof still guarded"
         },
         {
           "id": "B6.R38",
@@ -2500,16 +6231,16 @@
         {
           "id": "B6.C20",
           "type": "capacitor",
-          "value": 0.00015,
+          "value": 0.00005,
           "unit": "farad",
           "nodes": {
-            "n1": "N215",
-            "n2": "V22"
+            "n1": "OUTPUT_BIAS_LEFT",
+            "n2": "N215"
           },
           "card": "B6",
-          "status": "FERME_SCHEMA",
+          "status": "PARTIEL",
           "source_etape": "Etape 26",
-          "function": "upper output bootstrap/decoupling"
+          "function": "output-stage AC feedback/decoupling from left bias rail to 21.5 V node"
         },
         {
           "id": "B6.C21",
@@ -2517,13 +6248,13 @@
           "value": 0.0005,
           "unit": "farad",
           "nodes": {
-            "n1": "U2_PRI_TOP",
-            "n2": "U2_PRI_BOTTOM"
+            "n1": "N105",
+            "n2": "U2_PRI_TOP"
           },
           "card": "B6",
-          "status": "FERME_SCHEMA",
+          "status": "PARTIEL",
           "source_etape": "Etape 26",
-          "function": "output coupling to transformer"
+          "function": "series output coupling capacitor feeding U2 primary"
         },
         {
           "id": "B6.Ts1",
@@ -2633,7 +6364,7 @@
             "secondary": "B6_OUT_300R"
           },
           "card": "B6",
-          "status": "FERME_SCHEMA",
+          "status": "PARTIEL",
           "source_etape": "Etape 26",
           "function": "output transformer"
         },
@@ -2652,7 +6383,22 @@
           "card": "B6",
           "status": "COMMUTATEUR_SCHEMA",
           "source_etape": "Etape 26",
-          "function": "output switch upper section"
+          "function": "output switch upper section",
+          "contact_truth_status": "SWITCH_CONTACT_CANDIDATE",
+          "selected_config": "U273_DEBUG_CONFIG_001",
+          "contact_candidates": [
+            {
+              "id": "S3_DRAWN_22_23_CLOSED",
+              "terminals": [
+                "22",
+                "23"
+              ],
+              "contact_state": "candidate_closed",
+              "status": "SWITCH_CONTACT_CANDIDATE",
+              "truth_table_status": "UNKNOWN",
+              "mna_action": "boundary_only_not_stamped"
+            }
+          ]
         },
         {
           "id": "B6.S4",
@@ -2669,7 +6415,22 @@
           "card": "B6",
           "status": "COMMUTATEUR_SCHEMA",
           "source_etape": "Etape 26",
-          "function": "output switch lower section"
+          "function": "output switch lower section",
+          "contact_truth_status": "SWITCH_CONTACT_CANDIDATE",
+          "selected_config": "U273_DEBUG_CONFIG_001",
+          "contact_candidates": [
+            {
+              "id": "S4_DRAWN_25_26_CLOSED",
+              "terminals": [
+                "25",
+                "26"
+              ],
+              "contact_state": "candidate_closed",
+              "status": "SWITCH_CONTACT_CANDIDATE",
+              "truth_table_status": "UNKNOWN",
+              "mna_action": "boundary_only_not_stamped"
+            }
+          ]
         }
       ]
     }
@@ -2678,8 +6439,9 @@
     "S6": {
       "status": "PARTIEL",
       "selected_position": "delivery_linear",
+      "truth_table_status": "UNKNOWN",
       "delivery_linear_reading": {
-        "status": "FERME",
+        "status": "SWITCH_CONTACT_CANDIDATE",
         "contacts": [
           "4-5 closed",
           "8-9 closed",
@@ -2688,7 +6450,112 @@
           "5-3-1 closed",
           "2 open"
         ],
-        "source_etape": "Etape 20/21/24"
+        "contact_candidates": [
+          {
+            "id": "S6_DELIVERY_4_5_CLOSED",
+            "switch": "S6",
+            "selected_config": "U273_DEBUG_CONFIG_001",
+            "selected_mode": "limiter_drawn_position",
+            "selected_position": "delivery_linear",
+            "terminals": [
+              "4",
+              "5"
+            ],
+            "contact_state": "candidate_closed",
+            "status": "SWITCH_CONTACT_CANDIDATE",
+            "truth_table_status": "UNKNOWN",
+            "evidence": "Provisional delivery-linear S6 reading from Etape 20/21/24.",
+            "mna_action": "boundary_only_not_stamped",
+            "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+          },
+          {
+            "id": "S6_DELIVERY_8_9_CLOSED",
+            "switch": "S6",
+            "selected_config": "U273_DEBUG_CONFIG_001",
+            "selected_mode": "limiter_drawn_position",
+            "selected_position": "delivery_linear",
+            "terminals": [
+              "8",
+              "9"
+            ],
+            "contact_state": "candidate_closed",
+            "status": "SWITCH_CONTACT_CANDIDATE",
+            "truth_table_status": "UNKNOWN",
+            "evidence": "Provisional delivery-linear S6 reading from Etape 20/21/24.",
+            "mna_action": "boundary_only_not_stamped",
+            "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+          },
+          {
+            "id": "S6_DELIVERY_5_6_OPEN",
+            "switch": "S6",
+            "selected_config": "U273_DEBUG_CONFIG_001",
+            "selected_mode": "limiter_drawn_position",
+            "selected_position": "delivery_linear",
+            "terminals": [
+              "5",
+              "6"
+            ],
+            "contact_state": "candidate_open",
+            "status": "SWITCH_CONTACT_CANDIDATE",
+            "truth_table_status": "UNKNOWN",
+            "evidence": "Provisional delivery-linear S6 reading from Etape 20/21/24.",
+            "mna_action": "boundary_only_not_stamped",
+            "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+          },
+          {
+            "id": "S6_DELIVERY_7_8_OPEN",
+            "switch": "S6",
+            "selected_config": "U273_DEBUG_CONFIG_001",
+            "selected_mode": "limiter_drawn_position",
+            "selected_position": "delivery_linear",
+            "terminals": [
+              "7",
+              "8"
+            ],
+            "contact_state": "candidate_open",
+            "status": "SWITCH_CONTACT_CANDIDATE",
+            "truth_table_status": "UNKNOWN",
+            "evidence": "Provisional delivery-linear S6 reading from Etape 20/21/24.",
+            "mna_action": "boundary_only_not_stamped",
+            "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+          },
+          {
+            "id": "S6_DELIVERY_5_3_1_CHAIN_CLOSED",
+            "switch": "S6",
+            "selected_config": "U273_DEBUG_CONFIG_001",
+            "selected_mode": "limiter_drawn_position",
+            "selected_position": "delivery_linear",
+            "terminals": [
+              "5",
+              "3",
+              "1"
+            ],
+            "contact_state": "candidate_closed_chain",
+            "status": "SWITCH_CONTACT_CANDIDATE",
+            "truth_table_status": "UNKNOWN",
+            "evidence": "Provisional delivery-linear S6 reading from Etape 20/21/24; represented as a chain, not as a proven switch wafer truth table.",
+            "mna_action": "boundary_only_not_stamped",
+            "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+          },
+          {
+            "id": "S6_DELIVERY_2_OPEN",
+            "switch": "S6",
+            "selected_config": "U273_DEBUG_CONFIG_001",
+            "selected_mode": "limiter_drawn_position",
+            "selected_position": "delivery_linear",
+            "terminals": [
+              "2"
+            ],
+            "contact_state": "candidate_open_unconnected",
+            "status": "SWITCH_CONTACT_CANDIDATE",
+            "truth_table_status": "UNKNOWN",
+            "evidence": "Provisional delivery-linear S6 reading from Etape 20/21/24.",
+            "mna_action": "boundary_only_not_stamped",
+            "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+          }
+        ],
+        "source_etape": "Etape 20/21/24",
+        "boundary": "Use only as the drawn/debug position; do not promote to a complete S6 truth table."
       },
       "unresolved": [
         "All non-delivery Vorentzerrung positions still require contact-table proof.",
@@ -2740,6 +6607,43 @@
     "S7": {
       "status": "PARTIEL",
       "selected_mode": "limiter_drawn_17_to_18",
+      "truth_table_status": "UNKNOWN",
+      "selected_contact_candidates": [
+        {
+          "id": "S7_DRAWN_17_18_CLOSED",
+          "switch": "S7",
+          "selected_config": "U273_DEBUG_CONFIG_001",
+          "selected_mode": "limiter_drawn_position",
+          "selected_position": "limiter_drawn_17_to_18",
+          "terminals": [
+            "17",
+            "18"
+          ],
+          "contact_state": "candidate_closed",
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "truth_table_status": "UNKNOWN",
+          "evidence": "Drawn limiter/Begrenzer S7 state from the current S7 contact table.",
+          "mna_action": "boundary_only_not_stamped",
+          "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+        },
+        {
+          "id": "S7_DRAWN_17_19_OPEN",
+          "switch": "S7",
+          "selected_config": "U273_DEBUG_CONFIG_001",
+          "selected_mode": "limiter_drawn_position",
+          "selected_position": "limiter_drawn_17_to_18",
+          "terminals": [
+            "17",
+            "19"
+          ],
+          "contact_state": "candidate_open",
+          "status": "SWITCH_CONTACT_CANDIDATE",
+          "truth_table_status": "UNKNOWN",
+          "evidence": "Complementary open contact in the drawn limiter/Begrenzer S7 state.",
+          "mna_action": "boundary_only_not_stamped",
+          "boundary": "Drawn/debug contact candidate only. This is not a complete mechanical switch truth table and must not be promoted without visual continuity proof."
+        }
+      ],
       "contact_table": [
         {
           "position": "drawn_17_to_18",
@@ -2765,7 +6669,7 @@
           "s7_position": "drawn_17_to_18",
           "s7_closed": "17-18",
           "zener_path": "ZL10 active",
-          "status": "FERME",
+          "status": "SWITCH_CONTACT_CANDIDATE",
           "note": "Limiter bound with ZL10 active and low diode/rectifier drops."
         },
         {
@@ -2774,7 +6678,7 @@
           "s7_position": "drawn_17_to_18",
           "s7_closed": "17-18",
           "zener_path": "ZL10 active",
-          "status": "FERME",
+          "status": "SWITCH_CONTACT_CANDIDATE",
           "note": "Nominal limiter hypothesis: ZL10 active, SSD55 plus rectifier drops chosen around the printed 8 V RMS threshold."
         },
         {
@@ -2783,7 +6687,7 @@
           "s7_position": "drawn_17_to_18",
           "s7_closed": "17-18",
           "zener_path": "ZL10 active",
-          "status": "FERME",
+          "status": "SWITCH_CONTACT_CANDIDATE",
           "note": "Limiter bound with ZL10 active and high diode/rectifier drops."
         },
         {
@@ -2792,7 +6696,7 @@
           "s7_position": "drawn_17_to_18",
           "s7_closed": "17-18",
           "zener_path": "ZL10 active",
-          "status": "FERME",
+          "status": "SWITCH_CONTACT_CANDIDATE",
           "note": "Sensitivity bound: ZL10 effective voltage 10 percent lower, nominal diode/rectifier drops."
         },
         {
@@ -2801,7 +6705,7 @@
           "s7_position": "drawn_17_to_18",
           "s7_closed": "17-18",
           "zener_path": "ZL10 active",
-          "status": "FERME",
+          "status": "SWITCH_CONTACT_CANDIDATE",
           "note": "Sensitivity bound: ZL10 effective voltage 10 percent higher, nominal diode/rectifier drops."
         },
         {
@@ -3888,7 +7792,7 @@
         "c17": 0.0001,
         "c18": 0.00005,
         "c19": 0.00022,
-        "c20": 0.00015,
+        "c20": 0.00005,
         "c21": 0.0005,
         "gminResistance": 1000000000000,
         "rAmpInput": null,

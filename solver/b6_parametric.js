@@ -66,7 +66,7 @@ const defaultB6Values = Object.freeze({
   c17: 100e-6,
   c18: 50e-6,
   c19: 220e-6,
-  c20: 150e-6,
+  c20: 50e-6,
   c21: 500e-6,
   gminResistance: 1e12,
   rAmpInput: Infinity,
@@ -76,6 +76,7 @@ const defaultB6Values = Object.freeze({
 
 const B6_STATUS = Object.freeze({
   CLOSED: "FERME_SCHEMA",
+  PARTIAL: "PARTIEL",
   PARAMETRIC: "PARAMETRIQUE",
   GUARDED: "GARDE_NON_STAMPE",
   SWITCH: "COMMUTATEUR_SCHEMA",
@@ -295,11 +296,23 @@ function buildB6CompleteSchematicInventory(options = {}) {
   add("B6.R30", "resistor", p.r30, "ohm", { n1: "V122", n2: "V22" }, { function: "supply feed to 22V rail" });
   add("B6.R31", "resistor", p.r31, "ohm", { n1: "V22", n2: "N48" }, { function: "Ts4 collector/load feed" });
   add("B6.R32", "resistor", p.r32, "ohm", { n1: "N18", n2: "0" }, { function: "Ts4 current reference" });
-  add("B6.R33", "resistor", p.r33, "ohm", { n1: "V22", n2: "N215" }, { function: "output upper bias/feed" });
-  add("B6.R34", "resistor", p.r34, "ohm", { n1: "N105", n2: "U2_PRI_TOP" }, { function: "output transformer drive" });
-  add("B6.R35", "resistor", p.r35, "ohm", { n1: "OUTPUT_BIAS_LEFT", n2: "0" }, { function: "output-stage lower bias" });
+  add("B6.R33", "resistor", p.r33, "ohm", { n1: "OUTPUT_BIAS_LEFT", n2: "N215" }, {
+    status: B6_STATUS.PARTIAL,
+    function: "output-stage bias feedback from left bias rail to 21.5 V node",
+  });
+  add("B6.R34", "resistor", p.r34, "ohm", { n1: "OUTPUT_BIAS_LEFT", n2: "N105" }, {
+    status: B6_STATUS.PARTIAL,
+    function: "output-stage bias feed into Ts5/Ts6 midpoint",
+  });
+  add("B6.R35", "resistor", p.r35, "ohm", { n1: "OUTPUT_BIAS_LEFT", n2: "0" }, {
+    status: B6_STATUS.PARTIAL,
+    function: "output-stage lower bias return",
+  });
   add("B6.R36", "resistor", p.r36, "ohm", { n1: "V22", n2: "N215" }, { function: "output idle-current sense/feed" });
-  add("B6.R37", "resistor", p.r37, "ohm", { n1: "TS6_EMITTER", n2: "0" }, { function: "output lower emitter resistor" });
+  add("B6.R37", "resistor", p.r37, "ohm", { n1: "TS6_EMITTER", n2: "0" }, {
+    status: B6_STATUS.PARTIAL,
+    function: "output lower emitter resistor; Ts6 terminal proof still guarded",
+  });
   add("B6.R38", "resistor", p.r38, "ohm", { n1: "V22", n2: "SUPPLY_SI_0A4" }, { function: "supply series resistor/fuse feed" });
 
   add("B6.C8", "capacitor", p.c8, "farad", { n1: "N08", n2: "TS1_BIAS_TOP" }, { function: "front-stage coupling/compensation" });
@@ -314,8 +327,14 @@ function buildB6CompleteSchematicInventory(options = {}) {
   add("B6.C17", "capacitor", p.c17, "farad", { n1: "N18", n2: "0" }, { function: "Ts4 bypass" });
   add("B6.C18", "capacitor", p.c18, "farad", { n1: "N18", n2: "0" }, { function: "Ts4/output compensation" });
   add("B6.C19", "capacitor", p.c19, "farad", { n1: "V122", n2: "V22" }, { function: "22V feed decoupling" });
-  add("B6.C20", "capacitor", p.c20, "farad", { n1: "N215", n2: "V22" }, { function: "upper output bootstrap/decoupling" });
-  add("B6.C21", "capacitor", p.c21, "farad", { n1: "U2_PRI_TOP", n2: "U2_PRI_BOTTOM" }, { function: "output coupling to transformer" });
+  add("B6.C20", "capacitor", p.c20, "farad", { n1: "OUTPUT_BIAS_LEFT", n2: "N215" }, {
+    status: B6_STATUS.PARTIAL,
+    function: "output-stage AC feedback/decoupling from left bias rail to 21.5 V node",
+  });
+  add("B6.C21", "capacitor", p.c21, "farad", { n1: "N105", n2: "U2_PRI_TOP" }, {
+    status: B6_STATUS.PARTIAL,
+    function: "series output coupling capacitor feeding U2 primary",
+  });
 
   add("B6.Ts1", "bjt", "BCY66", null, { terminals: "from Siemens schematic symbol", printedNodes: ["V64", "N08"] }, {
     status: B6_STATUS.GUARDED,
@@ -342,23 +361,48 @@ function buildB6CompleteSchematicInventory(options = {}) {
     function: "lower output transistor; output-stage bound only",
   });
   add("B6.U2", "transformer", null, null, { primary: "U2_PRI_TOP/U2_PRI_BOTTOM", secondary: "B6_OUT_300R" }, {
+    status: B6_STATUS.PARTIAL,
     function: "output transformer",
   });
   add("B6.S3", "switch", null, null, { contacts: ["22", "23"], output: "B6_OUT_PLUS" }, {
     status: B6_STATUS.SWITCH,
     function: "output switch upper section",
+    contact_truth_status: "SWITCH_CONTACT_CANDIDATE",
+    selected_config: "U273_DEBUG_CONFIG_001",
+    contact_candidates: [
+      {
+        id: "S3_DRAWN_22_23_CLOSED",
+        terminals: ["22", "23"],
+        contact_state: "candidate_closed",
+        status: "SWITCH_CONTACT_CANDIDATE",
+        truth_table_status: "UNKNOWN",
+        mna_action: "boundary_only_not_stamped",
+      },
+    ],
   });
   add("B6.S4", "switch", null, null, { contacts: ["25", "26"], output: "B6_OUT_RETURN" }, {
     status: B6_STATUS.SWITCH,
     function: "output switch lower section",
+    contact_truth_status: "SWITCH_CONTACT_CANDIDATE",
+    selected_config: "U273_DEBUG_CONFIG_001",
+    contact_candidates: [
+      {
+        id: "S4_DRAWN_25_26_CLOSED",
+        terminals: ["25", "26"],
+        contact_state: "candidate_closed",
+        status: "SWITCH_CONTACT_CANDIDATE",
+        truth_table_status: "UNKNOWN",
+        mna_action: "boundary_only_not_stamped",
+      },
+    ],
   });
 
   return {
     title: "Siemens U273 B6 complete schematic inventory",
-    status: "FERME_SCHEMA_AVEC_MODELES_ACTIFS_GARDES",
+    status: "INVENTAIRE_SCHEMA_AVEC_SORTIE_ACTIVE_PARTIELLE",
     source: "Etape 26",
     boundary:
-      "All visible B6 service-sheet components are inventoried. Active BJT nonlinear stamps remain guarded; bridge DC/AC execution uses the closed diode/passive subset.",
+      "Visible B6 service-sheet components are inventoried. The bridge/passive subset is usable, but the Ts5/Ts6/C21/U2 output stage remains partial and all active BJT nonlinear stamps stay guarded.",
     node_aliases: {
       NA_25MV: "printed 25 mV bridge input node",
       NB: "bridge command/input node below C2",
@@ -370,6 +414,7 @@ function buildB6CompleteSchematicInventory(options = {}) {
       V22: "printed 22 V rail",
       N215: "printed 21.5 V output upper node",
       N105: "printed 10.5 V output midpoint",
+      OUTPUT_BIAS_LEFT: "output-stage left bias rail feeding R33/C20/R34/R35",
     },
     components: parts,
   };

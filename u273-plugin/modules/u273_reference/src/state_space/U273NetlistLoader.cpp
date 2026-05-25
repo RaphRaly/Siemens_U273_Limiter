@@ -330,6 +330,9 @@ private:
     if (contains(modelName, "u273_empirical")) {
         return makeU273EmpiricalCompositeDiode();
     }
+    if (contains(modelName, "ZL10") || contains(modelName, "ZL 10")) {
+        return makeZl10Approximation();
+    }
     if (contains(modelName, "OA154")) {
         return makeOa154Approximation();
     }

@@ -560,7 +560,7 @@ CalibrationReport B6B11CalibrationRunner::runOffline(const std::filesystem::path
         const ActiveTopologyEvaluator topologyEvaluator {};
         ActiveTopologyEvaluationOptions topologyOptions {};
         topologyOptions.requireAcImprovement = true;
-        const auto topologyResults = topologyEvaluator.evaluateB6GuardedCandidates(
+        const auto topologyResults = topologyEvaluator.evaluateB6B11GuardedCandidates(
             guardedDcView.circuit,
             guardedOp,
             topologyOptions);

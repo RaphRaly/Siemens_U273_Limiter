@@ -1,0 +1,96 @@
+{
+  "pdfPath": "C:\\Users\\user\\Desktop\\Siemens U273\\Siemens_U273_Limiter.pdf",
+  "images": [
+    {
+      "objectNumber": 56,
+      "filter": "CCITTFaxDecode",
+      "width": 3289,
+      "height": 2304,
+      "file": "pdf_image_obj56_3289x2304_photometric0.tif"
+    },
+    {
+      "objectNumber": 56,
+      "filter": "CCITTFaxDecode",
+      "width": 3289,
+      "height": 2304,
+      "file": "pdf_image_obj56_3289x2304_photometric1.tif"
+    },
+    {
+      "objectNumber": 8,
+      "filter": "CCITTFaxDecode",
+      "width": 712,
+      "height": 1046,
+      "file": "pdf_image_obj8_712x1046_photometric0.tif"
+    },
+    {
+      "objectNumber": 8,
+      "filter": "CCITTFaxDecode",
+      "width": 712,
+      "height": 1046,
+      "file": "pdf_image_obj8_712x1046_photometric1.tif"
+    },
+    {
+      "objectNumber": 16,
+      "filter": "CCITTFaxDecode",
+      "width": 776,
+      "height": 1107,
+      "file": "pdf_image_obj16_776x1107_photometric0.tif"
+    },
+    {
+      "objectNumber": 16,
+      "filter": "CCITTFaxDecode",
+      "width": 776,
+      "height": 1107,
+      "file": "pdf_image_obj16_776x1107_photometric1.tif"
+    },
+    {
+      "objectNumber": 24,
+      "filter": "CCITTFaxDecode",
+      "width": 776,
+      "height": 1107,
+      "file": "pdf_image_obj24_776x1107_photometric0.tif"
+    },
+    {
+      "objectNumber": 24,
+      "filter": "CCITTFaxDecode",
+      "width": 776,
+      "height": 1107,
+      "file": "pdf_image_obj24_776x1107_photometric1.tif"
+    },
+    {
+      "objectNumber": 32,
+      "filter": "CCITTFaxDecode",
+      "width": 776,
+      "height": 1107,
+      "file": "pdf_image_obj32_776x1107_photometric0.tif"
+    },
+    {
+      "objectNumber": 32,
+      "filter": "CCITTFaxDecode",
+      "width": 776,
+      "height": 1107,
+      "file": "pdf_image_obj32_776x1107_photometric1.tif"
+    },
+    {
+      "objectNumber": 40,
+      "filter": "CCITTFaxDecode",
+      "width": 776,
+      "height": 1107,
+      "file": "pdf_image_obj40_776x1107_photometric0.tif"
+    },
+    {
+      "objectNumber": 40,
+      "filter": "CCITTFaxDecode",
+      "width": 776,
+      "height": 1107,
+      "file": "pdf_image_obj40_776x1107_photometric1.tif"
+    },
+    {
+      "objectNumber": 67,
+      "filter": "DCTDecode",
+      "width": 1036,
+      "height": 631,
+      "file": "pdf_image_obj67_1036x631.jpg"
+    }
+  ]
+}

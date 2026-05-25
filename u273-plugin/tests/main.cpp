@@ -2,8 +2,10 @@
 #include <cmath>
 #include <complex>
 #include <cstdlib>
+#include <fstream>
 #include <filesystem>
 #include <iostream>
+#include <iterator>
 #include <limits>
 #include <string>
 #include <vector>
@@ -27,6 +29,7 @@
 #include "u273/reference/calibration/ActiveModelParameterMapping.h"
 #include "u273/reference/calibration/ActiveTopologyCandidate.h"
 #include "u273/reference/calibration/ActiveTopologyEvaluator.h"
+#include "u273/reference/calibration/ActiveTopologyInventory.h"
 #include "u273/reference/calibration/B6B11CalibrationRunner.h"
 #include "u273/reference/calibration/BoundedCalibrationSolver.h"
 #include "u273/reference/calibration/CalibrationDataset.h"
@@ -97,6 +100,30 @@ std::filesystem::path resultsDirectory()
     return std::filesystem::path {U273_RESULTS_DIR};
 }
 
+std::string readTextFile(const std::filesystem::path& path)
+{
+    std::ifstream input {path, std::ios::binary};
+    require(input.good(), "test fixture text file must open");
+    return std::string {
+        std::istreambuf_iterator<char> {input},
+        std::istreambuf_iterator<char> {}};
+}
+
+std::size_t countOccurrences(const std::string& text, const std::string& needle)
+{
+    if (needle.empty()) {
+        return 0;
+    }
+
+    std::size_t count = 0;
+    std::size_t offset = 0;
+    while ((offset = text.find(needle, offset)) != std::string::npos) {
+        ++count;
+        offset += needle.size();
+    }
+    return count;
+}
+
 bool sameNode(u273::reference::state_space::NodeId lhs, u273::reference::state_space::NodeId rhs)
 {
     return lhs.value == rhs.value;
@@ -116,6 +143,43 @@ bool hasResistor(const u273::reference::state_space::CircuitGraph& circuit,
         if (resistor.id == id
             && (forward || reverse)
             && std::fabs(resistor.resistanceOhm - resistanceOhm) <= resistanceOhm * 1.0e-12) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool hasCapacitor(const u273::reference::state_space::CircuitGraph& circuit,
+                  const char* id,
+                  const char* n1,
+                  const char* n2,
+                  double capacitanceFarad)
+{
+    const auto node1 = circuit.findNode(n1);
+    const auto node2 = circuit.findNode(n2);
+    for (const auto& capacitor : circuit.capacitors()) {
+        const auto forward = sameNode(capacitor.positive, node1) && sameNode(capacitor.negative, node2);
+        const auto reverse = sameNode(capacitor.positive, node2) && sameNode(capacitor.negative, node1);
+        if (capacitor.id == id
+            && (forward || reverse)
+            && std::fabs(capacitor.capacitanceFarad - capacitanceFarad) <= capacitanceFarad * 1.0e-12) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool hasTransformerPrimary(const u273::reference::state_space::CircuitGraph& circuit,
+                           const char* id,
+                           const char* primaryPositive,
+                           const char* primaryNegative)
+{
+    const auto p = circuit.findNode(primaryPositive);
+    const auto n = circuit.findNode(primaryNegative);
+    for (const auto& transformer : circuit.idealTransformerPorts()) {
+        if (transformer.id == id
+            && sameNode(transformer.primaryPositive, p)
+            && sameNode(transformer.primaryNegative, n)) {
             return true;
         }
     }
@@ -1276,6 +1340,74 @@ void testBjtCandidateRejectsImpossiblePins()
     require(plausible.hasUsablePins(), "BJT candidate with three non-ground unique pins must be usable");
 }
 
+void testActiveTopologyInventoryExposesB6B11ClosureGaps()
+{
+    using namespace u273::reference::calibration;
+    using namespace u273::reference::state_space;
+
+    const auto specs = defaultB6B11ActiveTopologyCandidateSpecs();
+    require(specs.size() == 12, "B6/B11 topology inventory must list six B6 and six B11 active devices");
+
+    auto completeTerminals = 0;
+    auto incompleteTerminals = 0;
+    for (const auto& spec : specs) {
+        if (spec.hasCompleteTerminalNames()) {
+            ++completeTerminals;
+        } else {
+            ++incompleteTerminals;
+        }
+    }
+    require(completeTerminals >= 2, "topology inventory must retain the plausible B6 Ts2/Ts4 candidates");
+    require(incompleteTerminals >= 10, "topology inventory must expose unresolved B6/B11 devices as incomplete");
+
+    CircuitGraph circuit {};
+    const std::array<const char*, 12> nodeNames {
+        "V64",
+        "N64_T2",
+        "N38",
+        "N32",
+        "N48",
+        "N24",
+        "N18",
+        "N08",
+        "N074",
+        "N215",
+        "N105",
+        "TS6_EMITTER"};
+    for (const auto* name : nodeNames) {
+        (void) circuit.addNode(name);
+    }
+
+    const auto candidates = instantiateActiveTopologyCandidates(circuit, specs);
+    require(candidates.size() == specs.size(), "topology inventory instantiation must preserve candidate count");
+
+    const auto findCandidate = [](const std::vector<ActiveTopologyCandidate>& values,
+                                  const char* id) -> const ActiveTopologyCandidate* {
+        for (const auto& candidate : values) {
+            if (candidate.id == id) {
+                return &candidate;
+            }
+        }
+        return nullptr;
+    };
+
+    const auto* ts2 = findCandidate(candidates, "B6.Ts2");
+    require(ts2 != nullptr && ts2->hasUsablePins() && !ts2->isRejected(),
+            "B6 Ts2 inventory candidate must instantiate as usable when nodes exist");
+
+    const auto* ts4 = findCandidate(candidates, "B6.Ts4");
+    require(ts4 != nullptr && ts4->hasUsablePins() && !ts4->isRejected(),
+            "B6 Ts4 inventory candidate must instantiate as usable when nodes exist");
+
+    const auto* ts1 = findCandidate(candidates, "B6.Ts1");
+    require(ts1 != nullptr && ts1->isRejected(),
+            "B6 Ts1 must remain rejected until its missing terminal is proven");
+
+    const auto* b11Ts1 = findCandidate(candidates, "B11.Ts1");
+    require(b11Ts1 != nullptr && b11Ts1->isRejected(),
+            "B11 Ts1 must remain rejected until B/C/E orientation is proven");
+}
+
 void testActiveTopologyEvaluatorKeepsCandidateGuardedWithoutAcImprovement()
 {
     using namespace u273::reference::state_space;
@@ -1416,6 +1548,493 @@ void testU273NetlistLoaderInventory()
     require(report.boundary() == u273::core::ModelBoundary::passWithGuardedBoundaries,
             "guarded netlist boundary must remain explicit");
     require(loaded.circuit.nodeCount() > 40, "loaded netlist must expose the real U273 node inventory");
+}
+
+void testB6OutputStageTopologyMatchesPdf()
+{
+    const auto loaded = u273::reference::state_space::U273NetlistLoader::loadFromFile(
+        resultsDirectory() / "u273_netlist.json");
+    const auto& circuit = loaded.circuit;
+
+    require(hasResistor(circuit, "B6.R36", "V22", "N215", 24.0),
+            "B6 output stage must keep R36 from 22 V rail to the 21.5 V node");
+    require(hasResistor(circuit, "B6.R33", "OUTPUT_BIAS_LEFT", "N215", 20000.0),
+            "B6 output stage must connect R33 between left bias rail and 21.5 V node");
+    require(hasCapacitor(circuit, "B6.C20", "OUTPUT_BIAS_LEFT", "N215", 50.0e-6),
+            "B6 output stage must connect C20 between left bias rail and 21.5 V node");
+    require(hasResistor(circuit, "B6.R34", "OUTPUT_BIAS_LEFT", "N105", 3600.0),
+            "B6 output stage must connect R34 from left bias rail to the 10.5 V midpoint");
+    require(hasCapacitor(circuit, "B6.C21", "N105", "U2_PRI_TOP", 500.0e-6),
+            "B6 output stage must use C21 as the series coupling capacitor into U2");
+    require(!hasCapacitor(circuit, "B6.C21", "U2_PRI_TOP", "U2_PRI_BOTTOM", 500.0e-6),
+            "B6 output stage must not place C21 in parallel with the U2 primary");
+    require(hasTransformerPrimary(circuit, "B6.U2", "U2_PRI_TOP", "U2_PRI_BOTTOM"),
+            "B6 output transformer primary must start after the C21 coupling node");
+}
+
+void testTopologyStep1DebugConfigKeepsUnprovenContactsCandidate()
+{
+    const auto json = readTextFile(resultsDirectory() / "u273_netlist.json");
+
+    require(json.find("\"debug_config_id\": \"U273_DEBUG_CONFIG_001\"") != std::string::npos,
+            "netlist must expose the named topology step-1 debug configuration");
+    require(json.find("\"status\": \"PARTIAL_TOPOLOGY_SAFE_DC_CLOSURE\"") != std::string::npos,
+            "topology step-1 config must be explicitly partial rather than full schematic closure");
+    require(json.find("\"truth_table_status\": \"UNKNOWN\"") != std::string::npos,
+            "switch truth tables must remain unknown until complete contact proof");
+    require(json.find("\"contact_truth_status\": \"SWITCH_CONTACT_CANDIDATE\"") != std::string::npos,
+            "B6 output switch contacts must be marked as candidates");
+    require(json.find("\"id\": \"B6_OUTPUT_BIAS_LEFT_KCL\"") != std::string::npos,
+            "netlist must carry the local B6 output-bias KCL checkpoint");
+    require(json.find("\"B11 remains too reduced for closure") != std::string::npos,
+            "B11 status must block premature active closure");
+}
+
+void testTopologyStep1SwitchContactsAreExplicitCandidates()
+{
+    const auto json = readTextFile(resultsDirectory() / "u273_netlist.json");
+
+    require(json.find("\"switch_contact_candidates\"") != std::string::npos,
+            "topology step-1 must expose an auditable switch contact candidate set");
+    require(json.find("\"id\": \"U273_DEBUG_CONFIG_001.SWITCH_CONTACT_CANDIDATES\"") != std::string::npos,
+            "switch contact candidates must be tied to the named debug configuration");
+    require(json.find("\"applied_to_executable_netlist\": false") != std::string::npos,
+            "switch contact candidates must not silently alter the executable netlist");
+    require(json.find("\"id\": \"S3_DRAWN_22_23_CLOSED\"") != std::string::npos,
+            "S3 drawn output contact must be explicit");
+    require(json.find("\"id\": \"S4_DRAWN_25_26_CLOSED\"") != std::string::npos,
+            "S4 drawn output contact must be explicit");
+    require(json.find("\"id\": \"S6_DELIVERY_4_5_CLOSED\"") != std::string::npos,
+            "S6 drawn delivery contact 4-5 must be explicit");
+    require(json.find("\"id\": \"S6_DELIVERY_5_3_1_CHAIN_CLOSED\"") != std::string::npos,
+            "S6 chained candidate contact 5-3-1 must be explicit");
+    require(json.find("\"id\": \"S7_DRAWN_17_18_CLOSED\"") != std::string::npos,
+            "S7 drawn limiter contact 17-18 must be explicit");
+    require(json.find("\"id\": \"S7_DRAWN_17_19_OPEN\"") != std::string::npos,
+            "S7 complementary open contact 17-19 must be explicit");
+    require(countOccurrences(json, "\"mna_action\": \"boundary_only_not_stamped\"") >= 10,
+            "every step-1 switch contact candidate must remain a non-stamped boundary");
+    require(json.find("\"b11_s6_s7_switch_matrix_candidate\"") != std::string::npos,
+            "B11 S6/S7 switch matrix candidate must be exposed");
+    require(json.find("\"switch_matrix_status\": \"SWITCH_MATRIX_CANDIDATE\"") != std::string::npos,
+            "B11 S6/S7 must remain a switch matrix candidate");
+    require(json.find("\"truth_table_status\": \"UNKNOWN\"") != std::string::npos,
+            "B11 S6/S7 switch matrix truth table must remain unknown");
+    require(json.find("\"C1_farad\": 3e-9") != std::string::npos,
+            "B11 S6 C1 must use the corrected 3 nF candidate");
+    require(json.find("\"C2_farad\": 3e-9") != std::string::npos,
+            "B11 S6 C2 must use the corrected 3 nF candidate");
+    require(json.find("\"R2_user_candidate_ohm\": 1000") != std::string::npos,
+            "B11 S6/R2 value must be recorded as a guarded user candidate");
+    require(json.find("S6 = mode_limiter") != std::string::npos,
+            "B11 S6/S7 matrix must forbid premature limiter mode labeling");
+    require(json.find("effect_on_CMD_D1_D2") != std::string::npos,
+            "B11 S6/S7 matrix must require per-position CMD/D1/D2 effect proof");
+}
+
+void testTopologyStep1B11VisualInventoryStaysNonStamped()
+{
+    const auto json = readTextFile(resultsDirectory() / "u273_netlist.json");
+
+    require(json.find("\"b11_visual_inventory\"") != std::string::npos,
+            "topology step-1 must carry the B11 visual inventory");
+    require(json.find("\"id\": \"B11_VISUAL_INVENTORY_STEP1\"") != std::string::npos,
+            "B11 inventory must be named as a step-1 candidate inventory");
+    require(json.find("\"active_simulation_allowed_for_step1\": false") != std::string::npos,
+            "B11 visual inventory must not enable active simulation");
+    require(json.find("\"mna_action\": \"inventory_only_not_stamped\"") != std::string::npos,
+            "B11 visual inventory must stay non-stamped");
+    require(json.find("\"R15\": 1200") != std::string::npos,
+            "B11 local crop inventory must expose the current R15 candidate value without promoting it");
+    require(json.find("\"R16\": 1200") != std::string::npos,
+            "B11 local crop inventory must expose the current R16 candidate value without promoting it");
+    require(json.find("\"id\": \"B11_TS1_TS2_LOCAL_PASSIVE_KCL\"") != std::string::npos,
+            "B11 inventory must expose local passive KCL checkpoints");
+    require(json.find("They do not identify B/C/E pins") != std::string::npos,
+            "B11 local KCL checkpoint must explicitly block BJT pin inference");
+    require(json.find("Resolution of value/path divergences") != std::string::npos,
+            "B11 inventory must preserve prior value/path divergence as a blocker");
+    require(countOccurrences(json, "\"mna_action\": \"inventory_only_not_stamped\"") >= 2,
+            "B11 topology candidates must remain inventory-only entries");
+}
+
+void testTopologyStep1B11LocalLedgerKeepsR15R16Partial()
+{
+    const auto json = readTextFile(resultsDirectory() / "u273_netlist.json");
+
+    require(json.find("\"b11_local_topology_proof_ledger\"") != std::string::npos,
+            "topology step-1 must expose the B11 local topology proof ledger");
+    require(json.find("\"id\": \"B11_LOCAL_TOPOLOGY_PROOF_LEDGER_STEP1\"") != std::string::npos,
+            "B11 local topology proof ledger must be explicitly named");
+    require(json.find("\"status\": \"CANDIDAT_SCHEMA_PARTIEL\"") != std::string::npos,
+            "B11 local topology proof ledger must stay partial rather than closed");
+    require(json.find("\"mna_action\": \"topology_ledger_only_not_stamped\"") != std::string::npos,
+            "B11 local topology proof ledger must not stamp the executable netlist");
+    require(json.find("\"R15\": 1200") != std::string::npos,
+            "B11 local topology proof ledger must keep R15 as 1.2 kOhm");
+    require(json.find("\"R16\": 1200") != std::string::npos,
+            "B11 local topology proof ledger must keep R16 as 1.2 kOhm");
+    require(json.find("\"rejected_value_ohm\": 12000") != std::string::npos,
+            "B11 local topology proof ledger must reject the old 12 kOhm reading");
+    require(json.find("\"closure_status\": \"not_closed_by_R15_R16_R13_alone\"") != std::string::npos,
+            "B11 R15/R16/R13 KCL must remain explicitly non-closed");
+    require(json.find("\"residual_iR15_minus_iR16_minus_iR13_amp\": 0.00037803030303030") != std::string::npos,
+            "B11 local topology proof ledger must preserve the corrected 0.378 mA residual");
+    require(json.find("\"confidence\": \"MODE_DEPENDENT_CANDIDATE_SWITCH_NETWORK\"") != std::string::npos,
+            "B11 S6/S7/C11/CMD must remain a mode-dependent candidate network");
+    require(json.find("Do not use IR15 ~= IR16 + IR13 as a closed proof") != std::string::npos,
+            "B11 local topology proof ledger must block promotion from the partial KCL equality");
+}
+
+void testTopologyStep1B11PdfEvidenceKeepsActiveClosureGuarded()
+{
+    const auto json = readTextFile(resultsDirectory() / "u273_netlist.json");
+
+    require(json.find("\"b11_pdf_topology_evidence_ledger\"") != std::string::npos,
+            "topology step-1 must expose the B11 PDF evidence ledger");
+    require(json.find("\"id\": \"B11_PDF_TOPOLOGY_EVIDENCE_STEP1\"") != std::string::npos,
+            "B11 PDF evidence ledger must be explicitly named");
+    require(json.find("\"mna_action\": \"pdf_evidence_only_not_stamped\"") != std::string::npos,
+            "B11 PDF evidence must not stamp the executable netlist");
+    require(json.find("\"visual_route\": \"B11_N9 -> R13 220k -> B11_N05_Ts1_LOW\"") != std::string::npos,
+            "B11 PDF evidence must confirm the R13 N9-to-N05 route");
+    require(json.find("\"visual_route\": \"B11_N9 -> R16 1.2k -> B11_REF\"") != std::string::npos,
+            "B11 PDF evidence must confirm the R16 N9-to-reference route");
+    require(json.find("\"visual_route\": \"B11_ND2_BOT_RAW -> R31 51k -> B11_NCMD_LOCAL\"") != std::string::npos,
+            "B11 PDF evidence must confirm the R31 detector-to-local-NCMD route");
+    require(json.find("\"component\": \"D2_SSD55\"") != std::string::npos,
+            "B11 PDF evidence must include D2 SSD55 endpoint topology");
+    require(json.find("\"component\": \"D1_ZL10\"") != std::string::npos,
+            "B11 PDF evidence must include D1 ZL10 endpoint topology");
+    require(json.find("\"visual_route\": \"B11_NDRV_C78_CANDIDATE -> C7 25u -> B11_N215\"") != std::string::npos,
+            "B11 PDF evidence must confirm the C7 endpoint into N215");
+    require(json.find("\"visual_route\": \"B11_NDRV_C78_CANDIDATE -> C8 25u -> B11_N145\"") != std::string::npos,
+            "B11 PDF evidence must keep C8 on the guarded NDRV_C78 candidate");
+    require(json.find("\"visual_route\": \"B11_NDRV_C9_CANDIDATE -> C9 25u -> B11_N9\"") != std::string::npos,
+            "B11 PDF evidence must keep C9 separate from NDRV_C78");
+    require(json.find("\"anode_candidate\": \"B11_N20_D2_TOP\"") != std::string::npos,
+            "B11 PDF evidence must record the D2 anode candidate");
+    require(json.find("\"cathode_candidate\": \"B11_NCMD_LOCAL\"") != std::string::npos,
+            "B11 PDF evidence must record the D1 ZL10 cathode candidate");
+    require(json.find("\"spice_polarity_promoted\": false") != std::string::npos,
+            "B11 PDF evidence must not promote D1/D2 SPICE polarity");
+    require(json.find("\"polarity_status\": \"graphical_endpoint_only_guarded\"") != std::string::npos,
+            "B11 PDF evidence must keep detector diode polarities guarded");
+    require(json.find("\"component\": \"Ts2\"") != std::string::npos,
+            "B11 PDF evidence must include Ts2 terminal topology");
+    require(json.find("\"pinout_status\": \"BCE_UNASSIGNED_GUARDED\"") != std::string::npos,
+            "B11 PDF evidence must keep Ts2 B/C/E guarded");
+    require(json.find("\"dc_policy\": \"open_in_dc_between_N05_and_R7_R8_S6\"") != std::string::npos,
+            "B11 PDF evidence must keep C5 as the DC-open route into R7/R8/S6");
+    require(json.find("\"role\": \"rectifier_filter_storage_not_direct_cmd\"") != std::string::npos,
+            "B11 PDF evidence must not present C11 as direct CMD proof");
+    require(json.find("\"replace_thevenin_b11_s6_s7_cmd\": false") != std::string::npos,
+            "B11 PDF evidence must not replace the guarded Thevenin command port");
+    require(json.find("\"boundary_trace_confirmed\": true") != std::string::npos,
+            "B11 PDF evidence must confirm the visible S6/R1/R2 boundary trace without promoting it");
+    require(json.find("visible S6/R1/R2 boundary conductor candidate") != std::string::npos,
+            "B11 PDF evidence must document the guarded CMD boundary interpretation");
+}
+
+void testTopologyStep1B11PdfTextFunctionalEvidenceStaysNonStamped()
+{
+    const auto json = readTextFile(resultsDirectory() / "u273_netlist.json");
+
+    require(json.find("\"b11_pdf_text_functional_evidence\"") != std::string::npos,
+            "topology step-1 must expose B11 PDF text functional evidence");
+    require(json.find("\"id\": \"B11_PDF_TEXT_FUNCTIONAL_EVIDENCE_STEP1\"") != std::string::npos,
+            "B11 PDF text functional evidence must be explicitly named");
+    require(json.find("\"source_encoding\": \"UTF-8\"") != std::string::npos,
+            "B11 PDF text functional evidence must record UTF-8 source handling");
+    require(json.find("\"mna_action\": \"functional_evidence_only_not_stamped\"") != std::string::npos,
+            "B11 PDF text functional evidence must not stamp the executable netlist");
+    require(json.find("\"id\": \"B11_REGELVERSTAERKER_FEEDBACK_FROM_B6_OUTPUT\"") != std::string::npos,
+            "PDF text must confirm B11 feedback regulation role");
+    require(json.find("\"id\": \"LIMITER_ZL10_THRESHOLD\"") != std::string::npos,
+            "PDF text must confirm D1 ZL10 limiter threshold role");
+    require(json.find("\"id\": \"S7_BYPASSES_ZL10_IN_COMPRESSOR\"") != std::string::npos,
+            "PDF text must confirm S7 compressor bypass function");
+    require(json.find("\"id\": \"S6_PREEMPHASIS_SWITCHING\"") != std::string::npos,
+            "PDF text must confirm S6 preemphasis switching function");
+    require(json.find("\"functional_role\": \"limiter_threshold_zener\"") != std::string::npos,
+            "D1 ZL10 must carry its text-confirmed functional role");
+    require(json.find("\"scope\": \"B6 audio gain-control diode bridge branch, not D1_ZL10 or D2_SSD55 detector diodes\"") != std::string::npos,
+            "Siemens empirical diode law must remain scoped to the audio gain bridge");
+    require(json.find("\"nominal\": 25") != std::string::npos,
+            "PDF text diode bridge target must keep the 25 mV nominal signal");
+    require(json.find("\"limiter\": 0.5") != std::string::npos,
+            "PDF text limiter attack target must be preserved");
+    require(json.find("\"compressor\": 1") != std::string::npos,
+            "PDF text compressor attack target must be preserved");
+    require(json.find("Complete S6/S7 contact truth table.") != std::string::npos,
+            "PDF text evidence must keep S6/S7 truth table unconfirmed");
+    require(json.find("\"s7_contact_truth_table_promoted\": false") != std::string::npos,
+            "PDF text evidence must not promote S7 contact truth tables");
+    require(json.find("\"replace_thevenin_b11_s6_s7_cmd\": false") != std::string::npos,
+            "PDF text evidence must not replace the guarded Thevenin command port");
+}
+
+void testTopologyStep1B11GptReponse2AuditBlocksPrematurePromotion()
+{
+    const auto json = readTextFile(resultsDirectory() / "u273_netlist.json");
+
+    require(json.find("\"b11_gpt_reponse_2_promotion_audit\"") != std::string::npos,
+            "topology step-1 must expose the GPT reponse 2 promotion audit");
+    require(json.find("\"id\": \"B11_GPT_REPONSE_2_2105_PROMOTION_AUDIT\"") != std::string::npos,
+            "GPT reponse 2 audit must be explicitly named");
+    require(json.find("\"source_file\": \"C:/Users/user/.claude/plans/Gpt reponse 2 2105.txt\"") != std::string::npos,
+            "GPT reponse 2 audit must record the UTF-8 source file");
+    require(json.find("\"mna_action\": \"audit_only_not_stamped\"") != std::string::npos,
+            "GPT reponse 2 audit must remain non-stamped");
+    require(json.find("D1_ZL10 anode=NZENER_OUT") != std::string::npos,
+            "GPT reponse 2 audit must preserve the guarded D1 polarity agreement");
+    require(json.find("\"claim\": \"C7.right = +24V rail\"") != std::string::npos,
+            "GPT reponse 2 audit must record the C7-to-24V claim");
+    require(json.find("\"c7_to_v24_rejected\": true") != std::string::npos,
+            "GPT reponse 2 audit must reject the C7-to-24V claim");
+    require(json.find("\"c7_endpoint\": \"B11_NDRV_C78_CANDIDATE -> B11_N215\"") != std::string::npos,
+            "GPT reponse 2 audit must preserve the canonical C7 endpoint");
+    require(json.find("\"claim\": \"B11 can move to partial_promoted_guarded official components\"") != std::string::npos,
+            "GPT reponse 2 audit must record the premature activation claim");
+    require(json.find("\"b11_activation_status\": \"blocked_before_active_promotion\"") != std::string::npos,
+            "GPT reponse 2 audit must keep B11 blocked before active promotion");
+    require(json.find("\"add_official_b11_components_now\": false") != std::string::npos,
+            "GPT reponse 2 audit must not add official B11 components");
+}
+
+void testTopologyStep1B11ScientificActivationResearchIsGuarded()
+{
+    const auto json = readTextFile(resultsDirectory() / "u273_netlist.json");
+
+    require(json.find("\"b11_scientific_activation_research_ledger\"") != std::string::npos,
+            "topology step-1 must expose the B11 scientific activation research ledger");
+    require(json.find("\"id\": \"B11_SCIENTIFIC_ACTIVATION_RESEARCH_LEDGER\"") != std::string::npos,
+            "B11 scientific research ledger must be explicitly named");
+    require(json.find("\"mna_action\": \"research_requirements_only_not_stamped\"") != std::string::npos,
+            "B11 scientific research ledger must not stamp the executable netlist");
+    require(json.find("\"active_simulation_allowed\": false") != std::string::npos,
+            "B11 scientific research ledger must not enable active simulation");
+    require(json.find("\"id\": \"NGSPICE_DIODE_BJT_MODEL_REFERENCE\"") != std::string::npos,
+            "B11 research ledger must cite a simulator-model source for diode/BJT parameters");
+    require(json.find("Add an optional zener breakdown branch before any D1 stamp experiment") != std::string::npos,
+            "B11 research ledger must require a zener-capable model before D1 stamping");
+    require(json.find("\"device\": \"zener_diode\"") != std::string::npos,
+            "B11 research ledger must include a zener stamp requirement");
+    require(json.find("\"BV\"") != std::string::npos,
+            "B11 research ledger must require BV for zener modelling");
+    require(json.find("\"IBV\"") != std::string::npos,
+            "B11 research ledger must require IBV for zener modelling");
+    require(json.find("\"component\": \"D1_ZL10\"") != std::string::npos,
+            "B11 research ledger must include D1 ZL10");
+    require(json.find("\"BV_volt\": 10") != std::string::npos,
+            "B11 research ledger must keep ZL10 as a 10 V candidate");
+    require(json.find("\"component\": \"D2_SSD55\"") != std::string::npos,
+            "B11 research ledger must include D2 SSD55");
+    require(json.find("\"source_strength\": \"weak_identity_only\"") != std::string::npos,
+            "B11 research ledger must mark SSD55 data as weak");
+    require(json.find("\"component\": \"SST117\"") != std::string::npos,
+            "B11 research ledger must include SST117");
+    require(json.find("\"source_strength\": \"identity_and_polarity_only\"") != std::string::npos,
+            "B11 research ledger must keep SST117 as identity/polarity evidence only");
+    require(json.find("\"gummel_poon_required_now\": false") != std::string::npos,
+            "B11 research ledger must not require Gummel-Poon for the first DC experiment");
+    require(json.find("\"active_b11_promotable\": false") != std::string::npos,
+            "B11 research ledger must not promote active B11");
+
+    const auto loaded = u273::reference::state_space::U273NetlistLoader::loadFromFile(
+        resultsDirectory() / "u273_netlist.json");
+    require(loaded.report.componentObjects == 88,
+            "B11 research metadata must not change the executable component count");
+}
+
+void testTopologyStep1B11PdfActiveConstraintsAreRejectionOnly()
+{
+    const auto json = readTextFile(resultsDirectory() / "u273_netlist.json");
+
+    require(json.find("\"b11_pdf_active_hypothesis_constraints\"") != std::string::npos,
+            "topology step-1 must expose B11 PDF active hypothesis constraints");
+    require(json.find("\"id\": \"B11_PDF_ACTIVE_HYPOTHESIS_CONSTRAINTS_STEP1\"") != std::string::npos,
+            "B11 PDF active constraints must be explicitly named");
+    require(json.find("\"mna_action\": \"hypothesis_constraints_only_not_stamped\"") != std::string::npos,
+            "B11 PDF active constraints must remain non-stamped");
+    require(json.find("\"node\": \"B11_N145\"") != std::string::npos,
+            "B11 PDF active constraints must include N145");
+    require(json.find("\"required_action\": \"sink_current_from_printed_node\"") != std::string::npos,
+            "B11 PDF active constraints must require N145 sink current");
+    require(json.find("\"node\": \"B11_N9\"") != std::string::npos,
+            "B11 PDF active constraints must include N9");
+    require(json.find("\"node\": \"B11_N05\"") != std::string::npos,
+            "B11 PDF active constraints must include N05");
+    require(json.find("Do not infer B/C/E") != std::string::npos,
+            "B11 PDF active constraints must forbid B/C/E inference");
+    require(json.find("not enough to accept a BJT pinout") != std::string::npos,
+            "B11 PDF active constraints must keep active topology unaccepted");
+}
+
+void testTopologyStep1B11RetranscriptionIsOnlyACrosscheck()
+{
+    const auto json = readTextFile(resultsDirectory() / "u273_netlist.json");
+
+    require(json.find("\"b11_retranscription_crosscheck\"") != std::string::npos,
+            "topology step-1 must expose the UTF-8 retranscription cross-check");
+    require(json.find("\"id\": \"B11_UTF8_RETRANSCRIPTION_CROSSCHECK_STEP1\"") != std::string::npos,
+            "B11 retranscription cross-check must be explicitly named");
+    require(json.find("\"source_encoding\": \"UTF-8\"") != std::string::npos,
+            "B11 retranscription cross-check must record UTF-8 source handling");
+    require(json.find("\"mna_action\": \"crosscheck_only_not_stamped\"") != std::string::npos,
+            "B11 retranscription must not stamp the executable netlist");
+    require(json.find("B11.R31/D1/D2/NCMD") != std::string::npos,
+            "B11 retranscription must preserve R31/D1/D2/NCMD as captured but guarded detector-route evidence");
+    require(json.find("Keep C7/C8 as NDRV_C78 candidate and C9 as NDRV_C9 candidate") != std::string::npos,
+            "B11 retranscription must keep driver-side capacitor nodes guarded");
+    require(json.find("do not replace B11_S6_S7 Thevenin command port") != std::string::npos,
+            "B11 retranscription must not promote C11/CMD to active closure");
+    require(json.find("no Ebers-Moll BJT stamp from this retranscription") != std::string::npos,
+            "B11 retranscription must not assign BJT pins");
+}
+
+void testTopologyStep1B11PassiveCandidateSubcircuitIsDisabled()
+{
+    const auto json = readTextFile(resultsDirectory() / "u273_netlist.json");
+
+    require(json.find("\"b11_passive_candidate_subcircuit\"") != std::string::npos,
+            "topology step-1 must expose a B11 passive candidate subcircuit");
+    require(json.find("\"id\": \"B11_PASSIVE_CANDIDATE_SUBCIRCUIT\"") != std::string::npos,
+            "B11 passive candidate subcircuit must be explicitly named");
+    require(json.find("\"enabled_in_executable_netlist\": false") != std::string::npos,
+            "B11 passive candidate subcircuit must be disabled by default");
+    require(json.find("\"stamp_policy\": \"disabled_by_default\"") != std::string::npos,
+            "B11 passive candidate subcircuit must require an explicit promotion before stamping");
+    require(json.find("\"candidate_component_count\": 20") != std::string::npos,
+            "B11 passive candidate subcircuit must expose the expected candidate component count");
+    require(json.find("\"expected_executable_component_count_without_this_candidate\": 88") != std::string::npos,
+            "B11 passive candidate must pin the executable component-count guard");
+    require(json.find("\"id\": \"B11.PASSIVE.R10\"") != std::string::npos,
+            "B11 passive candidate must include R10 as a review-only component");
+    require(json.find("\"id\": \"B11.PASSIVE.R15\"") != std::string::npos,
+            "B11 passive candidate must include R15 as a review-only component");
+    require(json.find("\"id\": \"B11.PASSIVE.C6\"") != std::string::npos,
+            "B11 passive candidate must include C6 as a review-only component");
+    require(json.find("\"id\": \"B11.PASSIVE.C7\"") != std::string::npos,
+            "B11 passive candidate must include PDF-confirmed C7 as a review-only component");
+    require(json.find("\"id\": \"B11.PASSIVE.C8\"") != std::string::npos,
+            "B11 passive candidate must include PDF-confirmed C8 as a review-only component");
+    require(json.find("\"id\": \"B11.PASSIVE.C9\"") != std::string::npos,
+            "B11 passive candidate must include PDF-confirmed C9 as a review-only component");
+    require(json.find("\"id\": \"B11.PASSIVE.C11\"") != std::string::npos,
+            "B11 passive candidate must include PDF-confirmed C11 as a review-only component");
+    require(json.find("\"id\": \"B11.PASSIVE.R31\"") != std::string::npos,
+            "B11 passive candidate must include PDF-confirmed R31 as a review-only component");
+    require(json.find("\"id\": \"B11.DIODE.D2_SSD55\"") != std::string::npos,
+            "B11 passive candidate must include D2 SSD55 as a guarded review-only component");
+    require(json.find("\"id\": \"B11.DIODE.D1_ZL10\"") != std::string::npos,
+            "B11 passive candidate must include D1 ZL10 as a guarded review-only component");
+    require(json.find("\"id\": \"B11.PASSIVE.R7_EFFECTIVE_MIN\"") != std::string::npos,
+            "B11 passive candidate must keep R7/R8 as a bounded branch after C5");
+    require(countOccurrences(json, "\"mna_action\": \"candidate_disabled_not_stamped\"") >= 20,
+            "every B11 passive candidate component must remain non-stamped");
+
+    const auto loaded = u273::reference::state_space::U273NetlistLoader::loadFromFile(
+        resultsDirectory() / "u273_netlist.json");
+    require(loaded.report.componentObjects == 88,
+            "B11 passive candidate components must not be added to the executable top-level component array");
+}
+
+void testTopologyStep1B11PassiveExperimentIsOptInOnly()
+{
+    const auto json = readTextFile(resultsDirectory() / "u273_netlist.json");
+
+    require(json.find("\"b11_passive_candidate_experiment\"") != std::string::npos,
+            "topology step-1 must expose the B11 passive experiment boundary");
+    require(json.find("\"id\": \"B11_PASSIVE_CANDIDATE_EXPERIMENTAL_PROBE\"") != std::string::npos,
+            "B11 passive experiment must be explicitly named");
+    require(json.find("\"enabled\": false") != std::string::npos,
+            "B11 passive experiment must stay disabled in the official netlist export");
+    require(json.find("\"enabled_by_default\": false") != std::string::npos,
+            "B11 passive experiment must be opt-in, not default behavior");
+    require(json.find("\"explicit_enable_flag\": \"--enable-b11-passive-candidate-experiment\"") != std::string::npos,
+            "B11 passive experiment must document the explicit enable flag");
+    require(json.find("\"allowed_scope\": \"isolated_passive_kcl_probe\"") != std::string::npos,
+            "B11 passive experiment must be limited to isolated passive KCL probing");
+    require(json.find("\"isolated_from_executable_netlist\": true") != std::string::npos,
+            "B11 passive experiment must be isolated from the executable netlist");
+    require(json.find("\"modifies_official_components\": false") != std::string::npos,
+            "B11 passive experiment must not modify official components");
+    require(json.find("\"result\": null") != std::string::npos,
+            "default netlist export must not carry opt-in experiment results");
+
+    const auto loaded = u273::reference::state_space::U273NetlistLoader::loadFromFile(
+        resultsDirectory() / "u273_netlist.json");
+    require(loaded.report.componentObjects == 88,
+            "B11 passive experiment metadata must not alter the executable component array");
+}
+
+void testTopologyStep1B11PriorArtifactsAreQuarantined()
+{
+    const auto json = readTextFile(resultsDirectory() / "u273_netlist.json");
+
+    require(json.find("\"b11_prior_artifact_audit\"") != std::string::npos,
+            "topology step-1 must expose a B11 prior-artifact audit");
+    require(json.find("\"id\": \"B11_STEP1_PRIOR_ARTIFACT_AUDIT\"") != std::string::npos,
+            "B11 prior-artifact audit must be explicitly named");
+    require(json.find("\"artifact_count\": 4") != std::string::npos,
+            "B11 prior-artifact audit must list the current quarantined script set");
+    require(json.find("\"artifact\": \"solver/b11_ts1_ts2_topology_constraints.js\"") != std::string::npos,
+            "B11 prior-artifact audit must quarantine the older Ts1/Ts2 constraint script");
+    require(json.find("\"issue_class\": \"dc_path_superseded_by_C5_open_reading\"") != std::string::npos,
+            "B11 prior-artifact audit must record the C5/R7/R8 DC-path supersession");
+    require(json.find("\"artifact\": \"solver/b11_ts2_r15_to_n05_path_solver.js\"") != std::string::npos,
+            "B11 prior-artifact audit must quarantine the older Ts2/R15 path solver");
+    require(json.find("\"status\": \"CONFLICTS_WITH_STEP1_CANONICAL_TOPOLOGY\"") != std::string::npos,
+            "B11 prior-artifact audit must mark route conflicts as non-promotion evidence");
+    require(json.find("\"Any prior B11 script with a listed conflict must be reconciled") != std::string::npos,
+            "B11 prior-artifact audit must block silent use of conflicting prior scripts");
+}
+
+void testTopologyStep1B11DirectPrintedNodePinPrefilterRejectsNaiveMappings()
+{
+    const auto json = readTextFile(resultsDirectory() / "u273_netlist.json");
+
+    require(json.find("\"b11_direct_printed_node_pin_prefilter\"") != std::string::npos,
+            "topology step-1 must expose the B11 direct printed-node pin prefilter");
+    require(json.find("\"id\": \"B11_TS1_TS2_DIRECT_PRINTED_NODE_PIN_PREFILTER\"") != std::string::npos,
+            "B11 direct printed-node pin prefilter must be explicitly named");
+    require(json.find("\"mna_action\": \"prefilter_only_not_stamped\"") != std::string::npos,
+            "B11 direct printed-node pin prefilter must stay non-stamped");
+    require(json.find("\"tested_hypothesis_count\": 96") != std::string::npos,
+            "B11 direct printed-node pin prefilter must enumerate the expected Ts1/Ts2 permutations");
+    require(json.find("\"soft_active_candidate_count\": 0") != std::string::npos,
+            "B11 direct printed-node pin prefilter must reject naive printed-node assignments");
+    require(json.find("\"strict_active_candidate_count\": 0") != std::string::npos,
+            "B11 direct printed-node pin prefilter must not claim strict active candidates");
+    require(json.find("needs hidden/intermediate route proof") != std::string::npos,
+            "B11 direct printed-node pin prefilter must require route proof rather than guessing pins");
+    require(json.find("do not accept any BJT pinout") != std::string::npos,
+            "B11 direct printed-node pin prefilter must block pin acceptance from voltage checks alone");
+}
+
+void testB6OutputBiasLocalKclCheckpointMath()
+{
+    constexpr auto r33 = 20000.0;
+    constexpr auto r34 = 3600.0;
+    constexpr auto r35 = 820.0;
+    constexpr auto r36 = 24.0;
+    constexpr auto v22 = 22.0;
+    constexpr auto n215 = 21.5;
+    constexpr auto n105 = 10.5;
+
+    const auto bias = (n215 / r33 + n105 / r34) / (1.0 / r33 + 1.0 / r34 + 1.0 / r35);
+    const auto ir33 = (n215 - bias) / r33;
+    const auto ir34 = (n105 - bias) / r34;
+    const auto ir35 = bias / r35;
+    const auto ir36 = (v22 - n215) / r36;
+
+    require(bias > 2.5 && bias < 2.7,
+            "B6 output passive KCL must solve OUTPUT_BIAS_LEFT near the expected printed-bias region");
+    require(std::fabs(ir33 + ir34 - ir35) < 1.0e-12,
+            "B6 output passive KCL must balance R33+R34 against R35");
+    require(std::fabs(ir36 - 20.833333333333332e-3) < 1.0e-12,
+            "B6 output R36 checkpoint must preserve the 20.8 mA printed-node current bound");
 }
 
 void testU273NetlistLoaderCanStampKnownBjtHypotheses()
@@ -1695,6 +2314,32 @@ void testU273EmpiricalDiodeLawMatchesGoldenFixture()
             "U273 empirical diode law must match golden current from voltage");
     require(std::fabs(conductanceMicroSiemens - 143.092258681156) < 2.0e-6,
             "U273 empirical diode law conductance must match the current-law derivative");
+}
+
+void testZl10ZenerApproximationAddsReverseBreakdown()
+{
+    const auto diode = u273::reference::state_space::makeZl10Approximation();
+    require(diode.isValid(), "ZL10 approximation must be a valid diode model");
+    require(diode.hasReverseBreakdown(), "ZL10 approximation must expose reverse breakdown");
+    require(std::fabs(diode.reverseBreakdownVoltage - 10.0) < 1.0e-12,
+            "ZL10 approximation must keep the 10 V breakdown candidate");
+
+    const auto forwardCurrent = diode.currentAmp(0.7);
+    const auto belowBreakdownCurrent = diode.currentAmp(-5.0);
+    const auto breakdownCurrent = diode.currentAmp(-11.0);
+    require(forwardCurrent > 0.0, "ZL10 forward branch must still conduct as a diode");
+    require(std::fabs(belowBreakdownCurrent) < 1.0e-8,
+            "ZL10 reverse current below breakdown must stay leakage-scale");
+    require(breakdownCurrent < -1.0e-5,
+            "ZL10 reverse branch must conduct after the breakdown knee");
+
+    const auto conductance = diode.conductanceSiemens(-11.0);
+    constexpr auto delta = 1.0e-5;
+    const auto finiteDifference = (diode.currentAmp(-11.0 + delta)
+        - diode.currentAmp(-11.0 - delta)) / (2.0 * delta);
+    require(conductance > 0.0, "ZL10 reverse breakdown conductance must be positive");
+    require(std::fabs(conductance - finiteDifference) / conductance < 1.0e-3,
+            "ZL10 reverse breakdown conductance must match the local current derivative");
 }
 
 void testStateSpaceBjtModelAndBiasFixture()
@@ -2664,11 +3309,28 @@ int main()
     testDcResidualGatePassesDcExecutionReference();
     testTransientResidualGateAcceptsGoldenSummaries();
     testBjtCandidateRejectsImpossiblePins();
+    testActiveTopologyInventoryExposesB6B11ClosureGaps();
     testActiveTopologyEvaluatorKeepsCandidateGuardedWithoutAcImprovement();
     testCalibrationReportDoesNotPromoteBoundaryEarly();
     testOfflineCalibrationRunnerStaysNonPromotable();
     testTransientWrapperAcceptsPlannedIntegrationMethods();
     testU273NetlistLoaderInventory();
+    testB6OutputStageTopologyMatchesPdf();
+    testTopologyStep1DebugConfigKeepsUnprovenContactsCandidate();
+    testTopologyStep1SwitchContactsAreExplicitCandidates();
+    testTopologyStep1B11VisualInventoryStaysNonStamped();
+    testTopologyStep1B11LocalLedgerKeepsR15R16Partial();
+    testTopologyStep1B11PdfEvidenceKeepsActiveClosureGuarded();
+    testTopologyStep1B11PdfTextFunctionalEvidenceStaysNonStamped();
+    testTopologyStep1B11GptReponse2AuditBlocksPrematurePromotion();
+    testTopologyStep1B11ScientificActivationResearchIsGuarded();
+    testTopologyStep1B11PdfActiveConstraintsAreRejectionOnly();
+    testTopologyStep1B11RetranscriptionIsOnlyACrosscheck();
+    testTopologyStep1B11PassiveCandidateSubcircuitIsDisabled();
+    testTopologyStep1B11PassiveExperimentIsOptInOnly();
+    testTopologyStep1B11PriorArtifactsAreQuarantined();
+    testTopologyStep1B11DirectPrintedNodePinPrefilterRejectsNaiveMappings();
+    testB6OutputBiasLocalKclCheckpointMath();
     testU273NetlistLoaderCanStampKnownBjtHypotheses();
     testLoadedU273NetlistFirstDaeStepConverges();
     testU273DatasheetElectricalSpecs();
@@ -2681,6 +3343,7 @@ int main()
     testStateSpaceRcBackwardEuler();
     testStateSpaceDiodeCurrentFixture();
     testU273EmpiricalDiodeLawMatchesGoldenFixture();
+    testZl10ZenerApproximationAddsReverseBreakdown();
     testStateSpaceBjtModelAndBiasFixture();
     testU273B6StateSpaceSkeleton();
     testMatrixTransposeAndNorm();

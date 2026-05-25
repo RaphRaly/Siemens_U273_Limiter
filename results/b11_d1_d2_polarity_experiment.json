@@ -1,0 +1,520 @@
+{
+  "id": "B11_D1_D2_POLARITY_EXPERIMENT",
+  "status": "CANDIDATE",
+  "enabled": true,
+  "enabled_by_default": false,
+  "explicit_enable_flag": "--enable-b11-d1-d2-polarity-experiment",
+  "allowed_scope": "isolated_diode_polarity_functional_probe",
+  "isolated_from_executable_netlist": true,
+  "modifies_official_components": false,
+  "b11_ncmd_local_separate_from_b6_cmd": true,
+  "s7_contact_truth_table_promoted": false,
+  "d1_polarity_candidates": [
+    {
+      "id": "D1_ZL10_GRAPHIC_CANDIDATE",
+      "component": "D1_ZL10",
+      "polarity": "graphic_zener_candidate",
+      "anode": "B11_NZENER_OUT_18_19",
+      "cathode": "B11_NCMD_LOCAL",
+      "model": "zener_with_reverse_breakdown_candidate",
+      "reverseBreakdownVolt": 10,
+      "forwardDropVolt": 0.65,
+      "expectedLimiterContributionVolt": 10
+    },
+    {
+      "id": "D1_ZL10_REVERSED_CONTROL",
+      "component": "D1_ZL10",
+      "polarity": "reversed_control",
+      "anode": "B11_NCMD_LOCAL",
+      "cathode": "B11_NZENER_OUT_18_19",
+      "model": "forward_diode_control_no_zener_threshold_in_limiter_path",
+      "reverseBreakdownVolt": 10,
+      "forwardDropVolt": 0.65,
+      "expectedLimiterContributionVolt": 0.65
+    }
+  ],
+  "d2_polarity_candidates": [
+    {
+      "id": "D2_SSD55_GRAPHIC_CANDIDATE",
+      "component": "D2_SSD55",
+      "polarity": "graphic_detector_candidate",
+      "anode": "B11_N20_D2_TOP",
+      "cathode": "B11_ND2_BOT_RAW",
+      "model": "shockley_identity_only_candidate",
+      "forwardDropVolt": 0.3,
+      "conductsPositiveDetector": true
+    },
+    {
+      "id": "D2_SSD55_REVERSED_CONTROL",
+      "component": "D2_SSD55",
+      "polarity": "reversed_control",
+      "anode": "B11_ND2_BOT_RAW",
+      "cathode": "B11_N20_D2_TOP",
+      "model": "shockley_reversed_control",
+      "forwardDropVolt": 0.3,
+      "conductsPositiveDetector": false
+    }
+  ],
+  "result": {
+    "status": "GUARDED_EXPERIMENT_COMPLETE_NOT_PROMOTED",
+    "candidate_count": 4,
+    "functional_pass_candidate_count": 1,
+    "rejected_candidate_count": 3,
+    "accepted_for_future_guarded_mna_stamp": "D1_ZL10_GRAPHIC_CANDIDATE__D2_SSD55_GRAPHIC_CANDIDATE",
+    "candidate_rows": [
+      {
+        "id": "D1_ZL10_GRAPHIC_CANDIDATE__D2_SSD55_GRAPHIC_CANDIDATE",
+        "status": "FUNCTIONAL_PASS_GUARDED_NOT_PROMOTED",
+        "d1": {
+          "id": "D1_ZL10_GRAPHIC_CANDIDATE",
+          "component": "D1_ZL10",
+          "polarity": "graphic_zener_candidate",
+          "anode": "B11_NZENER_OUT_18_19",
+          "cathode": "B11_NCMD_LOCAL",
+          "model": "zener_with_reverse_breakdown_candidate",
+          "reverseBreakdownVolt": 10,
+          "forwardDropVolt": 0.65,
+          "expectedLimiterContributionVolt": 10
+        },
+        "d2": {
+          "id": "D2_SSD55_GRAPHIC_CANDIDATE",
+          "component": "D2_SSD55",
+          "polarity": "graphic_detector_candidate",
+          "anode": "B11_N20_D2_TOP",
+          "cathode": "B11_ND2_BOT_RAW",
+          "model": "shockley_identity_only_candidate",
+          "forwardDropVolt": 0.3,
+          "conductsPositiveDetector": true
+        },
+        "limiterThresholdPeakVolt": 11.3,
+        "limiterThresholdRmsVolt": 7.990306627407987,
+        "compressorThresholdPeakVolt": 1.3,
+        "compressorThresholdRmsVolt": 0.9192388155425117,
+        "thresholdSeparationPeakVolt": 10,
+        "checks": [
+          {
+            "id": "D2_POSITIVE_RECTIFIED_DETECTOR_CONDUCTION",
+            "passed": true,
+            "reason": "D2 graphic polarity conducts from B11_N20_D2_TOP to B11_ND2_BOT_RAW for the positive detector half-cycle."
+          },
+          {
+            "id": "D1_LIMITER_ZENER_THRESHOLD_PRESENT",
+            "passed": true,
+            "reason": "Limiter mode must add the ZL10-scale threshold relative to the S7 compressor bypass path."
+          },
+          {
+            "id": "S7_COMPRESSOR_BYPASS_LOWERS_THRESHOLD",
+            "passed": true,
+            "reason": "Use S7 limiter/compressor function as a rejection rule only; this does not promote the S7 contact truth table."
+          },
+          {
+            "id": "B11_NCMD_LOCAL_BOUNDARY_HELD",
+            "passed": true,
+            "reason": "B11_NCMD_LOCAL remains an isolated local detector/control node and is not merged into the software B6 CMD node."
+          }
+        ],
+        "sampleRows": [
+          {
+            "mode": "limiter",
+            "ueRms": 8,
+            "peakVolt": 11.313708498984761,
+            "thresholdPeakVolt": 11.3,
+            "thresholdRmsVolt": 7.990306627407987,
+            "conductionDuty": 0.03134234177505557,
+            "averageExcessVolt": 0.00028642606798569953,
+            "averageCurrentAmp": 5.616197411484305e-9,
+            "peakCurrentAmp": 2.6879409774040103e-7
+          },
+          {
+            "mode": "limiter",
+            "ueRms": 12,
+            "peakVolt": 16.970562748477143,
+            "thresholdPeakVolt": 11.3,
+            "thresholdRmsVolt": 7.990306627407987,
+            "conductionDuty": 0.5361305496227253,
+            "averageExcessVolt": 2.0021959788905646,
+            "averageCurrentAmp": 0.000039258744684128716,
+            "peakCurrentAmp": 0.00011118750487210082
+          },
+          {
+            "mode": "compressor",
+            "ueRms": 8,
+            "peakVolt": 11.313708498984761,
+            "thresholdPeakVolt": 1.3,
+            "thresholdRmsVolt": 0.9192388155425117,
+            "conductionDuty": 0.9266873657009277,
+            "averageExcessVolt": 5.950131008284383,
+            "averageCurrentAmp": 0.00011666923545655653,
+            "peakCurrentAmp": 0.00019634722547028942
+          },
+          {
+            "mode": "compressor",
+            "ueRms": 12,
+            "peakVolt": 16.970562748477143,
+            "thresholdPeakVolt": 1.3,
+            "thresholdRmsVolt": 0.9192388155425117,
+            "conductionDuty": 0.9511850451142491,
+            "averageExcessVolt": 9.535509958989747,
+            "averageCurrentAmp": 0.00018697078350960288,
+            "peakCurrentAmp": 0.0003072659362446498
+          }
+        ],
+        "spice_polarity_promoted": false,
+        "s7_contact_truth_table_promoted": false,
+        "b11_ncmd_local_separate_from_b6_cmd": true,
+        "mna_action": "isolated_functional_probe_only_not_stamped",
+        "promotion_limit": "A functional pass is still not a stamp. S7 contact routing, diode parameters, C11 transfer, active B11 output impedance and B11-to-B6 CMD KCL remain unproven."
+      },
+      {
+        "id": "D1_ZL10_GRAPHIC_CANDIDATE__D2_SSD55_REVERSED_CONTROL",
+        "status": "REJECTED_BY_FUNCTIONAL_POLARITY_RULES",
+        "d1": {
+          "id": "D1_ZL10_GRAPHIC_CANDIDATE",
+          "component": "D1_ZL10",
+          "polarity": "graphic_zener_candidate",
+          "anode": "B11_NZENER_OUT_18_19",
+          "cathode": "B11_NCMD_LOCAL",
+          "model": "zener_with_reverse_breakdown_candidate",
+          "reverseBreakdownVolt": 10,
+          "forwardDropVolt": 0.65,
+          "expectedLimiterContributionVolt": 10
+        },
+        "d2": {
+          "id": "D2_SSD55_REVERSED_CONTROL",
+          "component": "D2_SSD55",
+          "polarity": "reversed_control",
+          "anode": "B11_ND2_BOT_RAW",
+          "cathode": "B11_N20_D2_TOP",
+          "model": "shockley_reversed_control",
+          "forwardDropVolt": 0.3,
+          "conductsPositiveDetector": false
+        },
+        "limiterThresholdPeakVolt": null,
+        "limiterThresholdRmsVolt": null,
+        "compressorThresholdPeakVolt": null,
+        "compressorThresholdRmsVolt": null,
+        "thresholdSeparationPeakVolt": null,
+        "checks": [
+          {
+            "id": "D2_POSITIVE_RECTIFIED_DETECTOR_CONDUCTION",
+            "passed": false,
+            "reason": "Reversed D2 blocks the positive detector half-cycle in this isolated functional probe."
+          },
+          {
+            "id": "D1_LIMITER_ZENER_THRESHOLD_PRESENT",
+            "passed": false,
+            "reason": "Limiter mode must add the ZL10-scale threshold relative to the S7 compressor bypass path."
+          },
+          {
+            "id": "S7_COMPRESSOR_BYPASS_LOWERS_THRESHOLD",
+            "passed": false,
+            "reason": "Use S7 limiter/compressor function as a rejection rule only; this does not promote the S7 contact truth table."
+          },
+          {
+            "id": "B11_NCMD_LOCAL_BOUNDARY_HELD",
+            "passed": true,
+            "reason": "B11_NCMD_LOCAL remains an isolated local detector/control node and is not merged into the software B6 CMD node."
+          }
+        ],
+        "sampleRows": [
+          {
+            "mode": "limiter",
+            "ueRms": 8,
+            "peakVolt": 11.313708498984761,
+            "thresholdPeakVolt": null,
+            "thresholdRmsVolt": null,
+            "conductionDuty": 0,
+            "averageExcessVolt": 0,
+            "averageCurrentAmp": 0,
+            "peakCurrentAmp": 0
+          },
+          {
+            "mode": "limiter",
+            "ueRms": 12,
+            "peakVolt": 16.970562748477143,
+            "thresholdPeakVolt": null,
+            "thresholdRmsVolt": null,
+            "conductionDuty": 0,
+            "averageExcessVolt": 0,
+            "averageCurrentAmp": 0,
+            "peakCurrentAmp": 0
+          },
+          {
+            "mode": "compressor",
+            "ueRms": 8,
+            "peakVolt": 11.313708498984761,
+            "thresholdPeakVolt": null,
+            "thresholdRmsVolt": null,
+            "conductionDuty": 0,
+            "averageExcessVolt": 0,
+            "averageCurrentAmp": 0,
+            "peakCurrentAmp": 0
+          },
+          {
+            "mode": "compressor",
+            "ueRms": 12,
+            "peakVolt": 16.970562748477143,
+            "thresholdPeakVolt": null,
+            "thresholdRmsVolt": null,
+            "conductionDuty": 0,
+            "averageExcessVolt": 0,
+            "averageCurrentAmp": 0,
+            "peakCurrentAmp": 0
+          }
+        ],
+        "spice_polarity_promoted": false,
+        "s7_contact_truth_table_promoted": false,
+        "b11_ncmd_local_separate_from_b6_cmd": true,
+        "mna_action": "isolated_functional_probe_only_not_stamped",
+        "promotion_limit": "A functional pass is still not a stamp. S7 contact routing, diode parameters, C11 transfer, active B11 output impedance and B11-to-B6 CMD KCL remain unproven."
+      },
+      {
+        "id": "D1_ZL10_REVERSED_CONTROL__D2_SSD55_GRAPHIC_CANDIDATE",
+        "status": "REJECTED_BY_FUNCTIONAL_POLARITY_RULES",
+        "d1": {
+          "id": "D1_ZL10_REVERSED_CONTROL",
+          "component": "D1_ZL10",
+          "polarity": "reversed_control",
+          "anode": "B11_NCMD_LOCAL",
+          "cathode": "B11_NZENER_OUT_18_19",
+          "model": "forward_diode_control_no_zener_threshold_in_limiter_path",
+          "reverseBreakdownVolt": 10,
+          "forwardDropVolt": 0.65,
+          "expectedLimiterContributionVolt": 0.65
+        },
+        "d2": {
+          "id": "D2_SSD55_GRAPHIC_CANDIDATE",
+          "component": "D2_SSD55",
+          "polarity": "graphic_detector_candidate",
+          "anode": "B11_N20_D2_TOP",
+          "cathode": "B11_ND2_BOT_RAW",
+          "model": "shockley_identity_only_candidate",
+          "forwardDropVolt": 0.3,
+          "conductsPositiveDetector": true
+        },
+        "limiterThresholdPeakVolt": 1.9500000000000002,
+        "limiterThresholdRmsVolt": 1.3788582233137676,
+        "compressorThresholdPeakVolt": 1.3,
+        "compressorThresholdRmsVolt": 0.9192388155425117,
+        "thresholdSeparationPeakVolt": 0.6500000000000001,
+        "checks": [
+          {
+            "id": "D2_POSITIVE_RECTIFIED_DETECTOR_CONDUCTION",
+            "passed": true,
+            "reason": "D2 graphic polarity conducts from B11_N20_D2_TOP to B11_ND2_BOT_RAW for the positive detector half-cycle."
+          },
+          {
+            "id": "D1_LIMITER_ZENER_THRESHOLD_PRESENT",
+            "passed": false,
+            "reason": "Limiter mode must add the ZL10-scale threshold relative to the S7 compressor bypass path."
+          },
+          {
+            "id": "S7_COMPRESSOR_BYPASS_LOWERS_THRESHOLD",
+            "passed": false,
+            "reason": "Use S7 limiter/compressor function as a rejection rule only; this does not promote the S7 contact truth table."
+          },
+          {
+            "id": "B11_NCMD_LOCAL_BOUNDARY_HELD",
+            "passed": true,
+            "reason": "B11_NCMD_LOCAL remains an isolated local detector/control node and is not merged into the software B6 CMD node."
+          }
+        ],
+        "sampleRows": [
+          {
+            "mode": "limiter",
+            "ueRms": 8,
+            "peakVolt": 11.313708498984761,
+            "thresholdPeakVolt": 1.9500000000000002,
+            "thresholdRmsVolt": 1.3788582233137676,
+            "conductionDuty": 0.8897232827976148,
+            "averageExcessVolt": 5.3597806665242995,
+            "averageCurrentAmp": 0.00010509373855929999,
+            "peakCurrentAmp": 0.00018360212743107372
+          },
+          {
+            "mode": "limiter",
+            "ueRms": 12,
+            "peakVolt": 16.970562748477143,
+            "thresholdPeakVolt": 1.9500000000000002,
+            "thresholdRmsVolt": 1.3788582233137676,
+            "conductionDuty": 0.9266873657009277,
+            "averageExcessVolt": 8.925196512426574,
+            "averageCurrentAmp": 0.00017500385318483478,
+            "peakCurrentAmp": 0.0002945208382054342
+          },
+          {
+            "mode": "compressor",
+            "ueRms": 8,
+            "peakVolt": 11.313708498984761,
+            "thresholdPeakVolt": 1.3,
+            "thresholdRmsVolt": 0.9192388155425117,
+            "conductionDuty": 0.9266873657009277,
+            "averageExcessVolt": 5.950131008284383,
+            "averageCurrentAmp": 0.00011666923545655653,
+            "peakCurrentAmp": 0.00019634722547028942
+          },
+          {
+            "mode": "compressor",
+            "ueRms": 12,
+            "peakVolt": 16.970562748477143,
+            "thresholdPeakVolt": 1.3,
+            "thresholdRmsVolt": 0.9192388155425117,
+            "conductionDuty": 0.9511850451142491,
+            "averageExcessVolt": 9.535509958989747,
+            "averageCurrentAmp": 0.00018697078350960288,
+            "peakCurrentAmp": 0.0003072659362446498
+          }
+        ],
+        "spice_polarity_promoted": false,
+        "s7_contact_truth_table_promoted": false,
+        "b11_ncmd_local_separate_from_b6_cmd": true,
+        "mna_action": "isolated_functional_probe_only_not_stamped",
+        "promotion_limit": "A functional pass is still not a stamp. S7 contact routing, diode parameters, C11 transfer, active B11 output impedance and B11-to-B6 CMD KCL remain unproven."
+      },
+      {
+        "id": "D1_ZL10_REVERSED_CONTROL__D2_SSD55_REVERSED_CONTROL",
+        "status": "REJECTED_BY_FUNCTIONAL_POLARITY_RULES",
+        "d1": {
+          "id": "D1_ZL10_REVERSED_CONTROL",
+          "component": "D1_ZL10",
+          "polarity": "reversed_control",
+          "anode": "B11_NCMD_LOCAL",
+          "cathode": "B11_NZENER_OUT_18_19",
+          "model": "forward_diode_control_no_zener_threshold_in_limiter_path",
+          "reverseBreakdownVolt": 10,
+          "forwardDropVolt": 0.65,
+          "expectedLimiterContributionVolt": 0.65
+        },
+        "d2": {
+          "id": "D2_SSD55_REVERSED_CONTROL",
+          "component": "D2_SSD55",
+          "polarity": "reversed_control",
+          "anode": "B11_ND2_BOT_RAW",
+          "cathode": "B11_N20_D2_TOP",
+          "model": "shockley_reversed_control",
+          "forwardDropVolt": 0.3,
+          "conductsPositiveDetector": false
+        },
+        "limiterThresholdPeakVolt": null,
+        "limiterThresholdRmsVolt": null,
+        "compressorThresholdPeakVolt": null,
+        "compressorThresholdRmsVolt": null,
+        "thresholdSeparationPeakVolt": null,
+        "checks": [
+          {
+            "id": "D2_POSITIVE_RECTIFIED_DETECTOR_CONDUCTION",
+            "passed": false,
+            "reason": "Reversed D2 blocks the positive detector half-cycle in this isolated functional probe."
+          },
+          {
+            "id": "D1_LIMITER_ZENER_THRESHOLD_PRESENT",
+            "passed": false,
+            "reason": "Limiter mode must add the ZL10-scale threshold relative to the S7 compressor bypass path."
+          },
+          {
+            "id": "S7_COMPRESSOR_BYPASS_LOWERS_THRESHOLD",
+            "passed": false,
+            "reason": "Use S7 limiter/compressor function as a rejection rule only; this does not promote the S7 contact truth table."
+          },
+          {
+            "id": "B11_NCMD_LOCAL_BOUNDARY_HELD",
+            "passed": true,
+            "reason": "B11_NCMD_LOCAL remains an isolated local detector/control node and is not merged into the software B6 CMD node."
+          }
+        ],
+        "sampleRows": [
+          {
+            "mode": "limiter",
+            "ueRms": 8,
+            "peakVolt": 11.313708498984761,
+            "thresholdPeakVolt": null,
+            "thresholdRmsVolt": null,
+            "conductionDuty": 0,
+            "averageExcessVolt": 0,
+            "averageCurrentAmp": 0,
+            "peakCurrentAmp": 0
+          },
+          {
+            "mode": "limiter",
+            "ueRms": 12,
+            "peakVolt": 16.970562748477143,
+            "thresholdPeakVolt": null,
+            "thresholdRmsVolt": null,
+            "conductionDuty": 0,
+            "averageExcessVolt": 0,
+            "averageCurrentAmp": 0,
+            "peakCurrentAmp": 0
+          },
+          {
+            "mode": "compressor",
+            "ueRms": 8,
+            "peakVolt": 11.313708498984761,
+            "thresholdPeakVolt": null,
+            "thresholdRmsVolt": null,
+            "conductionDuty": 0,
+            "averageExcessVolt": 0,
+            "averageCurrentAmp": 0,
+            "peakCurrentAmp": 0
+          },
+          {
+            "mode": "compressor",
+            "ueRms": 12,
+            "peakVolt": 16.970562748477143,
+            "thresholdPeakVolt": null,
+            "thresholdRmsVolt": null,
+            "conductionDuty": 0,
+            "averageExcessVolt": 0,
+            "averageCurrentAmp": 0,
+            "peakCurrentAmp": 0
+          }
+        ],
+        "spice_polarity_promoted": false,
+        "s7_contact_truth_table_promoted": false,
+        "b11_ncmd_local_separate_from_b6_cmd": true,
+        "mna_action": "isolated_functional_probe_only_not_stamped",
+        "promotion_limit": "A functional pass is still not a stamp. S7 contact routing, diode parameters, C11 transfer, active B11 output impedance and B11-to-B6 CMD KCL remain unproven."
+      }
+    ],
+    "s7_functional_constraints_used": [
+      {
+        "position": "drawn_17_to_18",
+        "closed": "17-18",
+        "open": "17-19",
+        "zenerPath": "ZL10 active",
+        "inferredMode": "limiter",
+        "promoted_contact_truth_table": false
+      },
+      {
+        "position": "alternate_17_to_19",
+        "closed": "17-19",
+        "open": "17-18",
+        "zenerPath": "ZL10 bypassed",
+        "inferredMode": "compressor",
+        "promoted_contact_truth_table": false
+      }
+    ],
+    "required_next_proof": [
+      "prove S7 17/18/19 closed/open contacts per mechanical position",
+      "measure or source real SSD55 diode parameters before any official stamp",
+      "keep B11_NCMD_LOCAL out of the B6 CMD KCL until the real B11 output path is proven",
+      "run the later active B11 DC experiment with source/gmin stepping before replacing the Thevenin fixture"
+    ],
+    "closure_verdict": {
+      "d1_graphic_polarity_functionally_consistent": true,
+      "d2_graphic_polarity_functionally_consistent": true,
+      "spice_polarity_promoted": false,
+      "active_b11_promotable": false,
+      "replace_thevenin_b11_s6_s7_cmd": false,
+      "s7_contact_truth_table_promoted": false,
+      "b11_ncmd_local_separate_from_b6_cmd": true
+    }
+  },
+  "blocked_outputs": [
+    "official D1/D2 MNA stamping",
+    "S7 truth-table promotion",
+    "active B11 simulation",
+    "B11_NCMD_LOCAL to B6 CMD merge",
+    "replacement of B11_S6_S7.VB11_S6_S7 + RB11_S6_S7_CMD"
+  ],
+  "boundary": "This experiment can reject diode polarity controls against S7 functional behavior, but it remains isolated from the executable netlist and cannot promote active B11."
+}

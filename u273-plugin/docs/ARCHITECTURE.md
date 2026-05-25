@@ -21,6 +21,8 @@ Scientific boundary:
 - The current declared status is `PASS_WITH_GUARDED_BOUNDARIES`.
 - The realtime B6 bridge is intentionally named a guarded surrogate until the
   active transistor model is closed and calibrated against golden data.
+- The active B6/B11 closure backlog is tracked in
+  `docs/B6_B11_ACTIVE_CLOSURE_PLAN.md`.
 - The component-level state-space/DAE solver lives under
   `u273_reference/state_space` and currently declares
   `FULL_ACTIVE_MODEL_UNVERIFIED`; it is a scientific reference path, not the

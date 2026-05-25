@@ -37,7 +37,7 @@
       "note": "high output-impedance sensitivity bound"
     }
   ],
-  "b6InventoryStatus": "FERME_SCHEMA_AVEC_MODELES_ACTIFS_GARDES",
+  "b6InventoryStatus": "INVENTAIRE_SCHEMA_AVEC_SORTIE_ACTIVE_PARTIELLE",
   "operatingPoints": {
     "rsource_3k": {
       "0": {

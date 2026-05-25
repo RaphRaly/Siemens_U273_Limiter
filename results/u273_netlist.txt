@@ -5,6 +5,8 @@ version: u273_orchestrator_v0_1
 status: PARTIEL
 coupling_mode: thevenin_b11_s6_s7_reference
 boundary: The current executable DC netlist keeps the B11/S6/S7 command path as a finite Thevenin reference. Full active B11+B6 closure waits for unread transistor routes and complete B11 netlist proof.
+debug_config: U273_DEBUG_CONFIG_001
+debug_config_status: PARTIAL_TOPOLOGY_SAFE_DC_CLOSURE
 
 Components
 id | type | value | unit | nodes | card | function | status | source_etape
@@ -57,11 +59,11 @@ B6.R29 | resistor | 20000 | ohm | n1=N18;n2=0 | B6 | Ts4 emitter/load return | F
 B6.R30 | resistor | 6800 | ohm | n1=V122;n2=V22 | B6 | supply feed to 22V rail | FERME_SCHEMA | Etape 26
 B6.R31 | resistor | 5600 | ohm | n1=V22;n2=N48 | B6 | Ts4 collector/load feed | FERME_SCHEMA | Etape 26
 B6.R32 | resistor | 1000 | ohm | n1=N18;n2=0 | B6 | Ts4 current reference | FERME_SCHEMA | Etape 26
-B6.R33 | resistor | 20000 | ohm | n1=V22;n2=N215 | B6 | output upper bias/feed | FERME_SCHEMA | Etape 26
-B6.R34 | resistor | 3600 | ohm | n1=N105;n2=U2_PRI_TOP | B6 | output transformer drive | FERME_SCHEMA | Etape 26
-B6.R35 | resistor | 820 | ohm | n1=OUTPUT_BIAS_LEFT;n2=0 | B6 | output-stage lower bias | FERME_SCHEMA | Etape 26
+B6.R33 | resistor | 20000 | ohm | n1=OUTPUT_BIAS_LEFT;n2=N215 | B6 | output-stage bias feedback from left bias rail to 21.5 V node | PARTIEL | Etape 26
+B6.R34 | resistor | 3600 | ohm | n1=OUTPUT_BIAS_LEFT;n2=N105 | B6 | output-stage bias feed into Ts5/Ts6 midpoint | PARTIEL | Etape 26
+B6.R35 | resistor | 820 | ohm | n1=OUTPUT_BIAS_LEFT;n2=0 | B6 | output-stage lower bias return | PARTIEL | Etape 26
 B6.R36 | resistor | 24 | ohm | n1=V22;n2=N215 | B6 | output idle-current sense/feed | FERME_SCHEMA | Etape 26
-B6.R37 | resistor | 10 | ohm | n1=TS6_EMITTER;n2=0 | B6 | output lower emitter resistor | FERME_SCHEMA | Etape 26
+B6.R37 | resistor | 10 | ohm | n1=TS6_EMITTER;n2=0 | B6 | output lower emitter resistor; Ts6 terminal proof still guarded | PARTIEL | Etape 26
 B6.R38 | resistor | 68 | ohm | n1=V22;n2=SUPPLY_SI_0A4 | B6 | supply series resistor/fuse feed | FERME_SCHEMA | Etape 26
 B6.C8 | capacitor | 0.00001 | farad | n1=N08;n2=TS1_BIAS_TOP | B6 | front-stage coupling/compensation | FERME_SCHEMA | Etape 26
 B6.C9 | capacitor | 0.00005 | farad | n1=N32;n2=0 | B6 | Ts2 emitter bypass | FERME_SCHEMA | Etape 26
@@ -75,23 +77,23 @@ B6.C16 | capacitor | 1e-7 | farad | n1=N074;n2=N18 | B6 | Ts3/Ts4 coupling | FER
 B6.C17 | capacitor | 0.0001 | farad | n1=N18;n2=0 | B6 | Ts4 bypass | FERME_SCHEMA | Etape 26
 B6.C18 | capacitor | 0.00005 | farad | n1=N18;n2=0 | B6 | Ts4/output compensation | FERME_SCHEMA | Etape 26
 B6.C19 | capacitor | 0.00022 | farad | n1=V122;n2=V22 | B6 | 22V feed decoupling | FERME_SCHEMA | Etape 26
-B6.C20 | capacitor | 0.00015 | farad | n1=N215;n2=V22 | B6 | upper output bootstrap/decoupling | FERME_SCHEMA | Etape 26
-B6.C21 | capacitor | 0.0005 | farad | n1=U2_PRI_TOP;n2=U2_PRI_BOTTOM | B6 | output coupling to transformer | FERME_SCHEMA | Etape 26
+B6.C20 | capacitor | 0.00005 | farad | n1=OUTPUT_BIAS_LEFT;n2=N215 | B6 | output-stage AC feedback/decoupling from left bias rail to 21.5 V node | PARTIEL | Etape 26
+B6.C21 | capacitor | 0.0005 | farad | n1=N105;n2=U2_PRI_TOP | B6 | series output coupling capacitor feeding U2 primary | PARTIEL | Etape 26
 B6.Ts1 | bjt | BCY66 |  | terminals=from Siemens schematic symbol;printedNodes=V64,N08 | B6 | front signal transistor; not nonlinear-stamped by default | GARDE_NON_STAMPE | Etape 26
 B6.Ts2 | bjt | BCY66 |  | collector=V64;base=N38;emitter=N32 | B6 | front signal transistor; hybrid-pi candidate only | GARDE_NON_STAMPE | Etape 26
 B6.Ts3 | bjt | SST117/1 |  | terminals=from Siemens schematic symbol;printedNodes=N24,N074 | B6 | middle gain/driver transistor; not nonlinear-stamped by default | GARDE_NON_STAMPE | Etape 26
 B6.Ts4 | bjt | SST116/1 |  | collector=N48;base=N24;emitter=N18 | B6 | middle gain/driver transistor; hybrid-pi candidate only | GARDE_NON_STAMPE | Etape 26
 B6.Ts5 | bjt | SST117/1 |  | terminals=from Siemens schematic symbol;printedNodes=N215,N105 | B6 | upper output transistor; output-stage bound only | GARDE_NON_STAMPE | Etape 26
 B6.Ts6 | bjt | SST117/1 |  | terminals=from Siemens schematic symbol;printedNodes=N105,0 | B6 | lower output transistor; output-stage bound only | GARDE_NON_STAMPE | Etape 26
-B6.U2 | transformer |  |  | primary=U2_PRI_TOP/U2_PRI_BOTTOM;secondary=B6_OUT_300R | B6 | output transformer | FERME_SCHEMA | Etape 26
+B6.U2 | transformer |  |  | primary=U2_PRI_TOP/U2_PRI_BOTTOM;secondary=B6_OUT_300R | B6 | output transformer | PARTIEL | Etape 26
 B6.S3 | switch |  |  | contacts=22,23;output=B6_OUT_PLUS | B6 | output switch upper section | COMMUTATEUR_SCHEMA | Etape 26
 B6.S4 | switch |  |  | contacts=25,26;output=B6_OUT_RETURN | B6 | output switch lower section | COMMUTATEUR_SCHEMA | Etape 26
 B6.GMIN_NL | resistor | 1000000000000 | ohm | n1=NL;n2=0 | B6 | MNA numerical stabilizer | NUMERICAL_HELPER | solver/b6_parametric.js
 B6.GMIN_NR | resistor | 1000000000000 | ohm | n1=NR;n2=0 | B6 | MNA numerical stabilizer | NUMERICAL_HELPER | solver/b6_parametric.js
 B11.S6.R4 | resistor | 7500 | ohm | n1=VL;n2=VM | B11 | S6 Vorentzerrung core branch VL-VM | PARTIEL | Etape 20/21
-B11.S6.C2 | capacitor | 5e-9 | farad | n1=VL;n2=VM | B11 | S6 Vorentzerrung core branch VL-VM | PARTIEL | Etape 20/21
+B11.S6.C2 | capacitor | 3e-9 | farad | n1=VL;n2=VM | B11 | S6 Vorentzerrung core branch VL-VM | PARTIEL | Etape 20/21
 B11.S6.R3 | resistor | 7500 | ohm | n1=VM;n2=VR | B11 | S6 Vorentzerrung core branch VM-VR | PARTIEL | Etape 20/21
-B11.S6.C1 | capacitor | 5e-9 | farad | n1=VM;n2=VR | B11 | S6 Vorentzerrung core branch VM-VR | PARTIEL | Etape 20/21
+B11.S6.C1 | capacitor | 3e-9 | farad | n1=VM;n2=VR | B11 | S6 Vorentzerrung core branch VM-VR | PARTIEL | Etape 20/21
 B11.S6.R5 | resistor | 15000 | ohm | n1=VL;n2=VR | B11 | S6 Vorentzerrung optional bridge branch | PARTIEL | Etape 20/21
 B11.S6.C3 | capacitor | 3.3e-9 | farad | n1=VL;n2=VR | B11 | S6 Vorentzerrung optional bridge branch | PARTIEL | Etape 20/21
 B11.S6.R6 | resistor | 3900 | ohm | n1=VM;n2=S6_R6_C4_MID | B11 | S6 VM-to-ground series RC branch | PARTIEL | Etape 20/21
@@ -100,11 +102,238 @@ B11.S6.C4 | capacitor | 3e-9 | farad | n1=S6_R6_C4_MID;n2=0 | B11 | S6 VM-to-gro
 Switches
 S6 status: PARTIEL
 S6 selected_position: delivery_linear
+S6 truth_table_status: UNKNOWN
 S6 delivery_linear: 4-5 closed; 8-9 closed; 5-6 open; 7-8 open; 5-3-1 closed; 2 open
+S6 delivery_linear_status: SWITCH_CONTACT_CANDIDATE
 S7 status: PARTIEL
 S7 selected_mode: limiter_drawn_17_to_18
+S7 truth_table_status: UNKNOWN
 S7 drawn_17_to_18: closed=17-18, open=17-19, zener=ZL10 active, mode=limiter
 S7 alternate_17_to_19: closed=17-19, open=17-18, zener=ZL10 bypassed, mode=compressor
+
+Topology Step 1 switch contact candidates
+candidate_set: U273_DEBUG_CONFIG_001.SWITCH_CONTACT_CANDIDATES
+candidate_set_status: SWITCH_CONTACT_CANDIDATE
+candidate_set_truth_table_status: UNKNOWN
+applied_to_executable_netlist: false
+S3_DRAWN_22_23_CLOSED: switch=S3, state=candidate_closed, terminals=22-23, status=SWITCH_CONTACT_CANDIDATE, mna_action=boundary_only_not_stamped
+S4_DRAWN_25_26_CLOSED: switch=S4, state=candidate_closed, terminals=25-26, status=SWITCH_CONTACT_CANDIDATE, mna_action=boundary_only_not_stamped
+S6_DELIVERY_4_5_CLOSED: switch=S6, state=candidate_closed, terminals=4-5, status=SWITCH_CONTACT_CANDIDATE, mna_action=boundary_only_not_stamped
+S6_DELIVERY_8_9_CLOSED: switch=S6, state=candidate_closed, terminals=8-9, status=SWITCH_CONTACT_CANDIDATE, mna_action=boundary_only_not_stamped
+S6_DELIVERY_5_6_OPEN: switch=S6, state=candidate_open, terminals=5-6, status=SWITCH_CONTACT_CANDIDATE, mna_action=boundary_only_not_stamped
+S6_DELIVERY_7_8_OPEN: switch=S6, state=candidate_open, terminals=7-8, status=SWITCH_CONTACT_CANDIDATE, mna_action=boundary_only_not_stamped
+S6_DELIVERY_5_3_1_CHAIN_CLOSED: switch=S6, state=candidate_closed_chain, terminals=5-3-1, status=SWITCH_CONTACT_CANDIDATE, mna_action=boundary_only_not_stamped
+S6_DELIVERY_2_OPEN: switch=S6, state=candidate_open_unconnected, terminals=2, status=SWITCH_CONTACT_CANDIDATE, mna_action=boundary_only_not_stamped
+S7_DRAWN_17_18_CLOSED: switch=S7, state=candidate_closed, terminals=17-18, status=SWITCH_CONTACT_CANDIDATE, mna_action=boundary_only_not_stamped
+S7_DRAWN_17_19_OPEN: switch=S7, state=candidate_open, terminals=17-19, status=SWITCH_CONTACT_CANDIDATE, mna_action=boundary_only_not_stamped
+
+Topology Step 1 B11 S6/S7 switch matrix candidate
+switch_matrix: B11_S6_S7_SWITCH_MATRIX_CANDIDATE_STEP1
+switch_matrix_status: SWITCH_MATRIX_CANDIDATE
+switch_matrix_truth_table_status: UNKNOWN
+switch_matrix_executable_effect: none; this is a switch-matrix closure checklist and does not alter the official B11/S6/S7 Thevenin boundary
+switch_matrix_values: {"R3_ohm":7500,"R4_ohm":7500,"R5_ohm":15000,"R6_ohm":3900,"C1_farad":3e-9,"C2_farad":3e-9,"C3_farad":3.3e-9,"C4_farad":3e-9,"R1_ohm":3000,"R2_user_candidate_ohm":1000}
+switch_matrix_forbidden_shortcuts: S6 = mode_limiter; S7 = mode_compressor; single global S6/S7 truth table without per-contact proof; Thevenin replacement from a selected debug contact only
+switch_matrix_required_fields: mechanical_position; contact_closed; contact_open; left_node; right_node; effect_on_preemphasis; effect_on_CMD_D1_D2; evidence_crop; promotion_decision
+
+Topology Step 1 B11 visual inventory
+b11_inventory: B11_VISUAL_INVENTORY_STEP1
+b11_inventory_status: CANDIDATE
+b11_inventory_mna_action: inventory_only_not_stamped
+b11_active_simulation_allowed_for_step1: false
+R10: visible=V24_to_N215, proposed=g10 between V24 and N215, status=CANDIDATE, source_status=confirmed_by_user_crop, mna_action=inventory_only_not_stamped
+R11: visible=N215_to_N10, proposed=g11 between N215 and N10, status=CANDIDATE, source_status=confirmed_by_user_crop, mna_action=inventory_only_not_stamped
+R15: visible=V24_to_N145, proposed=g15 between V24 and N145, status=CANDIDATE, source_status=corrects_latest_path_file_that_used_N215_to_N145, mna_action=inventory_only_not_stamped
+R14_C6: visible=N145_to_R14_to_X_R14C6_to_C6_to_N10, proposed=open, status=CANDIDATE, source_status=corrects_previous_N05_endpoint_assumption, mna_action=inventory_only_not_stamped
+R13: visible=N9_to_N05, proposed=g13 between N9 and N05, status=CANDIDATE, source_status=confirmed_by_user_crop, mna_action=inventory_only_not_stamped
+R16: visible=N9_to_reference, proposed=g16 between N9 and REF, status=CANDIDATE, source_status=confirmed_by_second_user_crop, mna_action=inventory_only_not_stamped
+R12_R9: visible=N05_to_reference, proposed=g12 and g9 between N05 and REF, status=CANDIDATE, source_status=confirmed_by_second_user_crop, mna_action=inventory_only_not_stamped
+R7_R8: visible=N05_to_C5_100uF_to_N150; N150_to_R7_500_adjustable_to_R8_680_to_reference, proposed=open from N05 because C5 is series/open in DC, status=CANDIDATE, source_status=corrected_by_global_user_crop, mna_action=inventory_only_not_stamped
+R17_C10: visible=N4_to_R17_6k8_parallel_C10_100p_to_reference, proposed=g17 between N4 and REF; C10 open in DC and dynamic in AC/transient, status=CANDIDATE, source_status=confirmed_by_screenshot_092120_not_N05, mna_action=inventory_only_not_stamped
+S6_core: visible=R5/C3 between left and right nodes; R4/C2 and R3/C1 split through VM; C4/R6 from VM to reference, proposed=S6 contact table still guarded, status=CANDIDATE, source_status=visible_in_global_user_crop, mna_action=inventory_only_not_stamped
+R1_R2: visible=right side of S6 shows R1=3k and R2 visible as 1M adjustable, proposed=guarded until exact S6 position/contact routing is assigned, status=CANDIDATE, source_status=corrects_previous_R2_5k1_read_for_this_visible_branch, mna_action=inventory_only_not_stamped
+Ts1_Ts2: visible=SST117 terminals are visible around N145/N10/N9 and N10/N05, proposed=guarded, status=CANDIDATE, source_status=pin names B/C/E still unassigned, mna_action=inventory_only_not_stamped
+B11_TS1_TS2_LOCAL_PASSIVE_KCL: status=CANDIDATE, iR15=0.007916666666666667, iR16=0.0075, n9PassiveDemand=0.007538636363636364
+
+Topology Step 1 B11 local topology proof ledger
+b11_local_ledger: B11_LOCAL_TOPOLOGY_PROOF_LEDGER_STEP1
+b11_local_ledger_status: CANDIDAT_SCHEMA_PARTIEL
+b11_local_ledger_mna_action: topology_ledger_only_not_stamped
+b11_local_R15_R16_R13: R15=1200, R16=1200, R13=220000
+b11_local_kcl: IR15=0.007916666666666667, IR16=0.0075, IR13=0.000038636363636363636, residual=0.000378030303030304, closure=not_closed_by_R15_R16_R13_alone
+B11_N145: touches=R15|Ts2 terminal|R14/C6|C8, confidence=PDF_VISUAL_CONFIRMED_CANDIDATE, must_prove=Ts2 B/C/E orientation and the active current path that accounts for the 0.378 mA residual.
+B11_N10: touches=R11|Ts1 terminal|R14/C6, confidence=PDF_VISUAL_CONFIRMED_CANDIDATE, must_prove=Ts1 B/C/E orientation and any hidden/intermediate base route before active stamping.
+B11_N9: touches=R16|R13|Ts2 terminal|C9, confidence=PDF_VISUAL_CONFIRMED_CANDIDATE, must_prove=Ts2 B/C/E orientation and the active source/sink relation at N9.
+B11_N05: touches=R12|R9|R13|Ts1 terminal|C5, confidence=PDF_VISUAL_CONFIRMED_CANDIDATE, must_prove=Ts1 B/C/E orientation and the active branch that supplies the remaining N05 current.
+B11_C5_ROUTE: touches=C5|R7/R8 branch|N05?, confidence=PDF_VISUAL_CONFIRMED_CANDIDATE, must_prove=Transient stamp and charge model; C5 is visually a series dynamic path and remains open in DC.
+B11_R17_ROUTE: touches=R17|C10?|N4?, confidence=CANDIDATE, must_prove=R17 must not be silently tied to N05 unless the PDF route proves it.
+B11_S6_S7_C11_CMD: touches=S6|S7|C11|CMD, confidence=MODE_DEPENDENT_CANDIDATE_SWITCH_NETWORK, must_prove=Contact truth table and C11/CMD route per mode before any single active B11 command path is promoted.
+
+Topology Step 1 B11 PDF topology evidence ledger
+b11_pdf_evidence: B11_PDF_TOPOLOGY_EVIDENCE_STEP1
+b11_pdf_evidence_status: CANDIDAT_SCHEMA_PARTIEL
+b11_pdf_evidence_mna_action: pdf_evidence_only_not_stamped
+b11_pdf_evidence_source: Siemens_U273_Limiter.pdf
+R13: status=PDF_VISUAL_CONFIRMED_CANDIDATE, route=B11_N9 -> R13 220k -> B11_N05_Ts1_LOW, limit=Passive endpoint proof only; does not close the active Ts1/Ts2 current path.
+R16: status=PDF_VISUAL_CONFIRMED_CANDIDATE, route=B11_N9 -> R16 1.2k -> B11_REF, limit=Endpoint proof only; old N145->N9 R16 reading remains rejected.
+Ts2: status=PDF_VISUAL_CONFIRMED_CANDIDATE, route=upper_terminal=B11_N145 shared with R15 bottom, R14 left/right chain and C8 right; lower_terminal=B11_N9 shared with R16 top, R13 left and C9 right; control_terminal_candidate=route into the R14/C6/N10/Ts1 local network, limit=Terminal graph is visual evidence; B/C/E names and Ebers-Moll stamps remain forbidden until an active hypothesis passes VBE/VCE/KCL.
+C8: status=PDF_VISUAL_CONFIRMED_CANDIDATE, route=B11_NDRV_C78_CANDIDATE -> C8 25u -> B11_N145, limit=Dynamic endpoint proof only; no AC/transient stamp is promoted in the official netlist.
+C9: status=PDF_VISUAL_CONFIRMED_CANDIDATE, route=B11_NDRV_C9_CANDIDATE -> C9 25u -> B11_N9, limit=Dynamic endpoint proof only; no AC/transient stamp is promoted in the official netlist.
+C7: status=PDF_VISUAL_CONFIRMED_CANDIDATE, route=B11_NDRV_C78_CANDIDATE -> C7 25u -> B11_N215, limit=Dynamic endpoint proof only; no AC/transient stamp is promoted in the official netlist.
+C5: status=PDF_VISUAL_CONFIRMED_CANDIDATE, route=B11_N05_Ts1_LOW -> C5 100u -> B11_N150_R7_TOP -> R7/R8/S6, limit=C5 proves R7/R8/S6 are not direct DC load at N05; transient/attack-release still needs an implicit capacitor stamp.
+C11: status=PDF_VISUAL_CONFIRMED_CANDIDATE, route=B11_NRECT_FILTERED_AFTER_R30_SI -> C11 500u -> B11_RECT_RETURN_22_24, limit=C11 is visually tied to the rectifier/fused storage area. The direct detector-to-B6-CMD transfer function is still not visually closed.
+R31: status=PDF_VISUAL_CONFIRMED_CANDIDATE, route=B11_ND2_BOT_RAW -> R31 51k -> B11_NCMD_LOCAL, limit=Detector/control endpoint proof only; B11_NCMD_LOCAL is not the software B6 CMD node and must not replace the Thevenin command path.
+D2_SSD55: status=PDF_VISUAL_CONFIRMED_CANDIDATE, route=B11_N20_D2_TOP -> D2 SSD55 -> B11_ND2_BOT_RAW, limit=Diode endpoint proof only; Shockley/RS parameters and final polarity stamp remain guarded.
+D1_ZL10: status=PDF_VISUAL_CONFIRMED_CANDIDATE, route=B11_NCMD_LOCAL -> D1 ZL10 -> B11_NZENER_OUT_18_19, limit=Zener endpoint and functional limiter-threshold role are captured, but polarity stamp and S7 17/18/19 truth table remain guarded.
+CMD_ROUTE: status=MODE_DEPENDENT_CANDIDATE_SWITCH_NETWORK, route=B11 active output -> C5/R7/R8/S6 visible network -> S6 right contacts -> R1/R2 boundary conductor candidate -> B6 bridge command remains represented by Thevenin port, limit=The PDF confirms a visible S6/R1/R2 boundary conductor candidate, but not a complete active output impedance or all mode contacts. Do not replace B11_S6_S7.VB11_S6_S7 + RB11_S6_S7_CMD until S6/S7 truth tables and active B11 output impedance are closed.
+b11_pdf_closure: active_b11_promotable=false, replace_thevenin=false, still_guarded=Ts1/Ts2 B/C/E|active current closure|S6/S7 full truth tables|diode model parameters and polarities|C7/C8/C9 driver-side common-node hypothesis|C11/detector-to-CMD transfer|Thevenin replacement
+
+Topology Step 1 B11 PDF text functional evidence
+b11_pdf_text_functional: B11_PDF_TEXT_FUNCTIONAL_EVIDENCE_STEP1
+b11_pdf_text_functional_status: PDF_TEXT_FUNCTIONAL_CONFIRMED
+b11_pdf_text_functional_mna_action: functional_evidence_only_not_stamped
+b11_pdf_text_functional_source: C:/Users/user/.claude/plans/Analyse texte du pdf U273.txt
+B11_REGELVERSTAERKER_FEEDBACK_FROM_B6_OUTPUT: fact=B11 is the regulation amplifier fed from the B6 signal amplifier output, so the control path is feedback, not arbitrary feed-forward., modeling=Future active closure must derive B11 drive from the B6 output node and cannot keep a free detector drive as proof.
+B11_RECTIFIER_BEFORE_DC_CONTROL: fact=The B11 output is followed by a silicon rectifier that produces the DC control voltage., modeling=The detector path must be part of the offline active reference before C11/CMD dynamics can be promoted.
+COMPRESSOR_DIRECT_CONTROL_TO_BRIDGE: fact=In compressor mode, the rectified DC control voltage is sent directly to the gain-control diode bridge., modeling=A compressor-mode candidate may bypass the limiter zener, but only after S7 contacts are proven.
+LIMITER_ZL10_THRESHOLD: fact=In limiter mode, a ZL10 zener is inserted so regulation starts close to nominal output., modeling=D1_ZL10 has a functionally confirmed limiter-threshold role with BV around 10 V as a candidate model parameter.
+S7_BYPASSES_ZL10_IN_COMPRESSOR: fact=The text says the zener is short-circuited by a switch in compressor mode., modeling=S7 has a functionally confirmed D1-bypass role candidate, but the exact 17/18/19 contact truth table still comes from the schematic.
+S6_PREEMPHASIS_SWITCHING: fact=The regulation-amplifier input divider can bypass a resistance with a capacitor for FM pre-emphasis., modeling=S6/S7 must be treated as a mode-dependent pre-emphasis and command-routing switch matrix, not a single RC shortcut.
+AUDIO_GAIN_BRIDGE_GE_SI_BRANCH: fact=Each audio gain-control bridge branch uses one germanium diode plus one silicon diode in series., modeling=The B6 gain bridge should use the Siemens empirical branch law or a Ge+Si equivalent, not a generic four-silicon-diode shortcut.
+b11_pdf_text_diode_law: scope=B6 audio gain-control diode bridge branch, not D1_ZL10 or D2_SSD55 detector diodes, voltage=UD_mV = 308 * ID_uA^0.16, current=ID_uA = 2.85e-16 * UD_mV^6.25, target_mV={"min":10,"nominal":25,"max":50}
+b11_pdf_text_closure: active_b11_promotable=false, replace_thevenin=false, s7_truth_table_promoted=false
+
+Topology Step 1 B11 GPT reponse 2 promotion audit
+b11_gpt_reponse_2_audit: B11_GPT_REPONSE_2_2105_PROMOTION_AUDIT
+b11_gpt_reponse_2_audit_status: CANDIDATE
+b11_gpt_reponse_2_audit_mna_action: audit_only_not_stamped
+b11_gpt_reponse_2_audit_source: C:/Users/user/.claude/plans/Gpt reponse 2 2105.txt
+D1_ZL10 anode=NZENER_OUT, cathode=NCMD, BV about 10 V: guarded_action=Already recorded as a polarity/model candidate and as text-confirmed limiter-threshold function; spice_polarity_promoted remains false.
+D2_SSD55 anode=N20_METER_TOP, cathode=NRECT_MINUS/ND2_BOT_RAW: guarded_action=Already recorded as a polarity candidate; SSD55 model and polarity stamp remain guarded.
+R31 is 51k between detector raw minus and local NCMD: guarded_action=Already recorded as B11_ND2_BOT_RAW -> R31 -> B11_NCMD_LOCAL, outside the software B6 CMD boundary.
+C11 must not appear in KCL(NCMD): guarded_action=Accepted as a promotion blocker: C11 remains not-direct-CMD evidence and is not connected to the software CMD node.
+S7 bypasses D1 in compressor and leaves D1 active in limiter: guarded_action=Accepted only as functional mode logic from the PDF text; S7 contact truth table remains unpromoted.
+C7.right = +24V rail: verdict=REJECT_FOR_STEP1, reason=The local crop used by the current ledger shows C7 terminating on the printed 21.5 V node, not on the 24 V rail. Keep B11.PASSIVE.C7 as NDRV_C78_CANDIDATE -> B11_N215.
+C7/C8/C9 driver topology is resolved: verdict=TOO_STRONG, reason=C7/C8/C9 endpoints are useful, but the driver-side conductor grouping is still a guarded visual hypothesis. Do not merge or stamp the dynamic driver nodes from this file.
+D1 and D2 polarity and stamps are promotable now: verdict=TOO_STRONG, reason=The graphical polarity candidates agree with the current ledger, but diode model parameters and S7 mode routing still need an explicit guarded experiment before stamping.
+S6 minimum limiter/compressor truth table is resolved as 3->1 and 3->2: verdict=TOO_STRONG, reason=The project still requires per-position closed/open contacts, left/right nodes, and CMD/D1/D2 effects before S6 can drive active B11 routing.
+B11 can move to partial_promoted_guarded official components: verdict=REJECT_FOR_STEP1, reason=No active B11 transistor pinout, no full S6/S7 truth table, no validated D1/D2 nonlinear experiment, and no real B11-to-B6 CMD KCL equation are available yet.
+b11_gpt_reponse_2_closure: active_b11_promotable=false, add_official_components=false, c7_to_v24_rejected=true
+
+Topology Step 1 B11 scientific activation research ledger
+b11_scientific_research: B11_SCIENTIFIC_ACTIVATION_RESEARCH_LEDGER
+b11_scientific_research_status: CANDIDATE
+b11_scientific_research_mna_action: research_requirements_only_not_stamped
+b11_scientific_research_active_allowed: false
+HO_RUEHLI_BRENNAN_MNA_1975: kind=paper, consequence=Keep B11 activation inside the existing MNA residual/Jacobian path rather than building an ad-hoc detector law.
+NGSPICE_DIODE_BJT_MODEL_REFERENCE: kind=simulator_manual, consequence=D1_ZL10 cannot be represented by the current forward-only Shockley diode. Add an optional zener breakdown branch before any D1 stamp experiment.
+HOLTERS_ZOLZER_NONLINEAR_STATE_SPACE_2015: kind=paper, consequence=Use this only after offline B11 MNA closure. It is a reduction path for realtime, not a substitute for proving B11 topology.
+ordinary_diode: current_status=implemented_for_forward_shockley_u273_empirical_audio_bridge_and_guarded_zener_breakdown, missing=series resistance still needs a bounded implementation before detector/zener parameter fitting
+zener_diode: current_status=guarded reverse-breakdown diode capability exists; D1_ZL10 is still not stamped, missing=D1_ZL10 stamp experiments must sweep both graphical polarities and reject the one that violates S7 mode behavior and printed-node KCL.
+npn_bjt_dc: current_status=minimal NPN Ebers-Moll residual/Jacobian already exists, missing=B/C/E pin assignments, source-stepping tests, and hidden/intermediate route proof for Ts1/Ts2
+charge_and_capacitance: current_status=linear capacitors are implicit; nonlinear diode/BJT capacitances are not implemented, missing=not required for first DC-only B11 activation, required before transient/audio claims
+D1_ZL10: source_strength=identity_and_nominal_voltage, promotion_allowed_now=false, gap=The source gives identity/nominal breakdown but not a full SPICE model. IBV/IS/N/RS are candidate parameters until I-V fit or datasheet scan is found.
+D2_SSD55: source_strength=weak_identity_only, promotion_allowed_now=false, gap=No reliable SSD55 electrical datasheet found. Treat existing makeSsd55Approximation as a hypothesis, not evidence.
+OA154Q: source_strength=component_electrical_summary, promotion_allowed_now=false, gap=undefined
+BCY66: source_strength=manufacturer_datasheet_scan_indexed, promotion_allowed_now=false, gap=The datasheet exists but project has not parsed a source-backed beta/capacitance table into calibration bounds.
+SST117: source_strength=identity_and_polarity_only, promotion_allowed_now=false, gap=No manufacturer electrical datasheet found. Forum claims such as BSX45/2N2219A similarity remain hypothesis only.
+SST116: source_strength=weak_identity_and_polarity, promotion_allowed_now=false, gap=Polarity is not as strong as SST117. Require stronger route proof and operating-point rejection before any stamp.
+2N3054: source_strength=modern_manufacturer_datasheet, promotion_allowed_now=false, gap=Useful for inventory completeness, but not a reason to relax Ts1/Ts2 pinout proof.
+b11_scientific_research_closure: zener_required=true, ebers_moll_dc_ok=true, active_b11_promotable=false
+
+Topology Step 1 B11 PDF active hypothesis constraints
+b11_pdf_active_constraints: B11_PDF_ACTIVE_HYPOTHESIS_CONSTRAINTS_STEP1
+b11_pdf_active_constraints_status: CANDIDATE
+b11_pdf_active_constraints_mna_action: hypothesis_constraints_only_not_stamped
+B11_N145: action=sink_current_from_printed_node, required_into_node=-0.007916666666666667, candidates=B11.Ts2, rule=Reject a Ts2 hypothesis if it cannot remove about 7.92 mA from N145 while keeping VBE/VCE plausible.
+B11_N9: action=source_current_into_printed_node, required_into_node=0.007538636363636364, candidates=B11.Ts2|B11.Ts1, rule=Reject an isolated Ts2 hypothesis if it assumes R15/R16/R13 alone close KCL; N9 still needs about 7.54 mA sourced.
+B11_N05: action=source_current_into_printed_node, required_into_node=0.004136958874458874, candidates=B11.Ts1, rule=Reject a Ts1 hypothesis if it cannot source about 4.14 mA into N05 without impossible beta or VBE/VCE.
+b11_pdf_active_constraints_verdict: The PDF now gives enough route topology to build a constrained BJT-hypothesis evaluator, but not enough to accept a BJT pinout.
+
+Topology Step 1 B11 UTF-8 retranscription crosscheck
+b11_retranscription_crosscheck: B11_UTF8_RETRANSCRIPTION_CROSSCHECK_STEP1
+b11_retranscription_status: CANDIDATE
+b11_retranscription_mna_action: crosscheck_only_not_stamped
+b11_retranscription_source: C:/Users/user/.claude/plans/Retranscit gpt u273.txt
+R13: agrees=R13 = 220k between N9V and N05V, project_status=already captured as B11_N9 -> R13 -> B11_N05_Ts1_LOW
+R16: agrees=R16 = 1.2k between N9V and reference, project_status=already captured as B11_N9 -> R16 -> B11_REF
+R15: agrees=R15 = 1.2k between V24 and N14V3/N145, project_status=already captured and used in the non-closed R15/R16/R13 KCL checkpoint
+Ts2: agrees=graphic terminals TOP=N14V3, RIGHT=NT2_R, BOTTOM=N9V, project_status=compatible with the guarded terminal graph; B/C/E still unassigned
+C5: agrees=C5 = 100u from Ts1 right/output route toward R7, project_status=compatible with the PDF ledger: C5 is a DC-open route into R7/R8/S6
+C8/C9: agrees=C8 and C9 are 25u dynamic branches into N145 and N9, project_status=compatible with PDF endpoints; C7/C8 share NDRV_C78 as a guarded candidate while C9 stays separate
+C11: agrees=C11 = 500u in the detector/control region, project_status=compatible in value, but the project keeps C11 as rectifier/filter storage, not direct CMD proof
+R31/D1/D2/NCMD: agrees=gpt reponse 2105 asserts D2 -> R31 51k -> NCMD -> D1 ZL10 -> 18/19/S7, project_status=accepted as PDF visual endpoint evidence only; B11_NCMD_LOCAL is not the software B6 CMD node
+C7: agrees=C7 = 25u into the 21.5 V region with a driver-side candidate conductor, project_status=accepted as a PDF visual endpoint candidate; C7/C8 common-driver hypothesis remains guarded
+B11.R31/D1/D2/NCMD: checklist_action=Captured as detector endpoint evidence and disabled candidate components; still not a B6 CMD/Thevenin replacement.
+S6/S7 Vorentzerrung network: checklist_action=Use as a value checklist for the switch truth-table proof; do not reduce the switched network to one RC branch.
+C7: checklist_action=Captured as a disabled dynamic candidate; prove or reject the C7/C8 common-driver hypothesis before dynamic B11 simulation.
+NDRV_A/NDRV_B/NDRV_C: checklist_action=Do not clamp them to reference. Keep C7/C8 as NDRV_C78 candidate and C9 as NDRV_C9 candidate until a continuous-conductor proof promotes or rejects the grouping.
+b11_retranscription_verdict: The retranscription is useful for KCL preparation and for finding the next PDF crops. It does not promote B11, assign B/C/E, or replace the guarded Thevenin CMD path.
+
+Topology Step 1 B11 prior artifact audit
+b11_prior_audit: B11_STEP1_PRIOR_ARTIFACT_AUDIT
+b11_prior_audit_status: CANDIDATE
+b11_prior_audit_artifact_count: 4
+solver/b11_ts1_ts2_topology_constraints.js: status=SUPERSEDED_FOR_STEP1, issue=dc_path_superseded_by_C5_open_reading, allowed_use=historical comparison only after its assumptions are explicitly reconciled with B11_PASSIVE_CANDIDATE_EXPERIMENTAL_PROBE
+solver/b11_ts2_r15_to_n05_path_solver.js: status=CONFLICTS_WITH_STEP1_CANONICAL_TOPOLOGY, issue=r16_r17_path_conflict, allowed_use=only as a rejected/alternative hypothesis until the PDF route proof explicitly resolves R16/R17
+solver/b11_active_bjt_linearization_estimates.js: status=SUPERSEDED_FOR_STEP1, issue=derived_from_pre_step1_current_bounds, allowed_use=rough order-of-magnitude context only
+solver/b11_active_hybrid_pi_inventory.js: status=SUPERSEDED_FOR_STEP1, issue=inherits_unproven_qpoint_rows, allowed_use=not-stamped inventory reference only
+
+Topology Step 1 B11 direct printed-node pin prefilter
+b11_pin_prefilter: B11_TS1_TS2_DIRECT_PRINTED_NODE_PIN_PREFILTER
+b11_pin_prefilter_status: CANDIDATE
+b11_pin_prefilter_mna_action: prefilter_only_not_stamped
+b11_pin_prefilter_tested_hypotheses: 96
+b11_pin_prefilter_soft_candidates: 0
+b11_pin_prefilter_strict_candidates: 0
+b11_pin_prefilter_conclusion: No direct B/C/E permutation of the currently printed B11 Ts1/Ts2 nodes passes the soft voltage prefilter. B11 active closure needs hidden/intermediate route proof, not a direct printed-node guess.
+
+Topology Step 1 B11 D1/D2 polarity experiment
+b11_d1_d2_experiment: B11_D1_D2_POLARITY_EXPERIMENT
+b11_d1_d2_experiment_enabled: false
+b11_d1_d2_experiment_flag: --enable-b11-d1-d2-polarity-experiment
+b11_d1_d2_experiment_scope: isolated_diode_polarity_functional_probe
+b11_d1_d2_experiment_isolated: true
+b11_d1_d2_experiment_modifies_official_components: false
+b11_d1_d2_experiment_ncmd_local: true
+
+Topology Step 1 B11 passive candidate subcircuit
+b11_passive_candidate: B11_PASSIVE_CANDIDATE_SUBCIRCUIT
+b11_passive_candidate_status: CANDIDATE
+b11_passive_candidate_enabled: false
+b11_passive_candidate_stamp_policy: disabled_by_default
+b11_passive_candidate_component_count: 20
+B11.PASSIVE.R10: type=resistor, value=2000, nodes=n1=B11_V24;n2=B11_N215, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.R11: type=resistor, value=10000, nodes=n1=B11_N215;n2=B11_N10, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.C7: type=capacitor, value=0.000025, nodes=n1=B11_NDRV_C78_CANDIDATE;n2=B11_N215, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.R15: type=resistor, value=1200, nodes=n1=B11_V24;n2=B11_N145, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.R14: type=resistor, value=2000, nodes=n1=B11_N145;n2=B11_R14_C6_MID, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.C6: type=capacitor, value=1e-9, nodes=n1=B11_R14_C6_MID;n2=B11_N10, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.C8: type=capacitor, value=0.000025, nodes=n1=B11_NDRV_C78_CANDIDATE;n2=B11_N145, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.C9: type=capacitor, value=0.000025, nodes=n1=B11_NDRV_C9_CANDIDATE;n2=B11_N9, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.R13: type=resistor, value=220000, nodes=n1=B11_N9;n2=B11_N05, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.R16: type=resistor, value=1200, nodes=n1=B11_N9;n2=B11_REF, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.R12: type=resistor, value=120, nodes=n1=B11_N05;n2=B11_REF, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.R9: type=resistor, value=56000, nodes=n1=B11_N05;n2=B11_REF, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.C5: type=capacitor, value=0.0001, nodes=n1=B11_N05;n2=B11_N150, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.R7_EFFECTIVE_MIN: type=resistor, value=680, nodes=n1=B11_N150;n2=B11_REF, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.R7_EFFECTIVE_MAX: type=resistor, value=1180, nodes=n1=B11_N150;n2=B11_REF, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.R17: type=resistor, value=6800, nodes=n1=B11_N4;n2=B11_REF, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.C11: type=capacitor, value=0.0005, nodes=n1=B11_NRECT_FILTERED_AFTER_R30_SI;n2=B11_RECT_RETURN_22_24, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.PASSIVE.R31: type=resistor, value=51000, nodes=n1=B11_ND2_BOT_RAW;n2=B11_NCMD_LOCAL, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.DIODE.D2_SSD55: type=diode, value=SSD55_candidate, nodes=n1=B11_N20_D2_TOP;n2=B11_ND2_BOT_RAW, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+B11.DIODE.D1_ZL10: type=zener_diode, value=ZL10_candidate, nodes=n1=B11_NCMD_LOCAL;n2=B11_NZENER_OUT_18_19, status=CANDIDATE, mna_action=candidate_disabled_not_stamped
+
+Topology Step 1 local DC checkpoints
+B6_OUTPUT_BIAS_LEFT_KCL: status=CANDIDATE, residual_amp=-4.336808689942018e-19
+
+Topology Step 1 B11 passive candidate experimental probe
+b11_passive_experiment: B11_PASSIVE_CANDIDATE_EXPERIMENTAL_PROBE
+b11_passive_experiment_enabled: false
+b11_passive_experiment_flag: --enable-b11-passive-candidate-experiment
+b11_passive_experiment_scope: isolated_passive_kcl_probe
+b11_passive_experiment_isolated: true
+b11_passive_experiment_modifies_official_components: false
 
 Open scientific boundaries
 - B11 active regulator is not yet a direct MNA block.
